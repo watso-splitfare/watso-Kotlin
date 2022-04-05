@@ -18,8 +18,15 @@
             android:layout_height="wrap_content"
 
             android:layout_marginBottom="8dp"
-            android:background="#ff9966"
-            android:text="생자대 생활 정보톡"
+            android:fontFamily="@font/fontstyle_title"
+            android:textSize="22sp"
+            android:shadowRadius="4.0"
+            android:shadowDx="4.0"
+            android:shadowDy="4.0"
+            android:shadowColor="#939393"
+            android:text="@string/app_title"
+
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -60,7 +67,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="배달톡"
+                    android:text="@string/baedal"
+                    android:fontFamily="@font/gamjaflower_regular"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,7 +87,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_baedal_pre"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="8dp"
@@ -101,7 +109,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="생택구"
+                    android:text="@string/taxi"
+                    android:fontFamily="@font/jua_regular"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -135,7 +144,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/lo_style_kara"
+                android:background="@drawable/lyt_style_kara_pre"
                 android:layout_margin="10dp">
 
                 <TextView
@@ -144,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
-                    android:text="TextView"
+                    android:text="@string/kara"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -206,6 +215,162 @@
                     android:text="TextView"
                     app:layout_constraintStart_toStartOf="@id/tv_kara3"
                     app:layout_constraintTop_toTopOf="@id/tv_kara3" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/lyt_style_board_pre"
+                tools:layout_editor_absoluteX="10dp">
+
+                <TextView
+                    android:id="@+id/tv_free_board_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/free_board"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_free_board1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_free_board_title" />
+
+                <TextView
+                    android:id="@+id/tv_free_board2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_free_board1" />
+
+                <TextView
+                    android:id="@+id/tv_free_board3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="TextView"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_free_board2" />
+
+                <TextView
+                    android:id="@+id/tv_free_board4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="@id/tv_free_board1"
+                    app:layout_constraintTop_toTopOf="@+id/tv_free_board1" />
+
+                <TextView
+                    android:id="@+id/tv_free_board5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="@id/tv_free_board1"
+                    app:layout_constraintTop_toTopOf="@id/tv_free_board2" />
+
+                <TextView
+                    android:id="@+id/tv_free_board6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="@id/tv_free_board3"
+                    app:layout_constraintTop_toTopOf="@id/tv_free_board3" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/lyt_style_board_pre"
+                tools:layout_editor_absoluteX="10dp">
+
+                <TextView
+                    android:id="@+id/tv_club_board_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/club_board"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_club_board1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_club_board_title" />
+
+                <TextView
+                    android:id="@+id/tv_club_board2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_club_board1" />
+
+                <TextView
+                    android:id="@+id/tv_club_board3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="TextView"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_club_board2" />
+
+                <TextView
+                    android:id="@+id/tv_club_board4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="@id/tv_club_board1"
+                    app:layout_constraintTop_toTopOf="@+id/tv_club_board1" />
+
+                <TextView
+                    android:id="@+id/tv_club_board5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="@id/tv_club_board1"
+                    app:layout_constraintTop_toTopOf="@id/tv_club_board2" />
+
+                <TextView
+                    android:id="@+id/tv_club_board6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="210dp"
+                    android:text="TextView"
+                    app:layout_constraintStart_toStartOf="@id/tv_club_board3"
+                    app:layout_constraintTop_toTopOf="@id/tv_club_board3" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.databinding.ActivityMainBinding
 import java.time.LocalDateTime
@@ -51,6 +52,18 @@ class MainActivity : AppCompatActivity() {
             binding.rvTaxiPre.adapter = TaxiPreAdapter(taxiList.subList(0,5))
         else
             binding.rvTaxiPre.adapter = TaxiPreAdapter(taxiList)
+
+        val karaList = arrayListOf(
+            KaraPre(1, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), true),
+            KaraPre(2, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), false),
+            KaraPre(3, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), true),
+            KaraPre(5, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), false),
+            KaraPre(6, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), true),
+            KaraPre(7, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), true),
+        )
+        binding.rvTaxiPre.layoutManager = ConstraintLayout
+        //binding.rvTaxiPre.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvTaxiPre.setHasFixedSize(true)
 
 
     }
