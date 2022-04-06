@@ -15,14 +15,14 @@ class TaxiPreAdapter(val taxiList: MutableList<TaxiPre>) : RecyclerView.Adapter<
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxiPreAdapter.CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_taxi_pre, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_taxi_pre, parent, false)
         return CustomViewHolder(view)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TaxiPreAdapter.CustomViewHolder, position: Int) {
         val content =taxiList.get(position)
-        val dt = content.dt
+        val dt = content.datetime
         val dec = DecimalFormat("#,###")
         val text = dt.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))) +
                 "\n%s -> %s\n현 인원 %d명\n예상 택시비 %s원".format(content.depart, content.dest, content.member, dec.format(content.fee/content.member))

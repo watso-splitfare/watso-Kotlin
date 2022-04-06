@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_board_pre.xml" value="0.165" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_kara_pre.xml" value="0.165" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style.xml" value="0.1" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style_baedal.xml" value="0.1365" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style_taxi.xml" value="0.1" />
@@ -15,6 +17,10 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/list_baedal_pre.xml" value="0.1" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/list_kara_pre.xml" value="0.5" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/list_taxi_pre.xml" value="0.33" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_pre.xml" value="0.20516304347826086" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_board_pre.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_pre.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_taxi_pre.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
       </map>
     </option>

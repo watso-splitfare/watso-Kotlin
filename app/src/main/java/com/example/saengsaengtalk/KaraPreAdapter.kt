@@ -14,7 +14,7 @@ class KaraPreAdapter(val karaList: MutableList<KaraPre>) : RecyclerView.Adapter<
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KaraPreAdapter.CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_kara_pre, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_kara_pre, parent, false)
         return CustomViewHolder(view)
     }
 
@@ -25,7 +25,8 @@ class KaraPreAdapter(val karaList: MutableList<KaraPre>) : RecyclerView.Adapter<
         val period = when(content.use) {
             true -> content.starttime.format(DateTimeFormatter.ofPattern("HH:mm")) + " ~ " +
                     content.endtime.format(DateTimeFormatter.ofPattern("HH:mm"))
-        else -> ""}
+            else -> ""
+        }
         val text = "No.%d %s %s ".format(content.number, available, period)
         holder.content.text = text
     }
