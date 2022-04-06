@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk
+package com.example.saengsaengtalk.adapterHome
 
 import java.time.LocalDateTime
 

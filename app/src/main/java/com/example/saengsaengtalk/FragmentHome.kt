@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.databinding.ActivityMainBinding
+import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import java.time.LocalDateTime
 
