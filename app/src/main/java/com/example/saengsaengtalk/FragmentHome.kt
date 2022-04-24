@@ -2,10 +2,13 @@ package com.example.saengsaengtalk
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +28,13 @@ class FragmentHome :Fragment() {
 
 
         refreshView()
+
+        //LinearLayout layout = binding.lyt
+        binding.lytHomeBaedallist.setOnClickListener { moveFrag(1) }
+        binding.lytHomeTaxilist.setOnClickListener { moveFrag(2) }
+        binding.lytHomeKaralist.setOnClickListener { moveFrag(3) }
+        binding.lytHomeFreeboard.setOnClickListener { moveFrag(4) }
+        binding.lytHomeClubboard.setOnClickListener { moveFrag(5) }
 
         return binding.root
         //return view
@@ -108,5 +118,10 @@ class FragmentHome :Fragment() {
         binding.rvClubBoard.setHasFixedSize(true)
         binding.rvClubBoard.adapter = ClubBoardPreAdapter(clubBoardList)
 
+    }
+
+    fun moveFrag(num: Int) {
+        val mActivity = activity as MainActivity
+        mActivity.setFrag(num)
     }
 }

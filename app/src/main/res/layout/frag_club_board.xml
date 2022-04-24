@@ -28,7 +28,7 @@
             android:shadowDx="4.0"
             android:shadowDy="4.0"
             android:shadowRadius="4.0"
-            android:text="@string/app_title"
+            android:text="@string/club_board"
             android:textSize="28sp"
 
             android:textStyle="bold"
@@ -66,7 +66,6 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_home_baedallist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -109,7 +108,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_home_taxilist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -152,7 +150,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_home_karalist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -185,7 +182,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_home_freeboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -217,7 +213,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_home_clubboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
