@@ -8,11 +8,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.adapterHome.BaedalPre
-import com.example.saengsaengtalk.adapterOthers.BaedalList
-import com.example.saengsaengtalk.adapterOthers.BaedalListAdapter
+import com.example.saengsaengtalk.adapterBaedal.BaedalList
+import com.example.saengsaengtalk.adapterBaedal.BaedalListAdapter
 import com.example.saengsaengtalk.databinding.FragBaedalBinding
-import com.example.saengsaengtalk.databinding.FragHomeBinding
 import java.time.LocalDateTime
 
 class FragmentBaedal :Fragment() {
@@ -49,5 +47,6 @@ class FragmentBaedal :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalList.setHasFixedSize(true)
         binding.rvBaedalList.adapter = BaedalListAdapter(baedalList)
+        binding.rvBaedalList.addItemDecoration(BaedalListAdapter.BaedalListAdapterDecoration())
     }
 }
