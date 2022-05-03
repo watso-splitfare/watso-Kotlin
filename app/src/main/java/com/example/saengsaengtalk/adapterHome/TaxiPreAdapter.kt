@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.R
@@ -26,16 +27,30 @@ class TaxiPreAdapter(val taxiList: MutableList<TaxiPre>) : RecyclerView.Adapter<
         val dt = content.datetime
         val dec = DecimalFormat("#,###")
         val text = dt.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))) +
-                "\n%s -> %s\n현 인원 %d명\n예상 택시비 %s원".format(content.depart, content.dest, content.member, dec.format(content.fee/content.member))
+                "\n%s -> %s\n현 인원 %d명\n예상 택시비 %s원".format(content.depart, content.destination, content.member, dec.format(content.fee/content.member))
         holder.content.text = text
+
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(it, position)
+        }
     }
+
+    interface OnItemClickListener {
+        fun onClick(v: View, position: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
         return taxiList.size
     }
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val content = itemView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_taxi_pre)
+        val content = itemView.findViewById<TextView>(R.id.tv_taxi_pre)
     }
 
 }

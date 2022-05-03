@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.R
@@ -49,7 +50,7 @@ class BaedalPreAdapter(val baedalList: MutableList<BaedalPre>) : RecyclerView.Ad
     }
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val content = itemView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_baedal_pre)
+        val content = itemView.findViewById<TextView>(R.id.tv_baedal_pre)
     }
 
 }

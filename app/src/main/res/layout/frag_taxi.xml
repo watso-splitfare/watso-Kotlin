@@ -153,7 +153,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:background="@drawable/box_style_kara_pre">
+                android:background="@drawable/box_style_pre_kara">
 
                 <TextView
                     android:id="@+id/tv_kara_title"
@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:background="@drawable/box_style_board_pre">
+                android:background="@drawable/box_style_pre_board">
 
                 <TextView
                     android:id="@+id/tv_free_board_title"
@@ -216,7 +216,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:background="@drawable/box_style_board_pre">
+                android:background="@drawable/box_style_pre_board">
 
                 <TextView
                     android:id="@+id/tv_club_board_title"

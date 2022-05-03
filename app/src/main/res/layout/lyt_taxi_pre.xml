@@ -16,12 +16,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_taxi_pre"
+
+        <TextView
+            android:id="@+id/tv_taxi_pre"
             android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_style_taxi"
+            android:layout_height="120dp"
+            android:background="@drawable/box_style_pre_taxi"
             android:text="3/11(금) 15:10\n생자대 -> 밀양역\n현 인원 3명\n예상 택시비 2,200원"
+            android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="#000000"
             android:textStyle="bold"

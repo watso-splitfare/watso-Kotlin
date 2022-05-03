@@ -59,11 +59,7 @@ class FragmentHome :Fragment() {
         val baedalAdapter = BaedalPreAdapter(baedalList)
         binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBaedal.setHasFixedSize(true)
-
-        if (baedalList.size > 5)
-            binding.rvBaedal.adapter = baedalAdapter // BaedalPreAdapter(baedalList.subList(0,5))
-        else
-            binding.rvBaedal.adapter = baedalAdapter //BaedalPreAdapter(baedalList)
+        binding.rvBaedal.adapter = baedalAdapter
 
         baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
@@ -77,19 +73,25 @@ class FragmentHome :Fragment() {
 
         /* 택시 */
         val taxiList = arrayListOf(
-            TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 1, 6600),
-            TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 2, 6600),
-            TaxiPre(LocalDateTime.now(), "밀양역", "생자대", 3, 6600),
-            TaxiPre(LocalDateTime.now(), "밀양역", "생자대", 3, 6600),
-            TaxiPre(LocalDateTime.now(), "생자대", "영남루", 1, 6600)
+            TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 1, 6600, 1),
+            TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 2, 6600, 2),
+            TaxiPre(LocalDateTime.now(), "밀양역", "생자대", 3, 6600, 3),
+            TaxiPre(LocalDateTime.now(), "밀양역", "생자대", 3, 6600, 4),
+            TaxiPre(LocalDateTime.now(), "생자대", "영남루", 1, 6600, 5)
         )
+        val taxiAdapter = TaxiPreAdapter(taxiList)
         binding.rvTaxi.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvTaxi.setHasFixedSize(true)
+        binding.rvTaxi.adapter = taxiAdapter
 
-        if (taxiList.size > 5)
-            binding.rvTaxi.adapter = TaxiPreAdapter(taxiList.subList(0,5))
-        else
-            binding.rvTaxi.adapter = TaxiPreAdapter(taxiList)
+        taxiAdapter.setItemClickListener(object: TaxiPreAdapter.OnItemClickListener{
+            override fun onClick(v: View, position: Int) {
+                Toast.makeText(v.context, "${taxiList[position].postNum}번", Toast.LENGTH_SHORT).show()
+                Log.d("홈프래그먼트 택시 온클릭", "${taxiList[position].postNum}")
+                //setDataAtFrag(FragmentTaxiPost(), taxiList[position].postNum.toString())
+            }
+        })
+        taxiAdapter.notifyDataSetChanged()
 
 
         /* 노래방 */
