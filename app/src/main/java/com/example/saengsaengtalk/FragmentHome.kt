@@ -2,9 +2,11 @@ package com.example.saengsaengtalk
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,11 +29,11 @@ class FragmentHome :Fragment() {
         refreshView()
 
         //LinearLayout layout = binding.lyt
-        binding.lytHomeBaedallist.setOnClickListener { moveFrag(1) }
-        binding.lytHomeTaxilist.setOnClickListener { moveFrag(2) }
-        binding.lytHomeKaralist.setOnClickListener { moveFrag(3) }
-        binding.lytHomeFreeboard.setOnClickListener { moveFrag(4) }
-        binding.lytHomeClubboard.setOnClickListener { moveFrag(5) }
+        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal()) }
+        binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi()) }
+        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara())}
+        binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard()) }
+        binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
         //return view
@@ -46,20 +48,31 @@ class FragmentHome :Fragment() {
     fun refreshView() {
 
         /* 배달 */
+
         val baedalList = arrayListOf(
-            BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000),
-            BaedalPre(LocalDateTime.now(), "BBQ", 3, 10000),
-            BaedalPre(LocalDateTime.now(), "마라탕", 2, 10000),
-            BaedalPre(LocalDateTime.now(), "피자", 3, 9000),
-            BaedalPre(LocalDateTime.now(), "치킨", 4, 6000)
+            BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 1),
+            BaedalPre(LocalDateTime.now(), "BBQ", 3, 10000, 2),
+            BaedalPre(LocalDateTime.now(), "마라탕", 2, 10000, 3),
+            BaedalPre(LocalDateTime.now(), "피자", 3, 9000, 4),
+            BaedalPre(LocalDateTime.now(), "치킨", 4, 6000, 5)
         )
+        val baedalAdapter = BaedalPreAdapter(baedalList)
         binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBaedal.setHasFixedSize(true)
 
         if (baedalList.size > 5)
-            binding.rvBaedal.adapter = BaedalPreAdapter(baedalList.subList(0,5))
+            binding.rvBaedal.adapter = baedalAdapter // BaedalPreAdapter(baedalList.subList(0,5))
         else
-            binding.rvBaedal.adapter = BaedalPreAdapter(baedalList)
+            binding.rvBaedal.adapter = baedalAdapter //BaedalPreAdapter(baedalList)
+
+        baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener{
+            override fun onClick(v: View, position: Int) {
+                Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
+                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
+                setDataAtFrag(FragmentBaedalPost(), baedalList[position].postNum.toString())
+            }
+        })
+        baedalAdapter.notifyDataSetChanged()
 
 
         /* 택시 */
@@ -117,8 +130,12 @@ class FragmentHome :Fragment() {
 
     }
 
-    fun moveFrag(num: Int) {
+    fun setFrag(fragment: Fragment) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(num)
+        mActivity.setFrag(fragment)
+    }
+    fun setDataAtFrag(fragment: Fragment, postNum:String) {
+        val mActivity = activity as MainActivity
+        mActivity.setDataAtFrag(fragment, postNum)
     }
 }

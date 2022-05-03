@@ -49,4 +49,9 @@ class FragmentBaedal :Fragment() {
         binding.rvBaedalList.adapter = BaedalListAdapter(baedalList)
         binding.rvBaedalList.addItemDecoration(BaedalListAdapter.BaedalListAdapterDecoration())
     }
+
+    /*fun moveFrag(num: Int) {
+        val mActivity = activity as MainActivity
+        mActivity.setFrag(num)
+    }*/
 }

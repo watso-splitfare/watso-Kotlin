@@ -28,7 +28,21 @@ class BaedalPreAdapter(val baedalList: MutableList<BaedalPre>) : RecyclerView.Ad
         val text = dt.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))) +
                 "\n%s %d팀\n예상 배달비 %s원".format(content.shop, content.member, dec.format(content.fee/content.member))
         holder.content.text = text
+
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(it, position)
+        }
     }
+
+    interface OnItemClickListener {
+        fun onClick(v: View, position: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
         return baedalList.size
