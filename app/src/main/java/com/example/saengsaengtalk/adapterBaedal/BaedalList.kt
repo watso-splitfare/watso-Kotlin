@@ -10,5 +10,6 @@ class BaedalList(
     val datetime: LocalDateTime,
     val shop: String,
     val member: Int,
-    val fee:Int
+    val fee:Int,
+    val postNum: Int
     ) {}

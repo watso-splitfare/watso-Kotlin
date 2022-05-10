@@ -37,7 +37,21 @@ class BaedalListAdapter(val baedalList: ArrayList<BaedalList>) : RecyclerView.Ad
         holder.tv_like.text = arg.like.toString()
         holder.tv_viewed.text = arg.viewed.toString()
         holder.tv_content.text = text
+
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(it, position)
+        }
     }
+
+    interface OnItemClickListener {
+        fun onClick(v: View, position: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
         return baedalList.size

@@ -33,11 +33,11 @@ class MainActivity : AppCompatActivity() {
 
         setFrag(FragmentHome())
 
-        binding.btnHome.setOnClickListener { setFrag(FragmentHome()) }
-        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal()) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost()) }
-        binding.btnKara.setOnClickListener { setFrag(FragmentKara()) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard()) }
+        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popAllStack = true) }
+        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popAllStack = true) }
+        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(), popAllStack = true) }
+        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popAllStack = true) }
+        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popAllStack = true) }
     }
 
     override fun onDestroy() {
@@ -45,18 +45,25 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        // Log.d("함수 호출", fragNum.toString())
-        transaction.replace(R.id.main_frame, fragment)
+    fun setFrag(fragment: Fragment, addBackStack:Boolean=false, popAllStack:Boolean=false) {
+        val fm = supportFragmentManager
+        val transaction = fm.beginTransaction()
+
+        if (popAllStack)
+            fm.popBackStack()
+        if (addBackStack)
+            transaction.replace(R.id.main_frame, fragment).addToBackStack(null)
+        else
+            transaction.replace(R.id.main_frame, fragment)
+
         transaction.commit()
     }
 
-    fun setDataAtFrag(fragment: Fragment, postNum:String="") {
+    fun setDataAtFrag(fragment: Fragment, postNum:String="", addBackStack:Boolean=false, popAllStack:Boolean=false) {
         val bundle = Bundle()
         bundle.putString("postNum", postNum)
 
         fragment.arguments = bundle
-        setFrag(fragment)
+        setFrag(fragment, addBackStack, popAllStack)
     }
 }

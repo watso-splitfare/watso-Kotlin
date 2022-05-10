@@ -56,16 +56,17 @@ class FragmentHome :Fragment() {
             BaedalPre(LocalDateTime.now(), "피자", 3, 9000, 4),
             BaedalPre(LocalDateTime.now(), "치킨", 4, 6000, 5)
         )
-        val baedalAdapter = BaedalPreAdapter(baedalList)
+
         binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBaedal.setHasFixedSize(true)
+        val baedalAdapter = BaedalPreAdapter(baedalList)
         binding.rvBaedal.adapter = baedalAdapter
 
         baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setDataAtFrag(FragmentBaedalPost(), baedalList[position].postNum.toString())
+                setDataAtFrag(FragmentBaedalPost(), baedalList[position].postNum.toString(), true)
             }
         })
         baedalAdapter.notifyDataSetChanged()
@@ -132,12 +133,12 @@ class FragmentHome :Fragment() {
 
     }
 
-    fun setFrag(fragment: Fragment) {
+    fun setFrag(fragment: Fragment, addBackStack:Boolean=false, popAllStack:Boolean=false) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment)
+        mActivity.setFrag(fragment, addBackStack, popAllStack)
     }
-    fun setDataAtFrag(fragment: Fragment, postNum:String) {
+    fun setDataAtFrag(fragment: Fragment, postNum:String, addBackStack:Boolean=false, popAllStack:Boolean=false) {
         val mActivity = activity as MainActivity
-        mActivity.setDataAtFrag(fragment, postNum)
+        mActivity.setDataAtFrag(fragment, postNum, addBackStack, popAllStack)
     }
 }
