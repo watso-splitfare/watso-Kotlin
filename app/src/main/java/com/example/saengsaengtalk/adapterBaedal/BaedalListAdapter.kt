@@ -29,12 +29,16 @@ class BaedalListAdapter(val baedalList: ArrayList<BaedalList>) : RecyclerView.Ad
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val arg =baedalList.get(position)
+        val arg = baedalList.get(position)
         val dec = DecimalFormat("#,###")
-        val text = "%s\n".format(arg.title) + arg.datetime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))) +
+        val text = "%s\n".format(arg.title) + arg.baedaltime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))) +
                 "\n%s\n%d팀\n예상 배달비 %s원".format(arg.shop, arg.member, dec.format(arg.fee/arg.member))
-        //holder.img.setImageResource()
-        holder.tv_like.text = arg.like.toString()
+        //holder.iv_baedal_list.setImageResource()
+        if (arg.likeUserList.contains("주넝이"))
+            holder.iv_like.setImageResource(R.drawable.heart_red)
+        else
+            holder.iv_like.setImageResource(R.drawable.heart)
+        holder.tv_like.text = arg.likeUserList.size.toString()
         holder.tv_viewed.text = arg.viewed.toString()
         holder.tv_content.text = text
 
@@ -58,7 +62,8 @@ class BaedalListAdapter(val baedalList: ArrayList<BaedalList>) : RecyclerView.Ad
     }
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val img = itemView.findViewById<ImageView>(R.id.img_baedal_list)
+        val iv_baedal_list = itemView.findViewById<ImageView>(R.id.img_baedal_list)
+        val iv_like = itemView.findViewById<ImageView>(R.id.img_baedal_list_like)
         val tv_like = itemView.findViewById<TextView>(R.id.tv_baedal_list_like)
         val tv_viewed = itemView.findViewById<TextView>(R.id.tv_baedal_list_viewed)
         val tv_content = itemView.findViewById<TextView>(R.id.tv_baedal_list_content)

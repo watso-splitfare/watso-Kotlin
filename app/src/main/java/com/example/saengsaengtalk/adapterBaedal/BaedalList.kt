@@ -3,11 +3,10 @@ package com.example.saengsaengtalk.adapterBaedal
 import java.time.LocalDateTime
 
 class BaedalList(
-    val like: Int,
-    val liked: Boolean,
+    val likeUserList: ArrayList<String>,
     val viewed: Int,
     val title: String,
-    val datetime: LocalDateTime,
+    val baedaltime: LocalDateTime,
     val shop: String,
     val member: Int,
     val fee:Int,

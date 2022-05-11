@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
+import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
+import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {
@@ -29,7 +31,7 @@ class FragmentHome :Fragment() {
         refreshView()
 
         //LinearLayout layout = binding.lyt
-        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal()) }
+        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList()) }
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi()) }
         binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara())}
         binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard()) }
