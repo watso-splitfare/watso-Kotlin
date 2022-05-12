@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.BaedalComment
 import com.example.saengsaengtalk.adapterBaedal.BaedalCommentAdapter
@@ -39,6 +40,9 @@ class FragmentBaedalPost :Fragment() {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
         refreshView()
+
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnOrder.setOnClickListener { setFrag(FragmentBaedalMenu(), addBackStack = true)}
 
         return binding.root
         //return view
@@ -90,5 +94,15 @@ class FragmentBaedalPost :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
         binding.rvComment.adapter = BaedalCommentAdapter(comment)
+    }
+
+    fun setFrag(fragment: Fragment, postNum:String="", addBackStack:Boolean=false, popAllStack:Boolean=false) {
+        val mActivity = activity as MainActivity
+        mActivity.setFrag(fragment, postNum, addBackStack, popAllStack)
+    }
+
+    fun onBackPressed() {
+        val mActivity =activity as MainActivity
+        mActivity.onBackPressed()
     }
 }
