@@ -42,7 +42,7 @@ class FragmentBaedalPost :Fragment() {
         refreshView()
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrder.setOnClickListener { setFrag(FragmentBaedalMenu(), addBackStack = true)}
+        binding.btnOrder.setOnClickListener { setFrag(FragmentBaedalMenu())}
 
         return binding.root
         //return view
@@ -96,9 +96,9 @@ class FragmentBaedalPost :Fragment() {
         binding.rvComment.adapter = BaedalCommentAdapter(comment)
     }
 
-    fun setFrag(fragment: Fragment, postNum:String="", addBackStack:Boolean=false, popAllStack:Boolean=false) {
+    fun setFrag(fragment: Fragment, postNum:String="") {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, postNum, addBackStack, popAllStack)
+        mActivity.setFrag(fragment, postNum)
     }
 
     fun onBackPressed() {

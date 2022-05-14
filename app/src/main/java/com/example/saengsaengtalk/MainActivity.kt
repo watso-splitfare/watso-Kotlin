@@ -26,11 +26,11 @@ class MainActivity : AppCompatActivity() {
 
         setFrag(FragmentHome())
 
-        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popAllStack = true) }
-        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), popAllStack = true) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(), popAllStack = true) }
-        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popAllStack = true) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popAllStack = true) }
+        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), addBackStack = false) }
+        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), addBackStack = false) }
+        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(),addBackStack = false) }
+        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), addBackStack = false) }
+        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), addBackStack = false) }
     }
 
     override fun onDestroy() {
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment, postNum:String="", addBackStack:Boolean=false, popAllStack:Boolean=false) {
+    fun setFrag(fragment: Fragment, postNum:String="", addBackStack:Boolean=true) {
         if (postNum != "") {            // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
             bundle.putString("postNum", postNum)
@@ -50,18 +50,17 @@ class MainActivity : AppCompatActivity() {
         val transaction = fm.beginTransaction()
 
 
-        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+        if (addBackStack) {
+            transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
+            transaction.add(R.id.main_frame, fragment).addToBackStack(null)
+        }
 
-
-        if (addBackStack)
-            transaction.replace(R.id.main_frame, fragment).addToBackStack(null)
-        else
-            transaction.replace(R.id.main_frame, fragment)
-
-        if (popAllStack) {
+        else {
             val count = fm.backStackEntryCount
-            for (i in 0 until count)
+            for (i in 0 until count) {
                 fm.popBackStack()
+            }
+            transaction.replace(R.id.main_frame, fragment)
         }
 
         transaction.commit()
