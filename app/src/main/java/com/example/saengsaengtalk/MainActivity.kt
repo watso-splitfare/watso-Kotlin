@@ -49,15 +49,20 @@ class MainActivity : AppCompatActivity() {
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
 
+
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+
+
+        if (addBackStack)
+            transaction.replace(R.id.main_frame, fragment).addToBackStack(null)
+        else
+            transaction.replace(R.id.main_frame, fragment)
+
         if (popAllStack) {
             val count = fm.backStackEntryCount
             for (i in 0 until count)
                 fm.popBackStack()
         }
-        if (addBackStack)
-            transaction.replace(R.id.main_frame, fragment).addToBackStack(null)
-        else
-            transaction.replace(R.id.main_frame, fragment)
 
         transaction.commit()
     }
