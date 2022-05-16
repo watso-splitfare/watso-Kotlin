@@ -41,14 +41,16 @@ class MainActivity : AppCompatActivity() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null), addBackStack:Boolean=true) {
         if ("none" !in arguments.keys) {
+            val bundle = Bundle()
             for (i in arguments.keys) {          // 넘겨줄 인자가 있나 체크
-                val bundle = Bundle()
                 bundle.putString(i, arguments[i])
-                fragment.arguments = bundle
+                Log.d("메인 엑티비티", "${i} : ${arguments[i]}")
             }
+            fragment.arguments = bundle
         }
         else
             Log.d("set Frag", "none")
+
 
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()

@@ -21,7 +21,9 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalMenu :Fragment() {
-    private var postNum: String? = null
+    var postNum: String? = null
+    var storeId: String? = null
+    var storeIdd: String? = null
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -30,9 +32,13 @@ class FragmentBaedalMenu :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postNum = it.getString("postNum")
+            storeId = it.getString("storeId")
+            storeIdd = it.getString("storeIdd")
         }
 
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
+        Log.d("배달 메뉴", "스토어 id: ${storeId}")
+        Log.d("배달 메뉴", "스토어 idd: ${storeIdd}")
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

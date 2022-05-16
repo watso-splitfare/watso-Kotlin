@@ -42,7 +42,9 @@ class FragmentBaedalPost :Fragment() {
         refreshView()
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrder.setOnClickListener { setFrag(FragmentBaedalMenu()) }
+        binding.btnOrder.setOnClickListener {
+            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to "1", "storeId" to "neneSammun", "storeIdd" to "neneSammundd"))
+        }
 
         return binding.root
         //return view
