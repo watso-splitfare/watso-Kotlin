@@ -3,6 +3,7 @@ package com.example.saengsaengtalk
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -38,13 +39,16 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment, postNum:String="", addBackStack:Boolean=true) {
-        if (postNum != "") {            // 넘겨줄 인자가 있나 체크
-            val bundle = Bundle()
-            bundle.putString("postNum", postNum)
-
-            fragment.arguments = bundle
+    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null), addBackStack:Boolean=true) {
+        if ("none" !in arguments.keys) {
+            for (i in arguments.keys) {          // 넘겨줄 인자가 있나 체크
+                val bundle = Bundle()
+                bundle.putString(i, arguments[i])
+                fragment.arguments = bundle
+            }
         }
+        else
+            Log.d("set Frag", "none")
 
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()

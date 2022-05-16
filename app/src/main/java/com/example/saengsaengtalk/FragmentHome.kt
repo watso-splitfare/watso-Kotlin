@@ -33,7 +33,7 @@ class FragmentHome :Fragment() {
         //LinearLayout layout = binding.lyt
         binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList()) }
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi()) }
-        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara())}
+        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara()) }
         binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard()) }
         binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
@@ -68,7 +68,7 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), baedalList[position].postNum.toString())
+                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
             }
         })
         baedalAdapter.notifyDataSetChanged()
@@ -136,8 +136,8 @@ class FragmentHome :Fragment() {
 
     }
 
-    fun setFrag(fragment: Fragment, postNum:String="") {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null)) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, postNum)
+        mActivity.setFrag(fragment, arguments)
     }
 }

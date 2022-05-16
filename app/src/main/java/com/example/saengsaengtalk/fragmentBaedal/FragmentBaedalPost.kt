@@ -42,7 +42,7 @@ class FragmentBaedalPost :Fragment() {
         refreshView()
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrder.setOnClickListener { setFrag(FragmentBaedalMenu())}
+        binding.btnOrder.setOnClickListener { setFrag(FragmentBaedalMenu()) }
 
         return binding.root
         //return view
@@ -96,9 +96,9 @@ class FragmentBaedalPost :Fragment() {
         binding.rvComment.adapter = BaedalCommentAdapter(comment)
     }
 
-    fun setFrag(fragment: Fragment, postNum:String="") {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null)) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, postNum)
+        mActivity.setFrag(fragment, arguments)
     }
 
     fun onBackPressed() {
