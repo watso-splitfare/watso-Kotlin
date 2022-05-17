@@ -33,14 +33,12 @@ class FragmentBaedalMenu :Fragment() {
         arguments?.let {
             postNum = it.getString("postNum")
             storeId = it.getString("storeId")
-            storeIdd = it.getString("storeIdd")
         }
 
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
         Log.d("배달 메뉴", "스토어 id: ${storeId}")
-        Log.d("배달 메뉴", "스토어 idd: ${storeIdd}")
     }
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalMenuBinding.inflate(inflater, container, false)
 
@@ -51,7 +49,6 @@ class FragmentBaedalMenu :Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
 
     }

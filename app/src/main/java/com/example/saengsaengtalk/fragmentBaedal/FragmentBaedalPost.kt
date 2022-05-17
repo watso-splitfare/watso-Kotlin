@@ -43,7 +43,7 @@ class FragmentBaedalPost :Fragment() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to "1", "storeId" to "neneSammun", "storeIdd" to "neneSammundd"))
+            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum, "storeId" to "neneSammun"))
         }
 
         return binding.root

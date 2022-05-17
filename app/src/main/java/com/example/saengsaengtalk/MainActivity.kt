@@ -40,21 +40,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null), addBackStack:Boolean=true) {
-        if ("none" !in arguments.keys) {
+        if ("none" !in arguments.keys) {        // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
-            for (i in arguments.keys) {          // 넘겨줄 인자가 있나 체크
+            for (i in arguments.keys) {
                 bundle.putString(i, arguments[i])
-                Log.d("메인 엑티비티", "${i} : ${arguments[i]}")
             }
             fragment.arguments = bundle
         }
-        else
-            Log.d("set Frag", "none")
-
 
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
-
 
         if (addBackStack) {
             transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
