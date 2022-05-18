@@ -11,16 +11,17 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.adapterBaedal.BaedalComment
-import com.example.saengsaengtalk.adapterBaedal.BaedalCommentAdapter
+import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONException
 import org.json.JSONObject
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
@@ -51,45 +52,98 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun refreshView() {
+        //lateinit var sectionMenu: MutableList<BaedalMenuSection>
+        //lateinit var menuMap: MutableMap<String, MutableList<BaedalMenu>>
+        var sectionMenu = mutableListOf<BaedalMenuSection>()
+        var menuMap = mutableMapOf<String, MutableList<BaedalMenu>>()
+
+
+        //lateinit var tempmap: MutableMap<String, String>
+        /*var temp = BaedalMenu("n", "p")
+        Log.d("temp.name", temp.name)
+        Log.d("temp.price", temp.price)
+        menuMap.put("n", mutableListOf(BaedalMenu("a", "b")))
+        Log.d("menumap[n][0].name", menuMap["n"]!![0].name)*/
+        //menuMap[section]!!.add(temp)
+
         val assetManager = resources.assets
         val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
 
-        //Log.d("제이슨: ", jsonString)
         val jObject = JSONObject(jsonString)
         val jArray = jObject.getJSONArray("nene")
 
         for (i in 0 until jArray.length()) {
             val obj = jArray.getJSONObject(i)
+            val id = obj.getInt("id")
             val section = obj.getString("section")
             val name = obj.getString("name")
-            val radio = obj.getJSONArray("radio")
-            val combo = obj.getJSONArray("combo")
-            Log.d("${i+1}번째 메뉴 ", "${section}\t${name}")
+            val radios = obj.getJSONArray("radio")
+            val combos = obj.getJSONArray("combo")
+
+            /* debug */
+
+            Log.d("id: ${id} ", "${section}\t${name}")
 
             try {
-                for (j in 0 until radio.length()) {
-                    val radio_ = radio.getJSONObject(j)
-                    val radio_area = radio_.getString("area")
-                    val radio_name = radio_.getString("name")
-                    val radio_price = radio_.getString("price")
-                    Log.d("${i + 1}번째 메뉴 ${radio_area}", "${radio_name}\t${radio_price}")
+                for (j in 0 until radios.length()) {
+                    val radio = radios.getJSONObject(j)
+                    val radio_area = radio.getString("area")
+                    val radio_name = radio.getString("name")
+                    val radio_price = radio.getString("price")
+                    Log.d("id: ${id}  ${radio_area}", "${radio_name}\t${radio_price}")
                 }
             } catch (e: JSONException) {
-                Log.d("${i + 1} 번째 메뉴", "라디오버튼 없음")
+                Log.d("id: ${id} ", "라디오버튼 없음")
             }
 
             try {
-                for (k in 0 until combo.length()) {
-                    val combo_ = combo.getJSONObject(k)
-                    val combo_area = combo_.getString("area")
-                    val combo_name = combo_.getString("name")
-                    val combo_price = combo_.getString("price")
-                    Log.d("${i + 1}번째 메뉴 ${combo_area}", "${combo_name}\t${combo_price}")
+                for (k in 0 until combos.length()) {
+                    val combo = combos.getJSONObject(k)
+                    val combo_area = combo.getString("area")
+                    val combo_name = combo.getString("name")
+                    val combo_price = combo.getString("price")
+                    Log.d("id: ${id}  ${combo_area}", "${combo_name}\t${combo_price}")
                 }
             } catch (e: JSONException) {
-                Log.d("${i + 1} 번째 메뉴", "콤보박스 없음")
+                Log.d("id: ${id} ", "콤보박스 없음")
             }
+
+            /* 실사용 코드 */
+
+            var min_price = 2147483647
+            var max_price = 0
+            for (i in 0 until radios.length()) {
+                if (radios.getJSONObject(i).getString("area") == "가격") {
+                    val radio_price = radios.getJSONObject(i).getString("price").toInt()
+                    if (min_price > radio_price) min_price = radio_price
+                    if (max_price < radio_price) max_price = radio_price
+                }
+            }
+            val dec = DecimalFormat("#,###")
+            val price =
+                if (min_price == max_price) "${dec.format(min_price)}원"
+                else "${dec.format(min_price)}~${dec.format(max_price)}원"
+            Log.d("section", section)
+            Log.d("name", name)
+            Log.d("price", price)
+            var temp = BaedalMenu(name, price)
+            Log.d("temp.name", temp.name)
+            Log.d("temp.price", temp.price)
+
+            if (section in menuMap.keys)
+                menuMap[section]!!.add(temp)
+            else
+                menuMap[section] = mutableListOf(temp)
+
         }
+        for ((key, value) in menuMap) {
+            sectionMenu.add(BaedalMenuSection(key, value))
+        }
+
+        binding.rvMenu.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvMenu.setHasFixedSize(true)
+        binding.rvMenu.adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
 
     }
 
