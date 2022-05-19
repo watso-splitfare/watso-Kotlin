@@ -30,18 +30,16 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val arg = baedalMenu.get(position)
-        val dec = DecimalFormat("#,###")
-
         holder.tv_name.text = arg.name
         holder.tv_price.text = arg.price
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(it, position)
+            itemClickListener.onClick(it, arg.name)
         }
     }
 
     interface OnItemClickListener {
-        fun onClick(v: View, position: Int)
+        fun onClick(v: View, menuName: String)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -59,7 +57,7 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
         val tv_price = itemView.findViewById<TextView>(R.id.tv_price)
     }
 
-    /*class BaedalListAdapterDecoration : RecyclerView.ItemDecoration() {
+    class BaedalMenuAdapterDecoration : RecyclerView.ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect,
             view: View,
@@ -100,5 +98,5 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
                 c.drawRect(left, top, right, bottom, paint)
             }
         }
-    }*/
+    }
 }

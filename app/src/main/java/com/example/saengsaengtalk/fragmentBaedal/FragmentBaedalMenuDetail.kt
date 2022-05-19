@@ -14,6 +14,7 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
+import com.example.saengsaengtalk.databinding.FragBaedalMenuDetailBinding
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONException
 import org.json.JSONObject
@@ -24,26 +25,24 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
-class FragmentBaedalMenu :Fragment() {
+class FragmentBaedalMenuDetail :Fragment() {
     var postNum: String? = null
     var storeId: String? = null
 
-    private var mBinding: FragBaedalMenuBinding? = null
+    private var mBinding: FragBaedalMenuDetailBinding? = null
     private val binding get() = mBinding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            postNum = it.getString("postNum")
-            storeId = it.getString("storeId")
+            val menuName = it.getString("menuName")
+            println(menuName)
         }
 
-        Log.d("배달 메뉴", "게시물 번호: ${postNum}")
-        Log.d("배달 메뉴", "스토어 id: ${storeId}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = FragBaedalMenuBinding.inflate(inflater, container, false)
+        mBinding = FragBaedalMenuDetailBinding.inflate(inflater, container, false)
 
         refreshView()
 
@@ -53,7 +52,7 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun refreshView() {
-        var sectionMenu = mutableListOf<BaedalMenuSection>()
+        /*var sectionMenu = mutableListOf<BaedalMenuSection>()
         var menuMap = mutableMapOf<String, MutableList<BaedalMenu>>()
 
 
@@ -71,35 +70,6 @@ class FragmentBaedalMenu :Fragment() {
             val radios = obj.getJSONArray("radio")
             val combos = obj.getJSONArray("combo")
 
-            /* debug */
-
-            Log.d("id: ${id} ", "${section}\t${name}")
-
-            try {
-                for (j in 0 until radios.length()) {
-                    val radio = radios.getJSONObject(j)
-                    val radio_area = radio.getString("area")
-                    val radio_name = radio.getString("name")
-                    val radio_price = radio.getString("price")
-                    Log.d("id: ${id}  ${radio_area}", "${radio_name}\t${radio_price}")
-                }
-            } catch (e: JSONException) {
-                Log.d("id: ${id} ", "라디오버튼 없음")
-            }
-
-            try {
-                for (k in 0 until combos.length()) {
-                    val combo = combos.getJSONObject(k)
-                    val combo_area = combo.getString("area")
-                    val combo_name = combo.getString("name")
-                    val combo_price = combo.getString("price")
-                    Log.d("id: ${id}  ${combo_area}", "${combo_name}\t${combo_price}")
-                }
-            } catch (e: JSONException) {
-                Log.d("id: ${id} ", "콤보박스 없음")
-            }
-
-            /* 실사용 코드 */
 
             var min_price = 2147483647
             var max_price = 0
@@ -131,21 +101,21 @@ class FragmentBaedalMenu :Fragment() {
         binding.rvMenu.setHasFixedSize(true)
 
         val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
-        binding.rvMenu.adapter = adapter
+        binding.rvMenu.adapter = adapter*/
         /*adapter.setItemClickListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
             override fun onClick(v: View, menuName: String) {
                 Log.d("제일 바깥", menuName)
                 //setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
             }
         })*/
-        adapter.addListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
+        /*adapter.addListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
             override fun onClick(menuName: String) {
                 //println(menuName)
-                setFrag(FragmentBaedalMenuDetail(), mapOf("menuName" to menuName))
+                setFrag(Fragment)
             }
         })
 
-        adapter.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()*/
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null)) {

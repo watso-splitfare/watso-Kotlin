@@ -6,17 +6,24 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.LytBaedalMenuSectionBinding
+import java.lang.ref.WeakReference
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -25,30 +32,7 @@ import kotlin.collections.ArrayList
 
 class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: MutableList<BaedalMenuSection>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
 
-    /*override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaedalMenuSectionAdapter.Holder {
-        val binding = LytBaedalMenuSectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return Holder(binding)
-    }
-
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        val section = baedalMenuSection[position]
-        holder.bind(section)
-    }
-
-    override fun getItemCount(): Int {
-        return baedalMenuSection.size
-    }
-
-    inner class Holder(var binding: LytBaedalMenuSectionBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BaedalMenuSection) {
-            binding.rvMenuSection = item
-
-            binding.
-        }
-    }*/
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        //val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_baedal_menu_section, parent, false)
-        //return CustomViewHolder(view)
         val binding = LytBaedalMenuSectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
@@ -60,19 +44,53 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
     }
 
 
+    interface OnItemClickListener {
+        fun onClick(menuName: String)
+    }
+
+    private var listener = WeakReference<OnItemClickListener>(null)
+
+    fun itemClick(menuName: String) {
+        listener.get()?.onClick(menuName)
+    }
+
+    fun addListener(listener: BaedalMenuSectionAdapter.OnItemClickListener) {
+        this.listener = WeakReference(listener)
+    }
+
+    //private lateinit var itemClickListener : OnItemClickListener
+
+    //var click: ((String) -> String)? = null
+
+    fun testing(menuName: String) {
+        Log.d("바깥 어댑터 함수 호출", menuName)
+    }
+
+
     override fun getItemCount(): Int {
         return baedalMenuSection.size
     }
 
     inner class CustomViewHolder(var binding: LytBaedalMenuSectionBinding) : RecyclerView.ViewHolder(binding.root) {
-        //val tv_section = itemView.findViewById<TextView>(R.id.tv_section)
-        //var rv_menu = itemView.findViewById<RecyclerView>(R.id.rv_menu_section)
         fun bind(item: BaedalMenuSection) {
             binding.tvSection.text = item.section
-            binding.rvMenuSection.adapter = BaedalMenuAdapter(item.sectionList)
+
             binding.rvMenuSection.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.rvMenuSection.addItemDecoration(BaedalMenuAdapter.BaedalMenuAdapterDecoration())
+
+            val adapter = BaedalMenuAdapter(item.sectionList)
+            binding.rvMenuSection.adapter = adapter
+
+            adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener{
+                override fun onClick(v: View, menuName: String) {
+                    //Log.d("배달 메뉴 온클릭", "${menuName}")
+                    testing(menuName)
+                    itemClick(menuName)
+                }
+            })
         }
+
     }
 
     class BaedalMenuSectionAdapterDecoration : RecyclerView.ItemDecoration() {
