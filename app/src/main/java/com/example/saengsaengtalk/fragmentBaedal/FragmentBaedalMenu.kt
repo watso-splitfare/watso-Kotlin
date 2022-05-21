@@ -115,7 +115,7 @@ class FragmentBaedalMenu :Fragment() {
                 if (min_price == max_price) "${dec.format(min_price)}원"
                 else "${dec.format(min_price)}~${dec.format(max_price)}원"
 
-            var temp = BaedalMenu(name, price)
+            var temp = BaedalMenu(id, name, price)
             if (section in menuMap.keys)
                 menuMap[section]!!.add(temp)
             else
@@ -132,16 +132,11 @@ class FragmentBaedalMenu :Fragment() {
 
         val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
         binding.rvMenu.adapter = adapter
-        /*adapter.setItemClickListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
-            override fun onClick(v: View, menuName: String) {
-                Log.d("제일 바깥", menuName)
-                //setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
-            }
-        })*/
+
         adapter.addListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
-            override fun onClick(menuName: String) {
-                //println(menuName)
-                setFrag(FragmentBaedalMenuDetail(), mapOf("menuName" to menuName))
+            override fun onClick(id: Int) {
+                println(id)
+                setFrag(FragmentBaedalMenuDetail(), mapOf("메뉴 id" to id.toString()))
             }
         })
 

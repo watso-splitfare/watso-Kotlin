@@ -34,12 +34,12 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
         holder.tv_price.text = arg.price
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(it, arg.name)
+            itemClickListener.onClick(arg.id)
         }
     }
 
     interface OnItemClickListener {
-        fun onClick(v: View, menuName: String)
+        fun onClick(id: Int)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {

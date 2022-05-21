@@ -45,27 +45,18 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
 
 
     interface OnItemClickListener {
-        fun onClick(menuName: String)
+        fun onClick(menuName: Int)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(menuName: String) {
-        listener.get()?.onClick(menuName)
+    fun itemClick(id: Int) {
+        listener.get()?.onClick(id)
     }
 
     fun addListener(listener: BaedalMenuSectionAdapter.OnItemClickListener) {
         this.listener = WeakReference(listener)
     }
-
-    //private lateinit var itemClickListener : OnItemClickListener
-
-    //var click: ((String) -> String)? = null
-
-    fun testing(menuName: String) {
-        Log.d("바깥 어댑터 함수 호출", menuName)
-    }
-
 
     override fun getItemCount(): Int {
         return baedalMenuSection.size
@@ -83,10 +74,8 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
             binding.rvMenuSection.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener{
-                override fun onClick(v: View, menuName: String) {
-                    //Log.d("배달 메뉴 온클릭", "${menuName}")
-                    testing(menuName)
-                    itemClick(menuName)
+                override fun onClick(id:Int) {
+                    itemClick(id)
                 }
             })
         }
