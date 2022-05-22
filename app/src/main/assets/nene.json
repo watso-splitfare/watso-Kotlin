@@ -1,235 +1,279 @@
 {
     "nene": [
         {
-            "id": 1,
             "section": "대표 메뉴",
-            "name": "청양마요치킨",
-            "radio": [
+            "menu": [
                 {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "오리지날",
-                    "price": 18000
+                    "id": 1,
+                    "menuName": "청양마요치킨",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "오리지날",
+                                    "price": 18000
+                                },
+                                {
+                                    "rnum": 2,
+                                    "optName": "순살",
+                                    "price": 20000
+                                }
+                            ]
+                        },
+                        {
+                            "area": "선택1",
+                            "option": [
+                                {
+                                    "rnum": 3,
+                                    "optName": "후라이드",
+                                    "price": 0
+                                },
+                                {
+                                    "rnum": 4,
+                                    "optName": "양념",
+                                    "price": 1000
+                                },
+                                {
+                                    "rnum": 5,
+                                    "optName": "간장",
+                                    "price": 1000
+                                }
+                            ]
+                        }
+                    ],
+                    "combo": [
+                        {
+                            "area": "추가선택",
+                            "option": [
+                                {
+                                    "cnum": 1,
+                                    "optName": "나쵸칩 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 2,
+                                    "optName": "네네치즈볼 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 3,
+                                    "optName": "콜라 1.25L 추가",
+                                    "price": 2500
+                                }
+                            ],
+                            "min": 1,
+                            "max": 2
+                        }
+                    ]
+                }, {
+                    "id": 2,
+                    "menuName": "소이크런치",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "오리지날",
+                                    "price": 18000
+                                },
+                                {
+                                    "rnum": 2,
+                                    "optName": "순살",
+                                    "price": 20000
+                                }
+                            ]
+                        }
+                    ],
+                    "combo": [
+                        {
+                            "area": "추가선택",
+                            "option": [
+                                {
+                                    "cnum": 1,
+                                    "optName": "나쵸칩 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 2,
+                                    "optName": "네네치즈볼 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 3,
+                                    "optName": "콜라 1.25L 추가",
+                                    "price": 2500
+                                }
+                            ],
+                            "min": 0,
+                            "max": -1
+                        }
+                    ]
+                }, {
+                    "id": 3,
+                    "menuName": "스노윙치킨",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "오리지날",
+                                    "price": 18000
+                                },
+                                {
+                                    "rnum": 2,
+                                    "optName": "순살",
+                                    "price": 20000
+                                }
+                            ]
+                        }
+
+                    ],
+                    "combo": [
+                        {
+                            "area": "추가선택",
+                            "option": [
+                                {
+                                    "cnum": 1,
+                                    "optName": "나쵸칩 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 2,
+                                    "optName": "네네치즈볼 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 3,
+                                    "optName": "콜라 1.25L 추가",
+                                    "price": 2500
+                                }
+                            ],
+                            "min": 0,
+                            "max": -1
+                        }
+                    ]
                 },
                 {
-                    "rnum": 2,
-                    "area": "가격",
-                    "name": "순살",
-                    "price": 20000
-                },
-                {
-                    "rnum": 3,
-                    "area": "선택1",
-                    "name": "후라이드",
-                    "price": 0
-                },
-                {
-                    "rnum": 4,
-                    "area": "선택1",
-                    "name": "양념",
-                    "price": 1000
-                },
-                {
-                    "rnum": 5,
-                    "area": "선택1",
-                    "name": "간장",
-                    "price": 1000
-                }
-            ],
-            "combo": [
-                {
-                    "cnum": 1,
-                    "area": "추가선택",
-                    "name": "나쵸칩 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 2,
-                    "area": "추가선택",
-                    "name": "네네치즈볼 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 3,
-                    "area": "추가선택",
-                    "name": "콜라 1.25L 추가",
-                    "price": 2500
+                    "id": 7,
+                    "menuName": "청양마요요치킨",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "오리지날",
+                                    "price": 18000
+                                },
+                                {
+                                    "rnum": 2,
+                                    "optName": "순살",
+                                    "price": 20000
+                                }
+                            ]
+                        }, {
+                            "area": "선택1",
+                            "option": [
+                                {
+                                    "rnum": 3,
+                                    "optName": "후라이드",
+                                    "price": 0
+                                },
+                                {
+                                    "rnum": 4,
+                                    "optName": "양념",
+                                    "price": 1000
+                                },
+                                {
+                                    "rnum": 5,
+                                    "optName": "간장",
+                                    "price": 1000
+                                }
+                            ]
+                        }
+
+                    ],
+                    "combo": [
+                        {
+                            "area": "추가선택",
+                            "option": [
+                                {
+                                    "cnum": 1,
+                                    "optName": "나쵸칩 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 2,
+                                    "optName": "네네치즈볼 추가",
+                                    "price": 3000
+                                },
+                                {
+                                    "cnum": 3,
+                                    "optName": "콜라 1.25L 추가",
+                                    "price": 2500
+                                }
+                            ],
+                            "min": 0,
+                            "max": -1
+                        }
+                    ]
                 }
             ]
-        },
-        {
-            "id": 2,
-            "section": "대표 메뉴",
-            "name": "소이크런치",
-            "radio": [
-                {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "오리지날",
-                    "price": 18000
-                },
-                {
-                    "rnum": 2,
-                    "area": "가격",
-                    "name": "순살",
-                    "price": 20000
-                }
-            ],
-            "combo": [
-                {
-                    "cnum": 1,
-                    "area": "추가선택",
-                    "name": "나쵸칩 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 2,
-                    "area": "추가선택",
-                    "name": "네네치즈볼 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 3,
-                    "area": "추가선택",
-                    "name": "콜라 1.25L 추가",
-                    "price": 2500
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "section": "대표 메뉴",
-            "name": "스노윙치킨",
-            "radio": [
-                {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "오리지날",
-                    "price": 18000
-                },
-                {
-                    "rnum": 2,
-                    "area": "가격",
-                    "name": "순살",
-                    "price": 20000
-                }
-            ],
-            "combo": [
-                {
-                    "cnum": 1,
-                    "area": "추가선택",
-                    "name": "나쵸칩 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 2,
-                    "area": "추가선택",
-                    "name": "네네치즈볼 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 3,
-                    "area": "추가선택",
-                    "name": "콜라 1.25L 추가",
-                    "price": 2500
-                }
-            ]
-        },
-        {
-            "id": 4,
-            "section": "사이드",
-            "name": "나쵸칩",
-            "radio": [
-                {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "나쵸칩",
-                    "price": 3000
-                }
-            ],
-            "combo": [""]
-        },
-        {
-            "id": 5,
-            "section": "사이드",
-            "name": "네네치즈볼",
-            "radio": [
-                {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "네네치즈볼",
-                    "price": 3000
-                }
-            ],
-            "combo": [""]
-        },
-        {
-            "id": 6,
-            "section": "사이드",
-            "name": "콜라 1.25L",
-            "radio": [
-                {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "콜라 1.25L 추가",
-                    "price": 3000
-                }
-            ],
-            "combo": [""]
         }, {
-            "id": 7,
-            "section": "대표 메뉴",
-            "name": "청양마요요치킨",
-            "radio": [
+            "section": "사이드",
+            "menu": [
                 {
-                    "rnum": 1,
-                    "area": "가격",
-                    "name": "오리지날",
-                    "price": 18000
-                },
-                {
-                    "rnum": 2,
-                    "area": "가격",
-                    "name": "순살",
-                    "price": 20000
-                },
-                {
-                    "rnum": 3,
-                    "area": "선택1",
-                    "name": "후라이드",
-                    "price": 0
-                },
-                {
-                    "rnum": 4,
-                    "area": "선택1",
-                    "name": "양념",
-                    "price": 1000
-                },
-                {
-                    "rnum": 5,
-                    "area": "선택1",
-                    "name": "간장",
-                    "price": 1000
-                }
-            ],
-            "combo": [
-                {
-                    "cnum": 1,
-                    "area": "추가선택",
-                    "name": "나쵸칩 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 2,
-                    "area": "추가선택",
-                    "name": "네네치즈볼 추가",
-                    "price": 3000
-                },
-                {
-                    "cnum": 3,
-                    "area": "추가선택",
-                    "name": "콜라 1.25L 추가",
-                    "price": 2500
+                    "id": 4,
+                    "menuName": "나쵸칩",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "나쵸칩",
+                                    "price": 3000
+                                }
+                            ]
+                        }
+                    ],
+                    "combo": [""]
+                }, {
+                    "id": 5,
+                    "menuName": "네네치즈볼",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "네네치즈볼",
+                                    "price": 3000
+                                }
+                            ]
+                        }
+                    ],
+                    "combo": [""]
+                }, {
+                    "id": 6,
+                    "menuName": "콜라 1.25L",
+                    "radio": [
+                        {
+                            "area": "가격",
+                            "option": [
+                                {
+                                    "rnum": 1,
+                                    "optName": "콜라 1.25L 추가",
+                                    "price": 2500
+                                }
+                            ]
+                        }
+                    ],
+                    "combo": [""]
                 }
             ]
         }

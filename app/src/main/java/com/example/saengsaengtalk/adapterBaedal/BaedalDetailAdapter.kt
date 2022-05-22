@@ -8,34 +8,27 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.R
-import java.text.DecimalFormat
-import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.ArrayList
+import org.json.JSONObject
 
-
-class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
+class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : RecyclerView.Adapter<BaedalDetailAdapter.CustomViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_baedal_menu, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_baedal_detail, parent, false)
         return CustomViewHolder(view)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val arg = baedalMenu.get(position)
-        holder.tv_name.text = arg.menuName
+        val arg = baedalDetail.get(position)
+        holder.rb_menu.text = arg.optName
         holder.tv_price.text = arg.price
-
-        holder.itemView.setOnClickListener {
-            itemClickListener.onClick(arg.id)
-        }
+        holder.itemView.setOnClickListener { itemClickListener.onClick(arg.num) }
     }
 
     interface OnItemClickListener {
@@ -49,15 +42,15 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return baedalMenu.size
+        return baedalDetail.size
     }
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tv_name = itemView.findViewById<TextView>(R.id.tv_name)
+        val rb_menu = itemView.findViewById<RadioButton>(R.id.rb_menu)
         val tv_price = itemView.findViewById<TextView>(R.id.tv_price)
     }
 
-    class BaedalMenuAdapterDecoration : RecyclerView.ItemDecoration() {
+    class BaedalDetailAdapterDecoration : RecyclerView.ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect,
             view: View,

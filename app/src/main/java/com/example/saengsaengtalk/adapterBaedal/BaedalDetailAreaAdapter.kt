@@ -22,7 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
+import com.example.saengsaengtalk.databinding.LytBaedalDetailAreaBinding
 import com.example.saengsaengtalk.databinding.LytBaedalMenuSectionBinding
+import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
@@ -30,22 +32,22 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: MutableList<BaedalMenuSection>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
+class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: MutableList<BaedalDetailArea>) : RecyclerView.Adapter<BaedalDetailAreaAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val binding = LytBaedalMenuSectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = LytBaedalDetailAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val item = baedalMenuSection[position]
+        val item = baedalDetailArea[position]
         holder.bind(item)
     }
 
 
     interface OnItemClickListener {
-        fun onClick(id: Int)
+        fun onClick(menuName: Int)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
@@ -54,35 +56,36 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
         listener.get()?.onClick(id)
     }
 
-    fun addListener(listener: BaedalMenuSectionAdapter.OnItemClickListener) {
+    fun addListener(listener: BaedalDetailAreaAdapter.OnItemClickListener) {
         this.listener = WeakReference(listener)
     }
 
     override fun getItemCount(): Int {
-        return baedalMenuSection.size
+        return baedalDetailArea.size
     }
 
-    inner class CustomViewHolder(var binding: LytBaedalMenuSectionBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BaedalMenuSection) {
-            binding.tvSection.text = item.section
+    inner class CustomViewHolder(var binding: LytBaedalDetailAreaBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: BaedalDetailArea) {
+            binding.tvArea.text = item.area
 
-            binding.rvMenuSection.layoutManager =
+            binding.rvMenuArea.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvMenuSection.addItemDecoration(BaedalMenuAdapter.BaedalMenuAdapterDecoration())
+            binding.rvMenuArea.addItemDecoration(BaedalDetailAdapter.BaedalDetailAdapterDecoration())
 
-            val adapter = BaedalMenuAdapter(item.sectionList)
-            binding.rvMenuSection.adapter = adapter
+            val adapter = BaedalDetailAdapter(item.areaList)
+            binding.rvMenuArea.adapter = adapter
 
-            adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener{
+            /*adapter.setItemClickListener(object: BaedalAreaAdapter.OnItemClickListener{
                 override fun onClick(id:Int) {
                     itemClick(id)
+                    println("dd")
                 }
-            })
+            })*/
         }
 
     }
 
-    class BaedalMenuSectionAdapterDecoration : RecyclerView.ItemDecoration() {
+    class BaedalDetailAreaAdapterDecoration : RecyclerView.ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect,
             view: View,
