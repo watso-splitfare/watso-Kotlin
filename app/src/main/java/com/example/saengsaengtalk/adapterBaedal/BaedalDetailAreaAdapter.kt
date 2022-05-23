@@ -6,30 +6,13 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.LytBaedalDetailAreaBinding
-import com.example.saengsaengtalk.databinding.LytBaedalMenuSectionBinding
-import org.json.JSONObject
-import java.lang.ref.WeakReference
-import java.text.DecimalFormat
-import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: MutableList<BaedalDetailArea>) : RecyclerView.Adapter<BaedalDetailAreaAdapter.CustomViewHolder>() {
@@ -45,21 +28,6 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
         holder.bind(item)
     }
 
-
-    interface OnItemClickListener {
-        fun onClick(menuName: Int)
-    }
-
-    private var listener = WeakReference<OnItemClickListener>(null)
-
-    fun itemClick(id: Int) {
-        listener.get()?.onClick(id)
-    }
-
-    fun addListener(listener: BaedalDetailAreaAdapter.OnItemClickListener) {
-        this.listener = WeakReference(listener)
-    }
-
     override fun getItemCount(): Int {
         return baedalDetailArea.size
     }
@@ -70,19 +38,10 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
 
             binding.rvMenuArea.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvMenuArea.addItemDecoration(BaedalDetailAdapter.BaedalDetailAdapterDecoration())
 
             val adapter = BaedalDetailAdapter(item.areaList)
             binding.rvMenuArea.adapter = adapter
-
-            adapter.setItemClickListener(object: BaedalDetailAdapter.OnItemClickListener{
-                override fun onClick(id:Int) {
-                    itemClick(id)
-                    println("dd")
-                }
-            })
         }
-
     }
 
     class BaedalDetailAreaAdapterDecoration : RecyclerView.ItemDecoration() {

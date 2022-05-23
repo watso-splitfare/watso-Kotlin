@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
-import org.json.JSONException
 import org.json.JSONObject
 import java.text.DecimalFormat
 
@@ -44,13 +43,10 @@ class FragmentBaedalMenu :Fragment() {
 
     fun refreshView() {
         var sectionMenu = mutableListOf<BaedalMenuSection>()
-        var menuMap = mutableMapOf<String, MutableList<BaedalMenu>>()
-
 
         val assetManager = resources.assets
         val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
 
-        //val jObject =
         val jArray = JSONObject(jsonString).getJSONArray("nene")
 
         for (i in 0 until jArray.length()) {
@@ -81,33 +77,7 @@ class FragmentBaedalMenu :Fragment() {
                 temp.add(BaedalMenu(id, menuname, price))
             }
             sectionMenu.add(BaedalMenuSection(section,temp))
-
-            /* 실사용 코드 */
-
-            /*var min_price = 2147483647
-            var max_price = 0
-            for (i in 0 until radios.length()) {
-                if (radios.getJSONObject(i).getString("area") == "가격") {
-                    val radio_price = radios.getJSONObject(i).getString("price").toInt()
-                    if (min_price > radio_price) min_price = radio_price
-                    if (max_price < radio_price) max_price = radio_price
-                }
-            }
-            val dec = DecimalFormat("#,###")
-            val price =
-                if (min_price == max_price) "${dec.format(min_price)}원"
-                else "${dec.format(min_price)}~${dec.format(max_price)}원"
-
-            var temp = BaedalMenu(id, name, price)
-            if (section in menuMap.keys)
-                menuMap[section]!!.add(temp)
-            else
-                menuMap[section] = mutableListOf(temp)*/
-
         }
-        /*for ((key, value) in menuMap) {
-            sectionMenu.add(BaedalMenuSection(key, value))
-        }*/
 
         binding.rvMenu.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -131,7 +101,6 @@ class FragmentBaedalMenu :Fragment() {
                         }
                     }
                 }
-
             }
         })
 

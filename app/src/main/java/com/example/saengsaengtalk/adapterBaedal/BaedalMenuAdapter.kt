@@ -8,16 +8,10 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.R
-import java.text.DecimalFormat
-import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.ArrayList
-
 
 class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
 
