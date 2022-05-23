@@ -67,9 +67,13 @@ class FragmentBaedalDetail :Fragment() {
 
             for (j in 0 until opts.length()){
                 val opt = opts.getJSONObject(j)
-                temp.add(BaedalDetail(opt.getInt("rnum"), opt.getString("optName"), "${opt.getString("price")}원"))
+                temp.add(BaedalDetail(
+                    opt.getInt("rnum"),
+                    opt.getString("optName"),
+                    "${opt.getString("price")}원",
+                true))
             }
-            areaMenu.add(BaedalDetailArea(area, temp, true))
+            areaMenu.add(BaedalDetailArea(area, temp))
         }
 
         if (combos[0] != "") {
@@ -88,11 +92,12 @@ class FragmentBaedalDetail :Fragment() {
                         BaedalDetail(
                             opt.getInt("cnum"),
                             opt.getString("optName"),
-                            "${opt.getString("price")}원"
+                            "${opt.getString("price")}원",
+                            false, min, max
                         )
                     )
                 }
-                areaMenu.add(BaedalDetailArea(area, temp, false, min, max))
+                areaMenu.add(BaedalDetailArea(area, temp))
 
             }
         }
@@ -106,7 +111,7 @@ class FragmentBaedalDetail :Fragment() {
 
         adapter.addListener(object: BaedalDetailAreaAdapter.OnItemClickListener{
             override fun onClick(menuName: Int) {
-                println(menuName)
+                println("디테일 프래그먼트: ${menuName}")
                 //setFrag(Fragment)
             }
         })

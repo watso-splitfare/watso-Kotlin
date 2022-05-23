@@ -75,12 +75,12 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
             val adapter = BaedalDetailAdapter(item.areaList)
             binding.rvMenuArea.adapter = adapter
 
-            /*adapter.setItemClickListener(object: BaedalAreaAdapter.OnItemClickListener{
+            adapter.setItemClickListener(object: BaedalDetailAdapter.OnItemClickListener{
                 override fun onClick(id:Int) {
                     itemClick(id)
                     println("dd")
                 }
-            })*/
+            })
         }
 
     }

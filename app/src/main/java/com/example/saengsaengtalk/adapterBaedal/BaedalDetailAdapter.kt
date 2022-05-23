@@ -8,6 +8,8 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -26,9 +28,19 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val arg = baedalDetail.get(position)
-        holder.rb_menu.text = arg.optName
+        lateinit var checkBtn: CompoundButton
+        if (arg.is_radio) {
+            holder.rb_menu.text = arg.optName
+            holder.cb_menu.setVisibility(View.INVISIBLE)
+            checkBtn = holder.rb_menu
+        } else {
+            holder.cb_menu.text = arg.optName
+            holder.rb_menu.setVisibility(View.INVISIBLE)
+            checkBtn = holder.cb_menu
+        }
         holder.tv_price.text = arg.price
         holder.itemView.setOnClickListener { itemClickListener.onClick(arg.num) }
+        checkBtn.setOnClickListener{ itemClickListener.onClick(arg.num) }
     }
 
     interface OnItemClickListener {
@@ -47,6 +59,7 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val rb_menu = itemView.findViewById<RadioButton>(R.id.rb_menu)
+        val cb_menu = itemView.findViewById<CheckBox>(R.id.cb_menu)
         val tv_price = itemView.findViewById<TextView>(R.id.tv_price)
     }
 
