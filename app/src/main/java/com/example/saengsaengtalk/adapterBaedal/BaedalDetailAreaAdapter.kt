@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytBaedalDetailAreaBinding
+import java.lang.ref.WeakReference
 
 
 class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: MutableList<BaedalDetailArea>) : RecyclerView.Adapter<BaedalDetailAreaAdapter.CustomViewHolder>() {
@@ -28,6 +29,20 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
         holder.bind(item)
     }
 
+    interface OnItemClickListener {
+        fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean)
+    }
+
+    private var listener = WeakReference<OnItemClickListener>(null)
+
+    fun itemClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
+        listener.get()?.onClick(isRadio, area, num, isChecked)
+    }
+
+    fun addListener(listener: BaedalDetailAreaAdapter.OnItemClickListener) {
+        this.listener = WeakReference(listener)
+    }
+
     override fun getItemCount(): Int {
         return baedalDetailArea.size
     }
@@ -41,6 +56,12 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
 
             val adapter = BaedalDetailAdapter(item.areaList)
             binding.rvMenuArea.adapter = adapter
+
+            adapter.setItemClickListener(object: BaedalDetailAdapter.OnItemClickListener{
+                override fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
+                    itemClick(isRadio, area, num, isChecked)
+                }
+            })
         }
     }
 
