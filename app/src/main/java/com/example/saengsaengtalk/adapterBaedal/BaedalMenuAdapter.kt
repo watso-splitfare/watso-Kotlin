@@ -12,24 +12,25 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.R
+import com.example.saengsaengtalk.databinding.LytBaedalDetailBinding
+import com.example.saengsaengtalk.databinding.LytBaedalMenuBinding
 
 class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_baedal_menu, parent, false)
-        return CustomViewHolder(view)
+        val binding = LytBaedalMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CustomViewHolder(binding)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val arg = baedalMenu.get(position)
-        holder.tv_name.text = arg.menuName
-        holder.tv_price.text = arg.price
+        val menu = baedalMenu.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(arg.id)
+            itemClickListener.onClick(menu.id)
         }
+        holder.bind(menu)
     }
 
     interface OnItemClickListener {
@@ -46,9 +47,11 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
         return baedalMenu.size
     }
 
-    class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tv_name = itemView.findViewById<TextView>(R.id.tv_name)
-        val tv_price = itemView.findViewById<TextView>(R.id.tv_price)
+    class CustomViewHolder(var binding: LytBaedalMenuBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(menu: BaedalMenu) {
+            binding.tvName.text = menu.menuName
+            binding.tvPrice.text = menu.price
+        }
     }
 
     class BaedalMenuAdapterDecoration : RecyclerView.ItemDecoration() {

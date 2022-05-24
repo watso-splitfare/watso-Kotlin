@@ -28,7 +28,6 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
     inner class CustomViewHolder(var binding: LytBaedalDetailBinding) : RecyclerView.ViewHolder(binding.root) {
         lateinit var checkBtn: CompoundButton
         fun bind(item: BaedalDetail) {
-
             if (item.is_radio) {
                 binding.rbMenu.text = item.optName
                 binding.cbMenu.setVisibility(View.INVISIBLE)
@@ -65,8 +64,7 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
                 }
             }
             binding.cbMenu.text = item.optName
-            binding.tvPrice.text = item.price
-
+            binding.tvPrice.text = "${item.price}원"
         }
     }
 }

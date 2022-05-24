@@ -55,7 +55,7 @@ class FragmentBaedalDetail :Fragment() {
                 temp.add(BaedalDetail(
                     opt.getInt("rnum"),
                     opt.getString("optName"),
-                    "${opt.getString("price")}원",
+                    opt.getString("price").toInt(),
                 true))
             }
             areaMenu.add(BaedalDetailArea(area, temp))
@@ -78,7 +78,7 @@ class FragmentBaedalDetail :Fragment() {
                         BaedalDetail(
                             opt.getInt("cnum"),
                             opt.getString("optName"),
-                            "${opt.getString("price")}원",
+                            opt.getString("price").toInt(),
                             false, min, max
                         )
                     )
@@ -88,15 +88,14 @@ class FragmentBaedalDetail :Fragment() {
             }
         }
 
+        binding.tvMenuName.text = menuName
         binding.rvMenu.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenu.setHasFixedSize(true)
 
         val adapter = BaedalDetailAreaAdapter(requireContext(), areaMenu)
         binding.rvMenu.adapter = adapter
-
         binding.rvMenu.addItemDecoration(BaedalDetailAreaAdapter.BaedalDetailAreaAdapterDecoration())
-
         adapter.notifyDataSetChanged()
     }
 
