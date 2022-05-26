@@ -95,8 +95,7 @@ class FragmentBaedalDetail :Fragment() {
         }
 
         binding.tvMenuName.text = menuName
-        binding.rvMenu.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvMenu.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenu.setHasFixedSize(true)
 
         val adapter = BaedalDetailAreaAdapter(requireContext(), areaMenu)
