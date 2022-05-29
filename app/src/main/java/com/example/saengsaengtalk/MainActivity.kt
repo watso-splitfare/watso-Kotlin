@@ -57,10 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         else {
-            val count = fm.backStackEntryCount
-            for (i in 0 until count) {
-                fm.popBackStack()
-            }
+            fm.popBackStackImmediate()
             transaction.replace(R.id.main_frame, fragment)
         }
 
