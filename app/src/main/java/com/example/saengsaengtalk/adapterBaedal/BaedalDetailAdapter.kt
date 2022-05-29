@@ -56,13 +56,13 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
                 checkBtn.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
-                    itemClickListener.onClick(true, opt.area, opt.num, checkBtn.isChecked)
+                    itemClickListener.onClick(true, opt.area, opt.num, true)
                     println("0")
                 }
                 itemView.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
-                    itemClickListener.onClick(true, opt.area, opt.num, checkBtn.isChecked)
+                    itemClickListener.onClick(true, opt.area, opt.num, true)
                     println("1")
                 }
             } else {
@@ -75,8 +75,7 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
                     println(0)
                 }
                 itemView.setOnClickListener {
-                    if (checkBtn.isChecked) checkBtn.setChecked(false)
-                    else checkBtn.setChecked(true)
+                    checkBtn.setChecked(!checkBtn.isChecked)
                     itemClickListener.onClick(false, opt.area, opt.num, checkBtn.isChecked)
                     println(1)
                 }
