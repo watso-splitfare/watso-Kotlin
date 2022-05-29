@@ -115,6 +115,8 @@ class FragmentBaedalDetail :Fragment() {
                 binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
             }
         })
+
+        //binding.btnOrderConfirm.setOnClickListener(setFrag())
     }
 
     fun setTotalPrice(): Int {
@@ -154,9 +156,10 @@ class FragmentBaedalDetail :Fragment() {
             if (isChecked) comboChecked[num] = 1
             else comboChecked[num] = 0
         }
+        println("라디오: ${radioChecked}, 콤보: ${comboChecked}")
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null)) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }

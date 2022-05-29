@@ -107,7 +107,7 @@ class FragmentBaedalMenu :Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null)) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }

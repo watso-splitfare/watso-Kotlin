@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null), addBackStack:Boolean=true) {
-        if ("none" !in arguments.keys) {        // 넘겨줄 인자가 있나 체크
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, addBackStack:Boolean=true) {
+        if (arguments != null) {        // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
             for (i in arguments.keys) {
                 bundle.putString(i, arguments[i])

@@ -43,7 +43,7 @@ class FragmentBaedalPost :Fragment() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum, "storeId" to "neneSammun"))
+            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "storeId" to "neneSammun"))
         }
 
         return binding.root
@@ -98,7 +98,7 @@ class FragmentBaedalPost :Fragment() {
         binding.rvComment.adapter = BaedalCommentAdapter(comment)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String?> = mapOf("none" to null)) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }
