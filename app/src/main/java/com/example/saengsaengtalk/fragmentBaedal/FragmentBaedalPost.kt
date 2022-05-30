@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.FragmentHomeDirections
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.BaedalComment
@@ -25,14 +28,17 @@ class FragmentBaedalPost :Fragment() {
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private val args: FragmentBaedalPostArgs by navArgs()
+
+
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postNum = it.getString("postNum")
         }
 
         Log.d("배달 포스트", "게시물 번호: ${postNum}")
-    }
+    }*/
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         //val view = inflater.inflate(R.layout.frag_baedal, container, false)
@@ -43,9 +49,11 @@ class FragmentBaedalPost :Fragment() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "storeId" to "neneSammun"))
+            val action = FragmentBaedalPostDirections.actionFragmentBaedalPostToFragmentBaedalMenu(args.postNum, "nene")
+            findNavController().navigate(action)
         }
 
+        println("여기: ${args.postNum}")
         return binding.root
         //return view
     }
@@ -97,12 +105,12 @@ class FragmentBaedalPost :Fragment() {
         binding.rvComment.setHasFixedSize(true)
         binding.rvComment.adapter = BaedalCommentAdapter(comment)
     }
-
+/*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }
-
+*/
     fun onBackPressed() {
         val mActivity =activity as MainActivity
         mActivity.onBackPressed()

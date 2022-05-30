@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
@@ -18,6 +19,8 @@ class FragmentBaedalDetail :Fragment() {
 
     //private var mBinding: FragBaedalMenuDetailBinding? = null
     //private val binding get() = mBinding!!
+    private val args: FragmentBaedalDetailArgs by navArgs()
+
     val radioPrice = mutableMapOf<Int, Int>()
     val comboPrice = mutableMapOf<Int, Int>()
     val radioChecked = mutableMapOf<Int, Int>()
@@ -25,11 +28,13 @@ class FragmentBaedalDetail :Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
+        /*arguments?.let {
             val jsonString = it.getString("menu")
             menu = JSONObject(jsonString)
             println("디테일 프래그먼트: ${jsonString}")
-        }
+        }*/
+        println("디테일 프래그먼트: ${args.menu}")
+        menu = JSONObject(args.menu)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -158,12 +163,12 @@ class FragmentBaedalDetail :Fragment() {
         }
         println("라디오: ${radioChecked}, 콤보: ${comboChecked}")
     }
-
+/*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }
-
+*/
     fun onBackPressed() {
         val mActivity = activity as MainActivity
         mActivity.onBackPressed()

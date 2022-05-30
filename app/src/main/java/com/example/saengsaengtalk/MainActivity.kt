@@ -7,6 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.example.saengsaengtalk.databinding.ActivityMainBinding
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
@@ -25,20 +27,22 @@ class MainActivity : AppCompatActivity() {
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setFrag(FragmentHome())
+        NavigationUI.setupWithNavController(binding.mainBottomNavigation, findNavController(R.id.nav_host))
+
+        /*setFrag(FragmentHome())
 
         binding.btnHome.setOnClickListener { setFrag(FragmentHome(), addBackStack = false) }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), addBackStack = false) }
         binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(),addBackStack = false) }
         binding.btnKara.setOnClickListener { setFrag(FragmentKara(), addBackStack = false) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), addBackStack = false) }
+        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), addBackStack = false) }*/
     }
 
     override fun onDestroy() {
         mBinding = null
         super.onDestroy()
     }
-
+/*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, addBackStack:Boolean=true) {
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
@@ -63,9 +67,9 @@ class MainActivity : AppCompatActivity() {
 
         transaction.commit()
     }
-
+*/
     override fun onBackPressed() {
-        val fm = supportFragmentManager
+        /*val fm = supportFragmentManager
         val count = fm.backStackEntryCount
         if (count > 0)
             super.onBackPressed()
@@ -76,6 +80,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 finish()
             }
-        }
+        }*/
+        super.onBackPressed()
     }
+
 }

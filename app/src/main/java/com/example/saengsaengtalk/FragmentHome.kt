@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.adapterHome.*
@@ -30,12 +33,14 @@ class FragmentHome :Fragment() {
 
         refreshView()
 
+
         //LinearLayout layout = binding.lyt
-        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList()) }
+
+        /*binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList()) }
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi()) }
         binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara()) }
         binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard()) }
-        binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
+        binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }*/
 
         return binding.root
         //return view
@@ -48,6 +53,7 @@ class FragmentHome :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        //val navController = Navigation.findNavController(binding.root)
 
         /* 배달 */
 
@@ -68,9 +74,12 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+                //setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+                var action = FragmentHomeDirections.actionFragmentHomeToFragmentBaedalPost(baedalList[position].postNum)
+                findNavController().navigate(action)
             }
         })
+
         baedalAdapter.notifyDataSetChanged()
 
 
@@ -135,9 +144,9 @@ class FragmentHome :Fragment() {
         binding.rvClubBoard.adapter = ClubBoardPreAdapter(clubBoardList)
 
     }
-
+/*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
-    }
+    }*/
 }

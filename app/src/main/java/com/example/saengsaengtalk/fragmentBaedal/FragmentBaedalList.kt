@@ -55,7 +55,7 @@ class FragmentBaedalList :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("배달프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+                //setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
             }
         })
         adapter.notifyDataSetChanged()
@@ -63,9 +63,9 @@ class FragmentBaedalList :Fragment() {
         binding.rvBaedalList.addItemDecoration(BaedalListAdapter.BaedalListAdapterDecoration())
     }
 
-
+/*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
-    }
+    }*/
 }

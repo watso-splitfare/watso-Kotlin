@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.FragmentHomeDirections
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
@@ -20,6 +23,8 @@ class FragmentBaedalMenu :Fragment() {
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
 
+    private val args: FragmentBaedalMenuArgs by navArgs()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -27,8 +32,8 @@ class FragmentBaedalMenu :Fragment() {
             storeId = it.getString("storeId")
         }
 
-        Log.d("배달 메뉴", "게시물 번호: ${postNum}")
-        Log.d("배달 메뉴", "스토어 id: ${storeId}")
+        Log.d("배달 메뉴", "게시물 번호: ${args.postNum}")
+        Log.d("배달 메뉴", "스토어 id: ${args.storeId}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -92,11 +97,15 @@ class FragmentBaedalMenu :Fragment() {
                 loop@ for (i in 0 until jArray.length()) {
                     val menus = jArray.getJSONObject(i).getJSONArray("menu")
                     for (j in 0 until menus.length()) {
-                        if (id == menus.getJSONObject(j).getInt("id")) {
-                            setFrag(
+                        val jsonObject = menus.getJSONObject(j)
+                        if (id == jsonObject.getInt("id")) {
+                            /*setFrag(
                                 FragmentBaedalDetail(),
                                 mapOf("menu" to menus.getJSONObject(j).toString())
-                            )
+                            )*/
+                            var action = FragmentBaedalMenuDirections.
+                            actionFragmentBaedalMenuToFragmentBaedalDetail(jsonObject.toString())
+                            findNavController().navigate(action)
                             break@loop
                         }
                     }
@@ -106,12 +115,12 @@ class FragmentBaedalMenu :Fragment() {
 
         adapter.notifyDataSetChanged()
     }
-
+/*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }
-
+*/
     fun onBackPressed() {
         val mActivity = activity as MainActivity
         mActivity.onBackPressed()
