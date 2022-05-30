@@ -56,8 +56,23 @@
             app:argType="integer"/>
         <argument
             android:name="storeId"
-            android:defaultValue="null"
+            app:nullable="true"
+            android:defaultValue="@null"
             app:argType="string"/>
+        <argument
+            android:name="radio"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="combo"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="menuId"
+            android:defaultValue="-1"
+            app:argType="integer"/>
         <action
             android:id="@+id/action_fragmentBaedalMenu_to_fragmentBaedalDetail"
             app:destination="@id/fragmentBaedalDetail" />
@@ -76,7 +91,9 @@
             app:argType="string"/>
         <action
             android:id="@+id/action_fragmentBaedalDetail_to_fragmentBaedalMenu"
-            app:destination="@id/fragmentBaedalMenu" />
+            app:destination="@id/fragmentBaedalMenu"
+            app:popUpTo="@id/fragmentBaedalMenu"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

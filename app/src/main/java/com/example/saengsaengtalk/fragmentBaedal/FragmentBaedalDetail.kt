@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuDetailBinding
 import org.json.JSONArray
@@ -15,11 +18,10 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalDetail :Fragment() {
-    var menu: JSONObject? = null
-
-    //private var mBinding: FragBaedalMenuDetailBinding? = null
-    //private val binding get() = mBinding!!
     private val args: FragmentBaedalDetailArgs by navArgs()
+
+    var menu: JSONObject? = null
+    var menuId = -1
 
     val radioPrice = mutableMapOf<Int, Int>()
     val comboPrice = mutableMapOf<Int, Int>()
@@ -35,6 +37,7 @@ class FragmentBaedalDetail :Fragment() {
         }*/
         println("디테일 프래그먼트: ${args.menu}")
         menu = JSONObject(args.menu)
+        menuId = menu!!.getInt("id")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,6 +46,11 @@ class FragmentBaedalDetail :Fragment() {
         refreshView(binding)
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnOrderConfirm.setOnClickListener {
+            val action = FragmentBaedalDetailDirections.
+            actionFragmentBaedalDetailToFragmentBaedalMenu(radio = radioChecked.toString(), combo = comboChecked.toString(), menuId = menuId)
+            findNavController().navigate(action)
+        }
 
         return binding.root
     }
@@ -162,6 +170,8 @@ class FragmentBaedalDetail :Fragment() {
             else comboChecked[num] = 0
         }
         println("라디오: ${radioChecked}, 콤보: ${comboChecked}")
+        val a = radioChecked.toString()
+        println("toString: ${a}")
     }
 /*
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

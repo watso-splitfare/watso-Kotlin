@@ -17,8 +17,11 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
-    var postNum: String? = null
+    var postNum: Int? = null
     var storeId: String? = null
+    var radio: String? = null
+    var combo: String? = null
+    var menuId: Int? = null
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -27,13 +30,26 @@ class FragmentBaedalMenu :Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            postNum = it.getString("postNum")
-            storeId = it.getString("storeId")
+        /*arguments?.let {
+            //postNum = it.getString("postNum")
+            //storeId = it.getString("storeId")
+            //println(arguments)
         }
 
+
         Log.d("배달 메뉴", "게시물 번호: ${args.postNum}")
-        Log.d("배달 메뉴", "스토어 id: ${args.storeId}")
+        Log.d("배달 메뉴", "스토어 id: ${args.storeId}")*/
+        postNum = args.postNum
+        storeId = args.storeId
+        radio = args.radio
+        combo = args.combo
+        menuId = args.menuId
+        println("****************************************")
+        println("게시물 번호: ${postNum}")
+        println("스토어 id: ${storeId}")
+        println("라디오: ${radio}")
+        println("콤보: ${combo}")
+        println("메뉴 Id: ${menuId}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
