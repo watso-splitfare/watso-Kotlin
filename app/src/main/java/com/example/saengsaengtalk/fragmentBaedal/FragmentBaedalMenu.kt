@@ -6,10 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.FragmentHomeDirections
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
@@ -17,39 +14,34 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
-    var postNum: Int? = null
+    var postNum: String? = null
     var storeId: String? = null
-    var radio: String? = null
-    var combo: String? = null
-    var menuId: Int? = null
+    var menuInCart= mutableListOf<Array<Any>>()
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
 
-    private val args: FragmentBaedalMenuArgs by navArgs()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*arguments?.let {
-            //postNum = it.getString("postNum")
-            //storeId = it.getString("storeId")
-            //println(arguments)
+        arguments?.let {
+            postNum = it.getString("postNum")
+            storeId = it.getString("storeId")
+        }
+
+        Log.d("배달 메뉴", "게시물 번호: ${postNum}")
+        Log.d("배달 메뉴", "스토어 id: ${storeId}")
+
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
+            val id = bundle.getInt("id")
+            val radio = bundle.get("radio")
+            val combo = bundle.get("combo")
+            menuInCart.add(arrayOf<Any>(id, radio!!, combo!!))
+            for (i in menuInCart) {
+                println("${i[0]}, ${i[1]}, ${i[2]}")
+            }
         }
 
 
-        Log.d("배달 메뉴", "게시물 번호: ${args.postNum}")
-        Log.d("배달 메뉴", "스토어 id: ${args.storeId}")*/
-        postNum = args.postNum
-        storeId = args.storeId
-        radio = args.radio
-        combo = args.combo
-        menuId = args.menuId
-        println("****************************************")
-        println("게시물 번호: ${postNum}")
-        println("스토어 id: ${storeId}")
-        println("라디오: ${radio}")
-        println("콤보: ${combo}")
-        println("메뉴 Id: ${menuId}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -113,15 +105,11 @@ class FragmentBaedalMenu :Fragment() {
                 loop@ for (i in 0 until jArray.length()) {
                     val menus = jArray.getJSONObject(i).getJSONArray("menu")
                     for (j in 0 until menus.length()) {
-                        val jsonObject = menus.getJSONObject(j)
-                        if (id == jsonObject.getInt("id")) {
-                            /*setFrag(
+                        if (id == menus.getJSONObject(j).getInt("id")) {
+                            setFrag(
                                 FragmentBaedalDetail(),
                                 mapOf("menu" to menus.getJSONObject(j).toString())
-                            )*/
-                            var action = FragmentBaedalMenuDirections.
-                            actionFragmentBaedalMenuToFragmentBaedalDetail(jsonObject.toString())
-                            findNavController().navigate(action)
+                            )
                             break@loop
                         }
                     }
@@ -131,12 +119,12 @@ class FragmentBaedalMenu :Fragment() {
 
         adapter.notifyDataSetChanged()
     }
-/*
+
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }
-*/
+
     fun onBackPressed() {
         val mActivity = activity as MainActivity
         mActivity.onBackPressed()

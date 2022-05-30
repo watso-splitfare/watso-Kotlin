@@ -6,11 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuDetailBinding
 import org.json.JSONArray
@@ -18,11 +15,10 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalDetail :Fragment() {
-    private val args: FragmentBaedalDetailArgs by navArgs()
-
     var menu: JSONObject? = null
-    var menuId = -1
 
+    //private var mBinding: FragBaedalMenuDetailBinding? = null
+    //private val binding get() = mBinding!!
     val radioPrice = mutableMapOf<Int, Int>()
     val comboPrice = mutableMapOf<Int, Int>()
     val radioChecked = mutableMapOf<Int, Int>()
@@ -30,14 +26,11 @@ class FragmentBaedalDetail :Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*arguments?.let {
+        arguments?.let {
             val jsonString = it.getString("menu")
             menu = JSONObject(jsonString)
             println("디테일 프래그먼트: ${jsonString}")
-        }*/
-        println("디테일 프래그먼트: ${args.menu}")
-        menu = JSONObject(args.menu)
-        menuId = menu!!.getInt("id")
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,11 +40,10 @@ class FragmentBaedalDetail :Fragment() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrderConfirm.setOnClickListener {
-            val action = FragmentBaedalDetailDirections.
-            actionFragmentBaedalDetailToFragmentBaedalMenu(radio = radioChecked.toString(), combo = comboChecked.toString(), menuId = menuId)
-            findNavController().navigate(action)
+            val bundle = bundleOf("id" to menu!!.getInt("id"), "radio" to radioChecked, "combo" to comboChecked)
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("menuWithOpt", bundle)
+            onBackPressed()
         }
-
         return binding.root
     }
 
@@ -170,15 +162,13 @@ class FragmentBaedalDetail :Fragment() {
             else comboChecked[num] = 0
         }
         println("라디오: ${radioChecked}, 콤보: ${comboChecked}")
-        val a = radioChecked.toString()
-        println("toString: ${a}")
     }
-/*
+
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
     }
-*/
+
     fun onBackPressed() {
         val mActivity = activity as MainActivity
         mActivity.onBackPressed()
