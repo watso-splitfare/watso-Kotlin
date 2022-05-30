@@ -1,26 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <fragment
-        android:id="@+id/nav_host"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+
+    <FrameLayout
+        android:id="@+id/main_frame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph"/>
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        app:menu="@menu/menu_bottom_navigation"
-        android:id="@+id/main_bottom_navigation"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="60dp"
+        android:background="#F5F5F5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
+        <ImageButton
+            android:id="@+id/btn_home"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:background="#00FFFFFF"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/home" />
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/btn_baedal"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#00FFFFFF"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_taxi"
+            app:layout_constraintStart_toEndOf="@+id/btn_home"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/delivery" />
+
+        <ImageButton
+            android:id="@+id/btn_taxi"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#00FFFFFF"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_free_board"
+            app:layout_constraintStart_toEndOf="@+id/btn_home"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/taxi" />
+
+        <ImageButton
+            android:id="@+id/btn_kara"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#00FFFFFF"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_free_board"
+            app:layout_constraintStart_toEndOf="@+id/btn_taxi"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/karaoke" />
+
+        <ImageButton
+            android:id="@+id/btn_free_board"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="24dp"
+            android:background="#00FFFFFF"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/list_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
