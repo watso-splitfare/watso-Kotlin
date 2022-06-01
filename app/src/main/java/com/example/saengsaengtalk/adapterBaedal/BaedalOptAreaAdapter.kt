@@ -30,12 +30,12 @@ class BaedalOptAreaAdapter(val context: Context, val baedalOptArea: MutableList<
     }
 
     interface OnItemClickListener {
-        fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean)
+        fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
+    fun itemClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean) {
         listener.get()?.onClick(isRadio, area, num, isChecked)
     }
 
@@ -58,7 +58,7 @@ class BaedalOptAreaAdapter(val context: Context, val baedalOptArea: MutableList<
             binding.rvMenuArea.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener{
-                override fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
+                override fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean) {
                     itemClick(isRadio, area, num, isChecked)
                 }
             })

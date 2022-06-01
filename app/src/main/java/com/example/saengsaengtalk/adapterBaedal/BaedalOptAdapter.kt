@@ -23,7 +23,7 @@ class BaedalOptAdapter(val baedalOpt: MutableList<BaedalOpt>) : RecyclerView.Ada
     }
 
     interface OnItemClickListener {
-        fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean)
+        fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {

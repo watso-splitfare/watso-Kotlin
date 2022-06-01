@@ -1,7 +1,7 @@
 package com.example.saengsaengtalk.adapterBaedal
 
 class BaedalOpt(
-    val num: Int,
+    val num: String,
     val optName: String,
     val price: Int,
     val area: String,

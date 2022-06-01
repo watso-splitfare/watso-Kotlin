@@ -19,10 +19,10 @@ class FragmentBaedalOpt :Fragment() {
 
     //private var mBinding: FragBaedalMenuDetailBinding? = null
     //private val binding get() = mBinding!!
-    val radioPrice = mutableMapOf<Int, Int>()
-    val comboPrice = mutableMapOf<Int, Int>()
-    val radioChecked = mutableMapOf<Int, Int>()
-    val comboChecked = mutableMapOf<Int, Int>()
+    val radioPrice = mutableMapOf<String, Int>()
+    val comboPrice = mutableMapOf<String, Int>()
+    val radioChecked = mutableMapOf<String, Int>()
+    val comboChecked = mutableMapOf<String, Int>()
     var count = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +60,7 @@ class FragmentBaedalOpt :Fragment() {
 
             for (j in 0 until opts.length()){
                 val opt = opts.getJSONObject(j)
-                val rnum = opt.getInt("rnum")
+                val rnum = opt.getInt("rnum").toString()
                 val optName = opt.getString("optName")
                 val price = opt.getString("price").toInt()
                 temp.add(BaedalOpt(rnum, optName, price, area,true))
@@ -84,7 +84,7 @@ class FragmentBaedalOpt :Fragment() {
 
                 for (j in 0 until opts.length()) {
                     val opt = opts.getJSONObject(j)
-                    val cnum = opt.getInt("cnum")
+                    val cnum = opt.getInt("cnum").toString()
                     val optName = opt.getString("optName")
                     val price = opt.getString("price").toInt()
                     temp.add(BaedalOpt(cnum, optName, price, area,false, min, max))
@@ -117,7 +117,7 @@ class FragmentBaedalOpt :Fragment() {
         }
 
         adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
-            override fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
+            override fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean) {
                 println("isRadio: ${isRadio}, area: ${area}, num:${num}, isChecked:${isChecked}")
                 if (isRadio) setChecked(isRadio, area, num, isChecked, radios)
                 else setChecked(isRadio, area, num, isChecked)
@@ -153,7 +153,7 @@ class FragmentBaedalOpt :Fragment() {
         return (totalPrice * count)
     }
 
-    fun setChecked(isRadio: Boolean, area: String, num: Int, isChecked: Boolean, optList: JSONArray= JSONArray()) {
+    fun setChecked(isRadio: Boolean, area: String, num: String, isChecked: Boolean, optList: JSONArray= JSONArray()) {
         if (isRadio) {
             if (radioChecked[num] == 0){
                 var radios = JSONObject()
@@ -163,10 +163,10 @@ class FragmentBaedalOpt :Fragment() {
                         break
                     }
                 }
-                var nums = mutableListOf<Int>()
+                var nums = mutableListOf<String>()
                 val array = radios.getJSONArray("option")
                 for (i in 0 until array.length()){
-                    nums.add(array.getJSONObject(i).getInt("rnum"))
+                    nums.add(array.getJSONObject(i).getString("rnum"))
                 }
                 for (i in nums) {
                     if (i == num) radioChecked[i] = 1
