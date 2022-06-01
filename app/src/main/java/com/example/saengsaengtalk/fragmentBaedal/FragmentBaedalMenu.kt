@@ -98,7 +98,7 @@ class FragmentBaedalMenu :Fragment() {
                     for (j in 0 until menus.length()) {
                         if (id == menus.getJSONObject(j).getInt("id")) {
                             setFrag(
-                                FragmentBaedalDetail(),
+                                FragmentBaedalOpt(),
                                 mapOf("menu" to menus.getJSONObject(j).toString())
                             )
                             break@loop

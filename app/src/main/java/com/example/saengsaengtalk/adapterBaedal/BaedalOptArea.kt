@@ -1,6 +1,6 @@
 package com.example.saengsaengtalk.adapterBaedal
 
-class BaedalDetailArea(
+class BaedalOptArea(
     val area: String,
-    val areaList: MutableList<BaedalDetail>
+    val areaList: MutableList<BaedalOpt>
     ) {}

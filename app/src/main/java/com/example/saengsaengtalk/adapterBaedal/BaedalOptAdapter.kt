@@ -5,20 +5,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saengsaengtalk.databinding.LytBaedalDetailBinding
+import com.example.saengsaengtalk.databinding.LytBaedalOptBinding
 import java.text.DecimalFormat
 
-class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : RecyclerView.Adapter<BaedalDetailAdapter.CustomViewHolder>() {
+class BaedalOptAdapter(val baedalOpt: MutableList<BaedalOpt>) : RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
 
     var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val binding = LytBaedalDetailBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = LytBaedalOptBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val opt = baedalDetail.get(position)
+        val opt = baedalOpt.get(position)
         holder.bind(opt)
     }
 
@@ -33,12 +33,12 @@ class BaedalDetailAdapter(val baedalDetail: MutableList<BaedalDetail>) : Recycle
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return baedalDetail.size
+        return baedalOpt.size
     }
 
-    inner class CustomViewHolder(var binding: LytBaedalDetailBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CustomViewHolder(var binding: LytBaedalOptBinding) : RecyclerView.ViewHolder(binding.root) {
         lateinit var checkBtn: CompoundButton
-        fun bind(opt: BaedalDetail) {
+        fun bind(opt: BaedalOpt) {
             if (opt.is_radio) {
                 binding.rbMenu.text = opt.optName
                 binding.cbMenu.setVisibility(View.INVISIBLE)

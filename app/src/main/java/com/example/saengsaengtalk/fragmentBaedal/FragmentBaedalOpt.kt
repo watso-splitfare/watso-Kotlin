@@ -9,12 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
-import com.example.saengsaengtalk.databinding.FragBaedalDetailBinding
+import com.example.saengsaengtalk.databinding.FragBaedalOptBinding
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
 
-class FragmentBaedalDetail :Fragment() {
+class FragmentBaedalOpt :Fragment() {
     var menu: JSONObject? = null
 
     //private var mBinding: FragBaedalMenuDetailBinding? = null
@@ -35,15 +35,15 @@ class FragmentBaedalDetail :Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragBaedalDetailBinding.inflate(inflater, container, false)
+        val binding = FragBaedalOptBinding.inflate(inflater, container, false)
 
         refreshView(binding)
 
         return binding.root
     }
 
-    fun refreshView(binding: FragBaedalDetailBinding) {
-        var areaMenu = mutableListOf<BaedalDetailArea>()
+    fun refreshView(binding: FragBaedalOptBinding) {
+        var areaMenu = mutableListOf<BaedalOptArea>()
 
         val id = menu!!.getInt("id")
         val menuName = menu!!.getString("menuName")
@@ -54,7 +54,7 @@ class FragmentBaedalDetail :Fragment() {
 
         for (i in 0 until radios.length()) {
             val radio = radios.getJSONObject(i)
-            var temp = mutableListOf<BaedalDetail>()
+            var temp = mutableListOf<BaedalOpt>()
             val area = radio.getString("area")
             val opts = radio.getJSONArray("option")
 
@@ -63,20 +63,20 @@ class FragmentBaedalDetail :Fragment() {
                 val rnum = opt.getInt("rnum")
                 val optName = opt.getString("optName")
                 val price = opt.getString("price").toInt()
-                temp.add(BaedalDetail(rnum, optName, price, area,true))
+                temp.add(BaedalOpt(rnum, optName, price, area,true))
 
                 radioPrice[rnum] = price
                 if (j == 0) radioChecked[rnum] = 1
                 else radioChecked[rnum] = 0
             }
-            areaMenu.add(BaedalDetailArea(area, temp))
+            areaMenu.add(BaedalOptArea(area, temp))
         }
 
         if (combos[0] != "") {
             for (i in 0 until combos.length()) {
                 val combo = combos.getJSONObject(i)
 
-                var temp = mutableListOf<BaedalDetail>()
+                var temp = mutableListOf<BaedalOpt>()
                 val area = combo.getString("area")
                 val opts = combo.getJSONArray("option")
                 val min = combo.getInt("min")
@@ -87,12 +87,12 @@ class FragmentBaedalDetail :Fragment() {
                     val cnum = opt.getInt("cnum")
                     val optName = opt.getString("optName")
                     val price = opt.getString("price").toInt()
-                    temp.add(BaedalDetail(cnum, optName, price, area,false, min, max))
+                    temp.add(BaedalOpt(cnum, optName, price, area,false, min, max))
 
                     comboPrice[cnum] = price
                     comboChecked[cnum] = 0
                 }
-                areaMenu.add(BaedalDetailArea(area, temp))
+                areaMenu.add(BaedalOptArea(area, temp))
             }
         }
 
@@ -100,9 +100,9 @@ class FragmentBaedalDetail :Fragment() {
         binding.rvMenu.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenu.setHasFixedSize(true)
         binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
-        val adapter = BaedalDetailAreaAdapter(requireContext(), areaMenu)
+        val adapter = BaedalOptAreaAdapter(requireContext(), areaMenu)
 
-        binding.rvMenu.addItemDecoration(BaedalDetailAreaAdapter.BaedalDetailAreaAdapterDecoration())
+        binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
         adapter.notifyDataSetChanged()
 
         binding.rvMenu.adapter = adapter
@@ -116,7 +116,7 @@ class FragmentBaedalDetail :Fragment() {
             binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
         }
 
-        adapter.addListener(object: BaedalDetailAreaAdapter.OnItemClickListener {
+        adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
             override fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
                 println("isRadio: ${isRadio}, area: ${area}, num:${num}, isChecked:${isChecked}")
                 if (isRadio) setChecked(isRadio, area, num, isChecked, radios)

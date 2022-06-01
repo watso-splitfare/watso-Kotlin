@@ -12,20 +12,20 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saengsaengtalk.databinding.LytBaedalDetailAreaBinding
+import com.example.saengsaengtalk.databinding.LytBaedalOptAreaBinding
 import java.lang.ref.WeakReference
 
 
-class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: MutableList<BaedalDetailArea>) : RecyclerView.Adapter<BaedalDetailAreaAdapter.CustomViewHolder>() {
+class BaedalOptAreaAdapter(val context: Context, val baedalOptArea: MutableList<BaedalOptArea>) : RecyclerView.Adapter<BaedalOptAreaAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val binding = LytBaedalDetailAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = LytBaedalOptAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val item = baedalDetailArea[position]
+        val item = baedalOptArea[position]
         holder.bind(item)
     }
 
@@ -39,25 +39,25 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
         listener.get()?.onClick(isRadio, area, num, isChecked)
     }
 
-    fun addListener(listener: BaedalDetailAreaAdapter.OnItemClickListener) {
+    fun addListener(listener: BaedalOptAreaAdapter.OnItemClickListener) {
         this.listener = WeakReference(listener)
     }
 
     override fun getItemCount(): Int {
-        return baedalDetailArea.size
+        return baedalOptArea.size
     }
 
-    inner class CustomViewHolder(var binding: LytBaedalDetailAreaBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BaedalDetailArea) {
+    inner class CustomViewHolder(var binding: LytBaedalOptAreaBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: BaedalOptArea) {
             binding.tvArea.text = item.area
 
             binding.rvMenuArea.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalDetailAdapter(item.areaList)
+            val adapter = BaedalOptAdapter(item.areaList)
             binding.rvMenuArea.adapter = adapter
 
-            adapter.setItemClickListener(object: BaedalDetailAdapter.OnItemClickListener{
+            adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener{
                 override fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
                     itemClick(isRadio, area, num, isChecked)
                 }
@@ -65,7 +65,7 @@ class BaedalDetailAreaAdapter(val context: Context, val baedalDetailArea: Mutabl
         }
     }
 
-    class BaedalDetailAreaAdapterDecoration : RecyclerView.ItemDecoration() {
+    class BaedalOptAreaAdapterDecoration : RecyclerView.ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect,
             view: View,
