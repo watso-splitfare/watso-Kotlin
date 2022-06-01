@@ -40,14 +40,12 @@ class FragmentBaedalConfirm :Fragment() {
 
         refreshView()
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

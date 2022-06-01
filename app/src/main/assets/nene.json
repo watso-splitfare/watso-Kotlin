@@ -1,5 +1,8 @@
 {
-    "nene": [
+    "storeId": 1,
+    "storeName": "네네치킨 삼문점",
+    "baedalFee": 10000,
+    "info": [
         {
             "section": "대표 메뉴",
             "menu": [

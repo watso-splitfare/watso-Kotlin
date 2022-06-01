@@ -39,7 +39,6 @@ class FragmentBaedalDetail :Fragment() {
 
         refreshView(binding)
 
-
         return binding.root
     }
 

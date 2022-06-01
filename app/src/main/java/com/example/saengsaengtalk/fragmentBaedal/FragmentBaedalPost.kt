@@ -35,23 +35,20 @@ class FragmentBaedalPost :Fragment() {
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //val view = inflater.inflate(R.layout.frag_baedal, container, false)
-
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
         refreshView()
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "storeId" to "neneSammun"))
-        }
 
         return binding.root
-        //return view
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnOrder.setOnClickListener {
+            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "storeId" to "neneSammun"))
+        }
         val baedalPostData = mapOf(
             "title" to "네네치킨 먹을 사람",
             "writer" to "주넝이",

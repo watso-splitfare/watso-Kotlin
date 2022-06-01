@@ -40,18 +40,18 @@ class FragmentBaedalMenu :Fragment() {
 
         refreshView()
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-
         return binding.root
     }
 
     fun refreshView() {
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
+
         var sectionMenu = mutableListOf<BaedalMenuSection>()
 
         val assetManager = resources.assets
         val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
 
-        val jArray = JSONObject(jsonString).getJSONArray("nene")
+        val jArray = JSONObject(jsonString).getJSONArray("info")
 
         for (i in 0 until jArray.length()) {
             val obj = jArray.getJSONObject(i)           // 섹션
