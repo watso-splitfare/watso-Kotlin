@@ -11,13 +11,17 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
-    var storeId: String? = null
-    var menuInCart= mutableListOf<Array<Any>>()
+    var storeName: String? = null
+
+    var menuArray = JSONArray() //getMenuArray()                          // 현재화면 구성에 사용
+    var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
+    var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -26,13 +30,10 @@ class FragmentBaedalMenu :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postNum = it.getString("postNum")
-            storeId = it.getString("storeId")
+            storeName = it.getString("storeName")
         }
-
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
-        Log.d("배달 메뉴", "스토어 id: ${storeId}")
-
-
+        Log.d("배달 메뉴", "스토어 이름: ${storeName}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,15 +47,66 @@ class FragmentBaedalMenu :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
-        var sectionMenu = mutableListOf<BaedalMenuSection>()
+        menuArray = getMenuArray()
+        setSectionMenu()
 
+        binding.rvMenu.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvMenu.setHasFixedSize(true)
+
+        val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
+        binding.rvMenu.adapter = adapter
+
+        adapter.addListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
+            override fun onClick(id: Int) {
+                println(id)
+                loop@ for (i in 0 until menuArray.length()) {
+                    val menus = menuArray.getJSONObject(i).getJSONArray("menu")
+                    for (j in 0 until menus.length()) {
+                        if (id == menus.getJSONObject(j).getInt("id")) {
+                            setFrag(
+                                FragmentBaedalOpt(),
+                                mapOf("menu" to menus.getJSONObject(j).toString())
+                            )
+                            break@loop
+                        }
+                    }
+                }
+            }
+        })
+        adapter.notifyDataSetChanged()
+
+        binding.lyCartCount.visibility = View.INVISIBLE
+        binding.btnCart.setEnabled(false)
+
+        /* Detail frag에서 메뉴 선택 후 담기 시 작동 */
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
+            val opt = bundle.getString("opt")
+            println("데이터 받음: ${opt}")
+            setOptArray(opt!!)
+            optArray.put(JSONObject(opt))
+
+            binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
+            binding.lyCartCount.visibility = View.VISIBLE
+            binding.tvCartCount.text = optArray.length().toString()
+            binding.btnCart.setEnabled(true)
+        }
+        binding.btnCart.setOnClickListener {
+            setFrag(FragmentBaedalConfirm(), mapOf("storeName" to storeName!!, "opt" to optArray.toString()))
+        }
+    }
+
+     @JvmName("getMenuArray1")
+     fun getMenuArray(): JSONArray{
         val assetManager = resources.assets
         val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
 
-        val jArray = JSONObject(jsonString).getJSONArray("info")
+        return JSONObject(jsonString).getJSONArray("info")
+    }
 
-        for (i in 0 until jArray.length()) {
-            val obj = jArray.getJSONObject(i)           // 섹션
+    fun setSectionMenu() {
+        for (i in 0 until menuArray.length()) {
+            val obj = menuArray.getJSONObject(i)           // 섹션
             val section = obj.getString("section")  // 섹션명
             val secArray = obj.getJSONArray("menu")
             var temp = mutableListOf<BaedalMenu>()
@@ -82,56 +134,15 @@ class FragmentBaedalMenu :Fragment() {
             }
             sectionMenu.add(BaedalMenuSection(section,temp))
         }
+    }
 
-        binding.rvMenu.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvMenu.setHasFixedSize(true)
-
-        val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
-        binding.rvMenu.adapter = adapter
-
-        adapter.addListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
-            override fun onClick(id: Int) {
-                println(id)
-                loop@ for (i in 0 until jArray.length()) {
-                    val menus = jArray.getJSONObject(i).getJSONArray("menu")
-                    for (j in 0 until menus.length()) {
-                        if (id == menus.getJSONObject(j).getInt("id")) {
-                            setFrag(
-                                FragmentBaedalOpt(),
-                                mapOf("menu" to menus.getJSONObject(j).toString())
-                            )
-                            break@loop
-                        }
-                    }
-                }
-            }
-        })
-
-        adapter.notifyDataSetChanged()
-
-        binding.lyCartCount.visibility = View.INVISIBLE
-        binding.btnCart.setEnabled(false)
-
-
-        /* Detail frag에서 메뉴 선택 후 담기 시 작동 */
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
-            val id = bundle.getInt("id")
-            val radio = bundle.get("radio")
-            val combo = bundle.get("combo")
-            val count = bundle.get("count")
-            menuInCart.add(arrayOf<Any>(id, radio!!, combo!!, count!!))
-            for (i in menuInCart) {
-                println("${i[0]}, ${i[1]}, ${i[2]}, ${i[3]}")
-                binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
-                binding.lyCartCount.visibility = View.VISIBLE
-                binding.tvCartCount.text = menuInCart.size.toString()
-                binding.btnCart.setEnabled(true)
-            }
-        }
-        binding.btnCart.setOnClickListener {
-            setFrag(FragmentBaedalConfirm())
-        }
+    fun setOptArray(opt: String) {
+        val jObect = JSONObject(opt)
+        val id = jObect.getInt("id")
+        val radio = jObect.getJSONObject("radio")
+        val combo = jObect.getJSONObject("combo")
+        val count =jObect.getInt("count")
+        println("setOptArray: ${id}, ${radio}, ${combo}, ${count}")
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

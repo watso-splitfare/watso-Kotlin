@@ -127,7 +127,14 @@ class FragmentBaedalOpt :Fragment() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrderConfirm.setOnClickListener {
-            val bundle = bundleOf("id" to menu!!.getInt("id"), "radio" to radioChecked, "combo" to comboChecked, "count" to count)
+            val jsonObject = JSONObject()
+            jsonObject.put("id", menu!!.getInt("id"))
+            jsonObject.put("radio", JSONObject(radioChecked as Map<*, *>))
+            jsonObject.put("combo", JSONObject(comboChecked as Map<*, *>))
+            jsonObject.put("count", count)
+
+            //println("제이슨 출력: ${jsonObject.toString()}")
+            val bundle = bundleOf("opt" to jsonObject.toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("menuWithOpt", bundle)
             onBackPressed()
         }
@@ -171,11 +178,6 @@ class FragmentBaedalOpt :Fragment() {
             else comboChecked[num] = 0
         }
         println("라디오: ${radioChecked}, 콤보: ${comboChecked}")
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
     }
 
     fun onBackPressed() {
