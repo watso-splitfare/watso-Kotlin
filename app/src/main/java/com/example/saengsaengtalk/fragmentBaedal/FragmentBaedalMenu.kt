@@ -129,6 +129,9 @@ class FragmentBaedalMenu :Fragment() {
                 binding.btnCart.setEnabled(true)
             }
         }
+        binding.btnCart.setOnClickListener {
+            setFrag(FragmentBaedalConfirm())
+        }
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
