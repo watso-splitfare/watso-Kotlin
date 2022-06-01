@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_add_comment.xml" value="0.1235" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_cart_count.xml" value="0.259" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_board_pre.xml" value="0.165" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_kara_pre.xml" value="0.165" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_pre_baedal.xml" value="0.131" />
@@ -11,6 +12,7 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_search.xml" value="0.1" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_spinner.xml" value="0.1" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_cart.xml" value="0.1885" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_cart_empty.xml" value="0.259" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_confirm.xml" value="0.131" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_order.xml" value="0.12" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style.xml" value="0.1" />

@@ -41,6 +41,26 @@
                                     "price": 1000
                                 }
                             ]
+                        },
+                        {
+                            "area": "선택2",
+                            "option": [
+                                {
+                                    "rnum": 6,
+                                    "optName": "후라이드",
+                                    "price": 0
+                                },
+                                {
+                                    "rnum": 7,
+                                    "optName": "양념",
+                                    "price": 1000
+                                },
+                                {
+                                    "rnum": 8,
+                                    "optName": "간장",
+                                    "price": 1000
+                                }
+                            ]
                         }
                     ],
                     "combo": [

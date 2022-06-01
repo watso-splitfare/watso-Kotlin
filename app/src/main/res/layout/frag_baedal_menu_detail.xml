@@ -109,8 +109,59 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="수량"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <Button
+                        android:id="@+id/btn_sub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/tv_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="1" />
+
+                    <Button
+                        android:id="@+id/btn_add"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn_order_confirm"

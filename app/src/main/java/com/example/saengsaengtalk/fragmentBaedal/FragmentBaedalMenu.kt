@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
 import org.json.JSONObject
@@ -30,16 +31,6 @@ class FragmentBaedalMenu :Fragment() {
 
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
         Log.d("배달 메뉴", "스토어 id: ${storeId}")
-
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
-            val id = bundle.getInt("id")
-            val radio = bundle.get("radio")
-            val combo = bundle.get("combo")
-            menuInCart.add(arrayOf<Any>(id, radio!!, combo!!))
-            for (i in menuInCart) {
-                println("${i[0]}, ${i[1]}, ${i[2]}")
-            }
-        }
 
 
     }
@@ -118,6 +109,26 @@ class FragmentBaedalMenu :Fragment() {
         })
 
         adapter.notifyDataSetChanged()
+
+        binding.lyCartCount.visibility = View.INVISIBLE
+        binding.btnCart.setEnabled(false)
+
+
+        /* Detail frag에서 메뉴 선택 후 담기 시 작동 */
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
+            val id = bundle.getInt("id")
+            val radio = bundle.get("radio")
+            val combo = bundle.get("combo")
+            val count = bundle.get("count")
+            menuInCart.add(arrayOf<Any>(id, radio!!, combo!!, count!!))
+            for (i in menuInCart) {
+                println("${i[0]}, ${i[1]}, ${i[2]}, ${i[3]}")
+                binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
+                binding.lyCartCount.visibility = View.VISIBLE
+                binding.tvCartCount.text = menuInCart.size.toString()
+                binding.btnCart.setEnabled(true)
+            }
+        }
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

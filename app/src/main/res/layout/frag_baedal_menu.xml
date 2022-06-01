@@ -100,14 +100,39 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/btn_baedal_cart"
+            android:id="@+id/btn_cart"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/btn_baedal_cart_empty"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/shoppingbag_white" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ly_cart_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/box_cart_count"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_cart_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="1"
+                android:textColor="@color/baedal"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

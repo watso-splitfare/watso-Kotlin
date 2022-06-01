@@ -23,6 +23,7 @@ class FragmentBaedalDetail :Fragment() {
     val comboPrice = mutableMapOf<Int, Int>()
     val radioChecked = mutableMapOf<Int, Int>()
     val comboChecked = mutableMapOf<Int, Int>()
+    var count = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +39,7 @@ class FragmentBaedalDetail :Fragment() {
 
         refreshView(binding)
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrderConfirm.setOnClickListener {
-            val bundle = bundleOf("id" to menu!!.getInt("id"), "radio" to radioChecked, "combo" to comboChecked)
-            getActivity()?.getSupportFragmentManager()?.setFragmentResult("menuWithOpt", bundle)
-            onBackPressed()
-        }
+
         return binding.root
     }
 
@@ -54,6 +50,8 @@ class FragmentBaedalDetail :Fragment() {
         val menuName = menu!!.getString("menuName")
         val radios = menu!!.getJSONArray("radio")
         val combos = menu!!.getJSONArray("combo")
+        val dec = DecimalFormat("#,###")
+
 
         for (i in 0 until radios.length()) {
             val radio = radios.getJSONObject(i)
@@ -102,15 +100,22 @@ class FragmentBaedalDetail :Fragment() {
         binding.tvMenuName.text = menuName
         binding.rvMenu.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenu.setHasFixedSize(true)
-
+        binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
         val adapter = BaedalDetailAreaAdapter(requireContext(), areaMenu)
 
         binding.rvMenu.addItemDecoration(BaedalDetailAreaAdapter.BaedalDetailAreaAdapterDecoration())
         adapter.notifyDataSetChanged()
 
         binding.rvMenu.adapter = adapter
-        val dec = DecimalFormat("#,###")
-        binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
+
+        binding.btnSub.setOnClickListener {
+            if (count > 1) binding.tvCount.text = (--count).toString()
+            binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
+        }
+        binding.btnAdd.setOnClickListener {
+            if (count < 10) binding.tvCount.text = (++count).toString()
+            binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
+        }
 
         adapter.addListener(object: BaedalDetailAreaAdapter.OnItemClickListener {
             override fun onClick(isRadio: Boolean, area: String, num: Int, isChecked: Boolean) {
@@ -121,7 +126,12 @@ class FragmentBaedalDetail :Fragment() {
             }
         })
 
-        //binding.btnOrderConfirm.setOnClickListener(setFrag())
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnOrderConfirm.setOnClickListener {
+            val bundle = bundleOf("id" to menu!!.getInt("id"), "radio" to radioChecked, "combo" to comboChecked, "count" to count)
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("menuWithOpt", bundle)
+            onBackPressed()
+        }
     }
 
     fun setTotalPrice(): Int {
@@ -134,7 +144,7 @@ class FragmentBaedalDetail :Fragment() {
             for (i in comboChecked.keys)
                 totalPrice += comboChecked[i]!! * comboPrice[i]!!
 
-        return totalPrice
+        return (totalPrice * count)
     }
 
     fun setChecked(isRadio: Boolean, area: String, num: Int, isChecked: Boolean, optList: JSONArray= JSONArray()) {
