@@ -16,9 +16,8 @@ import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
     var menu: JSONObject? = null
+    var section: String? = null
 
-    //private var mBinding: FragBaedalMenuDetailBinding? = null
-    //private val binding get() = mBinding!!
     val radioPrice = mutableMapOf<String, Int>()
     val comboPrice = mutableMapOf<String, Int>()
     val radioChecked = mutableMapOf<String, Int>()
@@ -30,6 +29,7 @@ class FragmentBaedalOpt :Fragment() {
         arguments?.let {
             val jsonString = it.getString("menu")
             menu = JSONObject(jsonString)
+            section = it.getString("section")
             println("디테일 프래그먼트: ${jsonString}")
         }
     }
@@ -128,7 +128,8 @@ class FragmentBaedalOpt :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrderConfirm.setOnClickListener {
             val jsonObject = JSONObject()
-            jsonObject.put("id", menu!!.getInt("id"))
+            jsonObject.put("section", section)
+            jsonObject.put("id", id)
             jsonObject.put("radio", JSONObject(radioChecked as Map<*, *>))
             jsonObject.put("combo", JSONObject(comboChecked as Map<*, *>))
             jsonObject.put("count", count)
@@ -151,6 +152,10 @@ class FragmentBaedalOpt :Fragment() {
                 totalPrice += comboChecked[i]!! * comboPrice[i]!!
 
         return (totalPrice * count)
+    }
+
+    fun getParsedOpt() {
+
     }
 
     fun setChecked(isRadio: Boolean, area: String, num: String, isChecked: Boolean, optList: JSONArray= JSONArray()) {

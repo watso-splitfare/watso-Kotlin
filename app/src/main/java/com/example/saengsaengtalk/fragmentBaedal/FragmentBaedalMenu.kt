@@ -19,7 +19,7 @@ class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
     var storeName: String? = null
 
-    var menuArray = JSONArray() //getMenuArray()                          // 현재화면 구성에 사용
+    var menuArray = JSONArray()                             // 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
 
@@ -66,7 +66,8 @@ class FragmentBaedalMenu :Fragment() {
                         if (id == menus.getJSONObject(j).getInt("id")) {
                             setFrag(
                                 FragmentBaedalOpt(),
-                                mapOf("menu" to menus.getJSONObject(j).toString())
+                                mapOf("menu" to menus.getJSONObject(j).toString(),
+                                    "section" to menuArray.getJSONObject(i).getString("section"))
                             )
                             break@loop
                         }
@@ -84,7 +85,7 @@ class FragmentBaedalMenu :Fragment() {
             val opt = bundle.getString("opt")
             println("데이터 받음: ${opt}")
             setOptArray(opt!!)
-            optArray.put(JSONObject(opt))
+            //optArray.put(JSONObject(opt))
 
             binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
             binding.lyCartCount.visibility = View.VISIBLE
@@ -138,11 +139,28 @@ class FragmentBaedalMenu :Fragment() {
 
     fun setOptArray(opt: String) {
         val jObect = JSONObject(opt)
+        val section = jObect.getString("section")
         val id = jObect.getInt("id")
         val radio = jObect.getJSONObject("radio")
         val combo = jObect.getJSONObject("combo")
         val count =jObect.getInt("count")
-        println("setOptArray: ${id}, ${radio}, ${combo}, ${count}")
+
+
+        println("setOptArray: ${section}, ${id}, ${radio}, ${combo}, ${count}")
+
+        for (i in 0 until menuArray.length()) {
+            val obj = menuArray.getJSONObject(i)
+            if (obj.getString("section") == section){
+                val menu = obj.getJSONArray("menu")
+                for (j in 0 until menu.length()) {
+                    val menuObj = menu.getJSONObject(j)
+                    if (menuObj.getInt("id") == id) {
+                        var menu = menuObj.getString("menuName")
+                        //for (k in 0 until )
+                    }
+                }
+            }
+        }
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
