@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
-import com.example.saengsaengtalk.databinding.FragBaedalMenuDetailBinding
+import com.example.saengsaengtalk.databinding.FragBaedalDetailBinding
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -35,7 +35,7 @@ class FragmentBaedalDetail :Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragBaedalMenuDetailBinding.inflate(inflater, container, false)
+        val binding = FragBaedalDetailBinding.inflate(inflater, container, false)
 
         refreshView(binding)
 
@@ -43,7 +43,7 @@ class FragmentBaedalDetail :Fragment() {
         return binding.root
     }
 
-    fun refreshView(binding: FragBaedalMenuDetailBinding) {
+    fun refreshView(binding: FragBaedalDetailBinding) {
         var areaMenu = mutableListOf<BaedalDetailArea>()
 
         val id = menu!!.getInt("id")
