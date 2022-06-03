@@ -96,7 +96,7 @@ class FragmentBaedalMenu :Fragment() {
      @JvmName("getMenuArray1")
      fun getMenuArray(): JSONArray{
         val assetManager = resources.assets
-        val jsonString = assetManager.open("nene1.json").bufferedReader().use { it.readText() }
+        val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
 
         return JSONObject(jsonString).getJSONArray("info")
     }
