@@ -2,7 +2,6 @@ package com.example.saengsaengtalk.fragmentBaedal
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,23 +9,15 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.adapterBaedal.BaedalComment
-import com.example.saengsaengtalk.adapterBaedal.BaedalCommentAdapter
-import com.example.saengsaengtalk.adapterBaedal.BaedalConfirmMenuAdapter
-import com.example.saengsaengtalk.adapterBaedal.BaedalMenuSectionAdapter
+import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
-import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONArray
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class FragmentBaedalConfirm :Fragment() {
     var storeName: String? = null
     var opt: JSONArray? = null
-    var menu= mutableListOf<BaedalConfirmMenuAdapter>()
+
+    var menu = mutableListOf<BaedalConfirmMenu>()
 
     private var mBinding: FragBaedalConfirmBinding? = null
     private val binding get() = mBinding!!
@@ -58,8 +49,21 @@ class FragmentBaedalConfirm :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSelected.setHasFixedSize(true)
 
-        //val adapter = BaedalConfirmMenuAdapter(requireContext(), sectionMenu)
-        //binding.rvMenu.adapter = adapter
+        for (i in 0 until opt!!.length()) {
+            val obj = opt!!.getJSONObject(i)
+            val menuName = obj.getString("menuName")
+            val count = obj.getInt("count")
+
+            val strings = mutableListOf<BaedalConfirm>()
+            val stringArray = obj.getJSONArray("optString")
+            for (j in 0 until stringArray.length()) {
+                strings.add(BaedalConfirm(stringArray.getString(j)))
+            }
+
+            menu.add(BaedalConfirmMenu(menuName,count,strings))
+        }
+        val adapter = BaedalConfirmMenuAdapter(requireContext(), menu)
+        binding.rvMenuSelected.adapter = adapter
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

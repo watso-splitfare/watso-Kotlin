@@ -29,7 +29,7 @@ class FragmentBaedalOpt :Fragment() {
         arguments?.let {
             val jsonString = it.getString("menu")
             menu = JSONObject(jsonString)
-            section = it.getString("section")
+
             println("디테일 프래그먼트: ${jsonString}")
         }
     }
@@ -51,48 +51,51 @@ class FragmentBaedalOpt :Fragment() {
         val combos = menu!!.getJSONArray("combo")
         val dec = DecimalFormat("#,###")
 
-
         for (i in 0 until radios.length()) {
             val radio = radios.getJSONObject(i)
-            var temp = mutableListOf<BaedalOpt>()
+            val num = radio.getString("num")
             val area = radio.getString("area")
-            val opts = radio.getJSONArray("option")
+            val optName = radio.getString("optName")
+            val price = radio.getInt("price")
 
-            for (j in 0 until opts.length()){
-                val opt = opts.getJSONObject(j)
-                val num = opt.getInt("num").toString()
-                val optName = opt.getString("optName")
-                val price = opt.getString("price").toInt()
-                temp.add(BaedalOpt(num, optName, price, area,true))
+            radioPrice[num] = price
+            val baedalOpt = BaedalOpt(num, optName, price, area, true)
+            var areaCheck = false
 
-                radioPrice[num] = price
-                if (j == 0) radioChecked[num] = 1
-                else radioChecked[num] = 0
+            for (j in areaMenu){
+                if (j.area == area){
+                    j.areaList.add(baedalOpt)   // BaedalOptArea 클래스에서 맞는 area 찾아 baedalOpt 클래스 넣기
+                    areaCheck = true
+                    radioChecked[num] = 0
+                    break
+                }
             }
-            areaMenu.add(BaedalOptArea(area, temp))
+            if (!areaCheck) {                   // BaedalOptArea 에 없는 area 일 경우 새로 생성, 첫번째 옵션을 의미하므로 디폴트로 체크
+                areaMenu.add(BaedalOptArea(area, mutableListOf(baedalOpt)))
+                radioChecked[num] = 1
+            }
         }
 
         if (combos[0] != "") {
             for (i in 0 until combos.length()) {
                 val combo = combos.getJSONObject(i)
-
-                var temp = mutableListOf<BaedalOpt>()
+                val num = combo.getString("num")
                 val area = combo.getString("area")
-                val opts = combo.getJSONArray("option")
-                val min = combo.getInt("min")
-                val max = combo.getInt("max")
+                val optName = combo.getString("optName")
+                val price = combo.getInt("price")
 
-                for (j in 0 until opts.length()) {
-                    val opt = opts.getJSONObject(j)
-                    val num = opt.getInt("num").toString()
-                    val optName = opt.getString("optName")
-                    val price = opt.getString("price").toInt()
-                    temp.add(BaedalOpt(num, optName, price, area,false, min, max))
+                comboPrice[num] = price
+                comboChecked[num] = 0
 
-                    comboPrice[num] = price
-                    comboChecked[num] = 0
+                val baedalOpt = BaedalOpt(num, optName, price, area, false)
+                var areaCheck = false
+                for (j in areaMenu){
+                    if (j.area == area){
+                        j.areaList.add(baedalOpt)
+                        areaCheck = true
+                    }
                 }
-                areaMenu.add(BaedalOptArea(area, temp))
+                if (!areaCheck) areaMenu.add(BaedalOptArea(area, mutableListOf(baedalOpt)))
             }
         }
 
@@ -127,15 +130,23 @@ class FragmentBaedalOpt :Fragment() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrderConfirm.setOnClickListener {
-            val jsonObject = JSONObject()
-            jsonObject.put("section", section)
-            jsonObject.put("id", id)
-            jsonObject.put("radio", JSONObject(radioChecked as Map<*, *>))
-            jsonObject.put("combo", JSONObject(comboChecked as Map<*, *>))
-            jsonObject.put("count", count)
+            val optObject = JSONObject()
+            optObject.put("menuName", menuName)
+            optObject.put("id", id)
+            var tempRadio = mutableListOf<String>()
+            for ((k, v) in radioChecked) {
+                if (v == 1) tempRadio.add(k)
+            }
+            optObject.put("radio", JSONArray(tempRadio))
+            var tempCombo = mutableListOf<String>()
+            for ((k, v) in comboChecked) {
+                if (v == 1) tempCombo.add(k)
+            }
+            optObject.put("combo", JSONArray(tempCombo))
+            optObject.put("count", count)
 
             //println("제이슨 출력: ${jsonObject.toString()}")
-            val bundle = bundleOf("opt" to jsonObject.toString())
+            val bundle = bundleOf("opt" to optObject.toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("menuWithOpt", bundle)
             onBackPressed()
         }
@@ -157,18 +168,20 @@ class FragmentBaedalOpt :Fragment() {
     fun setChecked(isRadio: Boolean, area: String, num: String, isChecked: Boolean, optList: JSONArray= JSONArray()) {
         if (isRadio) {
             if (radioChecked[num] == 0){
-                var radios = JSONObject()
+                //var radios = JSONArray()
+                var nums = mutableListOf<String>()
+
                 for (i in 0 until optList.length()){
                     if (optList.getJSONObject(i).getString("area") == area) {
-                        radios = optList.getJSONObject(i)
-                        break
+                        //radios.put(optList.getJSONObject(i))
+                        nums.add(optList.getJSONObject(i).getString("num"))
                     }
                 }
-                var nums = mutableListOf<String>()
-                val array = radios.getJSONArray("option")
+
+                /*val array = radios.getJSONArray("option")
                 for (i in 0 until array.length()){
                     nums.add(array.getJSONObject(i).getString("num"))
-                }
+                }*/
                 for (i in nums) {
                     if (i == num) radioChecked[i] = 1
                     else radioChecked[i] = 0

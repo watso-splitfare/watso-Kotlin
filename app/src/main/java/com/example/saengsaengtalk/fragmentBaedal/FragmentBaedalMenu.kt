@@ -18,8 +18,9 @@ import java.text.DecimalFormat
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
     var storeName: String? = null
+    val dec = DecimalFormat("#,###")
 
-    var menuArray = JSONArray()                             // 현재화면 구성에 사용
+    var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
     var mapOpt = mutableMapOf<String, MutableMap<String, String>>()     // 옵션 area 값
@@ -62,16 +63,10 @@ class FragmentBaedalMenu :Fragment() {
             override fun onClick(id: Int) {
                 println(id)
                 loop@ for (i in 0 until menuArray.length()) {
-                    val menus = menuArray.getJSONObject(i).getJSONArray("menu")
-                    for (j in 0 until menus.length()) {
-                        if (id == menus.getJSONObject(j).getInt("id")) {
-                            setFrag(
-                                FragmentBaedalOpt(),
-                                mapOf("menu" to menus.getJSONObject(j).toString(),
-                                    "section" to menuArray.getJSONObject(i).getString("section"))
-                            )
-                            break@loop
-                        }
+                    val menus = menuArray.getJSONObject(i)
+                    if (id == menus.getInt("id")) {
+                        setFrag(FragmentBaedalOpt(), mapOf("menu" to menus.toString()))
+                        break@loop
                     }
                 }
             }
@@ -101,79 +96,117 @@ class FragmentBaedalMenu :Fragment() {
      @JvmName("getMenuArray1")
      fun getMenuArray(): JSONArray{
         val assetManager = resources.assets
-        val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
+        val jsonString = assetManager.open("nene1.json").bufferedReader().use { it.readText() }
 
         return JSONObject(jsonString).getJSONArray("info")
     }
 
     fun setSectionMenu() {
         for (i in 0 until menuArray.length()) {
-            val obj = menuArray.getJSONObject(i)           // 섹션
-            val section = obj.getString("section")  // 섹션명
-            val secArray = obj.getJSONArray("menu")
-            var temp = mutableListOf<BaedalMenu>()
-            for (j in 0 until secArray.length()) {
-                val id = secArray.getJSONObject(j).getString("id").toInt()
-                val menuname = secArray.getJSONObject(j).getString("menuName")
-                val radio = secArray.getJSONObject(j).getJSONArray("radio")
-                // val combo = secArray.getJSONObject(j).getJSONArray("combo")
-                println("id: ${id}, menuname: ${menuname}")
+            val obj = menuArray.getJSONObject(i)
+            val id = obj.getInt("id")
+            val section = obj.getString("section")
+            val menuname = obj.getString("menuName")
 
-                var minPrice = 2147483647
-                var maxPrice = 0
-                val priceArray = radio.getJSONObject(0).getJSONArray("option")
-                for (k in 0 until priceArray.length()) {
-                    val optPrice = priceArray.getJSONObject(k).getString("price").toInt()
+            println("id: ${id}, menuname: ${menuname}")
+
+            var minPrice = 2147483647
+            var maxPrice = 0
+            val radio = obj.getJSONArray("radio")
+
+            for (j in 0 until radio.length()) {
+                if (radio.getJSONObject(j).getString("area") == "가격") {
+                    val optPrice = radio.getJSONObject(j).getString("price").toInt()
                     if (minPrice > optPrice) minPrice = optPrice
                     if (maxPrice < optPrice) maxPrice = optPrice
                 }
-                val dec = DecimalFormat("#,###")
-                val price =
-                    if (minPrice == maxPrice) "${dec.format(minPrice)}원"
-                    else "${dec.format(minPrice)}~${dec.format(maxPrice)}원"
-
-                temp.add(BaedalMenu(id, menuname, price))
             }
-            sectionMenu.add(BaedalMenuSection(section,temp))
+
+            val price =
+                if (minPrice == maxPrice) "${dec.format(minPrice)}원"
+                else "${dec.format(minPrice)}~${dec.format(maxPrice)}원"
+
+            val baedalmenu = BaedalMenu(id, menuname, price)
+            var sectionCheck = false
+
+            for (i in sectionMenu) {
+                if (i.section == section) {
+                    i.sectionList.add(baedalmenu)
+                    sectionCheck = true
+                    break
+                }
+            }
+            if (!sectionCheck) sectionMenu.add(BaedalMenuSection(section,mutableListOf(baedalmenu)))
         }
+        println(sectionMenu)
     }
 
     fun setOptArray(opt: String) {
         val jObect = JSONObject(opt)
-        val section = jObect.getString("section")
+        val menuName = jObect.getString("menuName")
         val id = jObect.getInt("id")
-        val radio = jObect.getJSONObject("radio")
-        val combo = jObect.getJSONObject("combo")
+        val radio = jObect.getJSONArray("radio")
+        val combo = jObect.getJSONArray("combo")
         val count =jObect.getInt("count")
 
+        var optString = mutableListOf<String>()
 
-        println("setOptArray: ${section}, ${id}, ${radio}, ${combo}, ${count}")
-//area, optname, price
-        for (i in 0 until menuArray.length()) {
-            val obj = menuArray.getJSONObject(i)
-            if (obj.getString("section") == section){
-                val menu = obj.getJSONArray("menu")
-                for (j in 0 until menu.length()) {
-                    val menuObj = menu.getJSONObject(j)
-                    if (menuObj.getInt("id") == id) {
-                        val menuName = menuObj.getString("menuName")
-                        var area:MutableList<String>
-                        for (k in radio.keys()) {
-                            if (radio[k] == 1) {    // k = num, readio[k] == 1 이면 체크된옵션
-                                val radioData = menuObj.getJSONArray("radio")
-                                for (l in 0 until radioData.length()){
-                                    //val opt = radioData[l].getJSONArray("option")
-                                }
-                            }
+        //println("setOptArray: ${menuName}, ${id}, ${radio}, ${combo}, ${count}")
+
+        for (i in 0 until menuArray.length()){
+            if (menuArray.getJSONObject(i).getInt("id") == id){
+                val radioArray = menuArray.getJSONObject(i).getJSONArray("radio")
+                val comboArray = menuArray.getJSONObject(i).getJSONArray("combo")
+
+                val radioList = jArrayToList(radio)
+                while (optString.size < radioList.size) {
+                    for (j in 0 until radioArray.length()) {
+                        if (radioArray.getJSONObject(j).getString("num") in radioList) {
+                            val obj = radioArray.getJSONObject(j)
+                            val area = obj.getString("area")
+                            val optName = obj.getString("optName")
+                            val price = obj.getInt("price")
+                            optString.add("• ${area}: ${optName} (${dec.format(price)}원)")
                         }
-
-                        //for (k in 0 until )
                     }
                 }
+
+                val comboList = jArrayToList(combo)
+                var comboIndex = mutableMapOf<String, Int>()
+                var comboCount = 0
+                while (comboCount < comboList.size){
+                    for (j in 0 until comboArray.length()) {
+                        if (comboArray.getJSONObject(j).getString("num") in comboList) {
+                            val obj = comboArray.getJSONObject(j)
+                            val area = obj.getString("area")
+                            val optName = obj.getString("optName")
+                            val price = obj.getInt("price")
+                            if (area in comboIndex.keys) {
+                                optString[comboIndex[area]!!] =
+                                    "${optString[comboIndex[area]!!]} / ${optName} (${dec.format(price)}원)"
+                            }
+                            else {
+                                optString.add("• ${area}: ${optName} (${dec.format(price)}원)")
+                                comboIndex[area] = optString.lastIndex
+                            }
+                            comboCount++
+                        }
+                    }
+                }
+                break
             }
         }
+        //for (i in optString) println(i)
+        optArray.put(JSONObject(mapOf("menuName" to menuName, "count" to count, "optString" to optString)))
     }
 
+    fun jArrayToList(array: JSONArray): MutableList<String> {
+        var list = mutableListOf<String>()
+        for (i in 0 until array.length())
+            list.add(array.getString(i))
+
+        return list
+    }
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
