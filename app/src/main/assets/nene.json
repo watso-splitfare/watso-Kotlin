@@ -14,12 +14,12 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "오리지날",
                                     "price": 18000
                                 },
                                 {
-                                    "rnum": 2,
+                                    "num": 2,
                                     "optName": "순살",
                                     "price": 20000
                                 }
@@ -29,17 +29,17 @@
                             "area": "선택1",
                             "option": [
                                 {
-                                    "rnum": 3,
+                                    "num": 3,
                                     "optName": "후라이드",
                                     "price": 0
                                 },
                                 {
-                                    "rnum": 4,
+                                    "num": 4,
                                     "optName": "양념",
                                     "price": 1000
                                 },
                                 {
-                                    "rnum": 5,
+                                    "num": 5,
                                     "optName": "간장",
                                     "price": 1000
                                 }
@@ -49,17 +49,17 @@
                             "area": "선택2",
                             "option": [
                                 {
-                                    "rnum": 6,
+                                    "num": 6,
                                     "optName": "후라이드",
                                     "price": 0
                                 },
                                 {
-                                    "rnum": 7,
+                                    "num": 7,
                                     "optName": "양념",
                                     "price": 1000
                                 },
                                 {
-                                    "rnum": 8,
+                                    "num": 8,
                                     "optName": "간장",
                                     "price": 1000
                                 }
@@ -71,17 +71,17 @@
                             "area": "추가선택",
                             "option": [
                                 {
-                                    "cnum": 1,
+                                    "num": 1,
                                     "optName": "나쵸칩 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 2,
+                                    "num": 2,
                                     "optName": "네네치즈볼 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 3,
+                                    "num": 3,
                                     "optName": "콜라 1.25L 추가",
                                     "price": 2500
                                 }
@@ -98,12 +98,12 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "오리지날",
                                     "price": 18000
                                 },
                                 {
-                                    "rnum": 2,
+                                    "num": 2,
                                     "optName": "순살",
                                     "price": 20000
                                 }
@@ -115,17 +115,17 @@
                             "area": "추가선택",
                             "option": [
                                 {
-                                    "cnum": 1,
+                                    "num": 1,
                                     "optName": "나쵸칩 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 2,
+                                    "num": 2,
                                     "optName": "네네치즈볼 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 3,
+                                    "num": 3,
                                     "optName": "콜라 1.25L 추가",
                                     "price": 2500
                                 }
@@ -142,12 +142,12 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "오리지날",
                                     "price": 18000
                                 },
                                 {
-                                    "rnum": 2,
+                                    "num": 2,
                                     "optName": "순살",
                                     "price": 20000
                                 }
@@ -160,17 +160,17 @@
                             "area": "추가선택",
                             "option": [
                                 {
-                                    "cnum": 1,
+                                    "num": 1,
                                     "optName": "나쵸칩 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 2,
+                                    "num": 2,
                                     "optName": "네네치즈볼 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 3,
+                                    "num": 3,
                                     "optName": "콜라 1.25L 추가",
                                     "price": 2500
                                 }
@@ -188,12 +188,12 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "오리지날",
                                     "price": 18000
                                 },
                                 {
-                                    "rnum": 2,
+                                    "num": 2,
                                     "optName": "순살",
                                     "price": 20000
                                 }
@@ -202,17 +202,17 @@
                             "area": "선택1",
                             "option": [
                                 {
-                                    "rnum": 3,
+                                    "num": 3,
                                     "optName": "후라이드",
                                     "price": 0
                                 },
                                 {
-                                    "rnum": 4,
+                                    "num": 4,
                                     "optName": "양념",
                                     "price": 1000
                                 },
                                 {
-                                    "rnum": 5,
+                                    "num": 5,
                                     "optName": "간장",
                                     "price": 1000
                                 }
@@ -225,17 +225,17 @@
                             "area": "추가선택",
                             "option": [
                                 {
-                                    "cnum": 1,
+                                    "num": 1,
                                     "optName": "나쵸칩 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 2,
+                                    "num": 2,
                                     "optName": "네네치즈볼 추가",
                                     "price": 3000
                                 },
                                 {
-                                    "cnum": 3,
+                                    "num": 3,
                                     "optName": "콜라 1.25L 추가",
                                     "price": 2500
                                 }
@@ -257,7 +257,7 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "나쵸칩",
                                     "price": 3000
                                 }
@@ -273,7 +273,7 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "네네치즈볼",
                                     "price": 3000
                                 }
@@ -289,7 +289,7 @@
                             "area": "가격",
                             "option": [
                                 {
-                                    "rnum": 1,
+                                    "num": 1,
                                     "optName": "콜라 1.25L 추가",
                                     "price": 2500
                                 }

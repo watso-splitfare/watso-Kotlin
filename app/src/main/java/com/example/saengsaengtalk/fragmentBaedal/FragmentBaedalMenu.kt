@@ -22,6 +22,7 @@ class FragmentBaedalMenu :Fragment() {
     var menuArray = JSONArray()                             // 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
+    var mapOpt = mutableMapOf<String, MutableMap<String, String>>()     // 옵션 area 값
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -147,7 +148,7 @@ class FragmentBaedalMenu :Fragment() {
 
 
         println("setOptArray: ${section}, ${id}, ${radio}, ${combo}, ${count}")
-
+//area, optname, price
         for (i in 0 until menuArray.length()) {
             val obj = menuArray.getJSONObject(i)
             if (obj.getString("section") == section){
@@ -155,7 +156,17 @@ class FragmentBaedalMenu :Fragment() {
                 for (j in 0 until menu.length()) {
                     val menuObj = menu.getJSONObject(j)
                     if (menuObj.getInt("id") == id) {
-                        var menu = menuObj.getString("menuName")
+                        val menuName = menuObj.getString("menuName")
+                        var area:MutableList<String>
+                        for (k in radio.keys()) {
+                            if (radio[k] == 1) {    // k = num, readio[k] == 1 이면 체크된옵션
+                                val radioData = menuObj.getJSONArray("radio")
+                                for (l in 0 until radioData.length()){
+                                    //val opt = radioData[l].getJSONArray("option")
+                                }
+                            }
+                        }
+
                         //for (k in 0 until )
                     }
                 }
