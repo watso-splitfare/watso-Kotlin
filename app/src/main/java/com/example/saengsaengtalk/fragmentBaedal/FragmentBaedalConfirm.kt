@@ -20,6 +20,8 @@ class FragmentBaedalConfirm :Fragment() {
     var member = 1
     var opt: JSONArray? = null
 
+    val dec = DecimalFormat("#,###")
+
     var menu = mutableListOf<BaedalConfirmMenu>()
 
     private var mBinding: FragBaedalConfirmBinding? = null
@@ -56,7 +58,6 @@ class FragmentBaedalConfirm :Fragment() {
         binding.rvMenuSelected.setHasFixedSize(true)
 
         var orderPrice = 0
-        val dec = DecimalFormat("#,###")
 
         for (i in 0 until opt!!.length()) {
             val obj = opt!!.getJSONObject(i)
@@ -76,9 +77,36 @@ class FragmentBaedalConfirm :Fragment() {
         val adapter = BaedalConfirmMenuAdapter(requireContext(), menu)
         binding.rvMenuSelected.adapter = adapter
 
+        adapter.setItemClickListener(object: BaedalConfirmMenuAdapter.OnItemClickListener {
+            override fun onChange(position: Int, price:Int, change: String) {
+                if (change == "remove") {
+                    menu.removeAt(position);
+
+                    orderPrice -= price
+                    bindSetText(orderPrice)
+                    adapter.notifyItemRemoved(position);
+                }
+                else if (change == "sub") {
+                    menu[position].count -= 1
+                    orderPrice -= price
+                    bindSetText(orderPrice)
+                }
+                else {
+                    menu[position].count += 1
+                    orderPrice += price
+                    bindSetText(orderPrice)
+                }
+            }
+        })
+
+        bindSetText(orderPrice)
+    }
+
+    fun bindSetText(orderPrice: Int) {
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
-        binding.tvBaedalFee.text = "${dec.format(baedalFee/member)}원"
-        binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/member)}원"
+        binding.tvBaedalFee.text = "${dec.format(baedalFee/(member + 1))}원"
+        binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원"
+        binding.tvConfirm.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원 주문하기"
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

@@ -252,7 +252,7 @@
         app:layout_constraintStart_toStartOf="@+id/nestedScrollView">
 
         <TextView
-            android:id="@+id/tvextView"
+            android:id="@+id/tv_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="주문하기"

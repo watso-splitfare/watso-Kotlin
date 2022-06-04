@@ -1,5 +1,6 @@
 package com.example.saengsaengtalk.adapterBaedal
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
@@ -8,12 +9,12 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytBaedalConfirmMenuBinding
-import com.example.saengsaengtalk.databinding.LytBaedalMenuSectionBinding
-import java.lang.ref.WeakReference
 import java.text.DecimalFormat
 
 
 class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: MutableList<BaedalConfirmMenu>) : RecyclerView.Adapter<BaedalConfirmMenuAdapter.CustomViewHolder>() {
+
+    var dataChanged = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,6 +27,16 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
         holder.bind(item)
     }
 
+    interface OnItemClickListener {
+        fun onChange(position: Int, price: Int, change: String)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
+
     override fun getItemCount(): Int {
         return baedalConfirmMenu.size
     }
@@ -33,6 +44,8 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BaedalConfirmMenu) {
             val dec = DecimalFormat("#,###")
+            var count = item.count
+            var priceString = "${dec.format(item.price * count)}원"
 
             binding.tvMenu.text = item.menu
 
@@ -40,9 +53,30 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
             val adapter = BaedalConfirmAdapter(item.optList)
             binding.rvMenu.adapter = adapter
 
-            binding.tvPrice.text = "${dec.format(item.price * item.count)}원"
-            binding.tvCount.text = item.count.toString()
+            binding.tvPrice.text = priceString
+            binding.tvCount.text = count.toString()
 
+            binding.btnCancel.setOnClickListener {
+                itemClickListener.onChange(adapterPosition, item.price * count, "remove")
+            }
+            binding.btnSub.setOnClickListener {
+                if (count > 1) {
+                    count -= 1
+                    priceString = "${dec.format(item.price * count)}원"
+                    binding.tvPrice.text = priceString
+                    binding.tvCount.text = count.toString()
+                    itemClickListener.onChange(adapterPosition, item.price, "sub")
+                }
+            }
+            binding.btnAdd.setOnClickListener {
+                if (count < 10) {
+                    count += 1
+                    priceString = "${dec.format(item.price * count)}원"
+                    binding.tvPrice.text = priceString
+                    binding.tvCount.text = count.toString()
+                    itemClickListener.onChange(adapterPosition, item.price, "add")
+                }
+            }
         }
     }
 }
