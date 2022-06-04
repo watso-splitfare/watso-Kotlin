@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytBaedalConfirmMenuBinding
 import com.example.saengsaengtalk.databinding.LytBaedalMenuSectionBinding
 import java.lang.ref.WeakReference
+import java.text.DecimalFormat
 
 
 class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: MutableList<BaedalConfirmMenu>) : RecyclerView.Adapter<BaedalConfirmMenuAdapter.CustomViewHolder>() {
@@ -31,14 +32,16 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
 
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BaedalConfirmMenu) {
+            val dec = DecimalFormat("#,###")
+
             binding.tvMenu.text = item.menu
-            binding.tvCount.text = item.count.toString()
+
             binding.rvMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-
             val adapter = BaedalConfirmAdapter(item.optList)
             binding.rvMenu.adapter = adapter
 
+            binding.tvPrice.text = "${dec.format(item.price * item.count)}원"
+            binding.tvCount.text = item.count.toString()
 
         }
     }

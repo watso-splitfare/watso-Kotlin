@@ -12,9 +12,12 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
 import org.json.JSONArray
+import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
     var storeName: String? = null
+    var baedalFee = 0
+    var member = 1
     var opt: JSONArray? = null
 
     var menu = mutableListOf<BaedalConfirmMenu>()
@@ -26,6 +29,8 @@ class FragmentBaedalConfirm :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             storeName = it.getString("storeName")
+            baedalFee = it.getString("baedalFee")!!.toInt()
+            member = it.getString("member")!!.toInt()
             opt = JSONArray(it.getString("opt"))
         }
         println("스토어이름: ${storeName}")
@@ -44,14 +49,19 @@ class FragmentBaedalConfirm :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.tvStoreName.text = storeName
 
         binding.rvMenuSelected.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSelected.setHasFixedSize(true)
 
+        var orderPrice = 0
+        val dec = DecimalFormat("#,###")
+
         for (i in 0 until opt!!.length()) {
             val obj = opt!!.getJSONObject(i)
             val menuName = obj.getString("menuName")
+            val price = obj.getInt("price")
             val count = obj.getInt("count")
 
             val strings = mutableListOf<BaedalConfirm>()
@@ -60,10 +70,15 @@ class FragmentBaedalConfirm :Fragment() {
                 strings.add(BaedalConfirm(stringArray.getString(j)))
             }
 
-            menu.add(BaedalConfirmMenu(menuName,count,strings))
+            menu.add(BaedalConfirmMenu(menuName, price, count, strings))
+            orderPrice += price * count
         }
         val adapter = BaedalConfirmMenuAdapter(requireContext(), menu)
         binding.rvMenuSelected.adapter = adapter
+
+        binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
+        binding.tvBaedalFee.text = "${dec.format(baedalFee/member)}원"
+        binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/member)}원"
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

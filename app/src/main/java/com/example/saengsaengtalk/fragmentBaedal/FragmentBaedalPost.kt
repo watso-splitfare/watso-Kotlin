@@ -47,7 +47,7 @@ class FragmentBaedalPost :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "storeName" to "네네치킨 삼문점"))
+            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "member" to "3"))
         }
         val baedalPostData = mapOf(
             "title" to "네네치킨 먹을 사람",

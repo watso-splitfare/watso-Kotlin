@@ -17,9 +17,12 @@ import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
-    var storeName: String? = null
+    var member: String? = null
+
     val dec = DecimalFormat("#,###")
 
+    var storeName = ""
+    var baedalFee = ""
     var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
@@ -32,10 +35,10 @@ class FragmentBaedalMenu :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postNum = it.getString("postNum")
-            storeName = it.getString("storeName")
+            member = it.getString("member")
         }
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
-        Log.d("배달 메뉴", "스토어 이름: ${storeName}")
+        Log.d("배달 메뉴", "스토어 이름: ${member}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,9 +50,11 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-
         menuArray = getMenuArray()
+
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.tvStoreName.text = storeName
+
         setSectionMenu()
 
         binding.rvMenu.layoutManager =
@@ -89,16 +94,19 @@ class FragmentBaedalMenu :Fragment() {
             binding.btnCart.setEnabled(true)
         }
         binding.btnCart.setOnClickListener {
-            setFrag(FragmentBaedalConfirm(), mapOf("storeName" to storeName!!, "opt" to optArray.toString()))
+            setFrag(FragmentBaedalConfirm(), mapOf(
+                "storeName" to storeName!!, "baedalFee" to baedalFee, "member" to member!!, "opt" to optArray.toString()))
         }
     }
 
      @JvmName("getMenuArray1")
      fun getMenuArray(): JSONArray{
-        val assetManager = resources.assets
-        val jsonString = assetManager.open("nene.json").bufferedReader().use { it.readText() }
+         val assetManager = resources.assets
+         val jsonObj = JSONObject(assetManager.open("nene.json").bufferedReader().use { it.readText() })
 
-        return JSONObject(jsonString).getJSONArray("info")
+         storeName = jsonObj.getString("storeName")
+         baedalFee = jsonObj.getInt("baedalFee").toString()
+         return jsonObj.getJSONArray("info")
     }
 
     fun setSectionMenu() {
@@ -147,7 +155,8 @@ class FragmentBaedalMenu :Fragment() {
         val id = jObect.getInt("id")
         val radio = jObect.getJSONArray("radio")
         val combo = jObect.getJSONArray("combo")
-        val count =jObect.getInt("count")
+        val totalPrice = jObect.getInt("price")
+        val count = jObect.getInt("count")
 
         var optString = mutableListOf<String>()
 
@@ -197,7 +206,9 @@ class FragmentBaedalMenu :Fragment() {
             }
         }
         //for (i in optString) println(i)
-        optArray.put(JSONObject(mapOf("menuName" to menuName, "count" to count, "optString" to optString)))
+        optArray.put(JSONObject(mapOf(
+            "menuName" to menuName, "price" to totalPrice, "count" to count, "optString" to optString
+        )))
     }
 
     fun jArrayToList(array: JSONArray): MutableList<String> {

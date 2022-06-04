@@ -129,7 +129,7 @@ class FragmentBaedalOpt :Fragment() {
         })
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrderConfirm.setOnClickListener {
+        binding.btnCartConfirm.setOnClickListener {
             val optObject = JSONObject()
             optObject.put("menuName", menuName)
             optObject.put("id", id)
@@ -143,6 +143,7 @@ class FragmentBaedalOpt :Fragment() {
                 if (v == 1) tempCombo.add(k)
             }
             optObject.put("combo", JSONArray(tempCombo))
+            optObject.put("price", setTotalPrice()/count)
             optObject.put("count", count)
 
             //println("제이슨 출력: ${jsonObject.toString()}")
