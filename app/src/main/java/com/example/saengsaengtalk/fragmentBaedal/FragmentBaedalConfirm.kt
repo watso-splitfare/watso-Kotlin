@@ -106,7 +106,7 @@ class FragmentBaedalConfirm :Fragment() {
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvBaedalFee.text = "${dec.format(baedalFee/(member + 1))}원"
         binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원"
-        binding.tvConfirm.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원 주문하기"
+        binding.btnConfirm.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원 주문하기"
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
