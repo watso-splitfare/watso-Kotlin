@@ -14,6 +14,7 @@ import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
+import kotlin.reflect.typeOf
 
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
@@ -26,7 +27,6 @@ class FragmentBaedalMenu :Fragment() {
     var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
-    var mapOpt = mutableMapOf<String, MutableMap<String, String>>()     // 옵션 area 값
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -86,13 +86,53 @@ class FragmentBaedalMenu :Fragment() {
             val opt = bundle.getString("opt")
             println("데이터 받음: ${opt}")
             setOptArray(opt!!)
-            //optArray.put(JSONObject(opt))
 
             binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
             binding.lyCartCount.visibility = View.VISIBLE
             binding.tvCartCount.text = optArray.length().toString()
             binding.btnCart.setEnabled(true)
         }
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("fromConfirmFrag", this) { requestKey, bundle ->
+            val countChanged = JSONObject(bundle.getString("countChanged"))
+            println(bundle.getString("countChanged"))
+            for (i in 0 until optArray.length()){
+                //println(optArray.getJSONObject(i).toString())
+            }
+            var tempArray = JSONArray()
+            var position = mutableListOf<String>()
+            for (i in countChanged.keys())
+                position.add(i)
+            for (i in 0 until optArray.length()) {
+                if (position.contains(i.toString())) {
+                    if (countChanged[i.toString()] != 0) {
+                        val obj = optArray.getJSONObject(i)
+                        val menuName = obj.getString("menuName")
+                        val price = obj.getInt("price")
+                        val count = countChanged[i.toString()]
+                        val optString = jArrayToList(obj.getJSONArray("optString"))
+                        tempArray.put(
+                            JSONObject(mapOf("menuName" to menuName,"price" to price,"count" to count, "optString" to optString
+                                ))
+                        )
+                    }
+                } else {
+                    tempArray.put(optArray[i])
+                }
+            }
+
+            optArray = tempArray
+            //println("for문 종료")
+            for (i in 0 until optArray.length()){
+                //println(optArray.getJSONObject(i).toString())
+            }
+            binding.tvCartCount.text = optArray.length().toString()
+            if (optArray.length() == 0) {
+                binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
+                binding.lyCartCount.visibility = View.INVISIBLE
+                binding.btnCart.setEnabled(false)
+            }
+        }
+
         binding.btnCart.setOnClickListener {
             setFrag(FragmentBaedalConfirm(), mapOf(
                 "storeName" to storeName!!, "baedalFee" to baedalFee, "member" to member!!, "opt" to optArray.toString()))

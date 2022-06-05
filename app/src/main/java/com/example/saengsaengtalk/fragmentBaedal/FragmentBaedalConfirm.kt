@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
 import org.json.JSONArray
+import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
@@ -20,6 +22,8 @@ class FragmentBaedalConfirm :Fragment() {
     var member = 1
     var opt: JSONArray? = null
 
+    var orderPrice = 0
+    var countChanged = mutableMapOf<String, Int>()
     val dec = DecimalFormat("#,###")
 
     var menu = mutableListOf<BaedalConfirmMenu>()
@@ -57,7 +61,7 @@ class FragmentBaedalConfirm :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSelected.setHasFixedSize(true)
 
-        var orderPrice = 0
+
 
         for (i in 0 until opt!!.length()) {
             val obj = opt!!.getJSONObject(i)
@@ -79,25 +83,55 @@ class FragmentBaedalConfirm :Fragment() {
 
         adapter.setItemClickListener(object: BaedalConfirmMenuAdapter.OnItemClickListener {
             override fun onChange(position: Int, price:Int, change: String) {
+                var correction = 0
                 if (change == "remove") {
                     menu.removeAt(position);
-
+                    adapter.notifyDataSetChanged()
                     orderPrice -= price
                     bindSetText(orderPrice)
-                    adapter.notifyItemRemoved(position);
+
+                    for (i in countChanged.keys) {
+                        if (countChanged[i] == 0) {
+                            if (position >= i.toInt()) {
+                                println(correction)
+                                correction += 1
+                            }
+                        }
+                    }
+                    countChanged[(position + correction).toString()] = 0
                 }
                 else if (change == "sub") {
                     menu[position].count -= 1
                     orderPrice -= price
                     bindSetText(orderPrice)
+
+                    for (i in countChanged.keys) {
+                        if (countChanged[i] == 0) {
+                            if (position >= i.toInt()) correction += 1
+                        }
+                    }
+                    countChanged[(position + correction).toString()] = menu[position].count
                 }
                 else {
                     menu[position].count += 1
                     orderPrice += price
                     bindSetText(orderPrice)
+
+                    for (i in countChanged.keys) {
+                        if (countChanged[i] == 0) {
+                            if (position >= i.toInt()) correction += 1
+                        }
+                    }
+                    countChanged[(position + correction).toString()] = menu[position].count
                 }
             }
         })
+
+        binding.lytAddMenu.setOnClickListener {
+            val bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
+            onBackPressed()
+        }
 
         bindSetText(orderPrice)
     }

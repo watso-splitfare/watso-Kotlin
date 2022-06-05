@@ -56,7 +56,7 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
             binding.tvPrice.text = priceString
             binding.tvCount.text = count.toString()
 
-            binding.btnCancel.setOnClickListener {
+            binding.btnRemove.setOnClickListener {
                 itemClickListener.onChange(adapterPosition, item.price * count, "remove")
             }
             binding.btnSub.setOnClickListener {
