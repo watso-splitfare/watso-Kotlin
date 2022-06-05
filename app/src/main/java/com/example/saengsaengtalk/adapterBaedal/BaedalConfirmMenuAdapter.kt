@@ -1,9 +1,9 @@
 package com.example.saengsaengtalk.adapterBaedal
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,8 +14,6 @@ import java.text.DecimalFormat
 
 class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: MutableList<BaedalConfirmMenu>) : RecyclerView.Adapter<BaedalConfirmMenuAdapter.CustomViewHolder>() {
 
-    var dataChanged = false
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
@@ -23,6 +21,7 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
+
         val item = baedalConfirmMenu[position]
         holder.bind(item)
     }
@@ -58,6 +57,7 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
 
             binding.btnRemove.setOnClickListener {
                 itemClickListener.onChange(adapterPosition, item.price * count, "remove")
+                binding.lytBaedalConfirm.visibility = View.GONE
             }
             binding.btnSub.setOnClickListener {
                 if (count > 1) {

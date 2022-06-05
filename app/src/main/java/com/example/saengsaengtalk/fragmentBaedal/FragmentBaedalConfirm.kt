@@ -54,14 +54,16 @@ class FragmentBaedalConfirm :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener {
+            val bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
+            onBackPressed()
+        }
         binding.tvStoreName.text = storeName
 
         binding.rvMenuSelected.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSelected.setHasFixedSize(true)
-
-
 
         for (i in 0 until opt!!.length()) {
             val obj = opt!!.getJSONObject(i)
@@ -85,45 +87,20 @@ class FragmentBaedalConfirm :Fragment() {
             override fun onChange(position: Int, price:Int, change: String) {
                 var correction = 0
                 if (change == "remove") {
-                    menu.removeAt(position);
-                    adapter.notifyDataSetChanged()
+                    menu[position].count = 0
                     orderPrice -= price
-                    bindSetText(orderPrice)
-
-                    for (i in countChanged.keys) {
-                        if (countChanged[i] == 0) {
-                            if (position >= i.toInt()) {
-                                println(correction)
-                                correction += 1
-                            }
-                        }
-                    }
-                    countChanged[(position + correction).toString()] = 0
                 }
                 else if (change == "sub") {
                     menu[position].count -= 1
                     orderPrice -= price
-                    bindSetText(orderPrice)
-
-                    for (i in countChanged.keys) {
-                        if (countChanged[i] == 0) {
-                            if (position >= i.toInt()) correction += 1
-                        }
-                    }
-                    countChanged[(position + correction).toString()] = menu[position].count
                 }
                 else {
                     menu[position].count += 1
                     orderPrice += price
-                    bindSetText(orderPrice)
-
-                    for (i in countChanged.keys) {
-                        if (countChanged[i] == 0) {
-                            if (position >= i.toInt()) correction += 1
-                        }
-                    }
-                    countChanged[(position + correction).toString()] = menu[position].count
                 }
+
+                bindSetText(orderPrice)
+                countChanged[(position + correction).toString()] = menu[position].count
             }
         })
 
