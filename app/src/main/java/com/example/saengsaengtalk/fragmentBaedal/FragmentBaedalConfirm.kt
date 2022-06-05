@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
 import org.json.JSONArray
@@ -101,6 +102,18 @@ class FragmentBaedalConfirm :Fragment() {
 
                 bindSetText(orderPrice)
                 countChanged[(position + correction).toString()] = menu[position].count
+
+                var confirm = false
+                for (i in menu) {
+                    if (i.count > 0) {
+                        confirm = true
+                        break
+                    }
+                }
+                if (!confirm) {
+                    binding.btnConfirm.setEnabled(confirm)
+                    binding.btnConfirm.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                }
             }
         })
 
@@ -111,6 +124,10 @@ class FragmentBaedalConfirm :Fragment() {
         }
 
         bindSetText(orderPrice)
+
+        binding.btnConfirm.setOnClickListener {
+            println("클릭")
+        }
     }
 
     fun bindSetText(orderPrice: Int) {
