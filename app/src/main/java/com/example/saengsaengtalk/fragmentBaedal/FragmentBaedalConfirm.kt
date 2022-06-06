@@ -22,8 +22,8 @@ class FragmentBaedalConfirm :Fragment() {
     var storeName: String? = null
     var baedalFee = 0
     var member = 1
-    var opt: JSONArray? = null
-    var optInfo: JSONArray? = null
+    var orderList: JSONArray? = null
+    //var optInfo: JSONArray? = null
 
     var orderPrice = 0
     var countChanged = mutableMapOf<String, Int>()
@@ -41,11 +41,11 @@ class FragmentBaedalConfirm :Fragment() {
             storeName = it.getString("storeName")
             baedalFee = it.getString("baedalFee")!!.toInt()
             member = it.getString("member")!!.toInt()
-            opt = JSONArray(it.getString("opt"))
-            optInfo = JSONArray(it.getString("info"))
+            orderList = JSONArray(it.getString("orderList"))
+            //optInfo = JSONArray(it.getString("info"))
         }
         println("스토어이름: ${storeName}")
-        println("메뉴: ${opt}")
+        println("메뉴: ${orderList}")
 
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -59,8 +59,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        var bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString(),
-            "optInfo" to optInfo.toString())
+        var bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
         binding.btnPrevious.setOnClickListener {
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
             onBackPressed()
@@ -71,14 +70,14 @@ class FragmentBaedalConfirm :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSelected.setHasFixedSize(true)
 
-        for (i in 0 until opt!!.length()) {
-            val obj = opt!!.getJSONObject(i)
+        for (i in 0 until orderList!!.length()) {
+            val obj = orderList!!.getJSONObject(i)
             val menuName = obj.getString("menuName")
             val price = obj.getInt("price")
             val count = obj.getInt("count")
 
             val strings = mutableListOf<BaedalConfirm>()
-            val stringArray = obj.getJSONArray("optString")
+            val stringArray = JSONArray(obj.getString("optString"))
             for (j in 0 until stringArray.length()) {
                 strings.add(BaedalConfirm(stringArray.getString(j)))
             }
@@ -111,7 +110,7 @@ class FragmentBaedalConfirm :Fragment() {
                 bindSetText(orderPrice)
                 countChanged[(position + correction).toString()] = menu[position].count
 
-                for (i in 0 until optInfo!!.length()) {
+                /*for (i in 0 until optInfo!!.length()) {
                     if (i == position) {
                         val opt = optInfo!!.getJSONObject(i)
                         tempObj = JSONObject(mapOf("menuName" to opt.getString("menuName"),
@@ -121,10 +120,9 @@ class FragmentBaedalConfirm :Fragment() {
                         tempInfo.put(tempObj)
                     } else tempInfo.put(optInfo!!.getJSONObject(i))
                 }
-                optInfo = tempInfo
+                optInfo = tempInfo*/
 
-                bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString(),
-                    "optInfo" to optInfo.toString())
+                bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
 
                 var confirmAble = false
                 for (i in menu) {

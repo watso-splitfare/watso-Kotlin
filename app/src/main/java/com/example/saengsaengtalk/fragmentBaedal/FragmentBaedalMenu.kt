@@ -26,8 +26,8 @@ class FragmentBaedalMenu :Fragment() {
     var baedalFee = ""
     var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
-    var optArray = JSONArray()                              // confirm frag 뷰바인딩을 위한 String Array
-    var optInfo = JSONArray()                               // confirm frag 에서 API로 보내기 위한 형식
+    var orderList = JSONArray()                              // confirm frag 뷰바인딩을 위한 String Array
+    //var optInfo = JSONArray()                               // confirm frag 에서 API로 보내기 위한 형식
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -86,43 +86,46 @@ class FragmentBaedalMenu :Fragment() {
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
             val opt = bundle.getString("opt")
             println("데이터 받음: ${opt}")
-            optInfo.put(JSONObject(opt))
+            //optInfo.put(JSONObject(opt))
             setOptArray(opt!!)
 
             binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
             binding.lyCartCount.visibility = View.VISIBLE
-            binding.tvCartCount.text = optArray.length().toString()
+            binding.tvCartCount.text = orderList.length().toString()
             binding.btnCart.setEnabled(true)
         }
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("fromConfirmFrag", this) { requestKey, bundle ->
             val countChanged = JSONObject(bundle.getString("countChanged"))
-            optInfo = JSONArray(bundle.getString("optInfo"))
+            //optInfo = JSONArray(bundle.getString("optInfo"))
 
             var tempArray = JSONArray()
             var position = mutableListOf<String>()
             for (i in countChanged.keys())
                 position.add(i)
-            for (i in 0 until optArray.length()) {
+            for (i in 0 until orderList.length()) {
                 if (position.contains(i.toString())) {
                     if (countChanged[i.toString()] != 0) {
-                        val obj = optArray.getJSONObject(i)
+                        val obj = orderList.getJSONObject(i)
+                        val orderer = obj.getString("orderer")
+                        val ordererId = obj.getString("ordererId")
                         val menuName = obj.getString("menuName")
                         val price = obj.getInt("price")
                         val count = countChanged[i.toString()]
                         val optString = jArrayToList(obj.getJSONArray("optString"))
                         tempArray.put(
-                            JSONObject(mapOf("menuName" to menuName,"price" to price,"count" to count, "optString" to optString
+                            JSONObject(mapOf("orderer" to orderer, "ordererId" to ordererId,
+                                "menuName" to menuName,"price" to price,"count" to count, "optString" to optString
                                 ))
                         )
                     }
                 } else {
-                    tempArray.put(optArray[i])
+                    tempArray.put(orderList[i])
                 }
             }
 
-            optArray = tempArray
-            binding.tvCartCount.text = optArray.length().toString()
-            if (optArray.length() == 0) {
+            orderList = tempArray
+            binding.tvCartCount.text = orderList.length().toString()
+            if (orderList.length() == 0) {
                 binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
                 binding.lyCartCount.visibility = View.INVISIBLE
                 binding.btnCart.setEnabled(false)
@@ -132,7 +135,7 @@ class FragmentBaedalMenu :Fragment() {
         binding.btnCart.setOnClickListener {
             setFrag(FragmentBaedalConfirm(), mapOf(
                 "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
-                "member" to member!!, "opt" to optArray.toString(), "info" to optInfo.toString()))
+                "member" to member!!, "orderList" to orderList.toString()))
         }
     }
 
@@ -241,8 +244,8 @@ class FragmentBaedalMenu :Fragment() {
             }
         }
         //for (i in optString) println(i)
-        optArray.put(JSONObject(mapOf(
-            "menuName" to menuName, "price" to totalPrice, "count" to count, "optString" to optString
+        orderList.put(JSONObject(mapOf("orderer" to "주넝이", "ordererId" to "wnsjd",
+            "menuName" to menuName, "price" to totalPrice, "count" to count, "optString" to JSONArray(optString)
         )))
     }
 

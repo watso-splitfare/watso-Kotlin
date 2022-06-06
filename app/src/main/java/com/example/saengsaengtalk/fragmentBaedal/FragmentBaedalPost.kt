@@ -13,7 +13,11 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterBaedal.BaedalComment
 import com.example.saengsaengtalk.adapterBaedal.BaedalCommentAdapter
+import com.example.saengsaengtalk.adapterBaedal.BaedalOptAreaAdapter
+import com.example.saengsaengtalk.adapterBaedal.BaedalOrdererAdapter
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
+import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -22,6 +26,7 @@ import java.util.*
 class FragmentBaedalPost :Fragment() {
     private var postNum: String? = null
 
+    var postInfo = JSONObject()
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
 
@@ -49,7 +54,7 @@ class FragmentBaedalPost :Fragment() {
         binding.btnOrder.setOnClickListener {
             setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "member" to "3"))
         }
-        val baedalPostData = mapOf(
+        /*val baedalPostData = mapOf(
             "title" to "네네치킨 먹을 사람",
             "writer" to "주넝이",
             "created" to LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
@@ -78,7 +83,40 @@ class FragmentBaedalPost :Fragment() {
         binding.tvContent.text = baedalPostData["content"]
         if (baedalPostData["likeUserList"]!!.contains("주넝이"))
             binding.ivLike.setImageResource(R.drawable.heart_red)
-        binding.tvLike.text = (baedalPostData["likeUserList"]!!.count{ c -> c == ','} + 1).toString()
+        binding.tvLike.text = (baedalPostData["likeUserList"]!!.count{ c -> c == ','} + 1).toString()*/
+
+        getPostInfo()
+        val today = LocalDate.now().atTime(0,0)
+        val postCreated = LocalDateTime.parse(postInfo.getString("created"), DateTimeFormatter.ISO_DATE_TIME)
+        val baedalTime = LocalDateTime.parse(postInfo.getString("baedalTime"), DateTimeFormatter.ISO_DATE_TIME)
+        binding.tvPostTitle.text = postInfo.getString("title")
+        binding.tvPostCreated.text = when(postCreated.isBefore(today)) {
+            true -> postCreated.format(DateTimeFormatter.ofPattern("MM/dd"))
+            else -> postCreated.format(DateTimeFormatter.ofPattern("HH:mm"))
+        }
+        binding.tvPostWriter.text = postInfo.getString("writer")
+        binding.tvTime.text = baedalTime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
+            Locale.forLanguageTag("ko")))
+        binding.tvStore.text = postInfo.getString("store")
+        binding.tvMember.text = postInfo.getString("member")
+        binding.tvFee.text = (postInfo.getInt("baedalFee") / postInfo.getInt("member")).toString()
+        binding.tvContent.text = postInfo.getString("content")
+        val likeUserList = postInfo.getJSONArray("likeUserList")
+        for (i in 0 until likeUserList.length()) {
+            if (likeUserList.getString(i) == "wnsjd")
+                binding.ivLike.setImageResource(R.drawable.heart_red)
+        }
+        binding.tvLike.text = (likeUserList.length()).toString()
+
+        /* 주문 내역 */
+        /*binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvOrderList.setHasFixedSize(true)
+        val adapter = BaedalOrdererAdapter(requireContext(), areaMenu)*/
+
+        //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
+        //adapter.notifyDataSetChanged()
+
+        //binding.rvOrderList.adapter = adapter
 
 
         /* 댓글 */
@@ -93,6 +131,12 @@ class FragmentBaedalPost :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
         binding.rvComment.adapter = BaedalCommentAdapter(comment)
+    }
+
+    @JvmName("getPostInfo1")
+    fun getPostInfo() {
+        val assetManager = resources.assets
+        postInfo = JSONObject(assetManager.open("baedal_post.json").bufferedReader().use { it.readText() })
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

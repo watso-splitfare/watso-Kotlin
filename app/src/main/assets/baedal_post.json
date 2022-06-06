@@ -1,0 +1,37 @@
+{
+    "postNum": 1,
+    "store": "네네치킨",
+    "storeId": 1,
+    "title": "네네치킨 먹을 사람",
+    "writer": "주넝이",
+    "writerId": "wnsjd",
+    "created": "2022-06-04T15:10:00",
+    "baedalTime": "2022-06-04T18:10:00",
+    "member": 2,
+    "baedalFee": 10000,
+    "content": "네네치킨 드실분~",
+    "likeUserList": ["wnsjd", "ehdehd"],
+    "orderList": [
+        {
+            "orderer": "주넝이",
+            "ordererId": "wnsjd",
+            "menuName": "청양마요치킨",
+            "price": 24500,
+            "count": 2,
+            "optString": [
+                "• 가격: 오리지날 (18,000원)", "• 선택1: 간장 (1,000원)",
+                "• 추가선택:나쵸칩 추가 (3,000원) / 콜라 1.25L 추가 (2,500원)"
+            ]
+        }, {
+            "orderer": "동동이",
+            "ordererId": "ehdehd",
+            "menuName": "소이크런치",
+            "price": 26500,
+            "count": 1,
+            "optString": [
+                "• 가격: 순살 (20,000원)", "• 선택1: 양념 (1,000원)",
+                "• 추가선택:네네치즈볼 추가 (3,000원) / 콜라 1.25L 추가 (2,500원)"
+            ]
+        }
+    ]
+}

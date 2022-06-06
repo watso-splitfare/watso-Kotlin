@@ -55,6 +55,12 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_menu_section.xml" value="0.25" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_opt.xml" value="0.22871376811594202" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_opt_area.xml" value="0.22871376811594202" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_order.xml" value="0.17046605876393112" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_order_info.xml" value="0.14447463768115942" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_order_list.xml" value="0.17046605876393112" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_order_menu.xml" value="0.17806484295845998" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_order_opt.xml" value="0.14447463768115942" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_orderer.xml" value="0.17806484295845998" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_pre.xml" value="0.20516304347826086" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_board_pre.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_comment.xml" value="0.33" />
