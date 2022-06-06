@@ -89,7 +89,7 @@ class FragmentBaedalMenu :Fragment() {
             optInfo.put(JSONObject(opt))
             setOptArray(opt!!)
 
-            binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
+            binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
             binding.lyCartCount.visibility = View.VISIBLE
             binding.tvCartCount.text = optArray.length().toString()
             binding.btnCart.setEnabled(true)

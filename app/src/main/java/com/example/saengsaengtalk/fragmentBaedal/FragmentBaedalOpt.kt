@@ -105,7 +105,7 @@ class FragmentBaedalOpt :Fragment() {
         binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
         val adapter = BaedalOptAreaAdapter(requireContext(), areaMenu)
 
-        binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
+        //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
         adapter.notifyDataSetChanged()
 
         binding.rvMenu.adapter = adapter

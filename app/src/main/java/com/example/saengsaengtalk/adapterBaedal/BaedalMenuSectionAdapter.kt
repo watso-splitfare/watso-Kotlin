@@ -3,6 +3,7 @@ package com.example.saengsaengtalk.adapterBaedal
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,10 +47,20 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
     inner class CustomViewHolder(var binding: LytBaedalMenuSectionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BaedalMenuSection) {
             binding.tvSection.text = item.section
+            binding.lytSection.setOnClickListener{
+                if (binding.rvMenuSection.visibility == View.VISIBLE) {
+                    binding.rvMenuSection.visibility = View.GONE
+                    binding.ivArrow.setRotation(180f)
+                }
+                else {
+                    binding.rvMenuSection.visibility = View.VISIBLE
+                    binding.ivArrow.setRotation(0f)
+                }
+            }
 
             binding.rvMenuSection.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvMenuSection.addItemDecoration(BaedalMenuAdapter.BaedalMenuAdapterDecoration())
+            //binding.rvMenuSection.addItemDecoration(BaedalMenuAdapter.BaedalMenuAdapterDecoration())
 
             val adapter = BaedalMenuAdapter(item.sectionList)
             binding.rvMenuSection.adapter = adapter
