@@ -115,7 +115,7 @@ class FragmentBaedalMenu :Fragment() {
                         tempArray.put(
                             JSONObject(mapOf("orderer" to orderer, "ordererId" to ordererId,
                                 "menuName" to menuName,"price" to price,"count" to count, "optString" to optString
-                                ))
+                            ))
                         )
                     }
                 } else {
@@ -139,14 +139,14 @@ class FragmentBaedalMenu :Fragment() {
         }
     }
 
-     @JvmName("getMenuArray1")
-     fun getMenuArray(): JSONArray{
-         val assetManager = resources.assets
-         val jsonObj = JSONObject(assetManager.open("nene.json").bufferedReader().use { it.readText() })
+    @JvmName("getMenuArray1")
+    fun getMenuArray(): JSONArray{
+        val assetManager = resources.assets
+        val jsonObj = JSONObject(assetManager.open("nene.json").bufferedReader().use { it.readText() })
 
-         storeName = jsonObj.getString("storeName")
-         baedalFee = jsonObj.getInt("baedalFee").toString()
-         return jsonObj.getJSONArray("info")
+        storeName = jsonObj.getString("storeName")
+        baedalFee = jsonObj.getInt("baedalFee").toString()
+        return jsonObj.getJSONArray("info")
     }
 
     fun setSectionMenu() {

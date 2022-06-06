@@ -33,7 +33,7 @@ class BaedalOrdererAdapter(val context: Context, val baedalOrderer: MutableList<
             binding.rvOrderMenu.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalOrderAdapter(item.menuList)
+            val adapter = BaedalOrderAdapter(context, item.menuList)
             binding.rvOrderMenu.adapter = adapter
         }
     }

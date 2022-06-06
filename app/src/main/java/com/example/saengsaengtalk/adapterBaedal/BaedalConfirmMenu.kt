@@ -5,4 +5,4 @@ class BaedalConfirmMenu(
     val price: Int,
     var count: Int,
     val optList: MutableList<BaedalConfirm>
-    ) {}
+) {}

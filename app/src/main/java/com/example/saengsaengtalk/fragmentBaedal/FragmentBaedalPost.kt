@@ -11,10 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.adapterBaedal.BaedalComment
-import com.example.saengsaengtalk.adapterBaedal.BaedalCommentAdapter
-import com.example.saengsaengtalk.adapterBaedal.BaedalOptAreaAdapter
-import com.example.saengsaengtalk.adapterBaedal.BaedalOrdererAdapter
+import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -109,14 +106,37 @@ class FragmentBaedalPost :Fragment() {
         binding.tvLike.text = (likeUserList.length()).toString()
 
         /* 주문 내역 */
-        /*binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
-        val adapter = BaedalOrdererAdapter(requireContext(), areaMenu)*/
+
+        var orderer = mutableListOf<BaedalOrderer>()                  // 어댑터용
+        val orderList = postInfo.getJSONArray("orderList")      // 실제 데이터
+        for (i in 0 until orderList.length()){
+            val order = orderList.getJSONObject(i)
+            val menuName = order.getString("menuName")
+            val price = order.getInt("price")
+            val count = order.getInt("count")
+
+            val optString = order.getJSONArray("optString")
+            val optList = mutableListOf<BaedalOrderOpt>()
+            for (j in 0 until optString.length()) {
+                optList.add(BaedalOrderOpt(optString.getString(j)))
+            }
+            /*var ordererIndex = -1
+            for (j in 0 until orderer.size) {
+                if (orderer[j].orderer == order.getString("orderer"))
+                    ordererIndex = j
+            }
+            if (ordererIndex == -1) */
+
+            orderer.add(BaedalOrder(menuName, count, optList))
+        }
+        val adapter = BaedalOrdererAdapter(requireContext(), orderer)
 
         //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
         //adapter.notifyDataSetChanged()
 
-        //binding.rvOrderList.adapter = adapter
+        binding.rvOrderList.adapter = adapter
 
 
         /* 댓글 */
@@ -137,6 +157,14 @@ class FragmentBaedalPost :Fragment() {
     fun getPostInfo() {
         val assetManager = resources.assets
         postInfo = JSONObject(assetManager.open("baedal_post.json").bufferedReader().use { it.readText() })
+    }
+
+    fun jArrayToList(array: JSONArray): MutableList<String> {
+        var list = mutableListOf<String>()
+        for (i in 0 until array.length())
+            list.add(array.getString(i))
+
+        return list
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
