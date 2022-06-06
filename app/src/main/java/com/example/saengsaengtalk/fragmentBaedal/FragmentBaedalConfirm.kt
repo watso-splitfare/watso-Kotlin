@@ -18,6 +18,7 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
+    var postNum: String? = null
     var storeName: String? = null
     var baedalFee = 0
     var member = 1
@@ -35,6 +36,7 @@ class FragmentBaedalConfirm :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            postNum = it.getString("postNum")
             storeName = it.getString("storeName")
             baedalFee = it.getString("baedalFee")!!.toInt()
             member = it.getString("member")!!.toInt()

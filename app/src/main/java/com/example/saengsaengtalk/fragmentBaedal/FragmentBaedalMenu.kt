@@ -134,8 +134,8 @@ class FragmentBaedalMenu :Fragment() {
         }
 
         binding.btnCart.setOnClickListener {
-            setFrag(FragmentBaedalConfirm(), mapOf(
-                "storeName" to storeName!!, "baedalFee" to baedalFee, "member" to member!!, "opt" to optArray.toString()))
+            setFrag(FragmentBaedalConfirm(), mapOf("postNum" to postNum!!, "storeName" to storeName!!,
+                "baedalFee" to baedalFee, "member" to member!!, "opt" to optArray.toString()))
         }
     }
 
@@ -199,8 +199,6 @@ class FragmentBaedalMenu :Fragment() {
         val count = jObect.getInt("count")
 
         var optString = mutableListOf<String>()
-
-        //println("setOptArray: ${menuName}, ${id}, ${radio}, ${combo}, ${count}")
 
         for (i in 0 until menuArray.length()){
             if (menuArray.getJSONObject(i).getInt("id") == id){
