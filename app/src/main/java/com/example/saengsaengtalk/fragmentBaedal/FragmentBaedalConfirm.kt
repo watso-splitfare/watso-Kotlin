@@ -23,6 +23,7 @@ class FragmentBaedalConfirm :Fragment() {
     var baedalFee = 0
     var member = 1
     var opt: JSONArray? = null
+    var optInfo: JSONArray? = null
 
     var orderPrice = 0
     var countChanged = mutableMapOf<String, Int>()
@@ -41,6 +42,7 @@ class FragmentBaedalConfirm :Fragment() {
             baedalFee = it.getString("baedalFee")!!.toInt()
             member = it.getString("member")!!.toInt()
             opt = JSONArray(it.getString("opt"))
+            optInfo = JSONArray(it.getString("info"))
         }
         println("스토어이름: ${storeName}")
         println("메뉴: ${opt}")
@@ -57,8 +59,9 @@ class FragmentBaedalConfirm :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        var bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString(),
+            "optInfo" to optInfo.toString())
         binding.btnPrevious.setOnClickListener {
-            val bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
             onBackPressed()
         }
@@ -89,6 +92,9 @@ class FragmentBaedalConfirm :Fragment() {
         adapter.setItemClickListener(object: BaedalConfirmMenuAdapter.OnItemClickListener {
             override fun onChange(position: Int, price:Int, change: String) {
                 var correction = 0
+                var tempObj = JSONObject()
+                var tempInfo = JSONArray()
+
                 if (change == "remove") {
                     menu[position].count = 0
                     orderPrice -= price
@@ -105,22 +111,36 @@ class FragmentBaedalConfirm :Fragment() {
                 bindSetText(orderPrice)
                 countChanged[(position + correction).toString()] = menu[position].count
 
-                var confirm = false
+                for (i in 0 until optInfo!!.length()) {
+                    if (i == position) {
+                        val opt = optInfo!!.getJSONObject(i)
+                        tempObj = JSONObject(mapOf("menuName" to opt.getString("menuName"),
+                            "id" to opt.getInt("id"), "radio" to opt.getJSONArray("radio"),
+                            "combo" to opt.getJSONArray("combo"), "price" to opt.getInt("price"),
+                            "count" to menu[position].count))
+                        tempInfo.put(tempObj)
+                    } else tempInfo.put(optInfo!!.getJSONObject(i))
+                }
+                optInfo = tempInfo
+
+                bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString(),
+                    "optInfo" to optInfo.toString())
+
+                var confirmAble = false
                 for (i in menu) {
                     if (i.count > 0) {
-                        confirm = true
+                        confirmAble = true
                         break
                     }
                 }
-                if (!confirm) {
-                    binding.btnConfirm.setEnabled(confirm)
+                if (!confirmAble) {
+                    binding.btnConfirm.setEnabled(false)
                     binding.btnConfirm.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
                 }
             }
         })
 
         binding.lytAddMenu.setOnClickListener {
-            val bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
             onBackPressed()
         }
@@ -128,7 +148,7 @@ class FragmentBaedalConfirm :Fragment() {
         bindSetText(orderPrice)
 
         binding.btnConfirm.setOnClickListener {
-            println("클릭")
+            setFrag(FragmentBaedalPost(), mapOf("postNum" to postNum!!))
         }
     }
 
@@ -141,7 +161,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, 2)
     }
 
     fun onBackPressed() {

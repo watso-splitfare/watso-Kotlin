@@ -26,7 +26,8 @@ class FragmentBaedalMenu :Fragment() {
     var baedalFee = ""
     var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
-    var optArray = JSONArray()                              // confirm frag에 넘겨줄 인자
+    var optArray = JSONArray()                              // confirm frag 뷰바인딩을 위한 String Array
+    var optInfo = JSONArray()                               // confirm frag 에서 API로 보내기 위한 형식
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -85,6 +86,7 @@ class FragmentBaedalMenu :Fragment() {
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
             val opt = bundle.getString("opt")
             println("데이터 받음: ${opt}")
+            optInfo.put(JSONObject(opt))
             setOptArray(opt!!)
 
             binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart)
@@ -94,10 +96,8 @@ class FragmentBaedalMenu :Fragment() {
         }
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("fromConfirmFrag", this) { requestKey, bundle ->
             val countChanged = JSONObject(bundle.getString("countChanged"))
-            println(bundle.getString("countChanged"))
-            for (i in 0 until optArray.length()){
-                //println(optArray.getJSONObject(i).toString())
-            }
+            optInfo = JSONArray(bundle.getString("optInfo"))
+
             var tempArray = JSONArray()
             var position = mutableListOf<String>()
             for (i in countChanged.keys())
@@ -121,10 +121,6 @@ class FragmentBaedalMenu :Fragment() {
             }
 
             optArray = tempArray
-            //println("for문 종료")
-            for (i in 0 until optArray.length()){
-                //println(optArray.getJSONObject(i).toString())
-            }
             binding.tvCartCount.text = optArray.length().toString()
             if (optArray.length() == 0) {
                 binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
@@ -134,8 +130,9 @@ class FragmentBaedalMenu :Fragment() {
         }
 
         binding.btnCart.setOnClickListener {
-            setFrag(FragmentBaedalConfirm(), mapOf("postNum" to postNum!!, "storeName" to storeName!!,
-                "baedalFee" to baedalFee, "member" to member!!, "opt" to optArray.toString()))
+            setFrag(FragmentBaedalConfirm(), mapOf(
+                "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
+                "member" to member!!, "opt" to optArray.toString(), "info" to optInfo.toString()))
         }
     }
 

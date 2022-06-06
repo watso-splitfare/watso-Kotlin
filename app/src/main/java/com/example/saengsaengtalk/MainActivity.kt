@@ -27,11 +27,11 @@ class MainActivity : AppCompatActivity() {
 
         setFrag(FragmentHome())
 
-        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), addBackStack = false) }
-        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), addBackStack = false) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(),addBackStack = false) }
-        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), addBackStack = false) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), addBackStack = false) }
+        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0) }
+        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), popBackStack = 0) }
+        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(),popBackStack = 0) }
+        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0) }
+        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0) }
     }
 
     override fun onDestroy() {
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, addBackStack:Boolean=true) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int=-1) {
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
             for (i in arguments.keys) {
@@ -51,14 +51,18 @@ class MainActivity : AppCompatActivity() {
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
 
-        if (addBackStack) {
+        if (popBackStack == -1) {
             transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
             transaction.add(R.id.main_frame, fragment).addToBackStack(null)
-        }
-
-        else {
+        } else if (popBackStack == 0) {
             val count = fm.backStackEntryCount
             for (i in 0 until count) {
+                fm.popBackStack()
+            }
+            transaction.replace(R.id.main_frame, fragment)
+        } else {
+            //val count = fm.backStackEntryCount
+            for (i in 0 until popBackStack) {
                 fm.popBackStack()
             }
             transaction.replace(R.id.main_frame, fragment)
