@@ -26,6 +26,7 @@ class BaedalOrderAdapter(val context: Context, val baedalOrder: MutableList<Baed
     inner class CustomViewHolder(var binding: LytBaedalOrderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(order: BaedalOrder) {
             binding.tvMenuName.text = order.menuName
+            binding.tvCount.text = "수량: ${order.count}개"
             binding.rvOpt.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 

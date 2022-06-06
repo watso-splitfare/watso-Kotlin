@@ -15,6 +15,7 @@ import com.example.saengsaengtalk.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -22,6 +23,8 @@ import java.util.*
 
 class FragmentBaedalPost :Fragment() {
     private var postNum: String? = null
+
+    val dec = DecimalFormat("#,###")
 
     var postInfo = JSONObject()
     private var mBinding: FragBaedalPostBinding? = null
@@ -109,29 +112,33 @@ class FragmentBaedalPost :Fragment() {
         binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
-        var orderer = mutableListOf<BaedalOrderer>()                  // 어댑터용
+        var baedalOrderer = mutableListOf<BaedalOrderer>()                  // 어댑터용
         val orderList = postInfo.getJSONArray("orderList")      // 실제 데이터
         for (i in 0 until orderList.length()){
             val order = orderList.getJSONObject(i)
-            val menuName = order.getString("menuName")
-            val price = order.getInt("price")
-            val count = order.getInt("count")
+            val ordererName = order.getString("orderer")
+            val orders = order.getJSONArray("orders")
 
-            val optString = order.getJSONArray("optString")
-            val optList = mutableListOf<BaedalOrderOpt>()
-            for (j in 0 until optString.length()) {
-                optList.add(BaedalOrderOpt(optString.getString(j)))
-            }
-            /*var ordererIndex = -1
-            for (j in 0 until orderer.size) {
-                if (orderer[j].orderer == order.getString("orderer"))
-                    ordererIndex = j
-            }
-            if (ordererIndex == -1) */
+            val baedalOrder = mutableListOf<BaedalOrder>()
+            var totalPrice = 0
+            for (j in 0 until orders.length()) {
+                val aOrder = orders.getJSONObject(j)
+                val menuName = aOrder.getString("menuName")
+                totalPrice += aOrder.getInt("price")
+                val count = aOrder.getInt("count")
 
-            orderer.add(BaedalOrder(menuName, count, optList))
+                val optString = aOrder.getJSONArray("optString")
+                val baedalOrderOpt = mutableListOf<BaedalOrderOpt>()
+                for (k in 0 until optString.length()) {
+                    baedalOrderOpt.add(BaedalOrderOpt(optString.getString(k)))
+                }
+                baedalOrder.add(BaedalOrder(menuName, count, baedalOrderOpt))
+            }
+
+            baedalOrderer.add(BaedalOrderer(
+                "주문자 : ${ordererName}   주문금액: ${dec.format(totalPrice)}원", baedalOrder))
         }
-        val adapter = BaedalOrdererAdapter(requireContext(), orderer)
+        val adapter = BaedalOrdererAdapter(requireContext(), baedalOrderer)
 
         //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
         //adapter.notifyDataSetChanged()

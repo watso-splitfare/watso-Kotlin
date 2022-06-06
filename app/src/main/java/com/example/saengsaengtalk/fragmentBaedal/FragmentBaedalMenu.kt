@@ -106,14 +106,12 @@ class FragmentBaedalMenu :Fragment() {
                 if (position.contains(i.toString())) {
                     if (countChanged[i.toString()] != 0) {
                         val obj = orderList.getJSONObject(i)
-                        val orderer = obj.getString("orderer")
-                        val ordererId = obj.getString("ordererId")
                         val menuName = obj.getString("menuName")
                         val price = obj.getInt("price")
                         val count = countChanged[i.toString()]
                         val optString = jArrayToList(obj.getJSONArray("optString"))
                         tempArray.put(
-                            JSONObject(mapOf("orderer" to orderer, "ordererId" to ordererId,
+                            JSONObject(mapOf(
                                 "menuName" to menuName,"price" to price,"count" to count, "optString" to optString
                             ))
                         )
@@ -244,8 +242,8 @@ class FragmentBaedalMenu :Fragment() {
             }
         }
         //for (i in optString) println(i)
-        orderList.put(JSONObject(mapOf("orderer" to "주넝이", "ordererId" to "wnsjd",
-            "menuName" to menuName, "price" to totalPrice, "count" to count, "optString" to JSONArray(optString)
+        orderList.put(JSONObject(mapOf("menuName" to menuName, "price" to totalPrice,
+            "count" to count, "optString" to JSONArray(optString)
         )))
     }
 
