@@ -39,7 +39,7 @@ class FragmentBaedalMenu :Fragment() {
             member = it.getString("member")
         }
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
-        Log.d("배달 메뉴", "스토어 이름: ${member}")
+        Log.d("배달 메뉴", "주문 인원: ${member}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

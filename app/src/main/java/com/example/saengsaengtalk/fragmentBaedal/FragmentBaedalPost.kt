@@ -50,42 +50,30 @@ class FragmentBaedalPost :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf( "postNum" to postNum!!, "member" to "3"))
-        }
-        /*val baedalPostData = mapOf(
-            "title" to "네네치킨 먹을 사람",
-            "writer" to "주넝이",
-            "created" to LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-            "time" to LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-            "store" to "네네치킨",
-            "member" to "2",
-            "fee" to "10000",
-            "content" to "네네치킨 드실분~",
-            "likeUserList" to "주넝이, 동동이"
-        )
-
-        val today = LocalDate.now().atTime(0,0)
-        val postCreated = LocalDateTime.parse(baedalPostData["created"], DateTimeFormatter.ISO_DATE_TIME)
-        val baedalTime = LocalDateTime.parse(baedalPostData["time"], DateTimeFormatter.ISO_DATE_TIME)
-        binding.tvPostTitle.text = baedalPostData["title"]
-        binding.tvPostCreated.text = when(postCreated.isBefore(today)) {
-            true -> postCreated.format(DateTimeFormatter.ofPattern("MM/dd"))
-            else -> postCreated.format(DateTimeFormatter.ofPattern("HH:mm"))
-        }
-        binding.tvPostWriter.text = baedalPostData["writer"]
-        binding.tvTime.text = baedalTime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
-            Locale.forLanguageTag("ko")))
-        binding.tvStore.text = baedalPostData["store"]
-        binding.tvMember.text = baedalPostData["member"]
-        binding.tvFee.text = (baedalPostData["fee"]!!.toInt() / baedalPostData["member"]!!.toInt()).toString()
-        binding.tvContent.text = baedalPostData["content"]
-        if (baedalPostData["likeUserList"]!!.contains("주넝이"))
-            binding.ivLike.setImageResource(R.drawable.heart_red)
-        binding.tvLike.text = (baedalPostData["likeUserList"]!!.count{ c -> c == ','} + 1).toString()*/
-
         getPostInfo()
+
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        if (postNum!!.toInt() % 2 == 1) {
+            binding.tvOrder.text = "나도 주문하기"
+            binding.lytOrder.setOnClickListener {
+                setFrag(
+                    FragmentBaedalMenu(),
+                    mapOf("postNum" to postNum!!, "member" to postInfo.getString("member"))
+                )
+            }
+            if (postInfo.getBoolean("closed")){
+                binding.lytOrder.isEnabled = false
+                binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+            }
+        } else {
+            binding.tvOrder.text = "주문 마감하기"
+            binding.ivOrder.visibility = View.GONE
+            binding.lytOrder.setOnClickListener {
+                binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                binding.lytOrder.isEnabled = false
+            }
+        }
+
         val today = LocalDate.now().atTime(0,0)
         val postCreated = LocalDateTime.parse(postInfo.getString("created"), DateTimeFormatter.ISO_DATE_TIME)
         val baedalTime = LocalDateTime.parse(postInfo.getString("baedalTime"), DateTimeFormatter.ISO_DATE_TIME)

@@ -10,6 +10,7 @@
     "member": 2,
     "baedalFee": 10000,
     "content": "네네치킨 드실분~",
+    "closed": false,
     "likeUserList": ["wnsjd", "ehdehd"],
     "orderList": [
         {
