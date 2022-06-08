@@ -58,7 +58,7 @@ class FragmentBaedalPost :Fragment() {
             binding.lytOrder.setOnClickListener {
                 setFrag(
                     FragmentBaedalMenu(),
-                    mapOf("postNum" to postNum!!, "member" to postInfo.getString("member"))
+                    mapOf("postNum" to postNum!!, "member" to postInfo.getString("member"), "isPosting" to "false")
                 )
             }
             if (postInfo.getBoolean("closed")){

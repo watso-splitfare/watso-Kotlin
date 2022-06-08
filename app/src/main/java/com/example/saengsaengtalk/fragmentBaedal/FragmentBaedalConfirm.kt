@@ -20,16 +20,18 @@ import java.text.DecimalFormat
 class FragmentBaedalConfirm :Fragment() {
     var postNum: String? = null
     var storeName: String? = null
+    var isPosting: String? = null
+
     var baedalFee = 0
     var member = 1
-    var orderList: JSONArray? = null
+    var orderList: JSONArray? = null        // 프래그먼트간 메뉴 전송용 데이터
     //var optInfo: JSONArray? = null
 
     var orderPrice = 0
     var countChanged = mutableMapOf<String, Int>()
     val dec = DecimalFormat("#,###")
 
-    var menu = mutableListOf<BaedalConfirmMenu>()
+    var menu = mutableListOf<BaedalConfirmMenu>()       // 어댑터 바인딩용 데이터
 
     private var mBinding: FragBaedalConfirmBinding? = null
     private val binding get() = mBinding!!
@@ -43,6 +45,7 @@ class FragmentBaedalConfirm :Fragment() {
             member = it.getString("member")!!.toInt()
             orderList = JSONArray(it.getString("orderList"))
             //optInfo = JSONArray(it.getString("info"))
+            isPosting = it.getString("isPosting")
         }
         println("스토어이름: ${storeName}")
         println("메뉴: ${orderList}")
@@ -91,8 +94,6 @@ class FragmentBaedalConfirm :Fragment() {
         adapter.setItemClickListener(object: BaedalConfirmMenuAdapter.OnItemClickListener {
             override fun onChange(position: Int, price:Int, change: String) {
                 var correction = 0
-                var tempObj = JSONObject()
-                var tempInfo = JSONArray()
 
                 if (change == "remove") {
                     menu[position].count = 0
@@ -109,18 +110,6 @@ class FragmentBaedalConfirm :Fragment() {
 
                 bindSetText(orderPrice)
                 countChanged[(position + correction).toString()] = menu[position].count
-
-                /*for (i in 0 until optInfo!!.length()) {
-                    if (i == position) {
-                        val opt = optInfo!!.getJSONObject(i)
-                        tempObj = JSONObject(mapOf("menuName" to opt.getString("menuName"),
-                            "id" to opt.getInt("id"), "radio" to opt.getJSONArray("radio"),
-                            "combo" to opt.getJSONArray("combo"), "price" to opt.getInt("price"),
-                            "count" to menu[position].count))
-                        tempInfo.put(tempObj)
-                    } else tempInfo.put(optInfo!!.getJSONObject(i))
-                }
-                optInfo = tempInfo*/
 
                 bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
 
@@ -145,8 +134,19 @@ class FragmentBaedalConfirm :Fragment() {
 
         bindSetText(orderPrice)
 
-        binding.btnConfirm.setOnClickListener {
-            setFrag(FragmentBaedalPost(), mapOf("postNum" to postNum!!))
+        if (isPosting == "true") {
+            binding.lytRequest.setVisibility(View.GONE)
+            binding.btnConfirm.setOnClickListener {
+                getActivity()?.getSupportFragmentManager()?.setFragmentResult("ConfirmToAdd", bundleOf("menu" to menu))
+                onBackPressed()
+                onBackPressed()
+            }
+        } else {
+            binding.btnConfirm.setOnClickListener {
+                //setFrag(FragmentBaedalPost(), mapOf("postNum" to postNum!!))
+                onBackPressed()
+                onBackPressed()
+            }
         }
     }
 
@@ -154,12 +154,12 @@ class FragmentBaedalConfirm :Fragment() {
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvBaedalFee.text = "${dec.format(baedalFee/(member + 1))}원"
         binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원"
-        binding.btnConfirm.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원 주문하기"
+        binding.btnConfirm.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원 메뉴확정"
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, 2)
+        mActivity.setFrag(fragment, arguments)
     }
 
     fun onBackPressed() {

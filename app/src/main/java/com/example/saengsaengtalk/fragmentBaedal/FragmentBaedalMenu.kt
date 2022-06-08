@@ -19,6 +19,7 @@ import kotlin.reflect.typeOf
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
     var member: String? = null
+    var isPosting: String? = null
 
     val dec = DecimalFormat("#,###")
 
@@ -37,9 +38,11 @@ class FragmentBaedalMenu :Fragment() {
         arguments?.let {
             postNum = it.getString("postNum")
             member = it.getString("member")
+            isPosting = it.getString("isPosting")
         }
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
         Log.d("배달 메뉴", "주문 인원: ${member}")
+        Log.d("배달 메뉴", "포스팅?: ${isPosting}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -133,7 +136,7 @@ class FragmentBaedalMenu :Fragment() {
         binding.btnCart.setOnClickListener {
             setFrag(FragmentBaedalConfirm(), mapOf(
                 "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
-                "member" to member!!, "orderList" to orderList.toString()))
+                "member" to member!!, "orderList" to orderList.toString(), "isPosting" to isPosting!!))
         }
     }
 

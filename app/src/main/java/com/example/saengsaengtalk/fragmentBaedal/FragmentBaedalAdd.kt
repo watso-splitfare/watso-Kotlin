@@ -12,8 +12,15 @@ import android.widget.ArrayAdapter.createFromResource
 import android.widget.ListAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.R
+import com.example.saengsaengtalk.adapterBaedal.BaedalConfirmMenu
+import com.example.saengsaengtalk.adapterBaedal.BaedalOrder
+import com.example.saengsaengtalk.adapterBaedal.BaedalOrderAdapter
+import com.example.saengsaengtalk.adapterBaedal.BaedalOrderOpt
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.time.LocalDateTime
@@ -21,7 +28,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalAdd :Fragment() {
-    var baedalfee = 0
+    var baedalfee = 10000
     var orderPrice = 0
     var totalPrice = 0
 
@@ -52,7 +59,48 @@ class FragmentBaedalAdd :Fragment() {
         searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spnStore!!.adapter = searchmethod
 
+        binding.lytChoice.setOnClickListener {
+            setFrag(FragmentBaedalMenu(), mapOf("postNum" to "0", "member" to "0", "isPosting" to "true"))
+        }
+
         setText()
+
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("ConfirmToAdd", this) { requestKey, bundle ->
+
+            val menu: MutableList<BaedalConfirmMenu> = bundle.get("menu") as MutableList<BaedalConfirmMenu>
+
+            val baedalOrder = mutableListOf<BaedalOrder>()
+            var totalPrice = 0
+            for (i in menu) {
+                val menuName = i.menu
+                totalPrice += i.price
+                val count = i.count
+
+                val baedalOrderOpt = mutableListOf<BaedalOrderOpt>()
+                for (j in i.optList) {
+                    baedalOrderOpt.add(BaedalOrderOpt(j.optPrice))
+                }
+                baedalOrder.add(BaedalOrder(menuName, count, baedalOrderOpt))
+            }
+
+            binding.rvMenuList.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+            val adapter = BaedalOrderAdapter(requireContext(), baedalOrder)
+            binding.rvMenuList.adapter = adapter
+
+            binding.tvOrderPrice.text = "${decPrice.format(totalPrice)}원"
+            binding.tvBaedalFee.text = "${decPrice.format(baedalfee)}원"
+            binding.tvTotalPrice.text = "${decPrice.format(totalPrice+baedalfee)}원"
+
+            if (totalPrice > 0) {
+                binding.btnPostAdd.isEnabled = true
+                binding.btnPostAdd.setBackgroundResource(R.drawable.btn_baedal_confirm)
+                binding.btnPostAdd.setOnClickListener {
+                    setFrag(FragmentBaedalPost(), mapOf("postNum" to "0"))
+                }
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
