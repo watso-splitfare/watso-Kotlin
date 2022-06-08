@@ -11,16 +11,19 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
+import org.json.JSONObject
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalAdd :Fragment() {
-    //var dateString = ""
-    //var timeString = ""
-    //var orderTime: LocalDateTime? = null
-    var dec = DecimalFormat("00")
+    var baedalfee = 0
+    var orderPrice = 0
+    var totalPrice = 0
+
+    var decDt = DecimalFormat("00")
+    val decPrice = DecimalFormat("#,###")
 
     private var mBinding: FragBaedalAddBinding? = null
     private val binding get() = mBinding!!
@@ -41,6 +44,8 @@ class FragmentBaedalAdd :Fragment() {
         binding.tvOrderTime.text = getDateTimeString(now)
 
         binding.lytTime.setOnClickListener { showCalendar() }
+
+        setText()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -48,12 +53,12 @@ class FragmentBaedalAdd :Fragment() {
         val cal = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             run {
-                var dateString = "${year}-${dec.format(month + 1)}-${dec.format(dayOfMonth)}T"
+                var dateString = "${year}-${decDt.format(month + 1)}-${decDt.format(dayOfMonth)}T"
 
                 val timeSetListener =
                     TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                         run {
-                            var timeString = "${dec.format(hourOfDay)}:${dec.format(minute)}:00"
+                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:00"
                             var orderTime = LocalDateTime.parse(dateString+timeString)
                             binding.tvOrderTime.text = getDateTimeString(orderTime)
                         }
@@ -76,6 +81,13 @@ class FragmentBaedalAdd :Fragment() {
             "MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko")))
     }
 
+    fun setText() {
+        binding.tvBaedalFeeContent.text = "${decPrice.format(baedalfee)}원"
+        binding.tvBaedalFee.text = "${decPrice.format(baedalfee)}원"
+        binding.tvOrderPrice.text = "${decPrice.format(orderPrice)}원"
+        binding.tvTotalPrice.text = "${decPrice.format(totalPrice)}원"
+
+    }
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)
