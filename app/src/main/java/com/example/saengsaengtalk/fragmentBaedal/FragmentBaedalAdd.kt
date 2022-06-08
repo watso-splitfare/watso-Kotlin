@@ -7,6 +7,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ArrayAdapter.createFromResource
+import android.widget.ListAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.MainActivity
@@ -42,8 +45,12 @@ class FragmentBaedalAdd :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         val now = LocalDateTime.now()
         binding.tvOrderTime.text = getDateTimeString(now)
-
         binding.lytTime.setOnClickListener { showCalendar() }
+
+        val storeList = arrayOf<String>("네네치킨", "BBQ", "맘스터치치")
+        val searchmethod = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,storeList)
+        searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spnStore!!.adapter = searchmethod
 
         setText()
     }
