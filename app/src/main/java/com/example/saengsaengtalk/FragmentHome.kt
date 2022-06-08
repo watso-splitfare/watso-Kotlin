@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
+import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
 import java.time.LocalDateTime
@@ -50,6 +51,7 @@ class FragmentHome :Fragment() {
     fun refreshView() {
 
         /* 배달 */
+        binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
 
         val baedalList = arrayListOf(
             BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 1),

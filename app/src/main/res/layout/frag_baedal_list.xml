@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/lyt_post_title"
+            android:id="@+id/constraintLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -145,7 +145,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lyt_post_title" />
+            app:layout_constraintTop_toBottomOf="@id/constraintLayout3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

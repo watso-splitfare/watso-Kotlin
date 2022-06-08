@@ -32,8 +32,9 @@ class FragmentBaedalList :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-
-        /* 배달 */
+        binding.btnBaedalPostAdd.setOnClickListener {
+            setFrag(FragmentBaedalAdd())
+        }
         val baedalList = arrayListOf(
             BaedalList(arrayListOf("주넝이", "abcc"),43, "네네치킨 같이 드실분~~", LocalDateTime.now(), "네네치킨", 3, 10000, 1),
             BaedalList(arrayListOf("abcc", "b"),11, "치킨 같이 드실분~~", LocalDateTime.now(), "네네치킨", 2, 10000, 2),
