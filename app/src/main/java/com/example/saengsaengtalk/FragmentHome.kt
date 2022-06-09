@@ -49,6 +49,7 @@ class FragmentHome :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        binding.btnOption.setOnClickListener { setFrag(FragmentLogin()) }
 
         /* 배달 */
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
