@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="domains">
+        <item>직접 입력</item>
+        <item>pusan.ac.kr</item>
+        <item>naver.com</item>
+        <item>gmail.com</item>
+        <item>daum.net</item>
+        <item>hanmail.net</item>
+        <item>nate.com</item>
+        <item>kakao.com</item>
+    </string-array>
+</resources>
