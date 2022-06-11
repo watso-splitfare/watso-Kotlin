@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
+import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost

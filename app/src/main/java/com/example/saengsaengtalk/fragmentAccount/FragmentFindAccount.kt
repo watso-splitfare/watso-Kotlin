@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk
+package com.example.saengsaengtalk.fragmentAccount
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragFindAccountBinding
 
 class FragmentFindAccount :Fragment() {

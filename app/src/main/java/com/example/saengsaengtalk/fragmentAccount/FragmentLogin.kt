@@ -1,10 +1,11 @@
-package com.example.saengsaengtalk
+package com.example.saengsaengtalk.fragmentAccount
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragLoginBinding
 
 class FragmentLogin :Fragment() {
@@ -32,6 +33,7 @@ class FragmentLogin :Fragment() {
         binding.tvFindAccount.setOnClickListener {
             setFrag(FragmentFindAccount())
         }
+        binding.tvSignUp.setOnClickListener { setFrag(FragmentSignUp())}
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
