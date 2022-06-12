@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.adapterBaedal.*
+import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONArray
 import org.json.JSONObject

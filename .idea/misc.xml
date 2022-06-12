@@ -42,7 +42,7 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_club_board.xml" value="0.24479166666666666" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_find_account.xml" value="0.12107396149949341" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_forgot_id.xml" value="0.33" />
-        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board.xml" value="0.17603850050658562" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board.xml" value="0.33" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_home.xml" value="0.33" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara.xml" value="0.17603850050658562" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_login.xml" value="0.25" />
@@ -71,7 +71,9 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_pre.xml" value="0.20516304347826086" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_board_pre.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_comment.xml" value="0.33" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_free_board.xml" value="0.5" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_pre.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_post_in_list.xml" value="0.5" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_taxi_pre.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
       </map>

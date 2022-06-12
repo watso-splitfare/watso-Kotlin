@@ -11,8 +11,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.adapterBaedal.BaedalList
-import com.example.saengsaengtalk.adapterBaedal.BaedalListAdapter
+import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalList
+import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalListAdapter
 import com.example.saengsaengtalk.databinding.FragBaedalListBinding
 import java.time.LocalDateTime
 

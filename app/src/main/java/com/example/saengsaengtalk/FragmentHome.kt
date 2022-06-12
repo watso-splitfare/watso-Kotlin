@@ -17,6 +17,7 @@ import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
+import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {

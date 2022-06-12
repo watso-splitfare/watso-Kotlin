@@ -3,14 +3,12 @@ package com.example.saengsaengtalk
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.databinding.ActivityMainBinding
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
-import com.google.android.material.snackbar.Snackbar
+import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0) }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), popBackStack = 0) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentBaedalPost(),popBackStack = 0) }
+        binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0) }
         binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0) }
         binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0) }
     }

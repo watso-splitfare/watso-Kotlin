@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.adapterBaedal
+package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
 
 import android.os.Build
 import android.view.LayoutInflater

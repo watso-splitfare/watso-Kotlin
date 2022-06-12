@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.adapterBaedal
+package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
 
 import java.time.LocalDateTime
 
