@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragFreeBoardBinding
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalOrderAdapter
 import com.example.saengsaengtalk.fragmentFreeBoard.adapterFB.PostInList
 import com.example.saengsaengtalk.fragmentFreeBoard.adapterFB.PostInListAdapter
 import java.time.LocalDateTime

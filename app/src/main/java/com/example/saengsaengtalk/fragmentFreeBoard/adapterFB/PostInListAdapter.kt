@@ -2,23 +2,13 @@ package com.example.saengsaengtalk.fragmentFreeBoard.adapterFB
 
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.databinding.LytBaedalOptBinding
-import com.example.saengsaengtalk.databinding.LytBaedalOrdererBinding
 import com.example.saengsaengtalk.databinding.LytPostInListBinding
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalOrderAdapter
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalOrderer
-import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
-
 
 class PostInListAdapter(val postInList: MutableList<PostInList>) : RecyclerView.Adapter<PostInListAdapter.CustomViewHolder>() {
 
