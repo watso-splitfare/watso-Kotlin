@@ -2,16 +2,10 @@ package com.example.saengsaengtalk.adapterHome
 
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.LytBoardPreBinding
-import com.example.saengsaengtalk.databinding.LytKaraRoomBinding
-import com.example.saengsaengtalk.fragmentKara.adapter.KaraRoom
-import com.example.saengsaengtalk.fragmentKara.adapter.KaraRoomAdapter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
