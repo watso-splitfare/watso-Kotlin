@@ -15,8 +15,6 @@ import java.util.*
 
 
 class CommentAdapter(val baedalComment: MutableList<Comment>) : RecyclerView.Adapter<CommentAdapter.CustomViewHolder>() {
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_comment, parent, false)
         return CustomViewHolder(view)
