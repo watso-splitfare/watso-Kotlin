@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.databinding.ActivityMainBinding
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
+import com.example.saengsaengtalk.fragmentKara.FragmentKara
 
 class MainActivity : AppCompatActivity() {
 

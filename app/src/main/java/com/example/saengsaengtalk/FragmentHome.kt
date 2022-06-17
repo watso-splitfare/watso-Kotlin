@@ -19,6 +19,7 @@ import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
+import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {
@@ -39,7 +40,7 @@ class FragmentHome :Fragment() {
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi()) }
         binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara()) }
         binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard()) }
-        binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
+        //binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
         //return view
@@ -120,17 +121,17 @@ class FragmentHome :Fragment() {
 
         /* 자유게시판 */
         val freeBoardList = arrayListOf(
-            FreeBoardPre("자유게시판입니다.", LocalDateTime.now()),
-            FreeBoardPre("자유게시판입니다.222", LocalDateTime.now()),
-            FreeBoardPre("자유게시판입니다.33333", LocalDateTime.parse("2022-04-04T15:10:00"))
+            BoardPre("자유게시판입니다.", LocalDateTime.now()),
+            BoardPre("자유게시판입니다.222", LocalDateTime.now()),
+            BoardPre("자유게시판입니다.33333", LocalDateTime.parse("2022-04-04T15:10:00"))
         )
-        binding.rvFreeBoard.layoutManager = GridLayoutManager(requireContext(), 1)
+        binding.rvFreeBoard.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvFreeBoard.setHasFixedSize(true)
 
-        val freeBoardAdapter = FreeBoardPreAdapter(freeBoardList)
+        val freeBoardAdapter = BoardPreAdapter(freeBoardList)
         binding.rvFreeBoard.adapter = freeBoardAdapter
 
-        freeBoardAdapter.setItemClickListener(object: FreeBoardPreAdapter.OnItemClickListener{
+        freeBoardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
                 setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
@@ -139,15 +140,16 @@ class FragmentHome :Fragment() {
 
 
         /* 구인게시판 */
-        val clubBoardList = arrayListOf(
+        binding.lytHomeClubboard.setVisibility(View.GONE)
+        /*val clubBoardList = arrayListOf(
             ClubBoardPre("구인구직게시판입니다.", LocalDateTime.now()),
             ClubBoardPre("구인게시판입니다.222", LocalDateTime.now()),
             ClubBoardPre("구인게시판입니다.33333", LocalDateTime.parse("2022-04-05T00:00:01")),
             ClubBoardPre("구인게시판입니다.3333344", LocalDateTime.parse("2022-04-04T23:59:59")),
         )
-        binding.rvClubBoard.layoutManager = GridLayoutManager(requireContext(), 1)
+        binding.rvClubBoard.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvClubBoard.setHasFixedSize(true)
-        binding.rvClubBoard.adapter = ClubBoardPreAdapter(clubBoardList)
+        binding.rvClubBoard.adapter = ClubBoardPreAdapter(clubBoardList)*/
 
     }
 

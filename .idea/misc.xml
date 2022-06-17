@@ -39,6 +39,10 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_pre.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_taxi_pre.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_request.xml" value="0.155" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_kara_unusable.xml" value="0.155" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_kara_useable.xml" value="0.155" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_pre_baedal.xml" value="0.155" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_add.xml" value="0.25" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_list.xml" value="0.16530797101449277" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_menu.xml" value="0.16530797101449277" />
@@ -47,7 +51,11 @@
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board.xml" value="0.20018115942028986" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board_add.xml" value="0.33" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board_post.xml" value="0.33" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_home.xml" value="0.20018115942028986" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara.xml" value="0.33" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_menu.xml" value="0.1405775075987842" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_board_pre.xml" value="0.20018115942028986" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_room.xml" value="0.33" />
       </map>
     </option>
   </component>
