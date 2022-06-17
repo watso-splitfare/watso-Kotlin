@@ -2,6 +2,7 @@ package com.example.saengsaengtalk.fragmentFreeBoard.adapterFB
 
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +22,21 @@ class PostInListAdapter(val postInList: MutableList<PostInList>) : RecyclerView.
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val item = postInList[position]
         holder.bind(item)
+
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(position)
+        }
     }
+
+    interface OnItemClickListener {
+        fun onClick(position: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
         return postInList.size
@@ -48,5 +63,6 @@ class PostInListAdapter(val postInList: MutableList<PostInList>) : RecyclerView.
             }
         }
     }
+
 
 }

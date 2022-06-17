@@ -2,6 +2,7 @@ package com.example.saengsaengtalk.fragmentFreeBoard
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ class FragmentFreeBoard :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        binding.lytPostAdd.setOnClickListener { setFrag(FragmentFreeBoardAdd()) }
         val postsInList = mutableListOf<PostInList>()
         postsInList.add(PostInList(1, "자유게시판 입니다.", "게시판관리자",
             arrayOf("주넝이", "동동이"), 3, LocalDateTime.parse("2022-04-04T15:10:00")))
@@ -41,11 +43,17 @@ class FragmentFreeBoard :Fragment() {
             arrayOf("동동이", "ㅋㅋ"), 3, LocalDateTime.parse("2022-04-09T15:10:00")))
         postsInList.add(PostInList(5, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", "익명",
             arrayOf("동동이", "ㅋㅋ"), 3, LocalDateTime.now()))
-        val adapter = PostInListAdapter(postsInList)
 
-        binding.rvPostList.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val adapter = PostInListAdapter(postsInList)
+        binding.rvPostList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvPostList.adapter = adapter
+
+        adapter.setItemClickListener(object: PostInListAdapter.OnItemClickListener{
+            override fun onClick(position: Int) {
+                Log.d("자유게시판 온클릭", "${postsInList[position].postNum}")
+                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to postsInList[position].postNum.toString()))
+            }
+        })
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

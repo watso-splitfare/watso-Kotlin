@@ -91,6 +91,7 @@ class FragmentBaedalPost :Fragment() {
         binding.tvMember.text = postInfo.getString("member")
         binding.tvFee.text = (postInfo.getInt("baedalFee") / postInfo.getInt("member")).toString()
         binding.tvContent.text = postInfo.getString("content")
+
         val likeUserList = postInfo.getJSONArray("likeUserList")
         for (i in 0 until likeUserList.length()) {
             if (likeUserList.getString(i) == "wnsjd")
@@ -142,7 +143,6 @@ class FragmentBaedalPost :Fragment() {
             Comment("주넝이", "네네치킨 먹을 사람~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 2, 1, 0, "주넝이"),
             Comment("동동이", "먹을 사람 드루와~", LocalDateTime.now(), 3, 1, 0, "동동이"),
             Comment("동동이", "네네치킨~", LocalDateTime.now(), 4, 0, 1, "동동이")
-
         )
         binding.rvComment.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

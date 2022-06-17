@@ -18,6 +18,7 @@ import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
+import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {
@@ -76,7 +77,7 @@ class FragmentHome :Fragment() {
                 setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
             }
         })
-        baedalAdapter.notifyDataSetChanged()
+        //baedalAdapter.notifyDataSetChanged()
 
 
         /* 택시 */
@@ -125,7 +126,16 @@ class FragmentHome :Fragment() {
         )
         binding.rvFreeBoard.layoutManager = GridLayoutManager(requireContext(), 1)
         binding.rvFreeBoard.setHasFixedSize(true)
-        binding.rvFreeBoard.adapter = FreeBoardPreAdapter(freeBoardList)
+
+        val freeBoardAdapter = FreeBoardPreAdapter(freeBoardList)
+        binding.rvFreeBoard.adapter = freeBoardAdapter
+
+        freeBoardAdapter.setItemClickListener(object: FreeBoardPreAdapter.OnItemClickListener{
+            override fun onClick(position: Int) {
+                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
+                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+            }
+        })
 
 
         /* 구인게시판 */

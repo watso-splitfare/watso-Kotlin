@@ -22,6 +22,10 @@ class FreeBoardPreAdapter(val freeboardList: MutableList<FreeBoardPre>) : Recycl
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(position)
+        }
+
         val content =freeboardList.get(position)
         val today = LocalDate.now().atTime(0,0)
         val datetime = content.datetime
@@ -31,6 +35,16 @@ class FreeBoardPreAdapter(val freeboardList: MutableList<FreeBoardPre>) : Recycl
             else -> datetime.format(DateTimeFormatter.ofPattern("HH:mm"))
         }
     }
+
+    interface OnItemClickListener {
+        fun onClick(position: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
         return freeboardList.size
