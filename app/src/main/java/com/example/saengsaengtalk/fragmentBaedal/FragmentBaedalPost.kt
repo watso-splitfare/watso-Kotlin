@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
+import com.example.saengsaengtalk.adapterHome.Comment
+import com.example.saengsaengtalk.adapterHome.CommentAdapter
 import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import org.json.JSONArray
@@ -136,16 +138,16 @@ class FragmentBaedalPost :Fragment() {
 
         /* 댓글 */
         val comment = arrayListOf(
-            BaedalComment("동동이", "네네치킨 먹을 사람 드루와~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 1,0, 0, "동동이"),
-            BaedalComment("주넝이", "네네치킨 먹을 사람~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 2, 1, 0, "주넝이"),
-            BaedalComment("동동이", "먹을 사람 드루와~", LocalDateTime.now(), 3, 1, 0, "동동이"),
-            BaedalComment("동동이", "네네치킨~", LocalDateTime.now(), 4, 0, 1, "동동이")
+            Comment("동동이", "네네치킨 먹을 사람 드루와~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 1,0, 0, "동동이"),
+            Comment("주넝이", "네네치킨 먹을 사람~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 2, 1, 0, "주넝이"),
+            Comment("동동이", "먹을 사람 드루와~", LocalDateTime.now(), 3, 1, 0, "동동이"),
+            Comment("동동이", "네네치킨~", LocalDateTime.now(), 4, 0, 1, "동동이")
 
         )
         binding.rvComment.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
-        binding.rvComment.adapter = BaedalCommentAdapter(comment)
+        binding.rvComment.adapter = CommentAdapter(comment)
     }
 
     @JvmName("getPostInfo1")

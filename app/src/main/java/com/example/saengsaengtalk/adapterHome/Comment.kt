@@ -1,8 +1,8 @@
-package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
+package com.example.saengsaengtalk.adapterHome
 
 import java.time.LocalDateTime
 
-class BaedalComment(
+class Comment(
     val nickname: String,
     val comment: String,
     val createdAt: LocalDateTime,

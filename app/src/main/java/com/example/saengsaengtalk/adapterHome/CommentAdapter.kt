@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
+package com.example.saengsaengtalk.adapterHome
 
 import android.os.Build
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class BaedalCommentAdapter(val baedalComment: MutableList<BaedalComment>) : RecyclerView.Adapter<BaedalCommentAdapter.CustomViewHolder>() {
+class CommentAdapter(val baedalComment: MutableList<Comment>) : RecyclerView.Adapter<CommentAdapter.CustomViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
