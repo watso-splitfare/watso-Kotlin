@@ -36,10 +36,10 @@ class FragmentHome :Fragment() {
         refreshView()
 
         //LinearLayout layout = binding.lyt
-        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList()) }
-        binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi()) }
-        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara()) }
-        binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard()) }
+        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList(), index=1) }
+        binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), index=2) }
+        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara(), index=3) }
+        binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard(), index=4) }
         //binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
@@ -53,10 +53,10 @@ class FragmentHome :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnOption.setOnClickListener { setFrag(FragmentLogin()) }
+        binding.btnOption.setOnClickListener { setFrag(FragmentLogin(), index=-1) }
 
         /* 배달 */
-        binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
+        binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), index=1) }
 
         val baedalList = arrayListOf(
             BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 1),
@@ -75,7 +75,7 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()), index=1)
             }
         })
         //baedalAdapter.notifyDataSetChanged()
@@ -134,7 +134,7 @@ class FragmentHome :Fragment() {
         freeBoardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()), index=4)
             }
         })
 
@@ -153,8 +153,8 @@ class FragmentHome :Fragment() {
 
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, index: Int) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, index)
     }
 }

@@ -1,36 +1,40 @@
 package com.example.saengsaengtalk
 
+import android.content.res.Resources
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.databinding.ActivityMainBinding
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
 
+
 class MainActivity : AppCompatActivity() {
 
     private var mBinding: ActivityMainBinding? = null
     private val binding get() = mBinding!!
     var mBackWait:Long = 0
+    var bottomBarIndex:Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_main)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setFrag(FragmentHome())
 
-        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0) }
-        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), popBackStack = 0) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0) }
-        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0) }
+        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, index=0) }
+        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), popBackStack = 0, index=1) }
+        binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, index=2) }
+        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0, index=3) }
+        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0, index=4) }
     }
 
     override fun onDestroy() {
@@ -38,7 +42,9 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int=-1) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, index:Int = 0) {
+        if (bottomBarIndex != index) setBottomBarSize(index)
+
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
             for (i in arguments.keys) {
@@ -80,5 +86,60 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    fun setBottomBarSize(index: Int) {
+        val r: Resources = resources
+        var small_size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,30F, r.displayMetrics)
+
+        var big_size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,40F, r.displayMetrics)
+
+        when (bottomBarIndex) {
+            0 -> binding.btnHome.updateLayoutParams {
+                    width = small_size.toInt()
+                    height = small_size.toInt()
+            }
+
+            1 -> binding.btnBaedal.updateLayoutParams {
+                    width = small_size.toInt()
+                    height = small_size.toInt()
+            }
+            2 -> binding.btnTaxi.updateLayoutParams {
+                    width = small_size.toInt()
+                    height = small_size.toInt()
+            }
+            3 -> binding.btnKara.updateLayoutParams {
+                    width = small_size.toInt()
+                    height = small_size.toInt()
+            }
+            4 -> binding.btnFreeBoard.updateLayoutParams {
+                    width = small_size.toInt()
+                    height = small_size.toInt()
+            }
+        }
+
+        when (index) {
+            0 -> binding.btnHome.updateLayoutParams {
+                    width = big_size.toInt()
+                    height = big_size.toInt()
+            }
+            1 -> binding.btnBaedal.updateLayoutParams {
+                    width = big_size.toInt()
+                    height = big_size.toInt()
+            }
+            2 -> binding.btnTaxi.updateLayoutParams {
+                    width = big_size.toInt()
+                    height = big_size.toInt()
+            }
+            3 -> binding.btnKara.updateLayoutParams {
+                    width = big_size.toInt()
+                    height = big_size.toInt()
+            }
+            4 -> binding.btnFreeBoard.updateLayoutParams {
+                    width = big_size.toInt()
+                    height = big_size.toInt()
+            }
+        }
+        bottomBarIndex = index
     }
 }
