@@ -90,54 +90,53 @@ class MainActivity : AppCompatActivity() {
 
     fun setBottomBarSize(index: Int) {
         val r: Resources = resources
-        var small_size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,30F, r.displayMetrics)
-
-        var big_size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,40F, r.displayMetrics)
+        var small_size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,30F, r.displayMetrics).toInt()
+        var big_size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,40F, r.displayMetrics).toInt()
 
         when (bottomBarIndex) {
             0 -> binding.btnHome.updateLayoutParams {
-                    width = small_size.toInt()
-                    height = small_size.toInt()
+                    width = small_size
+                    height = small_size
             }
 
             1 -> binding.btnBaedal.updateLayoutParams {
-                    width = small_size.toInt()
-                    height = small_size.toInt()
+                    width = small_size
+                    height = small_size
             }
             2 -> binding.btnTaxi.updateLayoutParams {
-                    width = small_size.toInt()
-                    height = small_size.toInt()
+                    width = small_size
+                    height = small_size
             }
             3 -> binding.btnKara.updateLayoutParams {
-                    width = small_size.toInt()
-                    height = small_size.toInt()
+                    width = small_size
+                    height = small_size
             }
             4 -> binding.btnFreeBoard.updateLayoutParams {
-                    width = small_size.toInt()
-                    height = small_size.toInt()
+                    width = small_size
+                    height = small_size
             }
         }
 
         when (index) {
             0 -> binding.btnHome.updateLayoutParams {
-                    width = big_size.toInt()
-                    height = big_size.toInt()
+                    width = big_size
+                    height = big_size
             }
             1 -> binding.btnBaedal.updateLayoutParams {
-                    width = big_size.toInt()
-                    height = big_size.toInt()
+                    width = big_size
+                    height = big_size
             }
             2 -> binding.btnTaxi.updateLayoutParams {
-                    width = big_size.toInt()
-                    height = big_size.toInt()
+                    width = big_size
+                    height = big_size
             }
             3 -> binding.btnKara.updateLayoutParams {
-                    width = big_size.toInt()
-                    height = big_size.toInt()
+                    width = big_size
+                    height = big_size
             }
             4 -> binding.btnFreeBoard.updateLayoutParams {
-                    width = big_size.toInt()
-                    height = big_size.toInt()
+                    width = big_size
+                    height = big_size
             }
         }
         bottomBarIndex = index
