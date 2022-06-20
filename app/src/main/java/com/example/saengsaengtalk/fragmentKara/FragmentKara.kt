@@ -46,14 +46,14 @@ class FragmentKara :Fragment() {
         karaRoom.add(KaraRoom(4, true, "사용하기"))
 
 
-        val adapter = KaraRoomAdapter(karaRoom)
+        val roomAdapter = KaraRoomAdapter(karaRoom)
         binding.rvKaraRoom.layoutManager = GridLayoutManager(requireContext(), 2)
-        binding.rvKaraRoom.adapter = adapter
+        binding.rvKaraRoom.adapter = roomAdapter
 
-        adapter.setItemClickListener(object: KaraRoomAdapter.OnItemClickListener{
+        roomAdapter.setItemClickListener(object: KaraRoomAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
                 Log.d("노래방", "${karaRoom[position].Num}")
-                setFrag(FragmentFreeBoardPost(), mapOf("Num" to karaRoom[position].Num.toString()))
+                setFrag(FragmentKaraUse(), mapOf("Num" to karaRoom[position].Num.toString()))
             }
         })
 
@@ -64,10 +64,16 @@ class FragmentKara :Fragment() {
         boardPre.add(BoardPre("노래방게시판입니다.222", LocalDateTime.now()))
         boardPre.add(BoardPre("노래방게시판입니다.33333", LocalDateTime.parse("2022-04-04T15:10:00")))
 
-
+        val boardAdapter = BoardPreAdapter(boardPre)
         binding.rvKaraBoard.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvKaraBoard.setHasFixedSize(true)
-        binding.rvKaraBoard.adapter = BoardPreAdapter(boardPre)
+        binding.rvKaraBoard.adapter = boardAdapter
+
+        boardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
+            override fun onClick(position: Int) {
+                Log.d("노래방", "${karaRoom[position].Num}")
+                setFrag(FragmentFreeBoardPost(), mapOf("Num" to karaRoom[position].Num.toString()))
+            }
+        })
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
