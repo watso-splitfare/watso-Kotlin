@@ -121,7 +121,7 @@
             app:layout_constraintTop_toTopOf="@+id/textView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/lyt_time"
+            android:id="@+id/lyt_start_time"
             android:layout_width="210dp"
             android:layout_height="wrap_content"
             android:background="@drawable/box_style_search"
@@ -130,7 +130,7 @@
             app:layout_constraintTop_toTopOf="@+id/textView2">
 
             <TextView
-                android:id="@+id/tv_use_time"
+                android:id="@+id/tv_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -209,7 +209,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:text="TextView"
+            android:text="1,000원"
             app:layout_constraintBottom_toBottomOf="@+id/textView4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView4" />

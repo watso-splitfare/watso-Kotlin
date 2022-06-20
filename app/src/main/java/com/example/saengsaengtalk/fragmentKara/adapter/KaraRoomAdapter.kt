@@ -40,7 +40,7 @@ class KaraRoomAdapter(val karaRoom: MutableList<KaraRoom>) : RecyclerView.Adapte
     inner class CustomViewHolder(var binding: LytKaraRoomBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(room: KaraRoom) {
-            binding.tvRoomNumber.text = room.Num.toString()+"번방"
+            binding.tvRoomNumber.text = room.num.toString()+"번방"
             if (room.useAble) {
                 binding.tvState.text = "사용가능"
                 binding.viewLight.setBackgroundResource(R.drawable.box_style_kara_useable)

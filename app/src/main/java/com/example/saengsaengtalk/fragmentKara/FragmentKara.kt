@@ -17,6 +17,8 @@ import com.example.saengsaengtalk.databinding.FragKaraBinding
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.adapter.KaraRoom
 import com.example.saengsaengtalk.fragmentKara.adapter.KaraRoomAdapter
+import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDateTime
 
 class FragmentKara :Fragment() {
@@ -36,26 +38,30 @@ class FragmentKara :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         /*방 리스트*/
-        val karaRoom = mutableListOf<KaraRoom>()
-        karaRoom.add(KaraRoom(1, true, "사용하기"))
-        karaRoom.add(KaraRoom(5, false, "15:10~15:30"))
-        karaRoom.add(KaraRoom(2, true, "사용하기"))
-        karaRoom.add(KaraRoom(6, false, "15:05~15:15"))
-        karaRoom.add(KaraRoom(3, false, "15:03~15:13"))
-        karaRoom.add(KaraRoom(7, true, "사용하기"))
-        karaRoom.add(KaraRoom(4, true, "사용하기"))
-
+        val karaRoom = mutableListOf(
+            KaraRoom(1, true, "사용하기"),
+            KaraRoom(5, false, "15:10~15:30"),
+            KaraRoom(2, true, "사용하기"),
+            KaraRoom(6, false, "15:05~15:15"),
+            KaraRoom(3, false, "15:03~15:13"),
+            KaraRoom(7, true, "사용하기"),
+            KaraRoom(4, true, "사용하기")
+        )
 
         val roomAdapter = KaraRoomAdapter(karaRoom)
         binding.rvKaraRoom.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvKaraRoom.adapter = roomAdapter
 
+
         roomAdapter.setItemClickListener(object: KaraRoomAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
-                Log.d("노래방", "${karaRoom[position].Num}")
-                setFrag(FragmentKaraUse(), mapOf("Num" to karaRoom[position].Num.toString()))
+                Log.d("노래방", "${karaRoom[position].num}")
+                setFrag(FragmentKaraUse(), mapOf(
+                    "num" to karaRoom[position].num.toString(),
+                    "use" to karaRoom[position].use))
             }
         })
+
 
         /*노래방 게시판*/
         val boardPre = mutableListOf<BoardPre>()
@@ -70,8 +76,8 @@ class FragmentKara :Fragment() {
 
         boardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
-                Log.d("노래방", "${karaRoom[position].Num}")
-                setFrag(FragmentFreeBoardPost(), mapOf("Num" to karaRoom[position].Num.toString()))
+                Log.d("노래방", "${karaRoom[position].num}")
+                setFrag(FragmentFreeBoardPost(), mapOf("Num" to karaRoom[position].num.toString()))
             }
         })
     }

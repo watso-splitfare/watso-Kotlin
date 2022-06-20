@@ -154,6 +154,7 @@ class FragmentHome :Fragment() {
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, index: Int) {
+        println("index = ${index}")
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments, index)
     }

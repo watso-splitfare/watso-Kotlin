@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, index:Int = 0) {
+        println("bottomBarIndex = ${bottomBarIndex}, index = ${index}")
         if (bottomBarIndex != index) setBottomBarSize(index)
 
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크
