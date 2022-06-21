@@ -11,19 +11,19 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.databinding.FragBaedalBinding
 import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalList
 import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalListAdapter
-import com.example.saengsaengtalk.databinding.FragBaedalListBinding
 import java.time.LocalDateTime
 
-class FragmentBaedalList :Fragment() {
+class FragmentBaedal :Fragment() {
 
-    private var mBinding: FragBaedalListBinding? = null
+    private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = FragBaedalListBinding.inflate(inflater, container, false)
+        mBinding = FragBaedalBinding.inflate(inflater, container, false)
 
         refreshView()
 
@@ -60,7 +60,6 @@ class FragmentBaedalList :Fragment() {
 
         binding.rvBaedalList.addItemDecoration(BaedalListAdapter.BaedalListAdapterDecoration())
     }
-
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity

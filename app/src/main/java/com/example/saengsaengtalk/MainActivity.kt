@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.databinding.ActivityMainBinding
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
+import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
+import com.example.saengsaengtalk.fragmwntTaxi.FragmentTaxi
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setFrag(FragmentHome())
 
         binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, index=0) }
-        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedalList(), popBackStack = 0, index=1) }
+        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, index=1) }
         binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, index=2) }
         binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0, index=3) }
         binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0, index=4) }

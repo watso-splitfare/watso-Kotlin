@@ -15,11 +15,12 @@ import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalAdd
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalList
+import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
+import com.example.saengsaengtalk.fragmwntTaxi.FragmentTaxi
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {
@@ -36,7 +37,7 @@ class FragmentHome :Fragment() {
         refreshView()
 
         //LinearLayout layout = binding.lyt
-        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedalList(), index=1) }
+        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal(), index=1) }
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), index=2) }
         binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara(), index=3) }
         binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard(), index=4) }
