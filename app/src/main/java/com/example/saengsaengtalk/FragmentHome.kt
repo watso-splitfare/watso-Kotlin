@@ -20,7 +20,7 @@ import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
-import com.example.saengsaengtalk.fragmwntTaxi.FragmentTaxi
+import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {
@@ -30,13 +30,10 @@ class FragmentHome :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //val view = inflater.inflate(R.layout.frag_home, container, false)
         mBinding = FragHomeBinding.inflate(inflater, container, false)
-
 
         refreshView()
 
-        //LinearLayout layout = binding.lyt
         binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal(), index=1) }
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), index=2) }
         binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara(), index=3) }
@@ -44,7 +41,6 @@ class FragmentHome :Fragment() {
         //binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
-        //return view
     }
 
     override fun onDestroyView() {

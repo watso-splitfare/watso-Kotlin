@@ -57,8 +57,6 @@ class FragmentBaedal :Fragment() {
             }
         })
         adapter.notifyDataSetChanged()
-
-        binding.rvBaedalList.addItemDecoration(BaedalListAdapter.BaedalListAdapterDecoration())
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

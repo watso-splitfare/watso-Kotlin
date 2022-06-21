@@ -13,7 +13,7 @@ import com.example.saengsaengtalk.databinding.ActivityMainBinding
 import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
-import com.example.saengsaengtalk.fragmwntTaxi.FragmentTaxi
+import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 
 
 class MainActivity : AppCompatActivity() {
