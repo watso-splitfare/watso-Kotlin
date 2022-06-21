@@ -59,11 +59,14 @@
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_home.xml" value="0.20018115942028986" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara.xml" value="0.25" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara_use.xml" value="0.33" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_taxi_list.xml" value="0.33" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_baedal_menu.xml" value="0.1405775075987842" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_board_pre.xml" value="0.20018115942028986" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_pre.xml" value="0.20018115942028986" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_room.xml" value="0.33" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_kara_spinner.xml" value="0.67" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_taxi_table.xml" value="0.17806484295845998" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/lyt_taxi_table_row.xml" value="0.25" />
       </map>
     </option>
   </component>
