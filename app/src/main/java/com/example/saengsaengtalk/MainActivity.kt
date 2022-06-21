@@ -31,11 +31,11 @@ class MainActivity : AppCompatActivity() {
 
         setFrag(FragmentHome())
 
-        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, index=0) }
-        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, index=1) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, index=2) }
-        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0, index=3) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0, index=4) }
+        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, fragIndex=0) }
+        binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, fragIndex=1) }
+        binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2) }
+        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0, fragIndex=3) }
+        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0, fragIndex=4) }
     }
 
     override fun onDestroy() {
@@ -43,9 +43,11 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, index:Int = 0) {
-        println("bottomBarIndex = ${bottomBarIndex}, index = ${index}")
-        if (bottomBarIndex != index) setBottomBarSize(index)
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
+        println("argument = ${arguments}")
+        println("popBackStack = ${popBackStack}")
+        println("bottomBarIndex = ${bottomBarIndex}, fragIndex = ${fragIndex}")
+        if (bottomBarIndex != fragIndex) setBottomBarSize(fragIndex)
 
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크
             val bundle = Bundle()
@@ -90,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setBottomBarSize(index: Int) {
+    fun setBottomBarSize(fragindex: Int) {
         val r: Resources = resources
         var smallSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,30F, r.displayMetrics).toInt()
         var bigSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,40F, r.displayMetrics).toInt()
@@ -119,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        when (index) {
+        when (fragindex) {
             0 -> binding.btnHome.updateLayoutParams {
                 width = bigSize
                 height = bigSize
@@ -141,6 +143,6 @@ class MainActivity : AppCompatActivity() {
                 height = bigSize
             }
         }
-        bottomBarIndex = index
+        bottomBarIndex = fragindex
     }
 }

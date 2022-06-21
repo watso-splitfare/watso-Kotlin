@@ -40,7 +40,7 @@
             android:shadowDx="4.0"
             android:shadowDy="4.0"
             android:shadowRadius="4.0"
-            android:text="@string/baedal"
+            android:text="@string/taxi"
             android:textSize="28sp"
 
             android:textStyle="bold"
@@ -109,42 +109,98 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
-                    android:text="주문예정시간"
+                    android:text="출발지"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="목적지"
+                    app:layout_constraintStart_toStartOf="@+id/textView"
+                    app:layout_constraintTop_toBottomOf="@+id/textView" />
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
-                    android:text="가게명"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+                    android:text="출발시간"
+                    app:layout_constraintStart_toStartOf="@+id/textView2"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
                 <TextView
-                    android:id="@+id/tv_textView4"
+                    android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
-                    android:text="예상 배달비"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="현재인원"
+                    app:layout_constraintStart_toStartOf="@+id/textView3"
                     app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="신청인원"
+                    app:layout_constraintStart_toStartOf="@+id/textView4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/lyt_depart"
+                    android:layout_width="210dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/box_style_search"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView">
+
+                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                        android:id="@+id/spn_depart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="-12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/lyt_dest"
+                    android:layout_width="210dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/box_style_search"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintTop_toTopOf="@+id/textView2">
+
+                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                        android:id="@+id/spn_dest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="-12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/lyt_time"
                     android:layout_width="210dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="24dp"
                     android:background="@drawable/box_style_search"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintTop_toTopOf="@+id/textView3">
 
                     <TextView
-                        android:id="@+id/tv_order_time"
+                        android:id="@+id/tv_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -168,82 +224,86 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_store"
-                    android:layout_width="210dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/box_style_search"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_time"
-                    app:layout_constraintTop_toTopOf="@id/textView3">
-
-                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                        android:id="@+id/spn_store"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="-12dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <TextView
-                    android:id="@+id/tv_baedal_fee_content"
+                    android:id="@+id/lyt_member"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_store"
-                    app:layout_constraintTop_toTopOf="@+id/tv_textView4" />
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintTop_toTopOf="@+id/textView4">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/btn_baedal_order"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_textView4">
-
-                    <TextView
-                        android:id="@+id/textView19"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:text="메뉴 선택"
+                    <Button
+                        android:id="@+id/btn_sub"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:text="Button"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageView
-                        android:id="@+id/imageView2"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
+                    <TextView
+                        android:id="@+id/tv_member"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView19"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/finger" />
+                        app:layout_constraintStart_toEndOf="@+id/btn_sub"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/btn_add"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:text="Button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tv_member"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/lyt_propose_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintTop_toTopOf="@+id/textView5">
+
+                    <Button
+                        android:id="@+id/btn_propose_sub"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:text="Button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_propose_member"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btn_propose_sub"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/btn_propose_add"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:text="Button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tv_propose_member"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_menu_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-            </androidx.recyclerview.widget.RecyclerView>
 
             <View
                 android:id="@+id/divider5"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginHorizontal="4dp"
+                android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/listDivider" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -258,72 +318,51 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="예상 배달비는 실제와 다를 수 있습니다."
+                    android:text="예상 택시비는 실제와 다를 수 있습니다."
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/textView7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="주문금액"
-                    app:layout_constraintBottom_toTopOf="@+id/textView9"
+                    android:text="예상 택시비"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
                 <TextView
-                    android:id="@+id/textView9"
+                    android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="예상 배달비"
-                    app:layout_constraintBottom_toTopOf="@+id/textView10"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    android:layout_marginTop="8dp"
+                    android:text="1인당 비용"
+                    app:layout_constraintStart_toStartOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
                 <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="총 금액"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_order_price"
+                    android:id="@+id/tv_taxi_fee"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="TextView"
-                    app:layout_constraintBottom_toTopOf="@+id/tv_baedal_fee"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
                 <TextView
-                    android:id="@+id/tv_baedal_fee"
+                    android:id="@+id/tv_individual_fee"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
                     android:text="TextView"
-                    app:layout_constraintBottom_toTopOf="@+id/tv_total_price"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="@+id/tv_taxi_fee"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_taxi_fee" />
 
-                <TextView
-                    android:id="@+id/tv_total_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:text="TextView"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

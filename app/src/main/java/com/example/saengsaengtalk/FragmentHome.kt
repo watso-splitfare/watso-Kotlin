@@ -21,6 +21,7 @@ import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
+import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
 import java.time.LocalDateTime
 
@@ -35,10 +36,10 @@ class FragmentHome :Fragment() {
 
         refreshView()
 
-        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal(), index=1) }
-        binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), index=2) }
-        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara(), index=3) }
-        binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard(), index=4) }
+        binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal(), fragIndex=1) }
+        binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), fragIndex=2) }
+        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara(), fragIndex=3) }
+        binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard(), fragIndex=4) }
         //binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
@@ -51,10 +52,10 @@ class FragmentHome :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnOption.setOnClickListener { setFrag(FragmentLogin(), index=-1) }
+        binding.btnOption.setOnClickListener { setFrag(FragmentLogin(), fragIndex=-1) }
 
         /* 배달 */
-        binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), index=1) }
+        binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
 
         val baedalList = arrayListOf(
             BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 1),
@@ -73,13 +74,14 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()), index=1)
+                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()), fragIndex=1)
             }
         })
         //baedalAdapter.notifyDataSetChanged()
 
 
         /* 택시 */
+        binding.btnTaxiAdd.setOnClickListener { setFrag(FragmentTaxiAdd(), fragIndex=1) }
         val taxiList = arrayListOf(
             TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 1, 6600, 1),
             TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 2, 6600, 2),
@@ -96,7 +98,7 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${taxiList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 택시 온클릭", "${taxiList[position].postNum}")
-                setFrag(FragmentTaxiPost(), mapOf("postNum" to taxiList[position].postNum.toString()), index=2)
+                setFrag(FragmentTaxiPost(), mapOf("postNum" to taxiList[position].postNum.toString()), fragIndex=2)
             }
         })
         taxiAdapter.notifyDataSetChanged()
@@ -132,7 +134,7 @@ class FragmentHome :Fragment() {
         freeBoardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()), index=4)
+                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()), fragIndex=4)
             }
         })
 
@@ -151,9 +153,9 @@ class FragmentHome :Fragment() {
 
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, index: Int) {
-        println("index = ${index}")
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex: Int) {
+        println("setIndex = ${fragIndex}")
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, index)
+        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
     }
 }

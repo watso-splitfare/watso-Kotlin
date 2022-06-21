@@ -17,6 +17,7 @@ import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalListAdapter
 import java.time.LocalDateTime
 
 class FragmentBaedal :Fragment() {
+    val fragIndex = 1
 
     private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
@@ -61,6 +62,6 @@ class FragmentBaedal :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
     }
 }

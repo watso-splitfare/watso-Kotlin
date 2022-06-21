@@ -20,6 +20,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class FragmentTaxi :Fragment() {
+    val fragIndex = 2
 
     private var mBinding: FragTaxiBinding? = null
     private val binding get() = mBinding!!
@@ -35,6 +36,8 @@ class FragmentTaxi :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentTaxiAdd()) }
+
         val taxiTable = mutableListOf(
             TaxiTable(LocalDate.parse("2022-06-22"), mutableListOf(
                 TaxiTableRow(1,"생자대", "밀양역", LocalDateTime.parse("2022-06-22T15:10:00"), 3, 6600),
@@ -68,7 +71,8 @@ class FragmentTaxi :Fragment() {
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+        println("setIndex = ${fragIndex}")
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
     }
 }
