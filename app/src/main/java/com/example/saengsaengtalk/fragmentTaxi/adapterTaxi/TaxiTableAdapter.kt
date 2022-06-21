@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytTaxiTableBinding
 import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalConfirmAdapter
+import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalMenuAdapter
+import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalMenuSectionAdapter
+import java.lang.ref.WeakReference
 import java.time.format.DateTimeFormatter
 
 class TaxiTableAdapter(val context: Context, val taxiTable: MutableList<TaxiTable>) : RecyclerView.Adapter<TaxiTableAdapter.CustomViewHolder>() {
@@ -25,6 +28,20 @@ class TaxiTableAdapter(val context: Context, val taxiTable: MutableList<TaxiTabl
         holder.bind(table)
     }
 
+    interface OnItemClickListener {
+        fun onClick(postNum: Int)
+    }
+
+    private var listener = WeakReference<OnItemClickListener>(null)
+
+    fun itemClick(postNum: Int) {
+        listener.get()?.onClick(postNum)
+    }
+
+    fun addListener(listener: TaxiTableAdapter.OnItemClickListener) {
+        this.listener = WeakReference(listener)
+    }
+
     override fun getItemCount(): Int {
         return taxiTable.size
     }
@@ -36,6 +53,12 @@ class TaxiTableAdapter(val context: Context, val taxiTable: MutableList<TaxiTabl
             binding.rvDateTable.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             val adapter = TaxiTableRowAdapter(table.rows)
             binding.rvDateTable.adapter = adapter
+
+            adapter.setItemClickListener(object: TaxiTableRowAdapter.OnItemClickListener{
+                override fun onClick(postNum:Int) {
+                    itemClick(postNum)
+                }
+            })
         }
     }
 }

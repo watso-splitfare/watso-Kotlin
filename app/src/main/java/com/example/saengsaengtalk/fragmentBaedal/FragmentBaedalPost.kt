@@ -144,6 +144,7 @@ class FragmentBaedalPost :Fragment() {
             Comment("동동이", "먹을 사람 드루와~", LocalDateTime.now(), 3, 1, 0, "동동이"),
             Comment("동동이", "네네치킨~", LocalDateTime.now(), 4, 0, 1, "동동이")
         )
+        binding.tvCommentCount.text = "댓글 ${comment.size}"
         binding.rvComment.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)

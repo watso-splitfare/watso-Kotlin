@@ -19,8 +19,22 @@ class TaxiTableRowAdapter(val taxiTableRow: MutableList<TaxiTableRow>) : Recycle
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val row = taxiTableRow.get(position)
+
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(row.postNum)
+        }
         holder.bind(row)
     }
+
+    interface OnItemClickListener {
+        fun onClick(postNum: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
         return taxiTableRow.size

@@ -256,6 +256,7 @@ class FragmentBaedalMenu :Fragment() {
 
         return list
     }
+
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments)

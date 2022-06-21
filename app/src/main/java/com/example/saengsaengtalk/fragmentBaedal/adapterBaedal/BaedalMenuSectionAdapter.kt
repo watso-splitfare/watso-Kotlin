@@ -25,7 +25,6 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
         holder.bind(item)
     }
 
-
     interface OnItemClickListener {
         fun onClick(id: Int)
     }
@@ -60,7 +59,6 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
 
             binding.rvMenuSection.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            //binding.rvMenuSection.addItemDecoration(BaedalMenuAdapter.BaedalMenuAdapterDecoration())
 
             val adapter = BaedalMenuAdapter(item.sectionList)
             binding.rvMenuSection.adapter = adapter

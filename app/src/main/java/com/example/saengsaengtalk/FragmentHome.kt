@@ -21,6 +21,7 @@ import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
+import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
 import java.time.LocalDateTime
 
 class FragmentHome :Fragment() {
@@ -95,7 +96,7 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${taxiList[position].postNum}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 택시 온클릭", "${taxiList[position].postNum}")
-                //setDataAtFrag(FragmentTaxiPost(), taxiList[position].postNum.toString())
+                setFrag(FragmentTaxiPost(), mapOf("postNum" to taxiList[position].postNum.toString()), index=2)
             }
         })
         taxiAdapter.notifyDataSetChanged()
