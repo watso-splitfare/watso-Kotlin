@@ -24,11 +24,15 @@ import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
 import java.time.LocalDateTime
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class FragmentHome :Fragment() {
 
     private var mBinding: FragHomeBinding? = null
     private val binding get() = mBinding!!
+    val api=APIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -53,6 +57,28 @@ class FragmentHome :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnOption.setOnClickListener { setFrag(FragmentLogin(), fragIndex=-1) }
+
+        /** api test */
+        /*binding.btnTest1.setOnClickListener {
+            val data = PostModel(binding.etTest1.text.toString(),binding.etTest2.text.toString()
+                ,binding.etTest3.text.toString(),binding.etTest4.text.toString(),binding.etTest5.text.toString())
+            api.post_users(data).enqueue(object : Callback<PostResult> {
+                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+                    Log.d("log",response.toString())
+                    Log.d("log", response.body().toString())
+                    if(!response.body().toString().isEmpty())
+                        binding.tvTest.setText(response.body().toString());
+                }
+
+                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+                    // 실패
+                    Log.d("log",t.message.toString())
+                    Log.d("log","fail")
+                }
+            })
+        }*/
+
+        /** */
 
         /* 배달 */
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
