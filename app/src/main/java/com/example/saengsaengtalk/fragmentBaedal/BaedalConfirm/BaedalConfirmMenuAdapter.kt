@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm
 
 import android.content.Context
 import android.os.Build

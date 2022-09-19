@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalPost
 
 import android.os.Build
 import android.os.Bundle
@@ -13,8 +13,9 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterHome.Comment
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.BaedalOrder
+import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -126,8 +127,10 @@ class FragmentBaedalPost :Fragment() {
                 baedalOrder.add(BaedalOrder(menuName, count, baedalOrderOpt))
             }
 
-            baedalOrderer.add(BaedalOrderer(
-                "주문자 : ${ordererName}   주문금액: ${dec.format(totalPrice)}원", baedalOrder))
+            baedalOrderer.add(
+                BaedalOrderer(
+                "주문자 : ${ordererName}   주문금액: ${dec.format(totalPrice)}원", baedalOrder)
+            )
         }
         val adapter = BaedalOrdererAdapter(requireContext(), baedalOrderer)
 

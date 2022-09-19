@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalAdd
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedal
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalPost
+import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
+import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
+import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
@@ -59,7 +59,9 @@ class FragmentHome :Fragment() {
         binding.btnOption.setOnClickListener { setFrag(FragmentLogin(), fragIndex=-1) }
 
         /** api test */
-        /*binding.btnTest1.setOnClickListener {
+        binding.lytApiTest.visibility = View.GONE
+
+        binding.btnTest1.setOnClickListener {
             val data = PostModel(binding.etTest1.text.toString(),binding.etTest2.text.toString()
                 ,binding.etTest3.text.toString(),binding.etTest4.text.toString(),binding.etTest5.text.toString())
             api.post_users(data).enqueue(object : Callback<PostResult> {
@@ -76,7 +78,7 @@ class FragmentHome :Fragment() {
                     Log.d("log","fail")
                 }
             })
-        }*/
+        }
 
         /** */
 

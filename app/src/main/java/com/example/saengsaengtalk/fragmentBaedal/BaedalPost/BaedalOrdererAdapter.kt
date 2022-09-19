@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalPost
 
 import android.content.Context
 import android.os.Build
@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytBaedalOrdererBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.BaedalOrderAdapter
 
 
 class BaedalOrdererAdapter(val context: Context, val baedalOrderer: MutableList<BaedalOrderer>) : RecyclerView.Adapter<BaedalOrdererAdapter.CustomViewHolder>() {

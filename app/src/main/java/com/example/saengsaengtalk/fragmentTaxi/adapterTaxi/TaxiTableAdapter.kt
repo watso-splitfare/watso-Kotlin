@@ -8,9 +8,6 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytTaxiTableBinding
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalConfirmAdapter
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalMenuAdapter
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalMenuSectionAdapter
 import java.lang.ref.WeakReference
 import java.time.format.DateTimeFormatter
 

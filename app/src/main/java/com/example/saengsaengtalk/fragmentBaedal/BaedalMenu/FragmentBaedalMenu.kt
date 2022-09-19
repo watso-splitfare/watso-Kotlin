@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalMenu
 
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
+import com.example.saengsaengtalk.fragmentBaedal.BaedalOpt.FragmentBaedalOpt
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -133,7 +134,8 @@ class FragmentBaedalMenu :Fragment() {
         }
 
         binding.btnCart.setOnClickListener {
-            setFrag(FragmentBaedalConfirm(), mapOf(
+            setFrag(
+                FragmentBaedalConfirm(), mapOf(
                 "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
                 "member" to member!!, "orderList" to orderList.toString(), "isPosting" to isPosting!!))
         }

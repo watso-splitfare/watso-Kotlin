@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm
 
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.*
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
 import org.json.JSONArray
 import org.json.JSONObject

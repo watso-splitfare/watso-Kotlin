@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalMenu
 
 import android.content.Context
 import android.os.Build
@@ -35,7 +35,7 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
         listener.get()?.onClick(id)
     }
 
-    fun addListener(listener: BaedalMenuSectionAdapter.OnItemClickListener) {
+    fun addListener(listener: OnItemClickListener) {
         this.listener = WeakReference(listener)
     }
 
@@ -63,7 +63,7 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
             val adapter = BaedalMenuAdapter(item.sectionList)
             binding.rvMenuSection.adapter = adapter
 
-            adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener{
+            adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener {
                 override fun onClick(id:Int) {
                     itemClick(id)
                 }

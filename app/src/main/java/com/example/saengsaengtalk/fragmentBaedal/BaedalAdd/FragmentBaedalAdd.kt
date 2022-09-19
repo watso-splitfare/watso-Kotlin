@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalAdd
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -13,11 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalConfirmMenu
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalOrder
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalOrderAdapter
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalOrderOpt
+import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.BaedalConfirmMenu
+import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.BaedalOrderOpt
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
+import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.fragmentBaedal.adapterBaedal
+package com.example.saengsaengtalk.fragmentBaedal.BaedalOpt
 
 import android.content.Context
 import android.graphics.Canvas
@@ -39,7 +39,7 @@ class BaedalOptAreaAdapter(val context: Context, val baedalOptArea: MutableList<
         listener.get()?.onClick(isRadio, area, num, isChecked)
     }
 
-    fun addListener(listener: BaedalOptAreaAdapter.OnItemClickListener) {
+    fun addListener(listener: OnItemClickListener) {
         this.listener = WeakReference(listener)
     }
 
@@ -57,7 +57,7 @@ class BaedalOptAreaAdapter(val context: Context, val baedalOptArea: MutableList<
             val adapter = BaedalOptAdapter(item.areaList)
             binding.rvMenuArea.adapter = adapter
 
-            adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener{
+            adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener {
                 override fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean) {
                     itemClick(isRadio, area, num, isChecked)
                 }

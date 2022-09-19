@@ -10,12 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragTaxiBinding
-import com.example.saengsaengtalk.fragmentBaedal.FragmentBaedalOpt
-import com.example.saengsaengtalk.fragmentBaedal.adapterBaedal.BaedalMenuSectionAdapter
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTable
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTableAdapter
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTableRow
-import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTableRowAdapter
 import java.time.LocalDate
 import java.time.LocalDateTime
 
