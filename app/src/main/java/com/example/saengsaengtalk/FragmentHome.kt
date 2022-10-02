@@ -1,5 +1,13 @@
 package com.example.saengsaengtalk
 
+/*import com.example.saengsaengtalk.APIS.PostModel
+import com.example.saengsaengtalk.APIS.PostResult
+import com.example.saengsaengtalk.APIS.TestModel
+import com.example.saengsaengtalk.APIS.TestResult*/
+
+import APIS
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +19,14 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.GroupOptionModel
+import com.example.saengsaengtalk.APIS.SectionMenuModel
+import com.example.saengsaengtalk.APIS.StoreListModel
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
-import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
+import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
@@ -23,16 +34,18 @@ import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
-import java.time.LocalDateTime
+import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
+
 
 class FragmentHome :Fragment() {
 
     private var mBinding: FragHomeBinding? = null
     private val binding get() = mBinding!!
-    val api=APIS.create()
+    val api= APIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,29 +69,111 @@ class FragmentHome :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnOption.setOnClickListener { setFrag(FragmentLogin(), fragIndex=-1) }
+        binding.btnOption.setOnClickListener {
+            var auth = MainActivity.prefs.getString("Authentication", "")
+            Log.d("계정 버튼", auth)
+            setFrag(FragmentLogin(), fragIndex=-1)
+            /*if (auth == "" || auth == "null")
+                setFrag(FragmentLogin(), fragIndex=-1)
+            else
+                setFrag(FragmentAccount(), fragIndex=-1)*/
+        }
 
         /** api test */
-        binding.lytApiTest.visibility = View.GONE
+        //binding.lytApiTest.visibility = View.GONE
+
+        binding.btnRemoveCache.setOnClickListener {
+            MainActivity.prefs.removeString("Authentication")
+            MainActivity.prefs.removeString("authentication")
+
+            var auth = MainActivity.prefs.getString("Authentication", "")
+            Log.d("캐시삭제1", auth)
+            auth = MainActivity.prefs.getString("authentication", "")
+            Log.d("캐시삭제2", auth)
+        }
 
         binding.btnTest1.setOnClickListener {
-            val data = PostModel(binding.etTest1.text.toString(),binding.etTest2.text.toString()
-                ,binding.etTest3.text.toString(),binding.etTest4.text.toString(),binding.etTest5.text.toString())
-            api.post_users(data).enqueue(object : Callback<PostResult> {
-                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+            /*val data = PostModel(binding.etTest1.text.toString(),binding.etTest2.text.toString()
+                ,binding.etTest3.text.toString(),binding.etTest4.text.toString(),binding.etTest5.text.toString())*/
+            api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
+                override fun onResponse(call: Call<List<StoreListModel>>, response: Response<List<StoreListModel>>) {
                     Log.d("log",response.toString())
                     Log.d("log", response.body().toString())
                     if(!response.body().toString().isEmpty())
                         binding.tvTest.setText(response.body().toString());
                 }
 
-                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+                override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
                     // 실패
                     Log.d("log",t.message.toString())
                     Log.d("log","fail")
                 }
             })
         }
+
+        binding.btnTest2.setOnClickListener {
+            val data = binding.etTest2.text.toString().toInt()
+            api.getSectionMenu(data).enqueue(object : Callback<List<SectionMenuModel>> {
+                override fun onResponse(call: Call<List<SectionMenuModel>>, response: Response<List<SectionMenuModel>>) {
+                    Log.d("log",response.toString())
+                    Log.d("log", response.body().toString())
+                    if(!response.body().toString().isEmpty())
+                        binding.tvTest.setText(response.body().toString());
+                }
+
+                override fun onFailure(call: Call<List<SectionMenuModel>>, t: Throwable) {
+                    // 실패
+                    Log.d("log",t.message.toString())
+                    Log.d("log","fail")
+                }
+            })
+        }
+
+        binding.btnTest3.setOnClickListener {
+            val data = binding.etTest3.text.toString().toInt()
+            api.getGroupOption(data).enqueue(object : Callback<List<GroupOptionModel>> {
+                override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
+                    Log.d("log",response.toString())
+                    Log.d("log", response.body().toString())
+                    if(!response.body().toString().isEmpty())
+                        binding.tvTest.setText(response.body().toString());
+                }
+
+                override fun onFailure(call: Call<List<GroupOptionModel>>, t: Throwable) {
+                    // 실패
+                    Log.d("log",t.message.toString())
+                    Log.d("log","fail")
+                }
+            })
+        }
+
+        /*binding.btnTest1.setOnClickListener {
+            val data = TestModel("테스트 바디")
+            api.test("gdfdgd").enqueue(object : Callback<TestResult> {
+                override fun onResponse(call: Call<TestResult>, response: Response<TestResult>) {
+                    Log.d("log",response.toString())
+                    Log.d("log", response.body().toString())
+                    if(!response.body().toString().isEmpty())
+                        binding.tvTest.setText(response.body().toString());
+                }
+
+                override fun onFailure(call: Call<TestResult>, t: Throwable) {
+                    // 실패
+                    Log.d("log",t.message.toString())
+                    Log.d("log","fail")
+                }
+            })
+        }*/
+
+        /*binding.btnTest1.setOnClickListener {
+            val data = TestModel("테스트 바디")
+            api.test(data).enqueue(object: Callback<TestResult> {
+                override fun onResponse(call: Call<TestResult>, response: Response<TestResult>) {
+                    Log.d("log", response.toString())
+                    Log.d("log", response.body().toString())
+                }
+            })
+        }*/
 
         /** */
 

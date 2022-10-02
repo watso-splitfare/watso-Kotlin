@@ -128,7 +128,7 @@ class FragmentBaedalMenu :Fragment() {
             binding.tvCartCount.text = orderList.length().toString()
             if (orderList.length() == 0) {
                 binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
-                binding.lyCartCount.visibility = View.INVISIBLE
+                //binding.lyCartCount.visibility = View.INVISIBLE
                 binding.btnCart.setEnabled(false)
             }
         }
@@ -136,8 +136,8 @@ class FragmentBaedalMenu :Fragment() {
         binding.btnCart.setOnClickListener {
             setFrag(
                 FragmentBaedalConfirm(), mapOf(
-                "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
-                "member" to member!!, "orderList" to orderList.toString(), "isPosting" to isPosting!!))
+                    "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
+                    "member" to member!!, "orderList" to orderList.toString(), "isPosting" to isPosting!!))
         }
     }
 

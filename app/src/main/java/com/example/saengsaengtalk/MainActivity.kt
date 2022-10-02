@@ -3,6 +3,7 @@ package com.example.saengsaengtalk
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
+import android.preference.Preference
 import android.util.TypedValue
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -23,8 +24,15 @@ class MainActivity : AppCompatActivity() {
     var mBackWait:Long = 0
     var bottomBarIndex:Int = 0
 
+    companion object {
+        lateinit var prefs: PreferenceUtil
+    }
+
+    //val sharedPreference = getSharedPreferences("cache", 0)
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        prefs = PreferenceUtil(applicationContext)
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
