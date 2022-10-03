@@ -18,11 +18,8 @@ import java.io.IOException
 
 interface APIS {
 
-    /** 계정 관련 API */
-    @GET("test/cookie")
-    fun test(
-        @Query("username") username: String
-    ): Call<TestResult>
+
+        /** 계정 관련 API */
 
     @GET("auth/username-overlap-check")
     fun usernameOverlapCheck(
@@ -56,10 +53,10 @@ interface APIS {
     ): Call<LogoutResult>
 
 
-    /** 배달 게시물 관련 api */
+        /** 배달 게시물 관련 api */
 
     @GET("order/store-list")
-    fun getStoreList(): Call<List<StoreListModel>>//Call<JSONArray>
+    fun getStoreList(): Call<List<StoreListModel>>
 
     @GET("order/section-menu-select")
     fun getSectionMenu(

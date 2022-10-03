@@ -4,13 +4,16 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.StoreListModel
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.BaedalConfirmMenu
@@ -18,6 +21,13 @@ import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.BaedalOrderOpt
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.IOException
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -33,6 +43,7 @@ class FragmentBaedalAdd :Fragment() {
 
     private var mBinding: FragBaedalAddBinding? = null
     private val binding get() = mBinding!!
+    val api= APIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -50,16 +61,66 @@ class FragmentBaedalAdd :Fragment() {
         binding.tvOrderTime.text = getDateTimeString(now)
         binding.lytTime.setOnClickListener { showCalendar() }
 
-        val storeList = arrayOf<String>("네네치킨", "BBQ", "맘스터치치")
-        val searchmethod = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item,storeList)
-        searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spnStore!!.adapter = searchmethod
+        /** 주문할 가게 선택 */
+        var stores = listOf<StoreListModel>()
+        var storeids = mutableListOf<Int>()
+        var storeNames = mutableListOf<String>()
+        var storefees = mutableListOf<Int>()
+        var selectedId = 0
+
+        //val scope = GlobalScope
+        api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
+            override fun onResponse(
+                call: Call<List<StoreListModel>>,
+                response: Response<List<StoreListModel>>
+            ) {
+                Log.d("log", response.toString())
+                Log.d("log", response.body().toString())
+                stores = response.body()!!
+                stores.forEach {
+                    storeids.add(it.store_id)
+                    storeNames.add(it.store_name)
+                    storefees.add(it.fee)
+                }
+
+                val searchmethod =
+                    ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, storeNames)
+
+                searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spnStore!!.adapter = searchmethod
+                binding.spnStore.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+                        binding.tvBaedalFee.text = "${decPrice.format(storefees[position])}원"
+                        selectedId = position
+                        //Log.d("스피너", storeNames[position])
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
+                // 실패
+                Log.d("log", t.message.toString())
+                Log.d("log", "fail")
+            }
+        })
+
 
         binding.lytChoice.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf("postNum" to "0", "member" to "0", "isPosting" to "true"))
+            setFrag(FragmentBaedalMenu(), mapOf(
+                "member" to "0",
+                "isPosting" to "true",
+                "storeName" to storeNames[selectedId],
+                "storeId" to storeids[selectedId].toString(),
+                "baedalFee" to storefees[selectedId].toString()
+            ))
         }
 
-        setText()
+        //setText()
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("ConfirmToAdd", this) { requestKey, bundle ->
 
@@ -137,7 +198,6 @@ class FragmentBaedalAdd :Fragment() {
         binding.tvBaedalFee.text = "${decPrice.format(baedalfee)}원"
         binding.tvOrderPrice.text = "${decPrice.format(orderPrice)}원"
         binding.tvTotalPrice.text = "${decPrice.format(totalPrice)}원"
-
     }
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity

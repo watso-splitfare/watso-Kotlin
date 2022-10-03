@@ -34,6 +34,8 @@ import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
@@ -84,32 +86,34 @@ class FragmentHome :Fragment() {
 
         binding.btnRemoveCache.setOnClickListener {
             MainActivity.prefs.removeString("Authentication")
-            MainActivity.prefs.removeString("authentication")
 
             var auth = MainActivity.prefs.getString("Authentication", "")
-            Log.d("캐시삭제1", auth)
-            auth = MainActivity.prefs.getString("authentication", "")
-            Log.d("캐시삭제2", auth)
+            Log.d("캐시삭제", auth)
         }
 
-        binding.btnTest1.setOnClickListener {
+        /*binding.btnTest1.setOnClickListener {
             /*val data = PostModel(binding.etTest1.text.toString(),binding.etTest2.text.toString()
                 ,binding.etTest3.text.toString(),binding.etTest4.text.toString(),binding.etTest5.text.toString())*/
-            api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
-                override fun onResponse(call: Call<List<StoreListModel>>, response: Response<List<StoreListModel>>) {
-                    Log.d("log",response.toString())
-                    Log.d("log", response.body().toString())
-                    if(!response.body().toString().isEmpty())
-                        binding.tvTest.setText(response.body().toString());
-                }
+            GlobalScope.launch() {
+                api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
+                    override fun onResponse(
+                        call: Call<List<StoreListModel>>,
+                        response: Response<List<StoreListModel>>
+                    ) {
+                        Log.d("log", response.toString())
+                        Log.d("log", response.body().toString())
+                        if (!response.body().toString().isEmpty())
+                            binding.tvTest.setText(response.body().toString());
+                    }
 
-                override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
-                    // 실패
-                    Log.d("log",t.message.toString())
-                    Log.d("log","fail")
-                }
-            })
-        }
+                    override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
+                        // 실패
+                        Log.d("log", t.message.toString())
+                        Log.d("log", "fail")
+                    }
+                })
+            }
+        }*/
 
         binding.btnTest2.setOnClickListener {
             val data = binding.etTest2.text.toString().toInt()

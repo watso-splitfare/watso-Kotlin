@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.SectionMenuModel
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
@@ -14,31 +15,40 @@ import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.FragmentBaedalCon
 import com.example.saengsaengtalk.fragmentBaedal.BaedalOpt.FragmentBaedalOpt
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
     var member: String? = null
-    var isPosting: String? = null
+    var isPosting = "false"
+    var storeName = ""
+    var storeId = "0"
+    var baedalFee = ""
 
     val dec = DecimalFormat("#,###")
 
-    var storeName = ""
-    var baedalFee = ""
     var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
     var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var orderList = JSONArray()                              // confirm frag 뷰바인딩을 위한 String Array
+    var orderListTemp = JSONArray()
     //var optInfo = JSONArray()                               // confirm frag 에서 API로 보내기 위한 형식
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
+    val api= APIS.create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postNum = it.getString("postNum")
             member = it.getString("member")
-            isPosting = it.getString("isPosting")
+            isPosting = it.getString("isPosting")!!
+            storeName = it.getString("storeName")!!
+            storeId = it.getString("storeId")!!
+            baedalFee = it.getString("baedalFee")!!
         }
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
         Log.d("배달 메뉴", "주문 인원: ${member}")
@@ -55,6 +65,7 @@ class FragmentBaedalMenu :Fragment() {
 
     fun refreshView() {
         menuArray = getMenuArray()
+        getMenuArrayTemp()
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.tvStoreName.text = storeName
@@ -146,9 +157,24 @@ class FragmentBaedalMenu :Fragment() {
         val assetManager = resources.assets
         val jsonObj = JSONObject(assetManager.open("nene.json").bufferedReader().use { it.readText() })
 
-        storeName = jsonObj.getString("storeName")
-        baedalFee = jsonObj.getInt("baedalFee").toString()
+        //storeName = jsonObj.getString("storeName")
+        //baedalFee = jsonObj.getInt("baedalFee").toString()
         return jsonObj.getJSONArray("info")
+    }
+
+    fun getMenuArrayTemp() {
+        api.getSectionMenu(storeId.toInt()).enqueue(object : Callback<List<SectionMenuModel>> {
+            override fun onResponse(call: Call<List<SectionMenuModel>>, response: Response<List<SectionMenuModel>>) {
+                Log.d("log",response.toString())
+                Log.d("log", response.body().toString())
+            }
+
+            override fun onFailure(call: Call<List<SectionMenuModel>>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
     }
 
     fun setSectionMenu() {

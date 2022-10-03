@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.APIS.LoginModel
 import com.example.saengsaengtalk.APIS.LoginResult
-import com.example.saengsaengtalk.APIS.TestResult
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragLoginBinding
 import retrofit2.Call
