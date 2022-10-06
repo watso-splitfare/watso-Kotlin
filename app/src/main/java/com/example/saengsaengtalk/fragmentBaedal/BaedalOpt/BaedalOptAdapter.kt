@@ -5,25 +5,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.APIS.OptionModel
 import com.example.saengsaengtalk.databinding.LytBaedalOptBinding
 import java.text.DecimalFormat
 
-class BaedalOptAdapter(val baedalOpt: MutableList<BaedalOpt>) : RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
+class BaedalOptAdapter(val option: List<OptionModel>, val minOrderableQuantity: Int, val maxOrderableQuantity: Int):
+    RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
 
+    var isRadio = false
     var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOptBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        if (minOrderableQuantity == 1 && maxOrderableQuantity == 1){
+            isRadio = true
+        }
         return CustomViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val opt = baedalOpt.get(position)
-        holder.bind(opt)
+        val option = option.get(position)
+        holder.bind(option)
     }
 
     interface OnItemClickListener {
-        fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean)
+        fun onClick(isRadio:Boolean, optionId: Int, isChecked: Boolean)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -33,16 +40,16 @@ class BaedalOptAdapter(val baedalOpt: MutableList<BaedalOpt>) : RecyclerView.Ada
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return baedalOpt.size
+        return option.size
     }
 
     inner class CustomViewHolder(var binding: LytBaedalOptBinding) : RecyclerView.ViewHolder(binding.root) {
         lateinit var checkBtn: CompoundButton
-        fun bind(opt: BaedalOpt) {
-            if (opt.is_radio) {
-                binding.rbMenu.text = opt.optName
-                binding.cbMenu.setVisibility(View.INVISIBLE)
-                checkBtn = binding.rbMenu
+        fun bind(option: OptionModel) {
+            if (isRadio) {
+                binding.rbOption.text = option.option_name
+                binding.cbOption.setVisibility(View.INVISIBLE)
+                checkBtn = binding.rbOption
 
                 if (checkedPosition == -1 && adapterPosition == 0) {
                     checkBtn.setChecked(true)
@@ -56,33 +63,37 @@ class BaedalOptAdapter(val baedalOpt: MutableList<BaedalOpt>) : RecyclerView.Ada
                 checkBtn.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
-                    itemClickListener.onClick(true, opt.area, opt.num, true)
+                    itemClickListener.onClick(isRadio, option.option_id, true)
                     println("0")
                 }
                 itemView.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
-                    itemClickListener.onClick(true, opt.area, opt.num, true)
+                    itemClickListener.onClick(isRadio, option.option_id, true)
                     println("1")
                 }
             } else {
-                binding.cbMenu.text = opt.optName
-                binding.rbMenu.setVisibility(View.INVISIBLE)
-                checkBtn = binding.cbMenu
+                binding.cbOption.text = option.option_name
+                binding.rbOption.setVisibility(View.INVISIBLE)
+                checkBtn = binding.cbOption
 
                 checkBtn.setOnClickListener {
-                    itemClickListener.onClick(false, opt.area, opt.num, checkBtn.isChecked)
+                    itemClickListener.onClick(isRadio, option.option_id, checkBtn.isChecked)
                     println(0)
                 }
                 itemView.setOnClickListener {
                     checkBtn.setChecked(!checkBtn.isChecked)
-                    itemClickListener.onClick(false, opt.area, opt.num, checkBtn.isChecked)
+                    itemClickListener.onClick(isRadio, option.option_id, checkBtn.isChecked)
                     println(1)
                 }
             }
-            binding.cbMenu.text = opt.optName
+            binding.cbOption.text = option.option_name
             val dec = DecimalFormat("#,###")
-            binding.tvPrice.text = "${dec.format(opt.price)}원"
+            binding.tvPrice.text = "${dec.format(option.option_price)}원"
+        }
+
+        fun setUnchecked() {
+            checkBtn.setChecked(false)
         }
     }
 }

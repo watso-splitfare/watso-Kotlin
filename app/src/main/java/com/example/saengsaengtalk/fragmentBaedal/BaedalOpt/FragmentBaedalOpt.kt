@@ -1,113 +1,74 @@
 package com.example.saengsaengtalk.fragmentBaedal.BaedalOpt
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.GroupOptionModel
+import com.example.saengsaengtalk.APIS.SectionMenuModel
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
 import com.example.saengsaengtalk.databinding.FragBaedalOptBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.BaedalMenuSectionAdapter
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
-    var menu: JSONObject? = null
+    var menuId = 0
+    var menuName = ""
+    var menuPrice = 0
+    /*var menu: JSONObject? = null
     var section: String? = null
 
     val radioPrice = mutableMapOf<String, Int>()
     val comboPrice = mutableMapOf<String, Int>()
     val radioChecked = mutableMapOf<String, Int>()
-    val comboChecked = mutableMapOf<String, Int>()
+    val comboChecked = mutableMapOf<String, Int>()*/
+
+    val groupOptionPrice = mutableMapOf<Int, MutableMap<Int, Int>>()
+    var groupOptionChecked = mutableMapOf<Int, MutableMap<Int, Boolean>>()
     var count = 1
+
+    var groupOption = listOf<GroupOptionModel>()                   // 옵션 전체. 현재화면 구성에 사용
+    private var mBinding: FragBaedalOptBinding? = null
+    private val binding get() = mBinding!!
+    val api= APIS.create()
+    val dec = DecimalFormat("#,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            val jsonString = it.getString("menu")
-            menu = JSONObject(jsonString)
-
-            println("디테일 프래그먼트: ${jsonString}")
+            menuId = it.getString("menuId")!!.toInt()
+            menuName = it.getString("menuName")!!
+            menuPrice = it.getString("menuPrice")!!.toInt()
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragBaedalOptBinding.inflate(inflater, container, false)
+        mBinding = FragBaedalOptBinding.inflate(inflater, container, false)
 
-        refreshView(binding)
+        refreshView()
 
         return binding.root
     }
 
-    fun refreshView(binding: FragBaedalOptBinding) {
-        var areaMenu = mutableListOf<BaedalOptArea>()
-
-        val id = menu!!.getInt("id")
-        val menuName = menu!!.getString("menuName")
-        val radios = menu!!.getJSONArray("radio")
-        val combos = menu!!.getJSONArray("combo")
-        val dec = DecimalFormat("#,###")
-
-        for (i in 0 until radios.length()) {
-            val radio = radios.getJSONObject(i)
-            val num = radio.getString("num")
-            val area = radio.getString("area")
-            val optName = radio.getString("optName")
-            val price = radio.getInt("price")
-
-            radioPrice[num] = price
-            val baedalOpt = BaedalOpt(num, optName, price, area, true)
-            var areaCheck = false
-
-            for (j in areaMenu){
-                if (j.area == area){
-                    j.areaList.add(baedalOpt)   // BaedalOptArea 클래스에서 맞는 area 찾아 baedalOpt 클래스 넣기
-                    areaCheck = true
-                    radioChecked[num] = 0
-                    break
-                }
-            }
-            if (!areaCheck) {                   // BaedalOptArea 에 없는 area 일 경우 새로 생성, 첫번째 옵션을 의미하므로 디폴트로 체크
-                areaMenu.add(BaedalOptArea(area, mutableListOf(baedalOpt)))
-                radioChecked[num] = 1
-            }
-        }
-
-        if (combos[0] != "") {
-            for (i in 0 until combos.length()) {
-                val combo = combos.getJSONObject(i)
-                val num = combo.getString("num")
-                val area = combo.getString("area")
-                val optName = combo.getString("optName")
-                val price = combo.getInt("price")
-
-                comboPrice[num] = price
-                comboChecked[num] = 0
-
-                val baedalOpt = BaedalOpt(num, optName, price, area, false)
-                var areaCheck = false
-                for (j in areaMenu){
-                    if (j.area == area){
-                        j.areaList.add(baedalOpt)
-                        areaCheck = true
-                    }
-                }
-                if (!areaCheck) areaMenu.add(BaedalOptArea(area, mutableListOf(baedalOpt)))
-            }
-        }
+    fun refreshView() {
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         binding.tvMenuName.text = menuName
-        binding.rvMenu.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvMenu.setHasFixedSize(true)
+
+        setRecyclerView()
         binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
-        val adapter = BaedalOptAreaAdapter(requireContext(), areaMenu)
 
         //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
-        adapter.notifyDataSetChanged()
-
-        binding.rvMenu.adapter = adapter
 
         binding.btnSub.setOnClickListener {
             if (count > 1) binding.tvCount.text = (--count).toString()
@@ -118,17 +79,9 @@ class FragmentBaedalOpt :Fragment() {
             binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
         }
 
-        adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
-            override fun onClick(isRadio: Boolean, area: String, num: String, isChecked: Boolean) {
-                println("isRadio: ${isRadio}, area: ${area}, num:${num}, isChecked:${isChecked}")
-                if (isRadio) setChecked(isRadio, area, num, isChecked, radios)
-                else setChecked(isRadio, area, num, isChecked)
-                binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
-            }
-        })
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.btnCartConfirm.setOnClickListener {
+
+        /*binding.btnCartConfirm.setOnClickListener {
             val optObject = JSONObject()
             optObject.put("menuName", menuName)
             optObject.put("id", id)
@@ -149,49 +102,101 @@ class FragmentBaedalOpt :Fragment() {
             val bundle = bundleOf("opt" to optObject.toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("menuWithOpt", bundle)
             onBackPressed()
-        }
+        }*/
     }
 
     fun setTotalPrice(): Int {
         var totalPrice = 0
-
-        if (radioChecked.isNotEmpty())
-            for (i in radioChecked.keys)
-                totalPrice += radioChecked[i]!! * radioPrice[i]!!
-        if (comboChecked.isNotEmpty())
-            for (i in comboChecked.keys)
-                totalPrice += comboChecked[i]!! * comboPrice[i]!!
-
-        return (totalPrice * count)
-    }
-
-    fun setChecked(isRadio: Boolean, area: String, num: String, isChecked: Boolean, optList: JSONArray= JSONArray()) {
-        if (isRadio) {
-            if (radioChecked[num] == 0){
-                //var radios = JSONArray()
-                var nums = mutableListOf<String>()
-
-                for (i in 0 until optList.length()){
-                    if (optList.getJSONObject(i).getString("area") == area) {
-                        //radios.put(optList.getJSONObject(i))
-                        nums.add(optList.getJSONObject(i).getString("num"))
-                    }
-                }
-
-                /*val array = radios.getJSONArray("option")
-                for (i in 0 until array.length()){
-                    nums.add(array.getJSONObject(i).getString("num"))
-                }*/
-                for (i in nums) {
-                    if (i == num) radioChecked[i] = 1
-                    else radioChecked[i] = 0
+        groupOptionChecked.forEach{
+            val groupId = it.key
+            it.value.forEach{
+                val optionId = it.key
+                if (it.value) {
+                    totalPrice += groupOptionPrice[groupId]!![optionId]!!
                 }
             }
-        } else {
-            if (isChecked) comboChecked[num] = 1
-            else comboChecked[num] = 0
         }
-        println("라디오: ${radioChecked}, 콤보: ${comboChecked}")
+
+        return menuPrice + (totalPrice * count)
+    }
+
+
+    fun setRecyclerView() {
+        api.getGroupOption(menuId).enqueue(object : Callback<List<GroupOptionModel>> {
+            override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
+                groupOption = response.body()!!
+                mappingAdapter()
+                setGroupOptionChecked()
+                Log.d("log", response.toString())
+                Log.d("log", groupOption.toString())
+            }
+
+            override fun onFailure(call: Call<List<GroupOptionModel>>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    fun mappingAdapter() {
+        binding.rvOptionGroup.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvOptionGroup.setHasFixedSize(true)
+
+        val adapter = BaedalOptAreaAdapter(requireContext(), groupOption)
+        binding.rvOptionGroup.adapter = adapter
+
+
+        adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
+            override fun onClick(groupId: Int, isRadio: Boolean, optionId: Int, isChecked: Boolean) {
+                println("group: ${groupId}, optionId:${optionId}, isChecked:${isChecked}")
+                setChecked(groupId, isRadio, optionId, isChecked)
+                //binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
+            }
+        })
+
+        /*adapter.addListener(object : BaedalOptAreaAdapter.OnItemClickListener {
+            override fun onClick(option_id: Int) {
+                println("")
+            }
+        })*/
+        adapter.notifyDataSetChanged()
+    }
+
+    fun setGroupOptionChecked() {
+        groupOption.forEach {
+            val groupId = it.group_id
+            var radioFirst = true
+            val minQ = it.min_orderable_quantity
+            val maxQ = it.max_orderable_quantity
+            groupOptionChecked[groupId] = mutableMapOf<Int, Boolean>()
+            groupOptionPrice[groupId] = mutableMapOf<Int, Int>()
+            println("${it.group_name}")
+            it.option_list.forEach{
+                println("${radioFirst}, ${minQ}, ${maxQ}")
+                if (radioFirst && (minQ == 1 && maxQ == 1)) {
+                    groupOptionChecked[groupId]!![it.option_id] = true
+                    radioFirst = false
+                } else {
+                    groupOptionChecked[groupId]!![it.option_id] = false
+                }
+                groupOptionPrice[groupId]!![it.option_id] = it.option_price
+            }
+        }
+        println(groupOptionChecked)
+    }
+
+    fun setChecked(groupId: Int, isRadio:Boolean, optionId: Int, isChecked: Boolean) {
+        if (isRadio) {
+            for (i in groupOptionChecked[groupId]!!.keys) {
+                groupOptionChecked[groupId]!![i] = (i == optionId)
+            }
+        } else {
+            groupOptionChecked[groupId]!![optionId] = isChecked
+        }
+        println("groupOptionChecked: ${groupOptionChecked}")
+        binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
     }
 
     fun onBackPressed() {

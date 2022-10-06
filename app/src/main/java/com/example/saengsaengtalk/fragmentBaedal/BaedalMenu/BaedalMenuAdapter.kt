@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.APIS.MenuModel
 import com.example.saengsaengtalk.databinding.LytBaedalMenuBinding
+import java.text.DecimalFormat
 
-class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
+class BaedalMenuAdapter(val menu: List<MenuModel>) : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
@@ -17,16 +19,16 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val menu = baedalMenu.get(position)
+        val menu = menu.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(menu.id)
+            itemClickListener.onClick(menu.menu_id)
         }
         holder.bind(menu)
     }
 
     interface OnItemClickListener {
-        fun onClick(id: Int)
+        fun onClick(menuId: Int)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -36,13 +38,15 @@ class BaedalMenuAdapter(val baedalMenu: MutableList<BaedalMenu>) : RecyclerView.
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return baedalMenu.size
+        return menu.size
     }
 
     class CustomViewHolder(var binding: LytBaedalMenuBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(menu: BaedalMenu) {
-            binding.tvName.text = menu.menuName
-            binding.tvPrice.text = menu.price
+        val dec = DecimalFormat("#,###")
+
+        fun bind(menu: MenuModel) {
+            binding.tvName.text = menu.menu_name
+            binding.tvPrice.text = "%s원".format(dec.format(menu.menu_price))
         }
     }
 }

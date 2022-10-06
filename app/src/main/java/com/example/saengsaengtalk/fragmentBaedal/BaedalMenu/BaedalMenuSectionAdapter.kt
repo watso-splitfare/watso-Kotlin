@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.APIS.SectionMenuModel
 import com.example.saengsaengtalk.databinding.LytBaedalMenuSectionBinding
 import java.lang.ref.WeakReference
 
 
-class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: MutableList<BaedalMenuSection>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
+class BaedalMenuSectionAdapter(val context: Context, val sectionMenu: List<SectionMenuModel>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalMenuSectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,18 +22,18 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val item = baedalMenuSection[position]
-        holder.bind(item)
+        val section = sectionMenu[position]
+        holder.bind(section)
     }
 
     interface OnItemClickListener {
-        fun onClick(id: Int)
+        fun onClick(sectionId: Int, menuId: Int)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(id: Int) {
-        listener.get()?.onClick(id)
+    fun itemClick(sectionId: Int, menuId: Int) {
+        listener.get()?.onClick(sectionId, menuId)
     }
 
     fun addListener(listener: OnItemClickListener) {
@@ -40,12 +41,12 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
     }
 
     override fun getItemCount(): Int {
-        return baedalMenuSection.size
+        return sectionMenu.size
     }
 
     inner class CustomViewHolder(var binding: LytBaedalMenuSectionBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BaedalMenuSection) {
-            binding.tvSection.text = item.section
+        fun bind(section: SectionMenuModel) {
+            binding.tvSection.text = section.section_name
             binding.lytSection.setOnClickListener{
                 if (binding.rvMenuSection.visibility == View.VISIBLE) {
                     binding.rvMenuSection.visibility = View.GONE
@@ -60,12 +61,12 @@ class BaedalMenuSectionAdapter(val context: Context, val baedalMenuSection: Muta
             binding.rvMenuSection.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalMenuAdapter(item.sectionList)
+            val adapter = BaedalMenuAdapter(section.menu_list)
             binding.rvMenuSection.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener {
-                override fun onClick(id:Int) {
-                    itemClick(id)
+                override fun onClick(menuId:Int) {
+                    itemClick(section.section_id, menuId)
                 }
             })
         }

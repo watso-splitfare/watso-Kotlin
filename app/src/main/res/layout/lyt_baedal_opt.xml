@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <RadioButton
-        android:id="@+id/rb_menu"
+        android:id="@+id/rb_option"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="RadioButton"
@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
-        android:id="@+id/cb_menu"
+        android:id="@+id/cb_option"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CheckBox"

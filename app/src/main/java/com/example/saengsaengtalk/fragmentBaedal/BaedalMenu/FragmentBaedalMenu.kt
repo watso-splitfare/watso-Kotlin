@@ -18,7 +18,6 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
     var postNum: String? = null
@@ -28,12 +27,10 @@ class FragmentBaedalMenu :Fragment() {
     var storeId = "0"
     var baedalFee = ""
 
-    val dec = DecimalFormat("#,###")
 
-    var menuArray = JSONArray()                             // 스토어 메뉴 전체. 현재화면 구성에 사용
-    var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
+    var sectionMenu = listOf<SectionMenuModel>()                   // 스토어 메뉴 전체. 현재화면 구성에 사용
+    //var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
     var orderList = JSONArray()                              // confirm frag 뷰바인딩을 위한 String Array
-    var orderListTemp = JSONArray()
     //var optInfo = JSONArray()                               // confirm frag 에서 API로 보내기 위한 형식
 
     private var mBinding: FragBaedalMenuBinding? = null
@@ -64,40 +61,14 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun refreshView() {
-        menuArray = getMenuArray()
-        getMenuArrayTemp()
-
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.tvStoreName.text = storeName
-
-        setSectionMenu()
-
-        binding.rvMenu.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvMenu.setHasFixedSize(true)
-
-        val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
-        binding.rvMenu.adapter = adapter
-
-        adapter.addListener(object: BaedalMenuSectionAdapter.OnItemClickListener{
-            override fun onClick(id: Int) {
-                println(id)
-                loop@ for (i in 0 until menuArray.length()) {
-                    val menus = menuArray.getJSONObject(i)
-                    if (id == menus.getInt("id")) {
-                        setFrag(FragmentBaedalOpt(), mapOf("menu" to menus.toString()))
-                        break@loop
-                    }
-                }
-            }
-        })
-        adapter.notifyDataSetChanged()
+        setRecyclerView()
 
         binding.lyCartCount.visibility = View.INVISIBLE
         binding.btnCart.setEnabled(false)
 
-        /* Detail frag에서 메뉴 선택 후 담기 시 작동 */
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
+        /** Detail frag에서 메뉴 선택 후 담기 시 작동 */
+        /*getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
             val opt = bundle.getString("opt")
             println("데이터 받음: ${opt}")
             //optInfo.put(JSONObject(opt))
@@ -149,24 +120,16 @@ class FragmentBaedalMenu :Fragment() {
                 FragmentBaedalConfirm(), mapOf(
                     "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
                     "member" to member!!, "orderList" to orderList.toString(), "isPosting" to isPosting!!))
-        }
+        }*/
     }
 
-    @JvmName("getMenuArray1")
-    fun getMenuArray(): JSONArray{
-        val assetManager = resources.assets
-        val jsonObj = JSONObject(assetManager.open("nene.json").bufferedReader().use { it.readText() })
-
-        //storeName = jsonObj.getString("storeName")
-        //baedalFee = jsonObj.getInt("baedalFee").toString()
-        return jsonObj.getJSONArray("info")
-    }
-
-    fun getMenuArrayTemp() {
+    fun setRecyclerView() {
         api.getSectionMenu(storeId.toInt()).enqueue(object : Callback<List<SectionMenuModel>> {
             override fun onResponse(call: Call<List<SectionMenuModel>>, response: Response<List<SectionMenuModel>>) {
-                Log.d("log",response.toString())
-                Log.d("log", response.body().toString())
+                sectionMenu = response.body()!!
+                mappingAdapter()
+                Log.d("log", response.toString())
+                Log.d("log", sectionMenu.toString())
             }
 
             override fun onFailure(call: Call<List<SectionMenuModel>>, t: Throwable) {
@@ -177,112 +140,38 @@ class FragmentBaedalMenu :Fragment() {
         })
     }
 
-    fun setSectionMenu() {
-        for (i in 0 until menuArray.length()) {
-            val obj = menuArray.getJSONObject(i)
-            val id = obj.getInt("id")
-            val section = obj.getString("section")
-            val menuname = obj.getString("menuName")
+    fun mappingAdapter() {
+        binding.tvStoreName.text = storeName
 
-            println("id: ${id}, menuname: ${menuname}")
+        binding.rvMenuSection.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvMenuSection.setHasFixedSize(true)
 
-            var minPrice = 2147483647
-            var maxPrice = 0
-            val radio = obj.getJSONArray("radio")
+        val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
+        binding.rvMenuSection.adapter = adapter
 
-            for (j in 0 until radio.length()) {
-                if (radio.getJSONObject(j).getString("area") == "가격") {
-                    val optPrice = radio.getJSONObject(j).getString("price").toInt()
-                    if (minPrice > optPrice) minPrice = optPrice
-                    if (maxPrice < optPrice) maxPrice = optPrice
-                }
-            }
-
-            val price =
-                if (minPrice == maxPrice) "${dec.format(minPrice)}원"
-                else "${dec.format(minPrice)}~${dec.format(maxPrice)}원"
-
-            val baedalmenu = BaedalMenu(id, menuname, price)
-            var sectionCheck = false
-
-            for (i in sectionMenu) {
-                if (i.section == section) {
-                    i.sectionList.add(baedalmenu)
-                    sectionCheck = true
-                    break
-                }
-            }
-            if (!sectionCheck) sectionMenu.add(BaedalMenuSection(section,mutableListOf(baedalmenu)))
-        }
-        println(sectionMenu)
-    }
-
-    fun setOptArray(opt: String) {
-        val jObect = JSONObject(opt)
-        val menuName = jObect.getString("menuName")
-        val id = jObect.getInt("id")
-        val radio = jObect.getJSONArray("radio")
-        val combo = jObect.getJSONArray("combo")
-        val totalPrice = jObect.getInt("price")
-        val count = jObect.getInt("count")
-
-        var optString = mutableListOf<String>()
-
-        for (i in 0 until menuArray.length()){
-            if (menuArray.getJSONObject(i).getInt("id") == id){
-                val radioArray = menuArray.getJSONObject(i).getJSONArray("radio")
-                val comboArray = menuArray.getJSONObject(i).getJSONArray("combo")
-
-                val radioList = jArrayToList(radio)
-                while (optString.size < radioList.size) {
-                    for (j in 0 until radioArray.length()) {
-                        if (radioArray.getJSONObject(j).getString("num") in radioList) {
-                            val obj = radioArray.getJSONObject(j)
-                            val area = obj.getString("area")
-                            val optName = obj.getString("optName")
-                            val price = obj.getInt("price")
-                            optString.add("• ${area}: ${optName} (${dec.format(price)}원)")
+        adapter.addListener(object : BaedalMenuSectionAdapter.OnItemClickListener {
+            override fun onClick(sectionId: Int, menuId: Int) {
+                //println("클릭: 섹션: ${section_id}, 메뉴: ${menu_id}")
+                loop@ for (s in sectionMenu) {
+                    if (sectionId == s.section_id) {
+                        for (m in s.menu_list) {
+                            //println("검색: 섹션: ${s.section_id}, 메뉴: ${m.menu_id}")
+                            if (menuId == m.menu_id) {
+                                //println(m.toString())
+                                setFrag(FragmentBaedalOpt(), mapOf(
+                                    "menuId" to menuId.toString(),
+                                    "menuName" to m.menu_name,
+                                    "menuPrice" to m.menu_price.toString()
+                                ))
+                                break@loop
+                            }
                         }
                     }
                 }
-
-                val comboList = jArrayToList(combo)
-                var comboIndex = mutableMapOf<String, Int>()
-                var comboCount = 0
-                while (comboCount < comboList.size){
-                    for (j in 0 until comboArray.length()) {
-                        if (comboArray.getJSONObject(j).getString("num") in comboList) {
-                            val obj = comboArray.getJSONObject(j)
-                            val area = obj.getString("area")
-                            val optName = obj.getString("optName")
-                            val price = obj.getInt("price")
-                            if (area in comboIndex.keys) {
-                                optString[comboIndex[area]!!] =
-                                    "${optString[comboIndex[area]!!]} / ${optName} (${dec.format(price)}원)"
-                            }
-                            else {
-                                optString.add("• ${area}: ${optName} (${dec.format(price)}원)")
-                                comboIndex[area] = optString.lastIndex
-                            }
-                            comboCount++
-                        }
-                    }
-                }
-                break
             }
-        }
-        //for (i in optString) println(i)
-        orderList.put(JSONObject(mapOf("menuName" to menuName, "price" to totalPrice,
-            "count" to count, "optString" to JSONArray(optString)
-        )))
-    }
-
-    fun jArrayToList(array: JSONArray): MutableList<String> {
-        var list = mutableListOf<String>()
-        for (i in 0 until array.length())
-            list.add(array.getString(i))
-
-        return list
+        })
+        adapter.notifyDataSetChanged()
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
