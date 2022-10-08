@@ -5,17 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.GroupOptionModel
-import com.example.saengsaengtalk.APIS.SectionMenuModel
 import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
 import com.example.saengsaengtalk.databinding.FragBaedalOptBinding
-import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.BaedalMenuSectionAdapter
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,13 +19,6 @@ class FragmentBaedalOpt :Fragment() {
     var menuId = 0
     var menuName = ""
     var menuPrice = 0
-    /*var menu: JSONObject? = null
-    var section: String? = null
-
-    val radioPrice = mutableMapOf<String, Int>()
-    val comboPrice = mutableMapOf<String, Int>()
-    val radioChecked = mutableMapOf<String, Int>()
-    val comboChecked = mutableMapOf<String, Int>()*/
 
     val groupOptionPrice = mutableMapOf<Int, MutableMap<Int, Int>>()
     var groupOptionChecked = mutableMapOf<Int, MutableMap<Int, Boolean>>()
@@ -67,8 +54,6 @@ class FragmentBaedalOpt :Fragment() {
 
         setRecyclerView()
         binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
-
-        //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
 
         binding.btnSub.setOnClickListener {
             if (count > 1) binding.tvCount.text = (--count).toString()
@@ -150,18 +135,13 @@ class FragmentBaedalOpt :Fragment() {
 
         adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
             override fun onClick(groupId: Int, isRadio: Boolean, optionId: Int, isChecked: Boolean) {
-                println("group: ${groupId}, optionId:${optionId}, isChecked:${isChecked}")
+                //println("group: ${groupId}, optionId:${optionId}, isChecked:${isChecked}")
                 setChecked(groupId, isRadio, optionId, isChecked)
                 //binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
             }
         })
 
-        /*adapter.addListener(object : BaedalOptAreaAdapter.OnItemClickListener {
-            override fun onClick(option_id: Int) {
-                println("")
-            }
-        })*/
-        adapter.notifyDataSetChanged()
+        //adapter.notifyDataSetChanged()
     }
 
     fun setGroupOptionChecked() {
@@ -172,9 +152,9 @@ class FragmentBaedalOpt :Fragment() {
             val maxQ = it.max_orderable_quantity
             groupOptionChecked[groupId] = mutableMapOf<Int, Boolean>()
             groupOptionPrice[groupId] = mutableMapOf<Int, Int>()
-            println("${it.group_name}")
+            //println("${it.group_name}")
             it.option_list.forEach{
-                println("${radioFirst}, ${minQ}, ${maxQ}")
+                //println("${radioFirst}, ${minQ}, ${maxQ}")
                 if (radioFirst && (minQ == 1 && maxQ == 1)) {
                     groupOptionChecked[groupId]!![it.option_id] = true
                     radioFirst = false
@@ -187,14 +167,20 @@ class FragmentBaedalOpt :Fragment() {
         println(groupOptionChecked)
     }
 
-    fun setChecked(groupId: Int, isRadio:Boolean, optionId: Int, isChecked: Boolean) {
+    fun setChecked(groupId: Int, isRadio:Boolean, optionId: Int, isChecked: Boolean){
         if (isRadio) {
             for (i in groupOptionChecked[groupId]!!.keys) {
                 groupOptionChecked[groupId]!![i] = (i == optionId)
             }
         } else {
             groupOptionChecked[groupId]!![optionId] = isChecked
+            var count = 0
+            groupOptionChecked[groupId]!!.forEach{
+                if (it.value) count += 1
+            }
+            println("[FragOpt] count: ${count}, max: ${groupOption[groupId].max_orderable_quantity}")
         }
+        println("[FragOpt] isChecked: ${isChecked}")
         println("groupOptionChecked: ${groupOptionChecked}")
         binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
     }

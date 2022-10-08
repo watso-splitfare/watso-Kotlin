@@ -1,19 +1,22 @@
 package com.example.saengsaengtalk.fragmentBaedal.BaedalOpt
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.APIS.OptionModel
 import com.example.saengsaengtalk.databinding.LytBaedalOptBinding
 import java.text.DecimalFormat
 
-class BaedalOptAdapter(val option: List<OptionModel>, val minOrderableQuantity: Int, val maxOrderableQuantity: Int):
+class BaedalOptAdapter(val context: Context, val option: List<OptionModel>, val minOrderableQuantity: Int, val maxOrderableQuantity: Int):
     RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
 
     var isRadio = false
     var checkedPosition = -1
+    var count = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOptBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -77,23 +80,35 @@ class BaedalOptAdapter(val option: List<OptionModel>, val minOrderableQuantity: 
                 binding.rbOption.setVisibility(View.INVISIBLE)
                 checkBtn = binding.cbOption
 
+
                 checkBtn.setOnClickListener {
-                    itemClickListener.onClick(isRadio, option.option_id, checkBtn.isChecked)
-                    println(0)
+                    callItemClickListener(option.option_id)
                 }
                 itemView.setOnClickListener {
                     checkBtn.setChecked(!checkBtn.isChecked)
-                    itemClickListener.onClick(isRadio, option.option_id, checkBtn.isChecked)
-                    println(1)
+                    callItemClickListener(option.option_id)
                 }
+
             }
             binding.cbOption.text = option.option_name
             val dec = DecimalFormat("#,###")
             binding.tvPrice.text = "${dec.format(option.option_price)}원"
         }
 
-        fun setUnchecked() {
-            checkBtn.setChecked(false)
+        fun callItemClickListener(optionId: Int) {
+            if (checkBtn.isChecked) {
+                count += 1
+            } else {
+                count -= 1
+            }
+
+            if (count > maxOrderableQuantity) {
+                checkBtn.setChecked(false)
+                count -= 1
+                Toast.makeText(context, "최대 ${maxOrderableQuantity}개까지 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                itemClickListener.onClick(isRadio, optionId, checkBtn.isChecked)
+            }
         }
     }
 }
