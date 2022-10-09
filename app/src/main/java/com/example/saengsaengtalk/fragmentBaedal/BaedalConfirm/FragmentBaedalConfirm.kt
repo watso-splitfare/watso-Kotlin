@@ -12,42 +12,43 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
-import org.json.JSONObject
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
-    var postNum: String? = null
-    var storeName: String? = null
-    var isPosting: String? = null
-
+    var isPosting = false
+    var postNum: Int? = null
+    var member = 0
+    var storeName = ""
     var baedalFee = 0
-    var member = 1
-    var orderList: JSONArray? = null        // 프래그먼트간 메뉴 전송용 데이터
-    //var optInfo: JSONArray? = null
-
-    var orderPrice = 0
-    var countChanged = mutableMapOf<String, Int>()
-    val dec = DecimalFormat("#,###")
-
-    var menu = mutableListOf<BaedalConfirmMenu>()       // 어댑터 바인딩용 데이터
+    var orders = mutableListOf<BaedalOrder>()
 
     private var mBinding: FragBaedalConfirmBinding? = null
     private val binding get() = mBinding!!
+    val gson = Gson()
+    var orderPrice = 0
+    val dec = DecimalFormat("#,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            postNum = it.getString("postNum")
-            storeName = it.getString("storeName")
+            isPosting = it.getString("isPosting").toBoolean()
+            if (!isPosting) {
+                postNum = it.getString("postNum")!!.toInt()
+                member = it.getString("member")!!.toInt()
+            }
+            storeName = it.getString("storeName")!!
             baedalFee = it.getString("baedalFee")!!.toInt()
-            member = it.getString("member")!!.toInt()
-            orderList = JSONArray(it.getString("orderList"))
+            orders = gson.fromJson(it.getString("orders"), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
+                //JSONArray(it.getString("orders"))
+            //orderList = JSONArray(it.getString("orderList"))
             //optInfo = JSONArray(it.getString("info"))
-            isPosting = it.getString("isPosting")
         }
         println("스토어이름: ${storeName}")
-        println("메뉴: ${orderList}")
+        println("메뉴: ${orders}")
 
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -61,63 +62,47 @@ class FragmentBaedalConfirm :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        var bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
         binding.btnPrevious.setOnClickListener {
-            getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
+            rectifyOrders()
+            val bundle = bundleOf("ordersString" to gson.toJson(orders))
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("changeOrder", bundle)
             onBackPressed()
         }
+
         binding.tvStoreName.text = storeName
-
-        binding.rvMenuSelected.layoutManager =
+        binding.rvOrderList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvMenuSelected.setHasFixedSize(true)
+        binding.rvOrderList.setHasFixedSize(true)
 
-        for (i in 0 until orderList!!.length()) {
-            val obj = orderList!!.getJSONObject(i)
-            val menuName = obj.getString("menuName")
-            val price = obj.getInt("price")
-            val count = obj.getInt("count")
+        val adapter = AdapterSelectedMenu(requireContext(), JSONArray(gson.toJson(orders)))
+        binding.rvOrderList.adapter = adapter
 
-            val strings = mutableListOf<BaedalConfirm>()
-            val stringArray = JSONArray(obj.getString("optString"))
-            for (j in 0 until stringArray.length()) {
-                strings.add(BaedalConfirm(stringArray.getString(j)))
-            }
+        adapter.setItemClickListener(object: AdapterSelectedMenu.OnItemClickListener {
+            override fun onChange(position: Int, change: String) {
+                //ordersObject = gson.fromJson(orders.toString(), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
+                //println(ordersObject)
+                //val b = gson.toJson(ordersObject)
+                //println(b)
+                //println("@@@@@@@@@@@@@@@@@@@@@@@@")
+                //println(orders.toString())
+                //println(gson.toJson(orders))
 
-            menu.add(BaedalConfirmMenu(menuName, price, count, strings))
-            orderPrice += price * count
-        }
-        val adapter = BaedalConfirmMenuAdapter(requireContext(), menu)
-        binding.rvMenuSelected.adapter = adapter
-
-        adapter.setItemClickListener(object: BaedalConfirmMenuAdapter.OnItemClickListener {
-            override fun onChange(position: Int, price:Int, change: String) {
-                var correction = 0
-
+                val order = orders[position]
                 if (change == "remove") {
-                    menu[position].count = 0
-                    orderPrice -= price
+                    order.count = 0
                 }
                 else if (change == "sub") {
-                    menu[position].count -= 1
-                    orderPrice -= price
+                    order.count -= 1
                 }
                 else {
-                    menu[position].count += 1
-                    orderPrice += price
+                    order.count += 1
                 }
 
-                bindSetText(orderPrice)
-                countChanged[(position + correction).toString()] = menu[position].count
-
-                bundle = bundleOf("countChanged" to JSONObject(countChanged as Map<*, *>).toString())
+                bindSetText()
 
                 var confirmAble = false
-                for (i in menu) {
-                    if (i.count > 0) {
-                        confirmAble = true
-                        break
-                    }
+                orders.forEach {
+                    if (it.count > 0) confirmAble = true
                 }
                 if (!confirmAble) {
                     binding.btnConfirm.setEnabled(false)
@@ -127,16 +112,18 @@ class FragmentBaedalConfirm :Fragment() {
         })
 
         binding.lytAddMenu.setOnClickListener {
-            getActivity()?.getSupportFragmentManager()?.setFragmentResult("fromConfirmFrag", bundle)
+            rectifyOrders()
+            val bundle = bundleOf("ordersString" to gson.toJson(orders))
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("changeOrder", bundle)
             onBackPressed()
         }
 
-        bindSetText(orderPrice)
+        bindSetText()
 
-        if (isPosting == "true") {
+        if (isPosting) {
             binding.lytRequest.setVisibility(View.GONE)
             binding.btnConfirm.setOnClickListener {
-                getActivity()?.getSupportFragmentManager()?.setFragmentResult("ConfirmToAdd", bundleOf("menu" to menu))
+                getActivity()?.getSupportFragmentManager()?.setFragmentResult("ConfirmToPosting", bundleOf("ordersString" to gson.toJson(orders)))
                 onBackPressed()
                 onBackPressed()
             }
@@ -149,7 +136,23 @@ class FragmentBaedalConfirm :Fragment() {
         }
     }
 
-    fun bindSetText(orderPrice: Int) {
+    /** 메뉴 추가 Frag로 가기전 삭제된 데이터 교정*/
+    fun rectifyOrders() {
+        var removedIndex = mutableListOf<Int>()
+        for (i in 0 until orders.size) {
+            if (orders[i].count == 0) removedIndex.add(i)
+        }
+        removedIndex.reversed().forEach() {
+            orders.removeAt(it)
+        }
+    }
+
+    fun bindSetText() {
+        var temp = 0
+        orders.forEach {
+            temp += it.sumPrice * it.count
+        }
+        orderPrice = temp
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvBaedalFee.text = "${dec.format(baedalFee/(member + 1))}원"
         binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원"

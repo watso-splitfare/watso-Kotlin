@@ -20,18 +20,15 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class FragmentBaedalMenu :Fragment() {
+    var isPosting = false
     var postNum: String? = null
-    var member: String? = null
-    var isPosting = "false"
+    var member = "0"
     var storeName = ""
     var storeId = "0"
     var baedalFee = ""
 
-
-    var sectionMenu = listOf<SectionMenuModel>()                   // 스토어 메뉴 전체. 현재화면 구성에 사용
-    //var sectionMenu = mutableListOf<BaedalMenuSection>()    // 어댑터에 넘겨줄 인자
-    var orderList = JSONArray()                              // confirm frag 뷰바인딩을 위한 String Array
-    //var optInfo = JSONArray()                               // confirm frag 에서 API로 보내기 위한 형식
+    var sectionMenu = listOf<SectionMenuModel>()        // 스토어 메뉴 전체. 현재화면 구성에 사용
+    var orders = JSONArray()                            // 주문 리스트
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -40,9 +37,11 @@ class FragmentBaedalMenu :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            postNum = it.getString("postNum")
-            member = it.getString("member")
-            isPosting = it.getString("isPosting")!!
+            isPosting = it.getString("isPosting")!!.toBoolean()
+            if (!isPosting) {
+                postNum = it.getString("postNum")!!
+                member = it.getString("member")!!
+            }
             storeName = it.getString("storeName")!!
             storeId = it.getString("storeId")!!
             baedalFee = it.getString("baedalFee")!!
@@ -64,63 +63,47 @@ class FragmentBaedalMenu :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         setRecyclerView()
 
-        binding.lyCartCount.visibility = View.INVISIBLE
+        binding.lytCartCount.visibility = View.INVISIBLE
         binding.btnCart.setEnabled(false)
 
-        /** Detail frag에서 메뉴 선택 후 담기 시 작동 */
-        /*getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("menuWithOpt", this) { requestKey, bundle ->
-            val opt = bundle.getString("opt")
-            println("데이터 받음: ${opt}")
-            //optInfo.put(JSONObject(opt))
-            setOptArray(opt!!)
+        /** Option frag에서 메뉴 선택 후 담기 시 작동 */
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
+            val orderString = bundle.getString("orderString")
+            orders.put(JSONObject(orderString))
 
-            binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
-            binding.lyCartCount.visibility = View.VISIBLE
-            binding.tvCartCount.text = orderList.length().toString()
-            binding.btnCart.setEnabled(true)
-        }
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("fromConfirmFrag", this) { requestKey, bundle ->
-            val countChanged = JSONObject(bundle.getString("countChanged"))
-            //optInfo = JSONArray(bundle.getString("optInfo"))
-
-            var tempArray = JSONArray()
-            var position = mutableListOf<String>()
-            for (i in countChanged.keys())
-                position.add(i)
-            for (i in 0 until orderList.length()) {
-                if (position.contains(i.toString())) {
-                    if (countChanged[i.toString()] != 0) {
-                        val obj = orderList.getJSONObject(i)
-                        val menuName = obj.getString("menuName")
-                        val price = obj.getInt("price")
-                        val count = countChanged[i.toString()]
-                        val optString = jArrayToList(obj.getJSONArray("optString"))
-                        tempArray.put(
-                            JSONObject(mapOf(
-                                "menuName" to menuName,"price" to price,"count" to count, "optString" to optString
-                            ))
-                        )
-                    }
-                } else {
-                    tempArray.put(orderList[i])
-                }
+            if (orders.length() > 0) {
+                binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
+                binding.lytCartCount.visibility = View.VISIBLE
+                binding.tvCartCount.text = orders.length().toString()
+                binding.btnCart.setEnabled(true)
             }
+        }
 
-            orderList = tempArray
-            binding.tvCartCount.text = orderList.length().toString()
-            if (orderList.length() == 0) {
-                binding.btnCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
-                //binding.lyCartCount.visibility = View.INVISIBLE
+        /** Confirm frag에서 뒤로가기(메뉴 더담기) 시 작동 */
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("changeOrder", this) { requestKey, bundle ->
+            val ordersString = bundle.getString("ordersString")
+            orders = JSONArray(ordersString)
+
+            binding.tvCartCount.text = orders.length().toString()
+            if (orders.length() == 0) {
+                binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
+                binding.lytCartCount.visibility = View.INVISIBLE
                 binding.btnCart.setEnabled(false)
             }
         }
 
         binding.btnCart.setOnClickListener {
-            setFrag(
-                FragmentBaedalConfirm(), mapOf(
-                    "postNum" to postNum!!, "storeName" to storeName, "baedalFee" to baedalFee,
-                    "member" to member!!, "orderList" to orderList.toString(), "isPosting" to isPosting!!))
-        }*/
+            val map = mutableMapOf(
+                "isPosting" to isPosting.toString(),
+                "member" to member,
+                "storeName" to storeName,
+                "baedalFee" to baedalFee,
+                "orders" to orders.toString()
+            )
+            if (!isPosting) map["postNum"] = postNum!!
+
+            setFrag(FragmentBaedalConfirm(), map)
+        }
     }
 
     fun setRecyclerView() {
@@ -171,7 +154,7 @@ class FragmentBaedalMenu :Fragment() {
                 }
             }
         })
-        adapter.notifyDataSetChanged()
+        //adapter.notifyDataSetChanged()
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

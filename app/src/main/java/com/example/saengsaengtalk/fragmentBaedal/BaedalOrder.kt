@@ -2,21 +2,22 @@ package com.example.saengsaengtalk.fragmentBaedal
 
 
 data class BaedalOrder (
-    val count: Int,
-    val menuName: String,
+    var count: Int,
     val menuId: Int,
-    val menu_price: Int,
-    val options: List<Options>
+    val menuName: String,
+    val menuPrice: Int,
+    val sumPrice: Int,
+    val groups: List<Group>
 )
 
-data class Options(
-    val groupName: String,
+data class Group(
     val groupId: Int,
-    val option: List<Option>
+    val groupName: String,
+    val options: List<Option>
 )
 
 data class Option(
-    val optionName: String,
     val optionId: Int,
+    val optionName: String,
     val optionPrice: Int
 )

@@ -9,10 +9,13 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytBaedalConfirmMenuBinding
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.DecimalFormat
 
 
-class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: MutableList<BaedalConfirmMenu>) : RecyclerView.Adapter<BaedalConfirmMenuAdapter.CustomViewHolder>() {
+class AdapterSelectedMenu(val context: Context, val orders: JSONArray, val isRectifiable: Boolean=true):
+    RecyclerView.Adapter<AdapterSelectedMenu.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,13 +24,12 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-
-        val item = baedalConfirmMenu[position]
-        holder.bind(item)
+        val order = orders.getJSONObject(position)
+        holder.bind(order)
     }
 
     interface OnItemClickListener {
-        fun onChange(position: Int, price: Int, change: String)
+        fun onChange(position: Int, change: String)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -37,46 +39,55 @@ class BaedalConfirmMenuAdapter(val context: Context, val baedalConfirmMenu: Muta
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return baedalConfirmMenu.size
+        return orders.length()
     }
 
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BaedalConfirmMenu) {
+        fun bind(order: JSONObject) {
             val dec = DecimalFormat("#,###")
-            var count = item.count
-            var priceString = "${dec.format(item.price * count)}원"
+            var count = order.getInt("count")
+            var sumPrice = order.getInt("sumPrice")
+            var priceString = "${dec.format(sumPrice * count)}원"
 
-            binding.tvMenu.text = item.menu
+            if (!isRectifiable) {
+                binding.btnSub.visibility = View.GONE
+                binding.btnAdd.visibility = View.GONE
+                binding.btnRemove.visibility = View.GONE
+            }
+
+            binding.tvMenuName.text = order.getString("menuName")
 
             binding.rvMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val adapter = BaedalConfirmAdapter(item.optList)
+            val adapter = AdapterSelectedOption(order.getJSONArray("groups"))
             binding.rvMenu.adapter = adapter
 
-            binding.tvPrice.text = priceString
-            binding.tvCount.text = count.toString()
+            setBindText(priceString, count)
 
             binding.btnRemove.setOnClickListener {
-                itemClickListener.onChange(adapterPosition, item.price * count, "remove")
+                itemClickListener.onChange(adapterPosition, "remove")
                 binding.lytBaedalConfirm.visibility = View.GONE
             }
             binding.btnSub.setOnClickListener {
                 if (count > 1) {
                     count -= 1
-                    priceString = "${dec.format(item.price * count)}원"
-                    binding.tvPrice.text = priceString
-                    binding.tvCount.text = count.toString()
-                    itemClickListener.onChange(adapterPosition, item.price, "sub")
+                    priceString = "${dec.format(sumPrice * count)}원"
+                    setBindText(priceString, count)
+                    itemClickListener.onChange(adapterPosition, "sub")
                 }
             }
             binding.btnAdd.setOnClickListener {
                 if (count < 10) {
                     count += 1
-                    priceString = "${dec.format(item.price * count)}원"
-                    binding.tvPrice.text = priceString
-                    binding.tvCount.text = count.toString()
-                    itemClickListener.onChange(adapterPosition, item.price, "add")
+                    priceString = "${dec.format(sumPrice * count)}원"
+                    setBindText(priceString, count)
+                    itemClickListener.onChange(adapterPosition, "add")
                 }
             }
+        }
+
+        fun setBindText(priceString: String, count: Int) {
+            binding.tvPrice.text = priceString
+            binding.tvCount.text = "${count}개"
         }
     }
 }

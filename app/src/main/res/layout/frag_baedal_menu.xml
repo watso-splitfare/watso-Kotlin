@@ -135,7 +135,7 @@
             app:srcCompat="@drawable/shoppingbag_white" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ly_cart_count"
+            android:id="@+id/lyt_cart_count"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/box_cart_count"

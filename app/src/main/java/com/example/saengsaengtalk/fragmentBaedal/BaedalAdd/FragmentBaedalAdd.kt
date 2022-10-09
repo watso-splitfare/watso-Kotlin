@@ -16,18 +16,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.StoreListModel
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.BaedalConfirmMenu
-import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.BaedalOrderOpt
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.AdapterSelectedMenu
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -37,13 +35,14 @@ class FragmentBaedalAdd :Fragment() {
     var baedalfee = 10000
     var orderPrice = 0
     var totalPrice = 0
-
-    var decDt = DecimalFormat("00")
-    val decPrice = DecimalFormat("#,###")
+    var orders = JSONArray()
 
     private var mBinding: FragBaedalAddBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api = APIS.create()
+    val gson = Gson()
+    var decDt = DecimalFormat("00")
+    val decPrice = DecimalFormat("#,###")
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -122,12 +121,14 @@ class FragmentBaedalAdd :Fragment() {
 
         //setText()
 
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("ConfirmToAdd", this) { requestKey, bundle ->
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("ConfirmToPosting", this) { requestKey, bundle ->
 
-            val menu: MutableList<BaedalConfirmMenu> = bundle.get("menu") as MutableList<BaedalConfirmMenu>
+            //val menu: MutableList<BaedalConfirmMenu> = bundle.get("ordersString") as MutableList<BaedalConfirmMenu>
+            //val ordersString = bundle.getString("ordersString")
+            orders = JSONArray(bundle.getString("ordersString"))
 
-            val baedalOrder = mutableListOf<BaedalOrder>()
-            var totalPrice = 0
+            //val baedalOrder = mutableListOf<BaedalOrder>()
+            /*var totalPrice = 0
             for (i in menu) {
                 val menuName = i.menu
                 totalPrice += i.price
@@ -138,12 +139,12 @@ class FragmentBaedalAdd :Fragment() {
                     baedalOrderOpt.add(BaedalOrderOpt(j.optPrice))
                 }
                 baedalOrder.add(BaedalOrder(menuName, count, baedalOrderOpt))
-            }
+            }*/
 
             binding.rvMenuList.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalOrderAdapter(requireContext(), baedalOrder)
+            val adapter = AdapterSelectedMenu(requireContext(), orders, false)//BaedalOrderAdapter(requireContext(), baedalOrder)
             binding.rvMenuList.adapter = adapter
 
             binding.tvOrderPrice.text = "${decPrice.format(totalPrice)}원"
@@ -193,7 +194,7 @@ class FragmentBaedalAdd :Fragment() {
             "MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko")))
     }
 
-    fun setText() {
+    fun setBindText() {
         binding.tvBaedalFeeContent.text = "${decPrice.format(baedalfee)}원"
         binding.tvBaedalFee.text = "${decPrice.format(baedalfee)}원"
         binding.tvOrderPrice.text = "${decPrice.format(orderPrice)}원"
