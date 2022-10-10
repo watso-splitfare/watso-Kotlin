@@ -27,8 +27,8 @@ class FragmentBaedalMenu :Fragment() {
     var storeId = "0"
     var baedalFee = ""
 
-    var sectionMenu = listOf<SectionMenuModel>()        // 스토어 메뉴 전체. 현재화면 구성에 사용
     var orders = JSONArray()                            // 주문 리스트
+    var sectionMenu = listOf<SectionMenuModel>()        // 스토어 메뉴 전체. 현재화면 구성에 사용
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -45,6 +45,7 @@ class FragmentBaedalMenu :Fragment() {
             storeName = it.getString("storeName")!!
             storeId = it.getString("storeId")!!
             baedalFee = it.getString("baedalFee")!!
+            orders = JSONArray(it.getString("orders"))
         }
         Log.d("배달 메뉴", "게시물 번호: ${postNum}")
         Log.d("배달 메뉴", "주문 인원: ${member}")
@@ -62,21 +63,14 @@ class FragmentBaedalMenu :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         setRecyclerView()
-
-        binding.lytCartCount.visibility = View.INVISIBLE
-        binding.btnCart.setEnabled(false)
+        setCartBtn()
 
         /** Option frag에서 메뉴 선택 후 담기 시 작동 */
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
             val orderString = bundle.getString("orderString")
             orders.put(JSONObject(orderString))
 
-            if (orders.length() > 0) {
-                binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
-                binding.lytCartCount.visibility = View.VISIBLE
-                binding.tvCartCount.text = orders.length().toString()
-                binding.btnCart.setEnabled(true)
-            }
+            setCartBtn()
         }
 
         /** Confirm frag에서 뒤로가기(메뉴 더담기) 시 작동 */
@@ -84,26 +78,11 @@ class FragmentBaedalMenu :Fragment() {
             val ordersString = bundle.getString("ordersString")
             orders = JSONArray(ordersString)
 
-            binding.tvCartCount.text = orders.length().toString()
-            if (orders.length() == 0) {
-                binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
-                binding.lytCartCount.visibility = View.INVISIBLE
-                binding.btnCart.setEnabled(false)
-            }
+            setCartBtn()
         }
 
-        binding.btnCart.setOnClickListener {
-            val map = mutableMapOf(
-                "isPosting" to isPosting.toString(),
-                "member" to member,
-                "storeName" to storeName,
-                "baedalFee" to baedalFee,
-                "orders" to orders.toString()
-            )
-            if (!isPosting) map["postNum"] = postNum!!
-
-            setFrag(FragmentBaedalConfirm(), map)
-        }
+        binding.lytCart.setOnClickListener {cartOnClick()}
+        binding.btnCart.setOnClickListener {cartOnClick()}
     }
 
     fun setRecyclerView() {
@@ -155,6 +134,35 @@ class FragmentBaedalMenu :Fragment() {
             }
         })
         //adapter.notifyDataSetChanged()
+    }
+
+    fun setCartBtn() {
+        binding.tvCartCount.text = orders.length().toString()
+
+        if (orders.length() > 0) {
+            binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
+            binding.lytCartCount.visibility = View.VISIBLE
+            binding.btnCart.setEnabled(true)
+            binding.lytCart.setEnabled(true)
+        } else {
+            binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
+            binding.lytCartCount.visibility = View.INVISIBLE
+            binding.btnCart.setEnabled(false)
+            binding.lytCart.setEnabled(false)
+        }
+    }
+
+    fun cartOnClick(){
+        val map = mutableMapOf(
+            "isPosting" to isPosting.toString(),
+            "member" to member,
+            "storeName" to storeName,
+            "baedalFee" to baedalFee,
+            "orders" to orders.toString()
+        )
+        if (!isPosting) map["postNum"] = postNum!!
+
+        setFrag(FragmentBaedalConfirm(), map)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

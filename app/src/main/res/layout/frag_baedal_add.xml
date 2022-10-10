@@ -259,14 +259,14 @@
                         android:id="@+id/tv_textView4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="예상 배달비"
+                        android:text="함께 낼 배달비"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tv_baedal_fee_content"
+                        android:id="@+id/tv_baedal_store_fee"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -369,7 +369,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="예상 배달비"
+                    android:text="1인당 예상 배달비"
                     app:layout_constraintBottom_toTopOf="@+id/textView10"
                     app:layout_constraintStart_toStartOf="parent" />
 

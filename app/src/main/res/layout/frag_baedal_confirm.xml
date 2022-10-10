@@ -222,7 +222,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="예상 배달비"
+                    android:text="1인당 예상 배달비"
                     app:layout_constraintBottom_toTopOf="@+id/textView7"
                     app:layout_constraintStart_toStartOf="parent" />
 

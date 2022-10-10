@@ -45,17 +45,22 @@ class AdapterSelectedMenu(val context: Context, val orders: JSONArray, val isRec
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(order: JSONObject) {
             val dec = DecimalFormat("#,###")
+            var menuPrice = " (${dec.format(order.getInt("menuPrice"))}원)"
             var count = order.getInt("count")
             var sumPrice = order.getInt("sumPrice")
             var priceString = "${dec.format(sumPrice * count)}원"
 
-            if (!isRectifiable) {
+            if (isRectifiable) {
+                binding.tvCountString.visibility = View.GONE
+            } else {
                 binding.btnSub.visibility = View.GONE
                 binding.btnAdd.visibility = View.GONE
                 binding.btnRemove.visibility = View.GONE
+                binding.tvCount.visibility = View.GONE
+                binding.tvPrice.visibility = View.GONE
             }
 
-            binding.tvMenuName.text = order.getString("menuName")
+            binding.tvMenuName.text = order.getString("menuName") + menuPrice
 
             binding.rvMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             val adapter = AdapterSelectedOption(order.getJSONArray("groups"))
@@ -86,8 +91,9 @@ class AdapterSelectedMenu(val context: Context, val orders: JSONArray, val isRec
         }
 
         fun setBindText(priceString: String, count: Int) {
+            binding.tvCountString.text = "${count}개 (${priceString})"
             binding.tvPrice.text = priceString
-            binding.tvCount.text = "${count}개"
+            binding.tvCount.text = count.toString()
         }
     }
 }

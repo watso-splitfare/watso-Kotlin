@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.BaedalPost
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterHome.Comment
@@ -26,6 +27,7 @@ import java.util.*
 
 class FragmentBaedalPost :Fragment() {
     private var postNum: String? = null
+    lateinit var baedalPost: BaedalPost
 
     val dec = DecimalFormat("#,###")
 
@@ -46,7 +48,6 @@ class FragmentBaedalPost :Fragment() {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
         refreshView()
-
 
         return binding.root
     }
@@ -100,7 +101,7 @@ class FragmentBaedalPost :Fragment() {
         }
         binding.tvLike.text = (likeUserList.length()).toString()
 
-        /* 주문 내역 */
+        /** 주문 내역 */
         binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
@@ -140,7 +141,7 @@ class FragmentBaedalPost :Fragment() {
         binding.rvOrderList.adapter = adapter
 
 
-        /* 댓글 */
+        /** 댓글 */
         val comment = arrayListOf(
             Comment("동동이", "네네치킨 먹을 사람 드루와~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 1,0, 0, "동동이"),
             Comment("주넝이", "네네치킨 먹을 사람~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 2, 1, 0, "주넝이"),

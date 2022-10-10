@@ -150,7 +150,7 @@ class FragmentBaedalConfirm :Fragment() {
     fun bindSetText() {
         var temp = 0
         orders.forEach {
-            temp += it.sumPrice * it.count
+            temp += it.sumPrice!! * it.count
         }
         orderPrice = temp
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"

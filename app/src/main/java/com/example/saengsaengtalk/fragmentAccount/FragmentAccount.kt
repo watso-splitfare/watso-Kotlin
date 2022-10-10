@@ -6,13 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.APIS.LogoutResult
 import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragAccountBinding
-import com.example.saengsaengtalk.databinding.FragFindAccountBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

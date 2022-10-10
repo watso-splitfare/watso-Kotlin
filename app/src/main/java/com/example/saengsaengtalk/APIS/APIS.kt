@@ -1,5 +1,3 @@
-//import com.example.saengsaengtalk.HTTP_GET_Model
-
 import android.util.Log
 import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.MainActivity
@@ -8,18 +6,14 @@ import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.io.IOException
 
-
 interface APIS {
-
-
-        /** 계정 관련 API */
+    /** 계정 관련 API */
 
     @GET("auth/username-overlap-check")
     fun usernameOverlapCheck(
@@ -53,7 +47,7 @@ interface APIS {
     ): Call<LogoutResult>
 
 
-        /** 배달 게시물 관련 api */
+    /** 배달 게시물 관련 api */
 
     @GET("order/store-list")
     fun getStoreList(): Call<List<StoreListModel>>
@@ -67,6 +61,17 @@ interface APIS {
     fun getGroupOption(
         @Query("menu_id") menuId: Int
     ): Call<List<GroupOptionModel>>
+
+    @GET("order/post")
+    fun getPostContent(
+        @Query("post_id") postId: Int
+    ): Call<BaedalPostContent>
+
+    @GET("order/list-preview")
+    fun getBaedalOrderListPreview(
+        @Query("from_index") fromIndex: Int,
+        @Query("include") includeClosed: Boolean
+    ): Call<List<BaedalOrderListPreviewModel>>
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:5000/" //"http://59.8.74.204:5000/" //
