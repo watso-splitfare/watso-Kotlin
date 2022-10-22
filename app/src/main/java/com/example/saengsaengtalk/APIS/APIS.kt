@@ -49,29 +49,43 @@ interface APIS {
 
     /** 배달 게시물 관련 api */
 
-    @GET("order/store-list")
+    @GET("order/store/list")    // 201 가게 리스트 조회
     fun getStoreList(): Call<List<StoreListModel>>
 
-    @GET("order/section-menu-select")
+    @GET("order/menu/list")     // 202 가게 메뉴 조회
     fun getSectionMenu(
         @Query("store_id") storeId: Int
     ): Call<List<SectionMenuModel>>
 
-    @GET("order/group-option-select")
+    @GET("order/menu/detail")   // 203 가게 메뉴 디테일 조회
     fun getGroupOption(
-        @Query("menu_id") menuId: Int
+        @Query("menu_id") menuId: Int,   // 테스트용
+        @Query("menu_name") menuName: String,
+        @Query("store_id") storeId: Int
     ): Call<List<GroupOptionModel>>
 
-    @GET("order/post")
+    /*@GET("order/post/postion")          // 204 배달 게시글 등록
     fun getPostContent(
         @Query("post_id") postId: Int
-    ): Call<BaedalPostContent>
+    ): Call<BaedalPostContent>*/
 
-    @GET("order/list-preview")
+    @GET("order/post/detail/{post_id}")  // 205 배달 게시글 조회
+    @Headers("accept: application/json", "content-type: application/json")
+    fun getBaedalPost(
+        @Path("post_id") postId: Int
+        //@Query("post_id") postId: Int,
+    ): Call<BaedalPost>
+
+    @GET("order/post/list")  // 213 배달 게시글 리스트 조회
     fun getBaedalOrderListPreview(
         @Query("from_index") fromIndex: Int,
-        @Query("include") includeClosed: Boolean
     ): Call<List<BaedalOrderListPreviewModel>>
+
+    // 테스트
+    @GET("order/test")
+    fun getTest(
+
+    ): Call<TestModel>
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:5000/" //"http://59.8.74.204:5000/" //

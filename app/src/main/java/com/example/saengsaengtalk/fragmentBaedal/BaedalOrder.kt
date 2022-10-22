@@ -6,7 +6,7 @@ data class BaedalOrder (
     val menuId: Int?,
     val menuName: String,
     val menuPrice: Int,
-    val sumPrice: Int?,
+    val sumPrice: Int,
     val groups: List<Group>
 )
 

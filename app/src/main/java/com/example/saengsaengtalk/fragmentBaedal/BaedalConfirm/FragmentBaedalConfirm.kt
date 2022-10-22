@@ -74,19 +74,11 @@ class FragmentBaedalConfirm :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
-        val adapter = AdapterSelectedMenu(requireContext(), JSONArray(gson.toJson(orders)))
+        val adapter = SelectedMenuAdapter(requireContext(), JSONArray(gson.toJson(orders)))
         binding.rvOrderList.adapter = adapter
 
-        adapter.setItemClickListener(object: AdapterSelectedMenu.OnItemClickListener {
+        adapter.setItemClickListener(object: SelectedMenuAdapter.OnItemClickListener {
             override fun onChange(position: Int, change: String) {
-                //ordersObject = gson.fromJson(orders.toString(), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
-                //println(ordersObject)
-                //val b = gson.toJson(ordersObject)
-                //println(b)
-                //println("@@@@@@@@@@@@@@@@@@@@@@@@")
-                //println(orders.toString())
-                //println(gson.toJson(orders))
-
                 val order = orders[position]
                 if (change == "remove") {
                     order.count = 0

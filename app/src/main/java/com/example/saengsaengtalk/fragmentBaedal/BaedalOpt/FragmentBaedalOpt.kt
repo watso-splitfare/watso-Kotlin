@@ -22,6 +22,7 @@ class FragmentBaedalOpt :Fragment() {
     var menuId = 0
     var menuName = ""
     var menuPrice = 0
+    var storeId = 0
 
     val groupNames = mutableMapOf<Int, String>()
     val optionNames = mutableMapOf<Int, String>()
@@ -41,6 +42,7 @@ class FragmentBaedalOpt :Fragment() {
             menuId = it.getString("menuId")!!.toInt()
             menuName = it.getString("menuName")!!
             menuPrice = it.getString("menuPrice")!!.toInt()
+            storeId = it.getString("storeId")!!.toInt()
         }
     }
 
@@ -129,7 +131,7 @@ class FragmentBaedalOpt :Fragment() {
 
 
     fun setRecyclerView() {
-        api.getGroupOption(menuId).enqueue(object : Callback<List<GroupOptionModel>> {
+        api.getGroupOption(menuId, menuName, storeId).enqueue(object : Callback<List<GroupOptionModel>> {
             override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
                 groupOption = response.body()!!
                 mappingAdapter()

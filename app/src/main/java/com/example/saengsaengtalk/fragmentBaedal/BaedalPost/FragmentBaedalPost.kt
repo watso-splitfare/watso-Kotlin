@@ -10,38 +10,41 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.BaedalPost
+import com.example.saengsaengtalk.APIS.Order
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.adapterHome.Comment
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
-import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.BaedalOrder
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
-import org.json.JSONArray
-import org.json.JSONObject
+import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
+import com.example.saengsaengtalk.fragmentBaedal.Group
+import com.example.saengsaengtalk.fragmentBaedal.Option
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.DecimalFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalPost :Fragment() {
-    private var postNum: String? = null
-    lateinit var baedalPost: BaedalPost
+    var postId: String? = null
+    var userId: Int = 0
 
     val dec = DecimalFormat("#,###")
 
-    var postInfo = JSONObject()
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
+    val api= APIS.create()
+    lateinit var baedalPost: BaedalPost
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            postNum = it.getString("postNum")
+            postId = it.getString("postNum")!!
         }
 
-        Log.d("배달 포스트", "게시물 번호: ${postNum}")
+        Log.d("배달 포스트", "게시물 번호: ${postId}")
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -54,119 +57,115 @@ class FragmentBaedalPost :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        getPostInfo()
-
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        if (postNum!!.toInt() % 2 == 1) {
-            binding.tvOrder.text = "나도 주문하기"
-            binding.lytOrder.setOnClickListener {
-                setFrag(
-                    FragmentBaedalMenu(),
-                    mapOf("postNum" to postNum!!, "member" to postInfo.getString("member"), "isPosting" to "false")
-                )
-            }
-            if (postInfo.getBoolean("closed")){
-                binding.lytOrder.isEnabled = false
-                binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-            }
-        } else {
-            binding.tvOrder.text = "주문 마감하기"
-            binding.ivOrder.visibility = View.GONE
-            binding.lytOrder.setOnClickListener {
-                binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-                binding.lytOrder.isEnabled = false
-            }
-        }
 
-        val today = LocalDate.now().atTime(0,0)
-        val postCreated = LocalDateTime.parse(postInfo.getString("created"), DateTimeFormatter.ISO_DATE_TIME)
-        val baedalTime = LocalDateTime.parse(postInfo.getString("baedalTime"), DateTimeFormatter.ISO_DATE_TIME)
-        binding.tvPostTitle.text = postInfo.getString("title")
-        binding.tvPostCreated.text = when(postCreated.isBefore(today)) {
-            true -> postCreated.format(DateTimeFormatter.ofPattern("MM/dd"))
-            else -> postCreated.format(DateTimeFormatter.ofPattern("HH:mm"))
-        }
-        binding.tvPostWriter.text = postInfo.getString("writer")
-        binding.tvTime.text = baedalTime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
-            Locale.forLanguageTag("ko")))
-        binding.tvStore.text = postInfo.getString("store")
-        binding.tvMember.text = postInfo.getString("member")
-        binding.tvFee.text = (postInfo.getInt("baedalFee") / postInfo.getInt("member")).toString()
-        binding.tvContent.text = postInfo.getString("content")
-
-        val likeUserList = postInfo.getJSONArray("likeUserList")
-        for (i in 0 until likeUserList.length()) {
-            if (likeUserList.getString(i) == "wnsjd")
-                binding.ivLike.setImageResource(R.drawable.heart_red)
-        }
-        binding.tvLike.text = (likeUserList.length()).toString()
-
-        /** 주문 내역 */
-        binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvOrderList.setHasFixedSize(true)
-
-        var baedalOrderer = mutableListOf<BaedalOrderer>()                  // 어댑터용
-        val orderList = postInfo.getJSONArray("orderList")      // 실제 데이터
-        for (i in 0 until orderList.length()){
-            val order = orderList.getJSONObject(i)
-            val ordererName = order.getString("orderer")
-            val orders = order.getJSONArray("orders")
-
-            val baedalOrder = mutableListOf<BaedalOrder>()
-            var totalPrice = 0
-            for (j in 0 until orders.length()) {
-                val aOrder = orders.getJSONObject(j)
-                val menuName = aOrder.getString("menuName")
-                totalPrice += aOrder.getInt("price")
-                val count = aOrder.getInt("count")
-
-                val optString = aOrder.getJSONArray("optString")
-                val baedalOrderOpt = mutableListOf<BaedalOrderOpt>()
-                for (k in 0 until optString.length()) {
-                    baedalOrderOpt.add(BaedalOrderOpt(optString.getString(k)))
-                }
-                baedalOrder.add(BaedalOrder(menuName, count, baedalOrderOpt))
-            }
-
-            baedalOrderer.add(
-                BaedalOrderer(
-                "주문자 : ${ordererName}   주문금액: ${dec.format(totalPrice)}원", baedalOrder)
-            )
-        }
-        val adapter = BaedalOrdererAdapter(requireContext(), baedalOrderer)
-
-        //binding.rvMenu.addItemDecoration(BaedalOptAreaAdapter.BaedalOptAreaAdapterDecoration())
-        //adapter.notifyDataSetChanged()
-
-        binding.rvOrderList.adapter = adapter
-
-
-        /** 댓글 */
-        val comment = arrayListOf(
-            Comment("동동이", "네네치킨 먹을 사람 드루와~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 1,0, 0, "동동이"),
-            Comment("주넝이", "네네치킨 먹을 사람~ 123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789", LocalDateTime.now(), 2, 1, 0, "주넝이"),
-            Comment("동동이", "먹을 사람 드루와~", LocalDateTime.now(), 3, 1, 0, "동동이"),
-            Comment("동동이", "네네치킨~", LocalDateTime.now(), 4, 0, 1, "동동이")
-        )
-        binding.tvCommentCount.text = "댓글 ${comment.size}"
-        binding.rvComment.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvComment.setHasFixedSize(true)
-        binding.rvComment.adapter = CommentAdapter(comment)
+        getPostInfo()
     }
 
-    @JvmName("getPostInfo1")
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getPostInfo() {
-        val assetManager = resources.assets
-        postInfo = JSONObject(assetManager.open("baedal_post.json").bufferedReader().use { it.readText() })
+        api.getBaedalPost(postId!!.toInt()).enqueue(object : Callback<BaedalPost> {
+            override fun onResponse(call: Call<BaedalPost>, response: Response<BaedalPost>) {
+                baedalPost = response.body()!!
+                val store = baedalPost.store
+                val comments = baedalPost.comments
+
+                val postCreated = LocalDateTime.parse(baedalPost.reg_date, DateTimeFormatter.ISO_DATE_TIME)
+                val orderTime = LocalDateTime.parse(baedalPost.order_time, DateTimeFormatter.ISO_DATE_TIME)
+
+                /** 포스트 내용 바인딩 */
+                binding.tvPostTitle.text = baedalPost.title
+                binding.tvPostWriter.text = baedalPost.user.nick_name
+                binding.tvPostCreated.text = postCreated.format(
+                    DateTimeFormatter.ofPattern("YYYY. MM. dd HH:MM")
+                )
+
+
+                binding.tvOrderTime.text = orderTime.format(DateTimeFormatter.ofPattern("M월 d일(E) H시 m분", Locale.KOREAN))
+                binding.tvStore.text = store.store_name
+                binding.tvCurrentMember.text = baedalPost.current_member.toString()
+                binding.tvFee.text = "${dec.format(store.fee)}원"
+
+                if (baedalPost.content != null) binding.tvContent.text = baedalPost.content
+
+                binding.ivLike.visibility = View.GONE
+                binding.tvLike.visibility = View.GONE
+
+                if (userId != baedalPost.user.user_id) {
+                    if (baedalPost.is_closed){
+                        binding.tvOrder.text = "주문이 마감되었습니다."
+                        binding.lytOrder.isEnabled = false
+                        binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                    } else {
+                        binding.tvOrder.text = "나도 주문하기"
+                        binding.lytOrder.setOnClickListener {
+                            setFrag(
+                                FragmentBaedalMenu(),
+                                mapOf("postId" to postId!!, "member" to baedalPost.current_member.toString(), "isPosting" to "false")
+                            )
+                        }
+                    }
+                } else {
+                    binding.tvOrder.text = "주문 마감하기"
+                    binding.ivOrder.visibility = View.GONE
+                    binding.lytOrder.setOnClickListener {
+                        binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                        binding.lytOrder.isEnabled = false
+                    }
+                }
+
+                /** 주문내역 바인딩 */
+                binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvOrderList.setHasFixedSize(true)
+
+                val baedalOrderUsers = mutableListOf<BaedalOrderUser>()
+                for (orderUser in baedalPost.order_users) {
+                    var orderPrice = 0
+                    val baedalOrders = mutableListOf<BaedalOrder>()
+                    for (order in orderUser.orders) {
+                        val baedalOrder = apiModelToAdapterModel(order)
+                        baedalOrders.add(baedalOrder)
+                        orderPrice += baedalOrder.count * baedalOrder.sumPrice
+                    }
+
+                    baedalOrderUsers.add(
+                        BaedalOrderUser(
+                        orderUser.nick_name, "${dec.format(orderPrice)}원", baedalOrders))
+                }
+
+                val adapter = BaedalOrderUserAdapter(requireContext(), baedalOrderUsers)
+                binding.rvOrderList.adapter = adapter
+
+                /** 댓글 */
+                binding.tvCommentCount.text = "댓글 ${comments.size}"
+                binding.rvComment.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvComment.setHasFixedSize(true)
+                binding.rvComment.adapter = CommentAdapter(comments, userId)
+            }
+
+            override fun onFailure(call: Call<BaedalPost>, t: Throwable) {
+                // 실패
+                println("실패")
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
     }
 
-    fun jArrayToList(array: JSONArray): MutableList<String> {
-        var list = mutableListOf<String>()
-        for (i in 0 until array.length())
-            list.add(array.getString(i))
+    fun apiModelToAdapterModel(order: Order): BaedalOrder {
+        val groups = mutableListOf<Group>()
+        for (group in order.groups) {
+            val options = mutableListOf<Option>()
+            for (option in group.options) {
+                options.add(Option(null, option.option_name, option.option_price))
+            }
+            groups.add(Group(null, group.group_name, options))
+        }
 
-        return list
+        return BaedalOrder(
+            order.count, null, order.menu_name, order.menu_price, order.sum_price, groups
+        )
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
@@ -177,5 +176,5 @@ class FragmentBaedalPost :Fragment() {
     fun onBackPressed() {
         val mActivity =activity as MainActivity
         mActivity.onBackPressed()
-    }
+        }
 }

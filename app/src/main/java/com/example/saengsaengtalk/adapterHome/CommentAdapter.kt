@@ -9,12 +9,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.APIS.Comment
 import com.example.saengsaengtalk.R
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
-class CommentAdapter(val baedalComment: MutableList<Comment>) : RecyclerView.Adapter<CommentAdapter.CustomViewHolder>() {
+class CommentAdapter(val comments: List<Comment>, val user_id: Int) : RecyclerView.Adapter<CommentAdapter.CustomViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_comment, parent, false)
         return CustomViewHolder(view)
@@ -22,22 +23,25 @@ class CommentAdapter(val baedalComment: MutableList<Comment>) : RecyclerView.Ada
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val content = baedalComment.get(position)
-        if (content.depth == 0){
+        val comment = comments.get(position)
+        if (comment.depth == 0){
             holder.iv_reply.layoutParams.height = 0
             holder.iv_reply.layoutParams.width = 0
         }
         else
             holder.btn_reply.text = ""
-        if (content.nickname != "주넝이")
+        if (comment.user_id != user_id)
             holder.btn_delete.text = ""
-        holder.tv_nickname.text = content.nickname
-        holder.tv_comment.text = content.comment
-        holder.tv_datetime.text = content.createdAt.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko")))
+        holder.tv_nickname.text = comment.nick_name
+        holder.tv_comment.text = comment.content
+        val regDate = LocalDateTime.parse(comment.reg_date, DateTimeFormatter.ISO_DATE_TIME)
+        holder.tv_datetime.text = regDate.format(
+            DateTimeFormatter.ofPattern("YYYY. MM. dd HH:MM")
+        )
     }
 
     override fun getItemCount(): Int {
-        return baedalComment.size
+        return comments.size
     }
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

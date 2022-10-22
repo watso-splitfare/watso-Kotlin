@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.MainActivity
-import com.example.saengsaengtalk.adapterHome.Comment
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
 import com.example.saengsaengtalk.databinding.FragTaxiPostBinding
 import java.text.DecimalFormat
@@ -47,8 +46,8 @@ class FragmentTaxiPost :Fragment() {
 
         val content = Content("생자대->밀양역 가실분", "주넝이", LocalDateTime.now(),
             "생자대", "밀양역", LocalDateTime.parse("2022-04-04T15:10:00"), 2,6600,
-            "밀양역 가실분 구해요", mutableListOf(Comment("동동이", "저요!",
-                LocalDateTime.now(), 0, 0, 0, "ehdehd")))
+            "밀양역 가실분 구해요", /*mutableListOf(Comment("동동이", "저요!",
+                LocalDateTime.now(), 0, 0, 0, "ehdehd"))*/)
 
         binding.tvPostTitle.text = content.title
         binding.tvPostWriter.text = content.writer
@@ -69,11 +68,11 @@ class FragmentTaxiPost :Fragment() {
         binding.tvPrice.text = "${dec.format(content.price/content.member)}원"
         binding.tvContent.text = content.content
 
-        binding.tvCommentCount.text = "댓글 ${content.comment.size}"
+        //binding.tvCommentCount.text = "댓글 ${content.comment.size}"
         binding.rvComment.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
-        binding.rvComment.adapter = CommentAdapter(content.comment)
+        //binding.rvComment.adapter = CommentAdapter(content.comment)
     }
 
     class Content(
@@ -86,7 +85,7 @@ class FragmentTaxiPost :Fragment() {
         val member: Int,
         val price: Int,
         val content: String,
-        val comment: MutableList<Comment>
+        //val comment: MutableList<Comment>
     ) {}
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

@@ -7,7 +7,7 @@ import com.example.saengsaengtalk.databinding.LytBaedalConfirmBinding
 import org.json.JSONArray
 import java.text.DecimalFormat
 
-class AdapterSelectedOption(val groups: JSONArray) : RecyclerView.Adapter<AdapterSelectedOption.CustomViewHolder>() {
+class SelectedOptionAdapter(val groups: JSONArray) : RecyclerView.Adapter<SelectedOptionAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmBinding.inflate(LayoutInflater.from(parent.context), parent, false)

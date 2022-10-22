@@ -52,9 +52,9 @@ class FragmentBaedal :Fragment() {
         binding.rvBaedalList.adapter = adapter
         adapter.setItemClickListener(object: BaedalListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
-                Log.d("배달프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()))
+                Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
+                Log.d("배달프래그먼트 온클릭", "${baedalList[position].postId}")
+                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postId.toString()))
             }
         })
         adapter.notifyDataSetChanged()

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.GroupOptionModel
 import com.example.saengsaengtalk.APIS.SectionMenuModel
 import com.example.saengsaengtalk.APIS.StoreListModel
+import com.example.saengsaengtalk.APIS.TestModel
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
@@ -116,16 +117,14 @@ class FragmentHome :Fragment() {
         }*/
 
         binding.btnTest2.setOnClickListener {
-            val data = binding.etTest2.text.toString().toInt()
-            api.getSectionMenu(data).enqueue(object : Callback<List<SectionMenuModel>> {
-                override fun onResponse(call: Call<List<SectionMenuModel>>, response: Response<List<SectionMenuModel>>) {
+            //val data = binding.etTest2.text.toString().toInt()
+            api.getTest().enqueue(object : Callback<TestModel> {
+                override fun onResponse(call: Call<TestModel>, response: Response<TestModel>) {
                     Log.d("log",response.toString())
                     Log.d("log", response.body().toString())
-                    if(!response.body().toString().isEmpty())
-                        binding.tvTest.setText(response.body().toString());
                 }
 
-                override fun onFailure(call: Call<List<SectionMenuModel>>, t: Throwable) {
+                override fun onFailure(call: Call<TestModel>, t: Throwable) {
                     // 실패
                     Log.d("log",t.message.toString())
                     Log.d("log","fail")
@@ -133,7 +132,7 @@ class FragmentHome :Fragment() {
             })
         }
 
-        binding.btnTest3.setOnClickListener {
+        /*binding.btnTest3.setOnClickListener {
             val data = binding.etTest3.text.toString().toInt()
             api.getGroupOption(data).enqueue(object : Callback<List<GroupOptionModel>> {
                 override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
@@ -149,7 +148,7 @@ class FragmentHome :Fragment() {
                     Log.d("log","fail")
                 }
             })
-        }
+        }*/
 
         /*binding.btnTest1.setOnClickListener {
             val data = TestModel("테스트 바디")
@@ -185,11 +184,11 @@ class FragmentHome :Fragment() {
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
 
         val baedalList = arrayListOf(
-            BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 1),
-            BaedalPre(LocalDateTime.now(), "BBQ", 3, 10000, 2),
-            BaedalPre(LocalDateTime.now(), "마라탕", 2, 10000, 3),
-            BaedalPre(LocalDateTime.now(), "피자", 3, 9000, 4),
-            BaedalPre(LocalDateTime.now(), "치킨", 4, 6000, 5)
+            BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 0),
+            BaedalPre(LocalDateTime.now(), "BBQ", 3, 10000, 0),
+            BaedalPre(LocalDateTime.now(), "마라탕", 2, 10000, 0),
+            BaedalPre(LocalDateTime.now(), "피자", 3, 9000, 0),
+            BaedalPre(LocalDateTime.now(), "치킨", 4, 6000, 0)
         )
 
         binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -199,9 +198,9 @@ class FragmentHome :Fragment() {
 
         baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                Toast.makeText(v.context, "${baedalList[position].postNum}번", Toast.LENGTH_SHORT).show()
-                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postNum.toString()), fragIndex=1)
+                Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
+                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postId}")
+                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postId.toString()), fragIndex=1)
             }
         })
         //baedalAdapter.notifyDataSetChanged()
@@ -260,8 +259,8 @@ class FragmentHome :Fragment() {
 
         freeBoardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
-                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postNum}")
-                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postNum.toString()), fragIndex=4)
+                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postId}")
+                setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postId.toString()), fragIndex=4)
             }
         })
 

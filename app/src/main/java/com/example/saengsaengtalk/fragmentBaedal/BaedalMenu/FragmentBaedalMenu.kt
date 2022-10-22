@@ -124,7 +124,8 @@ class FragmentBaedalMenu :Fragment() {
                                 setFrag(FragmentBaedalOpt(), mapOf(
                                     "menuId" to menuId.toString(),
                                     "menuName" to m.menu_name,
-                                    "menuPrice" to m.menu_price.toString()
+                                    "menuPrice" to m.menu_price.toString(),
+                                    "storeId" to storeId
                                 ))
                                 break@loop
                             }

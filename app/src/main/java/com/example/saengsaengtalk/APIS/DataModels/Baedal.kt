@@ -1,6 +1,4 @@
 package com.example.saengsaengtalk.APIS
-
-import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
 import java.util.*
 
 /** 배달 가게 목록 모델 */
@@ -41,11 +39,31 @@ data class OptionModel(
 /** 배달 게시글 모델 */
 data class BaedalPost(
     val user: User,
-    val post: BaedalPostContent,
+    // val post: BaedalPostContent,
+    val _id: Int,
+    val store: Store,
+    val title: String,
+    val content: String?,
+    val order_time: String,
+    val place: String,
+    val current_member: Int,
+    val min_member: Int?,
+    val max_member: Int?,
+    val views: Int,
+    val reg_date: String,
+    val is_closed: Boolean,
+    val order_users: List<OrderUser>,
     val comments: List<Comment>
 )
 
-data class BaedalPostContent(
+data class Store(
+    val _id: Int,
+    val store_name: String,
+    val fee: Int,
+    val min_order: Int
+)
+
+/*data class BaedalPostContent(
     val post_id: Int,
     val store_id: Int,
     val store_name: String,
@@ -61,12 +79,30 @@ data class BaedalPostContent(
     val reg_date: Date,
     val is_closed: Boolean,
     val order_users: List<OrderUser>
-)
+)*/
 
 data class OrderUser(
     val user_id: Int,
     val nick_name: String,
-    val orders: List<BaedalOrder>
+    val orders: List<Order>
+)
+
+data class Order(
+    val menu_name: String,
+    val count: Int,
+    val menu_price: Int,
+    val sum_price: Int,
+    val groups: List<Group>
+)
+
+data class Group(
+    val group_name: String,
+    val options: List<Option>
+)
+
+data class Option(
+    val option_name: String,
+    val option_price: Int
 )
 
 /** 배달 게시글 미리보기 모델 */
@@ -80,4 +116,18 @@ data class BaedalOrderListPreviewModel(
     val current_member: Int,
     val fee: Int,
     val is_closed: Boolean
+)
+
+data class TestModel(
+    val a: Int,
+    val inner1: List<Inner1>,
+    val inner2: Inner2
+)
+
+data class Inner1(
+    val b: Int
+)
+
+data class Inner2(
+    val c: Int
 )

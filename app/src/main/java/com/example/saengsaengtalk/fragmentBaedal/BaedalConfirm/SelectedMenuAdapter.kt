@@ -14,8 +14,8 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 
-class AdapterSelectedMenu(val context: Context, val orders: JSONArray, val isRectifiable: Boolean=true):
-    RecyclerView.Adapter<AdapterSelectedMenu.CustomViewHolder>() {
+class SelectedMenuAdapter(val context: Context, val orders: JSONArray, val isRectifiable: Boolean=true):
+    RecyclerView.Adapter<SelectedMenuAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -53,6 +53,7 @@ class AdapterSelectedMenu(val context: Context, val orders: JSONArray, val isRec
             if (isRectifiable) {
                 binding.tvCountString.visibility = View.GONE
             } else {
+                binding.divider.visibility = View.GONE
                 binding.btnSub.visibility = View.GONE
                 binding.btnAdd.visibility = View.GONE
                 binding.btnRemove.visibility = View.GONE
@@ -63,7 +64,7 @@ class AdapterSelectedMenu(val context: Context, val orders: JSONArray, val isRec
             binding.tvMenuName.text = order.getString("menuName") + menuPrice
 
             binding.rvMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val adapter = AdapterSelectedOption(order.getJSONArray("groups"))
+            val adapter = SelectedOptionAdapter(order.getJSONArray("groups"))
             binding.rvMenu.adapter = adapter
 
             setBindText(priceString, count)

@@ -17,7 +17,7 @@ import com.example.saengsaengtalk.APIS.StoreListModel
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
-import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.AdapterSelectedMenu
+import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.SelectedMenuAdapter
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import org.json.JSONArray
@@ -82,7 +82,7 @@ class FragmentBaedalAdd :Fragment() {
             binding.rvMenuList.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = AdapterSelectedMenu(requireContext(), orders, false)//BaedalOrderAdapter(requireContext(), baedalOrder)
+            val adapter = SelectedMenuAdapter(requireContext(), orders, false)
             binding.rvMenuList.adapter = adapter
 
             orderPrice = 0
@@ -159,9 +159,7 @@ class FragmentBaedalAdd :Fragment() {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                         baedalfee = storefees[position]
                         setBindText()
-                        //binding.tvBaedalFee.text = "${decPrice.format(storefees[position])}원"
                         selectedId = position
-                        //Log.d("스피너", storeNames[position])
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
