@@ -23,7 +23,11 @@ import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.SelectedMenuAdapter
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
+import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
+import com.example.saengsaengtalk.fragmentBaedal.Group
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import org.json.JSONArray
@@ -49,6 +53,7 @@ class FragmentBaedalAdd :Fragment() {
 
     private var mBinding: FragBaedalAddBinding? = null
     private val binding get() = mBinding!!
+    val gson = Gson()
     val api = APIS.create()
     var decDt = DecimalFormat("00")
     val decPrice = DecimalFormat("#,###")
@@ -105,41 +110,16 @@ class FragmentBaedalAdd :Fragment() {
                 binding.btnPostAdd.isEnabled = true
                 binding.btnPostAdd.setBackgroundResource(R.drawable.btn_baedal_confirm)
                 binding.btnPostAdd.setOnClickListener {
-                    if (binding.etTitle.text.toString() == "") {
+                    if (false/*binding.etTitle.text.toString() == ""*/) {
                         makeToast("제목을 입력해주세요.")
                     } else {
-                        val minMember = if (binding.cbMinMember.isChecked)
-                            binding.etMinMember.text.toString().toInt() else null
-                        val maxMember = if (binding.cbMaxMember.isChecked)
-                            binding.etMaxMember.text.toString().toInt() else null
-
-                        val baedalPostModel = BaedalPostingModel(
-                            storeIds[selectedIdx],
-                            binding.etTitle.text.toString(),
-                            binding.etContent.text.toString(),
-                            binding.tvOrderTime.text.toString(),
-                            binding.spnPlace.selectedItem.toString(),
-                            minMember,
-                            maxMember
-                        )
-
-                        lateinit var postingResponse: BaedalPostingResponse
-
-                        val job = GlobalScope.launch {
-                            async {
-                                postingResponse = baedalPosting(baedalPostModel)
-                                println("바깥: ${postingResponse}")
-                            }.await()
-                        }
-                        runBlocking {
-                            job.join()
-                        }
-                        if (!postingResponse.sucess) {
+                        baedalPosting()
+                        /*if (!postingResponse.sucess) {
                             makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
 
                         } else {
                             makeToast("작성 성공")
-                        }
+                        }*/
                         //setFrag(FragmentBaedalPost(), mapOf("postNum" to "0"))
                     }
                 }
@@ -226,14 +206,24 @@ class FragmentBaedalAdd :Fragment() {
         binding.tvTotalPrice.text = "${decPrice.format(baedalfee+orderPrice)}원"//"${decPrice.format(totalPrice)}원"
     }
 
-    suspend fun baedalPosting(baedalPostModel: BaedalPostingModel): BaedalPostingResponse {
-        lateinit var result: BaedalPostingResponse
-        //var flag = false
+    fun baedalPosting() {
+        val minMember = if (binding.cbMinMember.isChecked)
+            binding.etMinMember.text.toString().toInt() else null
+        val maxMember = if (binding.cbMaxMember.isChecked)
+            binding.etMaxMember.text.toString().toInt() else null
 
-        runBlocking {
-            val channel = Channel<BaedalPostingResponse>()
+        val baedalPostModel = BaedalPostingModel(
+            storeIds[selectedIdx],
+            binding.etTitle.text.toString(),
+            binding.etContent.text.toString(),
+            binding.tvOrderTime.text.toString(),
+            binding.spnPlace.selectedItem.toString(),
+            minMember,
+            maxMember
+        )
 
-            api.baedalPosting(baedalPostModel).enqueue(object : Callback<BaedalPostingResponse> {
+        api.baedalPosting(baedalPostModel)
+            .enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(
                     call: Call<BaedalPostingResponse>,
                     response: Response<BaedalPostingResponse>
@@ -241,51 +231,65 @@ class FragmentBaedalAdd :Fragment() {
                     println("성공")
                     Log.d("log", response.toString())
                     Log.d("log", response.body().toString())
-                    launch {
-                        channel.send(response.body()!!)
-                        channel.close()
-                    }
-                    //result = response.body()!!
-                    //flag = true
+                    val postingResult = response.body()!!
+                    println(postingResult)
+                    baedalOrdering(postingResult.post_id)
                 }
 
                 override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
                     println("실패")
                     Log.d("log", t.message.toString())
                     Log.d("log", "fail")
-                    launch {
-                        channel.send(BaedalPostingResponse(false, "-1"))
-                        channel.close()
-                    }
-                    //BaedalPostingResponse(false, "-1")
-                    //flag = true
                 }
             })
-            result = channel.receive()
-        }
 
-        println("안: ${result}")
-        return result
     }
 
-    fun baedalOrdering(baedalOrderModel: OrderingModel): OrderingResponse{
-        lateinit var result: OrderingResponse
-        api.baedalOrdering(baedalOrderModel).enqueue(object : Callback<OrderingResponse> {
+    fun baedalOrdering(postId: String){
+        val ordersObject: List<BaedalOrder> = gson.fromJson(orders.toString(), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
+        val orderings = mutableListOf<OrderingOrder>()
+        for (order in ordersObject) {
+            orderings.add(getOrdering(order))
+        }
+
+        val orderingModel = OrderingModel(
+            storeIds[selectedIdx],
+            postId,
+            orderings
+        )
+        println(orderingModel)
+        api.baedalOrdering(orderingModel).enqueue(object : Callback<OrderingResponse> {
             override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
                 println("성공")
                 Log.d("log", response.toString())
                 Log.d("log", response.body().toString())
-                result = response.body()!!
+                val result = response.body()!!
+                setFrag(FragmentBaedalPost(), mapOf("postId" to "0"))
+                //setFrag(FragmentBaedalPost(), mapOf("postId" to result.post_id))
             }
 
             override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
                 println("실패")
                 Log.d("log", t.message.toString())
                 Log.d("log", "fail")
-                result = OrderingResponse(false, "-1")
             }
         })
-        return result
+    }
+
+    fun getOrdering(order: BaedalOrder): OrderingOrder {
+        val groups = mutableListOf<OrderingGroup>()
+        for (group in order.groups) {
+            groups.add(getGroup(group))
+        }
+        return OrderingOrder(order.count, order.menuName, groups)
+    }
+
+    fun getGroup(group: Group): OrderingGroup {
+        val options = mutableListOf<Int>()
+        for (option in group.options){
+            options.add(option.optionId!!)
+        }
+        return OrderingGroup(group.groupId!!, options)
     }
 
     fun makeToast(message: String) {
@@ -293,9 +297,9 @@ class FragmentBaedalAdd :Fragment() {
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int =-1) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, popBackStack, 1)
     }
 
     fun onBackPressed() {

@@ -200,7 +200,7 @@ class FragmentHome :Fragment() {
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postId}")
-                setFrag(FragmentBaedalPost(), mapOf("postNum" to baedalList[position].postId.toString()), fragIndex=1)
+                setFrag(FragmentBaedalPost(), mapOf("postId" to baedalList[position].postId.toString()), fragIndex=1)
             }
         })
         //baedalAdapter.notifyDataSetChanged()

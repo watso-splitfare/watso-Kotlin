@@ -41,7 +41,7 @@ class FragmentBaedalPost :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            postId = it.getString("postNum")!!
+            postId = it.getString("postId")!!
         }
 
         Log.d("배달 포스트", "게시물 번호: ${postId}")
