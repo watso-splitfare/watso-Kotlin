@@ -1,5 +1,7 @@
 package com.example.saengsaengtalk.fragmentBaedal.BaedalPost
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +17,7 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
+import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
 import com.example.saengsaengtalk.fragmentBaedal.Group
@@ -50,16 +53,27 @@ class FragmentBaedalPost :Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
-        refreshView()
+        refreshView(inflater)
 
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun refreshView() {
+    fun refreshView(inflater: LayoutInflater) {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.tvDelete.visibility = View.GONE     // 삭제 비활성화
 
         getPostInfo()
+
+        getActivity()?.getSupportFragmentManager()
+            ?.setFragmentResultListener("updatePost", this) { requestKey, bundle ->
+                val sucess = bundle.getBoolean("updateResult")
+                println("수정완료")
+                println(sucess)
+                postId = "1"
+                getPostInfo()
+            }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -72,6 +86,38 @@ class FragmentBaedalPost :Fragment() {
 
                 val postCreated = LocalDateTime.parse(baedalPost.reg_date, DateTimeFormatter.ISO_DATE_TIME)
                 val orderTime = LocalDateTime.parse(baedalPost.order_time, DateTimeFormatter.ISO_DATE_TIME)
+
+                if (userId != baedalPost.user.user_id) {
+                    binding.tvDelete.visibility = View.GONE
+                    binding.tvUpdate.visibility = View.GONE
+                }
+
+                /** 수정 버튼 */
+                binding.tvUpdate.setOnClickListener {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("게시글 수정하기")
+                        .setMessage("게시글을 수정하시겠습니까? \n주문 수정은 주문수정 버튼을 이용해 주세요.")
+                        .setPositiveButton("확인",
+                            DialogInterface.OnClickListener { dialog, id ->
+                                setFrag(FragmentBaedalAdd(), mapOf(
+                                    "isUpdating" to "true",
+                                    "postId" to postId!!,
+                                    "title" to baedalPost.title,
+                                    "content" to if (baedalPost.content != "") baedalPost.content!! else "",
+                                    "orderTime" to orderTime.toString(),
+                                    "storeName" to store.store_name,
+                                    "place" to baedalPost.place,
+                                    "minMember" to baedalPost.min_member.toString(),
+                                    "maxMember" to baedalPost.max_member.toString(),
+                                    "fee" to store.fee.toString()
+                                ))
+                            })
+                        .setNegativeButton("취소",
+                            DialogInterface.OnClickListener { dialog, id ->
+                                println("취소")
+                            })
+                    builder.show()
+                }
 
                 /** 포스트 내용 바인딩 */
                 binding.tvPostTitle.text = baedalPost.title

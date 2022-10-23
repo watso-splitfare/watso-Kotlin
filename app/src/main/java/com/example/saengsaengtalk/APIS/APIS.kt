@@ -75,6 +75,11 @@ interface APIS {
         //@Query("post_id") postId: Int,
     ): Call<BaedalPostModel>
 
+    @PATCH("order/post/update")             // 206 배달 게시글 수정
+    fun updateBaedalPost(
+        @Body jsonparams: BaedalUpdateModel
+    ): Call<BaedalPostingResponse>
+
     @POST("order/ordering")                 // 209 배달 주문 등록
     fun baedalOrdering(
         @Body jsonparams: OrderingModel

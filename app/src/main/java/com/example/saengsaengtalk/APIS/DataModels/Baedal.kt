@@ -102,6 +102,17 @@ data class Option(
     val option_price: Int
 )
 
+/** 206 배달 게시글 수정 모델 */
+data class BaedalUpdateModel(
+    val post_id: String,
+    val title: String,
+    val content: String?,
+    val order_time: String,
+    val place: String,
+    val min_member: Int?,
+    val max_member: Int?
+)
+
 /** 209 배달 주문 등록 모델 */
 data class OrderingModel(
     val store_id: String,
