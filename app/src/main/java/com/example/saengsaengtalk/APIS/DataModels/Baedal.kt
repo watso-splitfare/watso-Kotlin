@@ -1,14 +1,14 @@
 package com.example.saengsaengtalk.APIS
 import java.util.*
 
-/** 배달 가게 목록 모델 */
+/** 201 배달 가게 목록 모델 */
 data class StoreListModel(
-    val store_id: Int,
+    val store_id: String,
     val store_name: String,
     val fee: Int
 )
 
-/** 섹션 및 메뉴 모델 */
+/** 202 섹션 및 메뉴 모델 */
 data class SectionMenuModel(
     val section_id: Int,
     val section_name: String,
@@ -21,7 +21,7 @@ data class MenuModel(
     val menu_price: Int
 )
 
-/** 그룹 및 옵션 모델 */
+/** 203 그룹 및 옵션 모델 */
 data class GroupOptionModel(
     val group_id: Int,
     val group_name: String,
@@ -36,11 +36,26 @@ data class OptionModel(
     val option_price: Int
 )
 
-/** 배달 게시글 모델 */
-data class BaedalPost(
+/** 204 배달 게시글 등록 모델 */
+data class BaedalPostingModel(
+    val store_id: String,
+    val title: String,
+    val content: String?,
+    val order_time: String,
+    val place: String,
+    val min_member: Int?,
+    val max_member: Int?
+)
+
+data class BaedalPostingResponse(
+    val sucess: Boolean,
+    val post_id: String
+)
+
+/** 205 배달 게시글 조회 모델 */
+data class BaedalPostModel(
     val user: User,
-    // val post: BaedalPostContent,
-    val _id: Int,
+    val _id: String,
     val store: Store,
     val title: String,
     val content: String?,
@@ -57,29 +72,11 @@ data class BaedalPost(
 )
 
 data class Store(
-    val _id: Int,
+    val _id: String,
     val store_name: String,
     val fee: Int,
     val min_order: Int
 )
-
-/*data class BaedalPostContent(
-    val post_id: Int,
-    val store_id: Int,
-    val store_name: String,
-    val fee: Int,
-    val title: String,
-    val content: String?,
-    val order_time: Date,
-    val place: String,
-    val current_member: Int,
-    val min_member: Int?,
-    val max_member: Int?,
-    val views: Int,
-    val reg_date: Date,
-    val is_closed: Boolean,
-    val order_users: List<OrderUser>
-)*/
 
 data class OrderUser(
     val user_id: Int,
@@ -105,9 +102,32 @@ data class Option(
     val option_price: Int
 )
 
-/** 배달 게시글 미리보기 모델 */
+/** 209 배달 주문 등록 모델 */
+data class OrderingModel(
+    val store_id: String,
+    val post_id: String,
+    val orders: List<OrderingOrder>
+)
+
+data class OrderingOrder(
+    val quantity: Int,
+    val menu_name: String,
+    val groups: List<OrderingGroup>
+)
+
+data class OrderingGroup(
+    val group_id: Int,
+    val options: List<Int>
+)
+
+data class OrderingResponse(
+    val sucess: Boolean,
+    val post_id: String
+)
+
+/** 213 배달 게시글 미리보기 모델 */
 data class BaedalOrderListPreviewModel(
-    val post_id: Int,
+    val post_id: String,
     val views: Int,
     val liked: Int,
     val title: String,

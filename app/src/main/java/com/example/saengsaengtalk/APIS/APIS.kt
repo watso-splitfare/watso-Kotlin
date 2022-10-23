@@ -49,34 +49,38 @@ interface APIS {
 
     /** 배달 게시물 관련 api */
 
-    @GET("order/store/list")    // 201 가게 리스트 조회
+    @GET("order/store/list")                // 201 가게 리스트 조회
     fun getStoreList(): Call<List<StoreListModel>>
 
-    @GET("order/menu/list")     // 202 가게 메뉴 조회
+    @GET("order/menu/list")                 // 202 가게 메뉴 조회
     fun getSectionMenu(
         @Query("store_id") storeId: Int
     ): Call<List<SectionMenuModel>>
 
-    @GET("order/menu/detail")   // 203 가게 메뉴 디테일 조회
+    @GET("order/menu/detail")               // 203 가게 메뉴 디테일 조회
     fun getGroupOption(
-        @Query("menu_id") menuId: Int,   // 테스트용
+        @Query("menu_id") menuId: Int,      // 테스트용(실제 사용 x)
         @Query("menu_name") menuName: String,
         @Query("store_id") storeId: Int
     ): Call<List<GroupOptionModel>>
 
-    /*@GET("order/post/postion")          // 204 배달 게시글 등록
-    fun getPostContent(
-        @Query("post_id") postId: Int
-    ): Call<BaedalPostContent>*/
+    @POST("order/post/posting")             // 204 배달 게시글 등록
+    fun baedalPosting(
+        @Body jsonparams: BaedalPostingModel
+    ): Call<BaedalPostingResponse>
 
-    @GET("order/post/detail/{post_id}")  // 205 배달 게시글 조회
-    @Headers("accept: application/json", "content-type: application/json")
+    @GET("order/post/detail/{post_id}")     // 205 배달 게시글 조회
     fun getBaedalPost(
         @Path("post_id") postId: Int
         //@Query("post_id") postId: Int,
-    ): Call<BaedalPost>
+    ): Call<BaedalPostModel>
 
-    @GET("order/post/list")  // 213 배달 게시글 리스트 조회
+    @POST("order/ordering")                 // 209 배달 주문 등록
+    fun baedalOrdering(
+        @Body jsonparams: OrderingModel
+    ): Call<OrderingResponse>
+
+    @GET("order/post/list")                 // 213 배달 게시글 리스트 조회
     fun getBaedalOrderListPreview(
         @Query("from_index") fromIndex: Int,
     ): Call<List<BaedalOrderListPreviewModel>>

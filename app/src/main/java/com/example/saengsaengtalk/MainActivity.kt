@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    fun makeToast(message: String){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
         println("argument = ${arguments}")
         println("popBackStack = ${popBackStack}")

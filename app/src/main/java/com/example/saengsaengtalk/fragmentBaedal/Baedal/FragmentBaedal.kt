@@ -37,12 +37,12 @@ class FragmentBaedal :Fragment() {
             setFrag(FragmentBaedalAdd())
         }
         val baedalList = arrayListOf(
-            BaedalList(arrayListOf("주넝이", "abcc"),43, "네네치킨 같이 드실분~~", LocalDateTime.now(), "네네치킨", 3, 10000, 1),
-            BaedalList(arrayListOf("abcc", "b"),11, "치킨 같이 드실분~~", LocalDateTime.now(), "네네치킨", 2, 10000, 2),
-            BaedalList(arrayListOf("abcc", "c", "d"),35, "같이 드실분~~", LocalDateTime.now(), "네네치킨", 1, 10000, 3),
-            BaedalList(arrayListOf("주넝이", "abcc", "e"),24, "드실분~~", LocalDateTime.now(), "네네치킨", 3, 10000, 4),
-            BaedalList(arrayListOf("abcc"), 13, "네네치킨~~", LocalDateTime.now(), "네네치킨", 2, 10000, 5),
-            BaedalList(arrayListOf(),7, "네네치킨 드실분~~", LocalDateTime.now(), "네네치킨", 4, 10000, 6)
+            BaedalList(arrayListOf("주넝이", "abcc"),43, "네네치킨 같이 드실분~~", LocalDateTime.now(), "네네치킨", 3, 10000, 0),
+            BaedalList(arrayListOf("abcc", "b"),11, "치킨 같이 드실분~~", LocalDateTime.now(), "네네치킨", 2, 10000, 0),
+            BaedalList(arrayListOf("abcc", "c", "d"),35, "같이 드실분~~", LocalDateTime.now(), "네네치킨", 1, 10000, 0),
+            BaedalList(arrayListOf("주넝이", "abcc", "e"),24, "드실분~~", LocalDateTime.now(), "네네치킨", 3, 10000, 0),
+            BaedalList(arrayListOf("abcc"), 13, "네네치킨~~", LocalDateTime.now(), "네네치킨", 2, 10000, 0),
+            BaedalList(arrayListOf(),7, "네네치킨 드실분~~", LocalDateTime.now(), "네네치킨", 4, 10000, 0)
 
         )
         binding.rvBaedalList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

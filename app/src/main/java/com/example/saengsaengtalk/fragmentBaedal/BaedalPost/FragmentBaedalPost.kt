@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.BaedalPost
+import com.example.saengsaengtalk.APIS.BaedalPostModel
 import com.example.saengsaengtalk.APIS.Order
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
@@ -36,7 +36,7 @@ class FragmentBaedalPost :Fragment() {
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
-    lateinit var baedalPost: BaedalPost
+    lateinit var baedalPost: BaedalPostModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +64,8 @@ class FragmentBaedalPost :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getPostInfo() {
-        api.getBaedalPost(postId!!.toInt()).enqueue(object : Callback<BaedalPost> {
-            override fun onResponse(call: Call<BaedalPost>, response: Response<BaedalPost>) {
+        api.getBaedalPost(postId!!.toInt()).enqueue(object : Callback<BaedalPostModel> {
+            override fun onResponse(call: Call<BaedalPostModel>, response: Response<BaedalPostModel>) {
                 baedalPost = response.body()!!
                 val store = baedalPost.store
                 val comments = baedalPost.comments
@@ -144,7 +144,7 @@ class FragmentBaedalPost :Fragment() {
                 binding.rvComment.adapter = CommentAdapter(comments, userId)
             }
 
-            override fun onFailure(call: Call<BaedalPost>, t: Throwable) {
+            override fun onFailure(call: Call<BaedalPostModel>, t: Throwable) {
                 // 실패
                 println("실패")
                 Log.d("log",t.message.toString())
