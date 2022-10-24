@@ -36,7 +36,6 @@ import java.util.*
 class FragmentBaedalPost :Fragment() {
     var postId: String? = null
     var userId: Int = 0
-
     val dec = DecimalFormat("#,###")
 
     private var mBinding: FragBaedalPostBinding? = null
@@ -50,6 +49,7 @@ class FragmentBaedalPost :Fragment() {
             postId = it.getString("postId")!!
         }
 
+        //println("유저아이디 쿠키: ${MainActivity.prefs.getString("userID", "")}")
         Log.d("배달 포스트", "게시물 번호: ${postId}")
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -95,7 +95,7 @@ class FragmentBaedalPost :Fragment() {
                     binding.tvUpdate.visibility = View.GONE
                 }
 
-                /** 수정 버튼 */
+                /** 게시글 수정 버튼 */
                 binding.tvUpdate.setOnClickListener {
                     val builder = AlertDialog.Builder(requireContext())
                     builder.setTitle("게시글 수정하기")
@@ -180,8 +180,9 @@ class FragmentBaedalPost :Fragment() {
                         binding.lytClose.visibility = View.GONE
                     }
 
-                    /** 주문하기 */
+                    /** 주문하기 및 주문수정 */
                     if (baedalPost.is_member) {
+                        /** 주문하기 */
                         binding.lytCancel.visibility = View.VISIBLE
                         binding.tvOrder.text = "주문 수정하기"
                         binding.lytOrder.setOnClickListener {
@@ -189,7 +190,10 @@ class FragmentBaedalPost :Fragment() {
                                 "isPosting" to "false",
                                 "postId" to postId!!,
                                 "currentMember" to baedalPost.current_member.toString(),
-                                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                "isUpdating" to "true",
+                                "storeName" to store.store_name,
+                                "storeId" to store._id,
+                                "baedalFee" to store.fee.toString()
                             ))
                         }
 
@@ -257,6 +261,10 @@ class FragmentBaedalPost :Fragment() {
                 Log.d("log","fail")
             }
         })
+    }
+
+    fun getOrders(){
+
     }
 
     fun apiModelToAdapterModel(order: Order): BaedalOrder {

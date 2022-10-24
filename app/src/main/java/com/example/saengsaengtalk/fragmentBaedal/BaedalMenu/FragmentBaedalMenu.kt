@@ -23,7 +23,7 @@ class FragmentBaedalMenu :Fragment() {
     var isPosting = false
     var postId: String? = null
     var currentMember = "0"
-    var isUpdating = "false"
+    var isUpdating = false
     var storeName = ""
     var storeId = "0"
     var baedalFee = ""
@@ -42,7 +42,7 @@ class FragmentBaedalMenu :Fragment() {
             if (!isPosting) {
                 postId = it.getString("postId")!!
                 currentMember = it.getString("currentMember")!!
-                isUpdating = it.getString("isUpdating")!!
+                isUpdating = it.getString("isUpdating")!!.toBoolean()
             }
             storeName = it.getString("storeName")!!
             storeId = it.getString("storeId")!!

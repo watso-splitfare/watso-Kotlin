@@ -45,12 +45,9 @@ class FragmentLogin :Fragment() {
                     Log.d("로그인", response.toString())
                     Log.d("로그인", response.body().toString())
                     Log.d("로그인응답 헤더", response.headers().toString())
-                    MainActivity.prefs.setString(
-                        "Authentication", response.headers().get("Authentication").toString())
-                    MainActivity.prefs.setString(
-                        "userID", response.headers().get("user_id").toString())
+                    MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
+                    MainActivity.prefs.setString("userID", binding.etId.text.toString())
                 }
-
 
                 override fun onFailure(call: Call<LoginResult>, t: Throwable) {
                     // 실패

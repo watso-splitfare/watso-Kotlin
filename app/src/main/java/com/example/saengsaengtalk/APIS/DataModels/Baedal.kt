@@ -123,7 +123,7 @@ data class BaedalConditionResponse(
     val condition: Boolean
 )
 
-/** 209 배달 주문 등록 모델 */
+/** 209, 210 배달 주문 등록, 수정 모델 */
 data class OrderingModel(
     val store_id: String,
     val post_id: String,
