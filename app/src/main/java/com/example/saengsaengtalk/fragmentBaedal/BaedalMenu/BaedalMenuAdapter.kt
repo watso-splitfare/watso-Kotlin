@@ -22,13 +22,13 @@ class BaedalMenuAdapter(val menu: List<MenuModel>) : RecyclerView.Adapter<Baedal
         val menu = menu.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(menu.menu_id)
+            itemClickListener.onClick(menu.menu_name)
         }
         holder.bind(menu)
     }
 
     interface OnItemClickListener {
-        fun onClick(menuId: Int)
+        fun onClick(menuName: String)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {

@@ -52,14 +52,14 @@ interface APIS {
     @GET("order/store/list")                // 201 가게 리스트 조회
     fun getStoreList(): Call<List<StoreListModel>>
 
-    @GET("order/menu/list")                 // 202 가게 메뉴 조회
+    @GET("order/menu/list")                 // 202 메뉴 조회
     fun getSectionMenu(
         @Query("store_id") storeId: Int
     ): Call<List<SectionMenuModel>>
 
-    @GET("order/menu/detail")               // 203 가게 메뉴 디테일 조회
+    @GET("order/menu/detail")               // 203 옵션 조회
     fun getGroupOption(
-        @Query("menu_id") menuId: Int,      // 테스트용(실제 사용 x)
+        //@Query("menu_id") menuId: Int,      // 테스트용(실제 사용 x)
         @Query("menu_name") menuName: String,
         @Query("store_id") storeId: Int
     ): Call<List<GroupOptionModel>>

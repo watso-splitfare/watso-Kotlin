@@ -270,7 +270,7 @@ class FragmentBaedalPost :Fragment() {
         }
 
         return BaedalOrder(
-            order.count, null, order.menu_name, order.menu_price, order.sum_price, groups
+            order.quantity, order.menu_name, order.menu_price, order.sum_price, groups
         )
     }
 

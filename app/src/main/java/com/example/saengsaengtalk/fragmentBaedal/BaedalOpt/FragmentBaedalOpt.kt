@@ -19,7 +19,7 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
-    var menuId = 0
+    //var menuId = 0
     var menuName = ""
     var menuPrice = 0
     var storeId = 0
@@ -39,7 +39,7 @@ class FragmentBaedalOpt :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            menuId = it.getString("menuId")!!.toInt()
+            //menuId = it.getString("menuId")!!.toInt()
             menuName = it.getString("menuName")!!
             menuPrice = it.getString("menuPrice")!!.toInt()
             storeId = it.getString("storeId")!!.toInt()
@@ -79,7 +79,7 @@ class FragmentBaedalOpt :Fragment() {
         binding.btnCartConfirm.setOnClickListener {
             val order = JSONObject()
             order.put("count", count)
-            order.put("menuId", menuId)
+            //order.put("menuId", menuId)
             order.put("menuName", menuName)
             order.put("menuPrice", menuPrice)
 
@@ -131,7 +131,7 @@ class FragmentBaedalOpt :Fragment() {
 
 
     fun setRecyclerView() {
-        api.getGroupOption(menuId, menuName, storeId).enqueue(object : Callback<List<GroupOptionModel>> {
+        api.getGroupOption(menuName, storeId).enqueue(object : Callback<List<GroupOptionModel>> {
             override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
                 groupOption = response.body()!!
                 mappingAdapter()

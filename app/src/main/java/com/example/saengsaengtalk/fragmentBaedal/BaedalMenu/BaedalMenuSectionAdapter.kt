@@ -27,13 +27,13 @@ class BaedalMenuSectionAdapter(val context: Context, val sectionMenu: List<Secti
     }
 
     interface OnItemClickListener {
-        fun onClick(sectionId: Int, menuId: Int)
+        fun onClick(sectionName: String, menuName: String)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(sectionId: Int, menuId: Int) {
-        listener.get()?.onClick(sectionId, menuId)
+    fun itemClick(sectionName: String, menuName: String) {
+        listener.get()?.onClick(sectionName, menuName)
     }
 
     fun addListener(listener: OnItemClickListener) {
@@ -65,8 +65,8 @@ class BaedalMenuSectionAdapter(val context: Context, val sectionMenu: List<Secti
             binding.rvMenuSection.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener {
-                override fun onClick(menuId:Int) {
-                    itemClick(section.section_id, menuId)
+                override fun onClick(menuName: String) {
+                    itemClick(section.section_name, menuName)
                 }
             })
         }

@@ -115,16 +115,16 @@ class FragmentBaedalMenu :Fragment() {
         binding.rvMenuSection.adapter = adapter
 
         adapter.addListener(object : BaedalMenuSectionAdapter.OnItemClickListener {
-            override fun onClick(sectionId: Int, menuId: Int) {
+            override fun onClick(sectionName: String, menuName: String) {
                 //println("클릭: 섹션: ${section_id}, 메뉴: ${menu_id}")
                 loop@ for (s in sectionMenu) {
-                    if (sectionId == s.section_id) {
+                    if (sectionName == s.section_name) {
                         for (m in s.menu_list) {
                             //println("검색: 섹션: ${s.section_id}, 메뉴: ${m.menu_id}")
-                            if (menuId == m.menu_id) {
+                            if (menuName == m.menu_name) {
                                 //println(m.toString())
                                 setFrag(FragmentBaedalOpt(), mapOf(
-                                    "menuId" to menuId.toString(),
+                                    //"menuId" to menuId.toString(),
                                     "menuName" to m.menu_name,
                                     "menuPrice" to m.menu_price.toString(),
                                     "storeId" to storeId

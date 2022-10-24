@@ -10,13 +10,13 @@ data class StoreListModel(
 
 /** 202 섹션 및 메뉴 모델 */
 data class SectionMenuModel(
-    val section_id: Int,
+    //val section_id: Int,
     val section_name: String,
     val menu_list: List<MenuModel>
 )
 
 data class MenuModel(
-    val menu_id: Int,
+    //val menu_id: Int,
     val menu_name: String,
     val menu_price: Int
 )
@@ -87,18 +87,20 @@ data class OrderUser(
 
 data class Order(
     val menu_name: String,
-    val count: Int,
+    val quantity: Int,
     val menu_price: Int,
     val sum_price: Int,
     val groups: List<Group>
 )
 
 data class Group(
+    val group_id: Int,
     val group_name: String,
     val options: List<Option>
 )
 
 data class Option(
+    val option_id: Int,
     val option_name: String,
     val option_price: Int
 )
@@ -150,7 +152,7 @@ data class BaedalPostPreviewModel(
     val user_id: Int,
     val join_user: List<Int>,
     val nick_name: String,
-    val store: StoreModel,
+    val store: Store,
     val title: String,
     val place: String,
     val order_time: String,
@@ -160,13 +162,6 @@ data class BaedalPostPreviewModel(
     val update_date: String,
     val views: Int,
     val is_closed: Boolean
-)
-
-data class StoreModel(
-    val _id: String,
-    val store_name: String,
-    val fee: Int,
-    val min_order: Int
 )
 
 data class TestModel(
