@@ -64,7 +64,7 @@ class FragmentBaedalMenu :Fragment() {
 
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        setRecyclerView()
+        getMenuData()
         setCartBtn()
 
         /** Option frag에서 메뉴 선택 후 담기 시 작동 */
@@ -87,7 +87,7 @@ class FragmentBaedalMenu :Fragment() {
         binding.btnCart.setOnClickListener {cartOnClick()}
     }
 
-    fun setRecyclerView() {
+    fun getMenuData() {
         api.getSectionMenu(storeId.toInt()).enqueue(object : Callback<List<SectionMenuModel>> {
             override fun onResponse(call: Call<List<SectionMenuModel>>, response: Response<List<SectionMenuModel>>) {
                 sectionMenu = response.body()!!
@@ -136,7 +136,6 @@ class FragmentBaedalMenu :Fragment() {
                 }
             }
         })
-        //adapter.notifyDataSetChanged()
     }
 
     fun setCartBtn() {

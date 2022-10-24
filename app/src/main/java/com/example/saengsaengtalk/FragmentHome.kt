@@ -19,10 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.GroupOptionModel
-import com.example.saengsaengtalk.APIS.SectionMenuModel
-import com.example.saengsaengtalk.APIS.StoreListModel
-import com.example.saengsaengtalk.APIS.TestModel
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
@@ -30,14 +27,10 @@ import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
-import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoardPost
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -178,33 +171,9 @@ class FragmentHome :Fragment() {
             })
         }*/
 
-        /** */
-
-        /* 배달 */
+        /** 배달 */
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
-
-        val baedalList = arrayListOf(
-            BaedalPre(LocalDateTime.now(), "네네치킨", 2, 10000, 0),
-            BaedalPre(LocalDateTime.now(), "BBQ", 3, 10000, 0),
-            BaedalPre(LocalDateTime.now(), "마라탕", 2, 10000, 0),
-            BaedalPre(LocalDateTime.now(), "피자", 3, 9000, 0),
-            BaedalPre(LocalDateTime.now(), "치킨", 4, 6000, 0)
-        )
-
-        binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvBaedal.setHasFixedSize(true)
-        val baedalAdapter = BaedalPreAdapter(baedalList)
-        binding.rvBaedal.adapter = baedalAdapter
-
-        baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener{
-            override fun onClick(v: View, position: Int) {
-                Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
-                Log.d("홈프래그먼트 온클릭", "${baedalList[position].postId}")
-                setFrag(FragmentBaedalPost(), mapOf("postId" to baedalList[position].postId.toString()), fragIndex=1)
-            }
-        })
-        //baedalAdapter.notifyDataSetChanged()
-
+        getBaedalPostPreview()
 
         /* 택시 */
         binding.btnTaxiAdd.setOnClickListener { setFrag(FragmentTaxiAdd(), fragIndex=1) }
@@ -257,12 +226,12 @@ class FragmentHome :Fragment() {
         val freeBoardAdapter = BoardPreAdapter(freeBoardList)
         binding.rvFreeBoard.adapter = freeBoardAdapter
 
-        freeBoardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
+        /*freeBoardAdapter.setItemClickListener(object: BoardPreAdapter.OnItemClickListener{
             override fun onClick(position: Int) {
                 Log.d("홈프래그먼트 온클릭", "${baedalList[position].postId}")
                 setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postId.toString()), fragIndex=4)
             }
-        })
+        })*/
 
 
         /* 구인게시판 */
@@ -277,6 +246,42 @@ class FragmentHome :Fragment() {
         binding.rvClubBoard.setHasFixedSize(true)
         binding.rvClubBoard.adapter = ClubBoardPreAdapter(clubBoardList)*/
 
+    }
+
+    fun getBaedalPostPreview() {
+        api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
+            override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
+                val baedalPosts = response.body()!!
+                mappingBaedalAdapter(baedalPosts)
+                Log.d("log", response.toString())
+                Log.d("log", baedalPosts.toString())
+            }
+
+            override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    fun mappingBaedalAdapter(baedalPosts: List<BaedalPostPreviewModel>) {
+        binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvBaedal.setHasFixedSize(true)
+        val baedalAdapter = BaedalPreAdapter(baedalPosts)
+        binding.rvBaedal.adapter = baedalAdapter
+
+        baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener {
+            override fun onClick(v: View, position: Int) {
+                //Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
+                Log.d("홈프래그먼트 온클릭", "${baedalPosts[position]._id}")
+                setFrag(
+                    FragmentBaedalPost(),
+                    mapOf("postId" to baedalPosts[position]._id),
+                    fragIndex = 1
+                )
+            }
+        })
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex: Int) {

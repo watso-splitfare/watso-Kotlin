@@ -102,8 +102,8 @@ interface APIS {
 
     @GET("order/post/list")                 // 213 배달 게시글 리스트 조회
     fun getBaedalOrderListPreview(
-        @Query("from_index") fromIndex: Int,
-    ): Call<List<BaedalOrderListPreviewModel>>
+        //@Query("from_index") fromIndex: Int,
+    ): Call<List<BaedalPostPreviewModel>>
 
     // 테스트
     @GET("order/test")

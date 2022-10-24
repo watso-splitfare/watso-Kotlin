@@ -4,38 +4,27 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saengsaengtalk.R
+import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
+import com.example.saengsaengtalk.databinding.LytBaedalListBinding
 import java.text.DecimalFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class BaedalListAdapter(val baedalList: ArrayList<BaedalList>) : RecyclerView.Adapter<BaedalListAdapter.CustomViewHolder>() {
+class BaedalListAdapter(val baedalPosts: List<BaedalPostPreviewModel>) : RecyclerView.Adapter<BaedalListAdapter.CustomViewHolder>() {
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_baedal_list, parent, false)
-        return CustomViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaedalListAdapter.CustomViewHolder {
+        val binding = LytBaedalListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CustomViewHolder(binding)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val arg = baedalList.get(position)
-        val dec = DecimalFormat("#,###")
-        val text = "%s\n".format(arg.title) + arg.baedaltime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))) +
-                "\n%s\n%d팀\n예상 배달비 %s원".format(arg.shop, arg.member, dec.format(arg.fee/arg.member))
-        if (arg.likeUserList.contains("주넝이"))
-            holder.iv_like.setImageResource(R.drawable.heart_red)
-        else
-            holder.iv_like.setImageResource(R.drawable.heart)
-        holder.tv_like.text = arg.likeUserList.size.toString()
-        holder.tv_viewed.text = arg.viewed.toString()
-        holder.tv_content.text = text
+    override fun onBindViewHolder(holder: BaedalListAdapter.CustomViewHolder, position: Int) {
+        val post = baedalPosts[position]
+        holder.bind(post)
 
         holder.itemView.setOnClickListener {
             itemClickListener.onClick(it, position)
@@ -53,14 +42,29 @@ class BaedalListAdapter(val baedalList: ArrayList<BaedalList>) : RecyclerView.Ad
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return baedalList.size
+        return baedalPosts.size
     }
 
-    class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val iv_baedal_list = itemView.findViewById<ImageView>(R.id.img_baedal_list)
-        val iv_like = itemView.findViewById<ImageView>(R.id.img_baedal_list_like)
-        val tv_like = itemView.findViewById<TextView>(R.id.tv_baedal_list_like)
-        val tv_viewed = itemView.findViewById<TextView>(R.id.tv_baedal_list_viewed)
-        val tv_content = itemView.findViewById<TextView>(R.id.tv_baedal_list_content)
+    inner class CustomViewHolder(var binding: LytBaedalListBinding) : RecyclerView.ViewHolder(binding.root) {
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun bind(post: BaedalPostPreviewModel) {
+            binding.imgBaedalListLike.visibility = View.GONE
+            binding.imgBaedalListViewed.visibility = View.GONE
+            binding.tvBaedalListLike.visibility = View.GONE
+            binding.tvBaedalListViewed.visibility = View.GONE
+
+            val dec = DecimalFormat("#,###")
+            val text = "%s\n".format(post.title) + getDateTimeFormating(post.order_time) +
+                    "\n%s\n%d팀\n예상 배달비 %s원".format(post.store.store_name, post.current_member, dec.format(post.store.fee/post.current_member))
+            binding.tvBaedalListContent.text = text
+
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun getDateTimeFormating(dateTimeStr: String): String {
+            val dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            val formatter = DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))
+            return dateTime.format(formatter)
+        }
     }
 }
