@@ -15,34 +15,34 @@ import java.io.IOException
 interface APIS {
     /** 계정 관련 API */
 
-    @GET("auth/username-overlap-check")
+    @GET("auth/username-overlap-check")     // 100 아이디 중복조회
     fun usernameOverlapCheck(
         @Query("user_name") username: String
     ): Call<OverlapResult>
 
-    @GET("auth/nickname-overlap-check")
-    fun nicknameOverlapCheck(
-        @Query("nickname") nickname: String
-    ): Call<OverlapResult>
-
-    @GET("auth/studentnum-overlap-check")
+    @GET("auth/studentnum-overlap-check")   // 101 학번 중복조회
     fun studentnumOverlapCheck(
         @Query("studentnum") studentnum: Int
     ): Call<OverlapResult>
 
-    @POST("auth/signup")
+    @GET("auth/nickname-overlap-check")     // 102 닉네임 중복조회
+    fun nicknameOverlapCheck(
+        @Query("nickname") nickname: String
+    ): Call<OverlapResult>
+
+    @POST("auth/signup")                    // 103 회원가입
     @Headers("accept: application/json", "content-type: application/json")
     fun signup(
         @Body jsonparams: SignUpModel
     ): Call<SignUpResult>
 
-    @POST("auth/login")
+    @POST("auth/login")                     // 104 로그인
     @Headers("accept: application/json", "content-type: application/json")
     fun login(
         @Body jsonparams: LoginModel
     ): Call<LoginResult>
 
-    @POST("auth/logout")
+    @POST("auth/logout")                    // 105 로그아웃
     fun logout(
     ): Call<LogoutResult>
 
@@ -89,6 +89,16 @@ interface APIS {
     fun baedalOrdering(
         @Body jsonparams: OrderingModel
     ): Call<OrderingResponse>
+
+    @PATCH("order/ordering/update")         // 210 배달 주문 수정
+    fun baedalOrderUpdate(
+        @Body jsonparams: OrderingModel
+    ): Call<OrderingResponse>
+
+    @GET("order/post/join/condition-switch")// 211 배달 주문 취소
+    fun baedalOrderCancel(
+        @Query("post_id") postId: String,
+    ): Call<BaedalPostingResponse>
 
     @GET("order/post/list")                 // 213 배달 게시글 리스트 조회
     fun getBaedalOrderListPreview(

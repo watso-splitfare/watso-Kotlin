@@ -21,8 +21,9 @@ import retrofit2.Response
 
 class FragmentBaedalMenu :Fragment() {
     var isPosting = false
-    var postNum: String? = null
-    var member = "0"
+    var postId: String? = null
+    var currentMember = "0"
+    var isUpdating = "false"
     var storeName = ""
     var storeId = "0"
     var baedalFee = ""
@@ -39,16 +40,17 @@ class FragmentBaedalMenu :Fragment() {
         arguments?.let {
             isPosting = it.getString("isPosting")!!.toBoolean()
             if (!isPosting) {
-                postNum = it.getString("postNum")!!
-                member = it.getString("member")!!
+                postId = it.getString("postId")!!
+                currentMember = it.getString("currentMember")!!
+                isUpdating = it.getString("isUpdating")!!
             }
             storeName = it.getString("storeName")!!
             storeId = it.getString("storeId")!!
             baedalFee = it.getString("baedalFee")!!
             orders = JSONArray(it.getString("orders"))
         }
-        Log.d("배달 메뉴", "게시물 번호: ${postNum}")
-        Log.d("배달 메뉴", "주문 인원: ${member}")
+        Log.d("배달 메뉴", "게시물 번호: ${postId}")
+        Log.d("배달 메뉴", "주문 인원: ${currentMember}")
         Log.d("배달 메뉴", "포스팅?: ${isPosting}")
     }
 
@@ -156,12 +158,12 @@ class FragmentBaedalMenu :Fragment() {
     fun cartOnClick(){
         val map = mutableMapOf(
             "isPosting" to isPosting.toString(),
-            "member" to member,
+            "currentMember" to currentMember,
             "storeName" to storeName,
             "baedalFee" to baedalFee,
             "orders" to orders.toString()
         )
-        if (!isPosting) map["postNum"] = postNum!!
+        if (!isPosting) map["postNum"] = postId!!
 
         setFrag(FragmentBaedalConfirm(), map)
     }

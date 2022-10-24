@@ -141,7 +141,7 @@ class FragmentBaedalPost :Fragment() {
                 binding.tvLike.visibility = View.GONE
 
 
-                /** 주문하기 및 마감 */
+                /** 주문하기 및 주문가능 여부 변경 */
                 if (baedalPost.is_closed) {
                     binding.tvOrder.text = "주문이 마감되었습니다."
                     binding.lytOrder.isEnabled = false
@@ -152,8 +152,9 @@ class FragmentBaedalPost :Fragment() {
                     binding.tvClose.text = "주문 마감하기"
                     binding.tvClose.setTextColor(Color.WHITE)
                     if (userId == baedalPost.user.user_id) {
-
-                        binding.lytClose.setOnClickListener {       // 주문 가능 여부 변경
+                        binding.lytClose.visibility = View.VISIBLE
+                        /** 주문 가능 여부 변경 */
+                        binding.lytClose.setOnClickListener {
                             api.setClosed(mapOf("post_id" to postId!!)).enqueue(object : Callback<BaedalConditionResponse> {
                                 override fun onResponse(call: Call<BaedalConditionResponse>, response: Response<BaedalConditionResponse>) {
                                     val res = response.body()!!
@@ -179,8 +180,44 @@ class FragmentBaedalPost :Fragment() {
                         binding.lytClose.visibility = View.GONE
                     }
 
-                    if (baedalPost.is_member) binding.tvOrder.text = "주문 수정하기"
-                    else binding.tvOrder.text = "나도 주문하기"
+                    /** 주문하기 */
+                    if (baedalPost.is_member) {
+                        binding.lytCancel.visibility = View.VISIBLE
+                        binding.tvOrder.text = "주문 수정하기"
+                        binding.lytOrder.setOnClickListener {
+                            setFrag(FragmentBaedalMenu(), mapOf(
+                                "isPosting" to "false",
+                                "postId" to postId!!,
+                                "currentMember" to baedalPost.current_member.toString(),
+                                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                            ))
+                        }
+
+                        /** 주문취소 */
+                        println("userID: ${userId}, baedalPost.user.user_id: ${baedalPost.user.user_id}")
+                        if (userId != baedalPost.user.user_id) {
+                            binding.lytCancel.setOnClickListener {
+                                api.baedalOrderCancel(postId!!).enqueue(object : Callback<BaedalPostingResponse> {
+                                        override fun onResponse(call: Call<BaedalPostingResponse>,response: Response<BaedalPostingResponse>) {
+                                            val res = response.body()!!
+                                            println("주문취소: ${res}")
+                                            binding.lytCancel.visibility = View.GONE
+                                        }
+
+                                        override fun onFailure(call: Call<BaedalPostingResponse>,t: Throwable) {
+                                            // 실패
+                                            println("주문취소: 실패")
+                                            Log.d("log", t.message.toString())
+                                            Log.d("log", "fail")
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                    else {
+                        binding.tvOrder.text = "나도 주문하기"
+                        binding.lytCancel.visibility = View.GONE
+                    }
                 }
 
                 /** 주문내역 바인딩 */
