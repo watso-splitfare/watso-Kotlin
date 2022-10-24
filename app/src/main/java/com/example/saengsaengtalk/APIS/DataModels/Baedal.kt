@@ -67,6 +67,7 @@ data class BaedalPostModel(
     val views: Int,
     val reg_date: String,
     val is_closed: Boolean,
+    val is_member: Boolean,
     val order_users: List<OrderUser>,
     val comments: List<Comment>
 )
@@ -111,6 +112,13 @@ data class BaedalUpdateModel(
     val place: String,
     val min_member: Int?,
     val max_member: Int?
+)
+
+/** 207 주문 가능 여부 변경 응답 모델*/
+data class BaedalConditionResponse(
+    val sucess: Boolean,
+    val post_id: String,
+    val condition: Boolean
 )
 
 /** 209 배달 주문 등록 모델 */

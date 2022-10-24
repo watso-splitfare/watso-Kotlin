@@ -2,6 +2,7 @@ package com.example.saengsaengtalk.fragmentBaedal.BaedalPost
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +12,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.BaedalConditionResponse
 import com.example.saengsaengtalk.APIS.BaedalPostModel
+import com.example.saengsaengtalk.APIS.BaedalPostingResponse
 import com.example.saengsaengtalk.APIS.Order
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
@@ -137,27 +140,47 @@ class FragmentBaedalPost :Fragment() {
                 binding.ivLike.visibility = View.GONE
                 binding.tvLike.visibility = View.GONE
 
-                if (userId != baedalPost.user.user_id) {
-                    if (baedalPost.is_closed){
-                        binding.tvOrder.text = "주문이 마감되었습니다."
-                        binding.lytOrder.isEnabled = false
-                        binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-                    } else {
-                        binding.tvOrder.text = "나도 주문하기"
-                        binding.lytOrder.setOnClickListener {
-                            setFrag(
-                                FragmentBaedalMenu(),
-                                mapOf("postId" to postId!!, "member" to baedalPost.current_member.toString(), "isPosting" to "false")
-                            )
-                        }
-                    }
+
+                /** 주문하기 및 마감 */
+                if (baedalPost.is_closed) {
+                    binding.tvOrder.text = "주문이 마감되었습니다."
+                    binding.lytOrder.isEnabled = false
+                    binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                    binding.tvClose.text = "추가 주문받기"
+                    binding.tvClose.setTextColor(Color.BLACK)
                 } else {
-                    binding.tvOrder.text = "주문 마감하기"
-                    binding.ivOrder.visibility = View.GONE
-                    binding.lytOrder.setOnClickListener {
-                        binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-                        binding.lytOrder.isEnabled = false
+                    binding.tvClose.text = "주문 마감하기"
+                    binding.tvClose.setTextColor(Color.WHITE)
+                    if (userId == baedalPost.user.user_id) {
+
+                        binding.lytClose.setOnClickListener {       // 주문 가능 여부 변경
+                            api.setClosed(mapOf("post_id" to postId!!)).enqueue(object : Callback<BaedalConditionResponse> {
+                                override fun onResponse(call: Call<BaedalConditionResponse>, response: Response<BaedalConditionResponse>) {
+                                    val res = response.body()!!
+                                    if (res.condition) {
+                                        binding.tvClose.text = "주문 마감하기"
+                                        binding.tvClose.setTextColor(Color.WHITE)
+                                        binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_close)
+                                    } else {
+                                        binding.tvClose.text = "추가 주문받기"
+                                        binding.tvClose.setTextColor(Color.BLACK)
+                                        binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                                    }
+                                }
+                                override fun onFailure(call: Call<BaedalConditionResponse>, t: Throwable) {
+                                    // 실패
+                                    println("실패")
+                                    Log.d("log",t.message.toString())
+                                    Log.d("log","fail")
+                                }
+                            })
+                        }
+                    } else {
+                        binding.lytClose.visibility = View.GONE
                     }
+
+                    if (baedalPost.is_member) binding.tvOrder.text = "주문 수정하기"
+                    else binding.tvOrder.text = "나도 주문하기"
                 }
 
                 /** 주문내역 바인딩 */

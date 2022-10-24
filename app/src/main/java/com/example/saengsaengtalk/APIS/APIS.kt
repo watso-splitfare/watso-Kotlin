@@ -80,6 +80,11 @@ interface APIS {
         @Body jsonparams: BaedalUpdateModel
     ): Call<BaedalPostingResponse>
 
+    @PATCH("order/post/condition-switch")    // 207 배달 주문 가능 여부 변경
+    fun setClosed(
+        @Body jsonparams: Map<String, String>
+    ): Call<BaedalConditionResponse>
+
     @POST("order/ordering")                 // 209 배달 주문 등록
     fun baedalOrdering(
         @Body jsonparams: OrderingModel

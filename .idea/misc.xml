@@ -9,7 +9,9 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_pre_taxi.xml" value="0.21" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_search.xml" value="0.1" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/box_style_spinner.xml" value="0.1" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_close.xml" value="0.2465" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_order.xml" value="0.12" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_order_closed.xml" value="0.2465" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style.xml" value="0.1" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style_baedal.xml" value="0.1365" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_style_taxi.xml" value="0.1" />
@@ -30,6 +32,7 @@
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_post.xml" value="0.33" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_club_board.xml" value="0.24479166666666666" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board.xml" value="0.17603850050658562" />
+        <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_free_board_post.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_home.xml" value="0.33" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara.xml" value="0.17603850050658562" />
         <entry key="..\:/Users/HP/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_login.xml" value="0.19293478260869565" />
