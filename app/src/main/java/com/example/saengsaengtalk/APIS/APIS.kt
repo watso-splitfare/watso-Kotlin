@@ -117,7 +117,7 @@ interface APIS {
     ): Call<TestModel>
 
     companion object {
-        private const val BASE_URL = "http://52.78.106.235:5000/" //"http://59.8.74.204:5000/" //"http://10.0.2.2:5000/" //"http://52.78.106.235:5000/"
+        private const val BASE_URL = "http://10.0.2.2:5000/" //"http://59.8.74.204:5000/" //"http://10.0.2.2:5000/" //"http://52.78.106.235:5000/"
         var auth = MainActivity.prefs.getString("Authentication", "")
 
         fun create(): APIS {

@@ -59,14 +59,15 @@ class FragmentLogin :Fragment() {
                     val user_id = response.body()!!.user_id
                     println("유저 ID: ${response.body()!!.user_id}")
                     MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
-                    //MainActivity.prefs.setString("userId", response.headers().get("user_id").toString())
                     MainActivity.prefs.setString("userId", user_id.toString())
+                    onBackPressed()
                 }
 
                 override fun onFailure(call: Call<LoginResult>, t: Throwable) {
                     // 실패
                     Log.d("로그인",t.message.toString())
                     Log.d("로그인","fail")
+                    onBackPressed()
                 }
             })
         }

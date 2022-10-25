@@ -111,7 +111,7 @@ class FragmentSignUp :Fragment() {
         }
 
         /** 메일 관련 */
-        //binding.lytMail.visibility = View.GONE
+        binding.lytMail.visibility = View.GONE
         val domains = resources.getStringArray(R.array.domains)
 
         binding.spnMailDomain.adapter = ArrayAdapter.createFromResource(
@@ -132,7 +132,7 @@ class FragmentSignUp :Fragment() {
             }
         }
 
-        /** 회원가입*/
+        /** 회원가입 */
         binding.btnNext.setOnClickListener {
             var data = SignUpModel(
                 binding.etId.text.toString(),
@@ -144,6 +144,7 @@ class FragmentSignUp :Fragment() {
                 override fun onResponse(call: Call<SignUpResult>, response: Response<SignUpResult>) {
                     Log.d("회원가입",response.toString())
                     Log.d("회원가입", response.body().toString())
+                    onBackPressed()
                     /*if(!response.body().toString().isEmpty())
                         binding.tvTest.setText(response.body().toString());*/
                 }
@@ -152,6 +153,7 @@ class FragmentSignUp :Fragment() {
                     // 실패
                     Log.d("회원가입",t.message.toString())
                     Log.d("회원가입","fail")
+                    onBackPressed()
                 }
             })
         }
