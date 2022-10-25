@@ -11,13 +11,13 @@ data class BaedalOrder (
 )
 
 data class Group(
-    val groupId: Int?,
+    val groupId: Long?,
     val groupName: String,
     val options: List<Option>
 )
 
 data class Option(
-    val optionId: Int?,
+    val optionId: Long?,
     val optionName: String,
     val optionPrice: Int
 )

@@ -61,7 +61,7 @@ class BaedalMenuSectionAdapter(val context: Context, val sectionMenu: List<Secti
             binding.rvMenuSection.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalMenuAdapter(section.menu_list)
+            val adapter = BaedalMenuAdapter(section.menus)
             binding.rvMenuSection.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener {

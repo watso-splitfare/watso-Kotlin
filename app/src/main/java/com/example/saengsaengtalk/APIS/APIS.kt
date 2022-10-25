@@ -15,17 +15,17 @@ import java.io.IOException
 interface APIS {
     /** 계정 관련 API */
 
-    @GET("auth/username-overlap-check")     // 100 아이디 중복조회
+    @GET("auth/overlap/username")     // 100 아이디 중복조회
     fun usernameOverlapCheck(
         @Query("user_name") username: String
     ): Call<OverlapResult>
 
-    @GET("auth/studentnum-overlap-check")   // 101 학번 중복조회
+    @GET("auth/overlap/studentnum")   // 101 학번 중복조회
     fun studentnumOverlapCheck(
         @Query("studentnum") studentnum: Int
     ): Call<OverlapResult>
 
-    @GET("auth/nickname-overlap-check")     // 102 닉네임 중복조회
+    @GET("auth/overlap/nickname")     // 102 닉네임 중복조회
     fun nicknameOverlapCheck(
         @Query("nickname") nickname: String
     ): Call<OverlapResult>
@@ -54,14 +54,14 @@ interface APIS {
 
     @GET("order/menu/list")                 // 202 메뉴 조회
     fun getSectionMenu(
-        @Query("store_id") storeId: Int
+        @Query("store_id") storeId: String
     ): Call<List<SectionMenuModel>>
 
     @GET("order/menu/detail")               // 203 옵션 조회
     fun getGroupOption(
         //@Query("menu_id") menuId: Int,      // 테스트용(실제 사용 x)
         @Query("menu_name") menuName: String,
-        @Query("store_id") storeId: Int
+        @Query("store_id") storeId: String
     ): Call<List<GroupOptionModel>>
 
     @POST("order/post/posting")             // 204 배달 게시글 등록
@@ -71,7 +71,7 @@ interface APIS {
 
     @GET("order/post/detail/{post_id}")     // 205 배달 게시글 조회
     fun getBaedalPost(
-        @Path("post_id") postId: Int
+        @Path("post_id") postId: String
         //@Query("post_id") postId: Int,
     ): Call<BaedalPostModel>
 
@@ -89,6 +89,11 @@ interface APIS {
     fun baedalOrdering(
         @Body jsonparams: OrderingModel
     ): Call<OrderingResponse>
+
+    @GET("/order/ordering/update")          // 210 배달 주문 수정용 데이터 요청
+    fun getOrders(
+        @Query("post_id") postId: String
+    ): Call<UserOrder>
 
     @PATCH("order/ordering/update")         // 210 배달 주문 수정
     fun baedalOrderUpdate(
@@ -112,7 +117,7 @@ interface APIS {
     ): Call<TestModel>
 
     companion object {
-        private const val BASE_URL = "http://10.0.2.2:5000/" //"http://59.8.74.204:5000/" //
+        private const val BASE_URL = "http://52.78.106.235:5000/" //"http://59.8.74.204:5000/" //"http://10.0.2.2:5000/" //"http://52.78.106.235:5000/"
         var auth = MainActivity.prefs.getString("Authentication", "")
 
         fun create(): APIS {

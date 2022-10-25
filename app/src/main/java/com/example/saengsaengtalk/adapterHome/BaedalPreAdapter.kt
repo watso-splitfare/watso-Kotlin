@@ -48,10 +48,10 @@ class BaedalPreAdapter(val baedalPosts: List<BaedalPostPreviewModel>) : Recycler
     inner class CustomViewHolder(var binding: LytBaedalPreBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(post: BaedalPostPreviewModel) {
-
             val dec = DecimalFormat("#,###")
-            val text = getDateTimeFormating(post.order_time) + ("\n${post.store.store_name} ${post.current_member}팀" +
-                    "\n예상 배달비 ${dec.format(post.store.fee/post.current_member)}원")
+            val currentMember = post.join_user.size
+            val text = getDateTimeFormating(post.order_time) + ("\n${post.store.store_name} ${currentMember}팀" +
+                    "\n예상 배달비 ${dec.format(post.store.fee/currentMember)}원")
             binding.tvBaedalPre.text = text
         }
 

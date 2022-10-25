@@ -35,8 +35,10 @@ import java.util.*
 
 class FragmentBaedalPost :Fragment() {
     var postId: String? = null
-    var userId: Int = 0
+    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
     val dec = DecimalFormat("#,###")
+
+    var is_member = false
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
@@ -49,7 +51,7 @@ class FragmentBaedalPost :Fragment() {
             postId = it.getString("postId")!!
         }
 
-        //println("유저아이디 쿠키: ${MainActivity.prefs.getString("userID", "")}")
+        //println("유저아이디 쿠키: ${MainActivity.prefs.getString("userId", "")}")
         Log.d("배달 포스트", "게시물 번호: ${postId}")
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -70,27 +72,40 @@ class FragmentBaedalPost :Fragment() {
 
         getActivity()?.getSupportFragmentManager()
             ?.setFragmentResultListener("updatePost", this) { requestKey, bundle ->
-                val sucess = bundle.getBoolean("updateResult")
+                val success = bundle.getBoolean("success")
                 println("수정완료")
-                println(sucess)
-                postId = "1"
+                println(success)
+                postId = bundle.getString("postId")
                 getPostInfo()
             }
 
+        getActivity()?.getSupportFragmentManager()
+            ?.setFragmentResultListener("ordering", this) { requestKey, bundle ->
+                val success = bundle.getBoolean("success")
+                println("주문완료")
+                println(success)
+                postId = bundle.getString("postId")
+                getPostInfo()
+            }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getPostInfo() {
-        api.getBaedalPost(postId!!.toInt()).enqueue(object : Callback<BaedalPostModel> {
+        api.getBaedalPost(postId!!).enqueue(object : Callback<BaedalPostModel> {
             override fun onResponse(call: Call<BaedalPostModel>, response: Response<BaedalPostModel>) {
                 baedalPost = response.body()!!
+                is_member = baedalPost.join_user.contains(userId)
                 val store = baedalPost.store
-                val comments = baedalPost.comments
+                //val comments = baedalPost.comments
+                val currentMember = baedalPost.join_user.size
 
-                val postCreated = LocalDateTime.parse(baedalPost.reg_date, DateTimeFormatter.ISO_DATE_TIME)
+                val postCreated = LocalDateTime.parse(baedalPost.update_date, DateTimeFormatter.ISO_DATE_TIME)
                 val orderTime = LocalDateTime.parse(baedalPost.order_time, DateTimeFormatter.ISO_DATE_TIME)
 
-                if (userId != baedalPost.user.user_id) {
+                println("@@@@@@@@@@@@ userId: ${userId}")
+                println("@@@@@@@@@@@@ baedalPost: ${baedalPost}")
+                println("@@@@@@@@@@@@ post_user_id: ${baedalPost.user_id}")
+                if (userId != baedalPost.user_id) {
                     binding.tvDelete.visibility = View.GONE
                     binding.tvUpdate.visibility = View.GONE
                 }
@@ -124,7 +139,7 @@ class FragmentBaedalPost :Fragment() {
 
                 /** 포스트 내용 바인딩 */
                 binding.tvPostTitle.text = baedalPost.title
-                binding.tvPostWriter.text = baedalPost.user.nick_name
+                binding.tvPostWriter.text = baedalPost.nick_name
                 binding.tvPostCreated.text = postCreated.format(
                     DateTimeFormatter.ofPattern("YYYY. MM. dd HH:MM")
                 )
@@ -132,7 +147,7 @@ class FragmentBaedalPost :Fragment() {
 
                 binding.tvOrderTime.text = orderTime.format(DateTimeFormatter.ofPattern("M월 d일(E) H시 m분", Locale.KOREAN))
                 binding.tvStore.text = store.store_name
-                binding.tvCurrentMember.text = baedalPost.current_member.toString()
+                binding.tvCurrentMember.text = currentMember.toString()
                 binding.tvFee.text = "${dec.format(store.fee)}원"
 
                 if (baedalPost.content != null) binding.tvContent.text = baedalPost.content
@@ -151,7 +166,7 @@ class FragmentBaedalPost :Fragment() {
                 } else {
                     binding.tvClose.text = "주문 마감하기"
                     binding.tvClose.setTextColor(Color.WHITE)
-                    if (userId == baedalPost.user.user_id) {
+                    if (userId == baedalPost.user_id) {
                         binding.lytClose.visibility = View.VISIBLE
                         /** 주문 가능 여부 변경 */
                         binding.lytClose.setOnClickListener {
@@ -181,31 +196,24 @@ class FragmentBaedalPost :Fragment() {
                     }
 
                     /** 주문하기 및 주문수정 */
-                    if (baedalPost.is_member) {
-                        /** 주문하기 */
+                    var isUpdating:Boolean
+                    if (is_member) {
+                        /** 주문수정 */
                         binding.lytCancel.visibility = View.VISIBLE
                         binding.tvOrder.text = "주문 수정하기"
-                        binding.lytOrder.setOnClickListener {
-                            setFrag(FragmentBaedalMenu(), mapOf(
-                                "isPosting" to "false",
-                                "postId" to postId!!,
-                                "currentMember" to baedalPost.current_member.toString(),
-                                "isUpdating" to "true",
-                                "storeName" to store.store_name,
-                                "storeId" to store._id,
-                                "baedalFee" to store.fee.toString()
-                            ))
-                        }
+                        isUpdating = true
 
                         /** 주문취소 */
-                        println("userID: ${userId}, baedalPost.user.user_id: ${baedalPost.user.user_id}")
-                        if (userId != baedalPost.user.user_id) {
+                        println("userId: ${userId}, baedalPost.user.user_id: ${baedalPost.user_id}")
+                        if (userId != baedalPost.user_id) {
                             binding.lytCancel.setOnClickListener {
                                 api.baedalOrderCancel(postId!!).enqueue(object : Callback<BaedalPostingResponse> {
                                         override fun onResponse(call: Call<BaedalPostingResponse>,response: Response<BaedalPostingResponse>) {
-                                            val res = response.body()!!
+                                            val res = response.toString()!!
                                             println("주문취소: ${res}")
                                             binding.lytCancel.visibility = View.GONE
+                                            binding.tvOrder.text = "나도 주문하기"
+                                            getPostInfo()
                                         }
 
                                         override fun onFailure(call: Call<BaedalPostingResponse>,t: Throwable) {
@@ -219,8 +227,23 @@ class FragmentBaedalPost :Fragment() {
                         }
                     }
                     else {
-                        binding.tvOrder.text = "나도 주문하기"
+                        /** 주문작성 */
                         binding.lytCancel.visibility = View.GONE
+                        binding.tvOrder.text = "나도 주문하기"
+                        isUpdating = false
+                    }
+
+                    binding.lytOrder.setOnClickListener {
+                        setFrag(FragmentBaedalMenu(), mapOf(
+                            "isPosting" to "false",
+                            "postId" to postId!!,
+                            "currentMember" to currentMember.toString(),
+                            "isUpdating" to isUpdating.toString(),
+                            "storeName" to store.store_name,
+                            "storeId" to store._id,
+                            "baedalFee" to store.fee.toString(),
+                            "orders" to ""
+                        ))
                     }
                 }
 
@@ -229,7 +252,7 @@ class FragmentBaedalPost :Fragment() {
                 binding.rvOrderList.setHasFixedSize(true)
 
                 val baedalOrderUsers = mutableListOf<BaedalOrderUser>()
-                for (orderUser in baedalPost.order_users) {
+                for (orderUser in baedalPost.user_orders) {
                     var orderPrice = 0
                     val baedalOrders = mutableListOf<BaedalOrder>()
                     for (order in orderUser.orders) {
@@ -247,11 +270,11 @@ class FragmentBaedalPost :Fragment() {
                 binding.rvOrderList.adapter = adapter
 
                 /** 댓글 */
-                binding.tvCommentCount.text = "댓글 ${comments.size}"
+                /*binding.tvCommentCount.text = "댓글 ${comments.size}"
                 binding.rvComment.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 binding.rvComment.setHasFixedSize(true)
-                binding.rvComment.adapter = CommentAdapter(comments, userId)
+                binding.rvComment.adapter = CommentAdapter(comments, userId)*/
             }
 
             override fun onFailure(call: Call<BaedalPostModel>, t: Throwable) {

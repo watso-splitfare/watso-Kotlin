@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-class CommentAdapter(val comments: List<Comment>, val user_id: Int) : RecyclerView.Adapter<CommentAdapter.CustomViewHolder>() {
+class CommentAdapter(val comments: List<Comment>, val user_id: Long) : RecyclerView.Adapter<CommentAdapter.CustomViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.lyt_comment, parent, false)
         return CustomViewHolder(view)
@@ -34,7 +34,7 @@ class CommentAdapter(val comments: List<Comment>, val user_id: Int) : RecyclerVi
             holder.btn_delete.text = ""
         holder.tv_nickname.text = comment.nick_name
         holder.tv_comment.text = comment.content
-        val regDate = LocalDateTime.parse(comment.reg_date, DateTimeFormatter.ISO_DATE_TIME)
+        val regDate = LocalDateTime.parse(comment.update_date, DateTimeFormatter.ISO_DATE_TIME)
         holder.tv_datetime.text = regDate.format(
             DateTimeFormatter.ofPattern("YYYY. MM. dd HH:MM")
         )

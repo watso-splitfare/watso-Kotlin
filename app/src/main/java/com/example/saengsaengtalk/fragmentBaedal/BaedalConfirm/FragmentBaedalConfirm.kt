@@ -2,6 +2,7 @@ package com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,27 +10,37 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
+import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
+import com.example.saengsaengtalk.fragmentBaedal.Group
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
     var isPosting = false
-    var postNum: Int? = null
-    var member = 0
+    var postId = ""
+    var currentMember = 1
+    var isUpdating = false
     var storeName = ""
+    var storeId = "0"
     var baedalFee = 0
     var orders = mutableListOf<BaedalOrder>()
 
+    var orderPrice = 0
+
     private var mBinding: FragBaedalConfirmBinding? = null
     private val binding get() = mBinding!!
+    val api= APIS.create()
     val gson = Gson()
-    var orderPrice = 0
     val dec = DecimalFormat("#,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +48,11 @@ class FragmentBaedalConfirm :Fragment() {
         arguments?.let {
             isPosting = it.getString("isPosting").toBoolean()
             if (!isPosting) {
-                postNum = it.getString("postNum")!!.toInt()
-                member = it.getString("member")!!.toInt()
+                postId = it.getString("postId")!!
+                currentMember = it.getString("currentMember")!!.toInt()
+                isUpdating = it.getString("isUpdating").toBoolean()
+                storeId = it.getString("storeId")!!
+                if (isUpdating) currentMember -= 1
             }
             storeName = it.getString("storeName")!!
             baedalFee = it.getString("baedalFee")!!.toInt()
@@ -113,6 +127,7 @@ class FragmentBaedalConfirm :Fragment() {
         bindSetText()
 
         if (isPosting) {
+            /** 신규 게시글 작성 */
             binding.lytRequest.setVisibility(View.GONE)
             binding.btnConfirm.setOnClickListener {
                 getActivity()?.getSupportFragmentManager()?.setFragmentResult("ConfirmToPosting", bundleOf("ordersString" to gson.toJson(orders)))
@@ -120,11 +135,10 @@ class FragmentBaedalConfirm :Fragment() {
                 onBackPressed()
             }
         } else {
+            /** 기존 게시글에 주문 작성 또는 수정 */
             binding.btnConfirm.setOnClickListener {
-                //setFrag(FragmentBaedalPost(), mapOf("postNum" to postNum!!))
-                onBackPressed()
-                onBackPressed()
-            }
+                if (isUpdating) baedalOrderUpdating()   /** 주문수정 */
+                else baedalOrdering()                   /** 주문작성 */            }
         }
     }
 
@@ -139,6 +153,104 @@ class FragmentBaedalConfirm :Fragment() {
         }
     }
 
+    fun baedalOrdering(){
+        val orderingModel = getOrderingModel()
+
+        println("@@@@@@@@@@@@@@@@@${orderingModel}")
+        api.baedalOrdering(orderingModel).enqueue(object : Callback<OrderingResponse> {
+            override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
+                println("성공")
+                Log.d("log", response.toString())
+                Log.d("log", response.body().toString())
+                val result = response.body()!!
+                println(result)
+                orderingComplete(result.success)
+            }
+
+            override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
+                println("실패")
+                Log.d("log", t.message.toString())
+                Log.d("log", "fail")
+                orderingComplete(false)
+            }
+        })
+    }
+
+    fun baedalOrderUpdating(){
+        val orderingModel = getOrderingModel()
+
+        println(orderingModel)
+        api.baedalOrderUpdate(orderingModel).enqueue(object : Callback<OrderingResponse> {
+            override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
+                println("성공")
+                Log.d("log", response.toString())
+                Log.d("log", response.body().toString())
+                val result = response.body()!!
+                println(result)
+                orderingComplete(result.success)
+            }
+
+            override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
+                println("실패")
+                Log.d("log", t.message.toString())
+                Log.d("log", "fail")
+                orderingComplete(false)
+            }
+        })
+    }
+
+    fun orderingComplete(success: Boolean){
+        if (success) {
+            api.baedalOrderCancel(postId).enqueue(object : Callback<BaedalPostingResponse> {
+                override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
+
+                    println("주문취소 성공(주문등록)")
+                    Log.d("log", response.toString())
+                    goToPosting(success)
+                }
+
+                override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
+                    println("주문취소 실패(주문등록)")
+                    Log.d("log", t.message.toString())
+                    Log.d("log", "fail")
+                    goToPosting(success)
+                }
+            })
+        }
+        else goToPosting(success)
+    }
+
+    fun goToPosting(success: Boolean){
+        getActivity()?.getSupportFragmentManager()?.setFragmentResult("ordering", bundleOf("success" to success, "postId" to postId))
+        onBackPressed()
+        onBackPressed()
+    }
+
+    fun getOrderingModel(): OrderingModel {
+        val orderings = mutableListOf<OrderingOrder>()
+        for (order in orders) {
+            orderings.add(getOrdering(order))
+        }
+
+        return OrderingModel(storeId, postId, orderings)
+    }
+
+    fun getOrdering(order: BaedalOrder): OrderingOrder {
+        val groups = mutableListOf<OrderingGroup>()
+        for (group in order.groups) {
+            groups.add(getGroup(group))
+        }
+        return OrderingOrder(order.count, order.menuName, groups)
+    }
+
+    fun getGroup(group: Group): OrderingGroup {
+        val options = mutableListOf<Long>()
+        for (option in group.options){
+            options.add(option.optionId!!)
+        }
+        return OrderingGroup(group.groupId!!, options)
+    }
+
     fun bindSetText() {
         var temp = 0
         orders.forEach {
@@ -146,9 +258,9 @@ class FragmentBaedalConfirm :Fragment() {
         }
         orderPrice = temp
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
-        binding.tvBaedalFee.text = "${dec.format(baedalFee/(member + 1))}원"
-        binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원"
-        binding.btnConfirm.text = "${dec.format(orderPrice + baedalFee/(member + 1))}원 메뉴확정"
+        binding.tvBaedalFee.text = "${dec.format(baedalFee/currentMember)}원"
+        binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/currentMember)}원"
+        binding.btnConfirm.text = "${dec.format(orderPrice + baedalFee/currentMember)}원 메뉴확정"
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

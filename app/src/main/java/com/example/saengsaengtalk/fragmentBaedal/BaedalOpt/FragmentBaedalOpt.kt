@@ -22,12 +22,12 @@ class FragmentBaedalOpt :Fragment() {
     //var menuId = 0
     var menuName = ""
     var menuPrice = 0
-    var storeId = 0
+    var storeId = ""
 
-    val groupNames = mutableMapOf<Int, String>()
-    val optionNames = mutableMapOf<Int, String>()
-    val groupOptionPrice = mutableMapOf<Int, MutableMap<Int, Int>>()
-    val groupOptionChecked = mutableMapOf<Int, MutableMap<Int, Boolean>>()
+    val groupNames = mutableMapOf<Long, String>()
+    val optionNames = mutableMapOf<Long, String>()
+    val groupOptionPrice = mutableMapOf<Long, MutableMap<Long, Int>>()
+    val groupOptionChecked = mutableMapOf<Long, MutableMap<Long, Boolean>>()
     var count = 1
 
     var groupOption = listOf<GroupOptionModel>()                   // 옵션 전체. 현재화면 구성에 사용
@@ -42,7 +42,7 @@ class FragmentBaedalOpt :Fragment() {
             //menuId = it.getString("menuId")!!.toInt()
             menuName = it.getString("menuName")!!
             menuPrice = it.getString("menuPrice")!!.toInt()
-            storeId = it.getString("storeId")!!.toInt()
+            storeId = it.getString("storeId")!!
         }
     }
 
@@ -136,7 +136,7 @@ class FragmentBaedalOpt :Fragment() {
                 groupOption = response.body()!!
                 mappingAdapter()
                 setGroupOptionData()
-                Log.d("log", response.toString())
+                Log.d("log옵션@@@@@@@@@@@@@@@@@@@@", response.toString())
                 Log.d("log", groupOption.toString())
             }
 
@@ -158,7 +158,7 @@ class FragmentBaedalOpt :Fragment() {
 
 
         adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
-            override fun onClick(groupId: Int, isRadio: Boolean, optionId: Int, isChecked: Boolean) {
+            override fun onClick(groupId: Long, isRadio: Boolean, optionId: Long, isChecked: Boolean) {
                 //println("group: ${groupId}, optionId:${optionId}, isChecked:${isChecked}")
                 setChecked(groupId, isRadio, optionId, isChecked)
                 //binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
@@ -177,10 +177,10 @@ class FragmentBaedalOpt :Fragment() {
             val maxQ = it.max_orderable_quantity
 
             groupNames[groupId] = groupName
-            groupOptionChecked[groupId] = mutableMapOf<Int, Boolean>()
-            groupOptionPrice[groupId] = mutableMapOf<Int, Int>()
+            groupOptionChecked[groupId] = mutableMapOf<Long, Boolean>()
+            groupOptionPrice[groupId] = mutableMapOf<Long, Int>()
 
-            it.option_list.forEach{
+            it.options.forEach{
                 val optionId = it.option_id
 
                 if (radioFirst && (minQ == 1 && maxQ == 1)) {
@@ -196,7 +196,7 @@ class FragmentBaedalOpt :Fragment() {
         println(groupOptionChecked)
     }
 
-    fun setChecked(groupId: Int, isRadio:Boolean, optionId: Int, isChecked: Boolean){
+    fun setChecked(groupId: Long, isRadio:Boolean, optionId: Long, isChecked: Boolean){
         if (isRadio) {
             for (i in groupOptionChecked[groupId]!!.keys) {
                 groupOptionChecked[groupId]!![i] = (i == optionId)

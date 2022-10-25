@@ -33,7 +33,7 @@ class BaedalOptAdapter(val context: Context, val option: List<OptionModel>, val 
     }
 
     interface OnItemClickListener {
-        fun onClick(isRadio:Boolean, optionId: Int, isChecked: Boolean)
+        fun onClick(isRadio:Boolean, optionId: Long, isChecked: Boolean)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -95,7 +95,7 @@ class BaedalOptAdapter(val context: Context, val option: List<OptionModel>, val 
             binding.tvPrice.text = "${dec.format(option.option_price)}원"
         }
 
-        fun callItemClickListener(optionId: Int) {
+        fun callItemClickListener(optionId: Long) {
             if (checkBtn.isChecked) {
                 count += 1
             } else {

@@ -54,8 +54,9 @@ class BaedalListAdapter(val baedalPosts: List<BaedalPostPreviewModel>) : Recycle
             binding.tvBaedalListViewed.visibility = View.GONE
 
             val dec = DecimalFormat("#,###")
+            val currentMember = post.join_user.size
             val text = "%s\n".format(post.title) + getDateTimeFormating(post.order_time) +
-                    "\n%s\n%d팀\n예상 배달비 %s원".format(post.store.store_name, post.current_member, dec.format(post.store.fee/post.current_member))
+                    "\n%s\n%d팀\n예상 배달비 %s원".format(post.store.store_name, currentMember, dec.format(post.store.fee/currentMember))
             binding.tvBaedalListContent.text = text
 
         }

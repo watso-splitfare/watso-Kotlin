@@ -76,7 +76,7 @@ class FragmentHome :Fragment() {
         }
 
         /** api test */
-        //binding.lytApiTest.visibility = View.GONE
+        binding.lytApiTest.visibility = View.GONE
 
         binding.btnRemoveCache.setOnClickListener {
             MainActivity.prefs.removeString("Authentication")

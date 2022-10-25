@@ -111,7 +111,7 @@ class FragmentSignUp :Fragment() {
         }
 
         /** 메일 관련 */
-        binding.lytMail.visibility = View.GONE
+        //binding.lytMail.visibility = View.GONE
         val domains = resources.getStringArray(R.array.domains)
 
         binding.spnMailDomain.adapter = ArrayAdapter.createFromResource(

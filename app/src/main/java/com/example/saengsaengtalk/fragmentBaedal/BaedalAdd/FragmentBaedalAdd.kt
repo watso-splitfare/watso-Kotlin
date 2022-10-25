@@ -264,6 +264,7 @@ class FragmentBaedalAdd :Fragment() {
 
 
         if (isUpdating) {
+            /** 게시글 수정 */
             val baedalUpdateModel = BaedalUpdateModel(
                 postId.toString(),
                 title!!,
@@ -282,11 +283,10 @@ class FragmentBaedalAdd :Fragment() {
                         println("성공")
                         Log.d("log", response.toString())
                         Log.d("log", response.body().toString())
-                        val postingResult = response.body()!!
-                        println(postingResult)
+                        val result = response.body()!!
+                        println(result)
 
-                        val bundle = bundleOf("updateResult" to postingResult.sucess)
-                        println(bundle)
+                        val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
                         getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
                         onBackPressed()
                     }
@@ -298,6 +298,7 @@ class FragmentBaedalAdd :Fragment() {
                     }
                 })
         } else {
+            /** 게시글 신규 등록 */
             var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
             val baedalPostModel = BaedalPostingModel(
                 storeIds[selectedIdx],
@@ -320,7 +321,7 @@ class FragmentBaedalAdd :Fragment() {
                         Log.d("log", response.body().toString())
                         val postingResult = response.body()!!
                         //println(postingResult)
-                        if (!postingResult.sucess) {
+                        if (!postingResult.success) {
                             makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                             println(postingResult)
                         }
@@ -356,11 +357,11 @@ class FragmentBaedalAdd :Fragment() {
                 Log.d("log", response.toString())
                 Log.d("log", response.body().toString())
                 val result = response.body()!!
-                if (!result.sucess) {
+                if (!result.success) {
                     makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                     println(result)
                 }
-                else setFrag(FragmentBaedalPost(), mapOf("postId" to "0"))
+                else setFrag(FragmentBaedalPost(), mapOf("postId" to result.post_id))
                 //setFrag(FragmentBaedalPost(), mapOf("postId" to result.post_id))
             }
 
@@ -381,7 +382,7 @@ class FragmentBaedalAdd :Fragment() {
     }
 
     fun getGroup(group: Group): OrderingGroup {
-        val options = mutableListOf<Int>()
+        val options = mutableListOf<Long>()
         for (option in group.options){
             options.add(option.optionId!!)
         }
