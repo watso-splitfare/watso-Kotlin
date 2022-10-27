@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.io.IOException
 
-interface APIS:AuthAPIS, BaedalAPIS {
+interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS {
     // 테스트
     @GET("order/test")
     fun getTest(

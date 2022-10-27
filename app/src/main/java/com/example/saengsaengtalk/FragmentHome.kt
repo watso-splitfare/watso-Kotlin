@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.*
+import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
@@ -176,28 +177,8 @@ class FragmentHome :Fragment() {
         getBaedalPostPreview()
 
         /* 택시 */
-        binding.btnTaxiAdd.setOnClickListener { setFrag(FragmentTaxiAdd(), fragIndex=1) }
-        val taxiList = arrayListOf(
-            TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 1, 6600, 1),
-            TaxiPre(LocalDateTime.now(), "생자대", "밀양역", 2, 6600, 2),
-            TaxiPre(LocalDateTime.now(), "밀양역", "생자대", 3, 6600, 3),
-            TaxiPre(LocalDateTime.now(), "밀양역", "생자대", 3, 6600, 4),
-            TaxiPre(LocalDateTime.now(), "생자대", "영남루", 1, 6600, 5)
-        )
-        val taxiAdapter = TaxiPreAdapter(taxiList)
-        binding.rvTaxi.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvTaxi.setHasFixedSize(true)
-        binding.rvTaxi.adapter = taxiAdapter
-
-        taxiAdapter.setItemClickListener(object: TaxiPreAdapter.OnItemClickListener{
-            override fun onClick(v: View, position: Int) {
-                Toast.makeText(v.context, "${taxiList[position].postNum}번", Toast.LENGTH_SHORT).show()
-                Log.d("홈프래그먼트 택시 온클릭", "${taxiList[position].postNum}")
-                setFrag(FragmentTaxiPost(), mapOf("postNum" to taxiList[position].postNum.toString()), fragIndex=2)
-            }
-        })
-        taxiAdapter.notifyDataSetChanged()
-
+        binding.btnTaxiAdd.setOnClickListener { setFrag(FragmentTaxiAdd(), fragIndex=2) }
+        getTaxiPostPreview()
 
         /* 노래방 */
         val karaList = arrayListOf(
@@ -279,6 +260,42 @@ class FragmentHome :Fragment() {
                     FragmentBaedalPost(),
                     mapOf("postId" to baedalPosts[position]._id),
                     fragIndex = 1
+                )
+            }
+        })
+    }
+
+    fun getTaxiPostPreview() {
+        api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
+            override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
+                val taxiPosts = response.body()!!
+                mappingTaxiAdapter(taxiPosts)
+                Log.d("log", response.toString())
+                Log.d("log", taxiPosts.toString())
+            }
+
+            override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    fun mappingTaxiAdapter(taxiPosts: List<TaxiPostPreviewModel>) {
+        binding.rvTaxi.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvTaxi.setHasFixedSize(true)
+        val taxiAdapter = TaxiPreAdapter(taxiPosts)
+        binding.rvTaxi.adapter = taxiAdapter
+
+        taxiAdapter.setItemClickListener(object: TaxiPreAdapter.OnItemClickListener {
+            override fun onClick(v: View, position: Int) {
+                //Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
+                Log.d("홈프래그먼트 온클릭", "${taxiPosts[position]._id}")
+                setFrag(
+                    FragmentTaxiPost(),
+                    mapOf("postId" to taxiPosts[position]._id),
+                    fragIndex = 2
                 )
             }
         })
