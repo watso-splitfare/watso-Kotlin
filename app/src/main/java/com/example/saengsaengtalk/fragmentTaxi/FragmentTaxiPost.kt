@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.DataModels.TaxiJoinResponse
 import com.example.saengsaengtalk.APIS.DataModels.TaxiPostModel
 import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
+import com.example.saengsaengtalk.APIS.DataModels.TaxiSwitchConditionResponse
 import com.example.saengsaengtalk.APIS.PostingResponse
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
@@ -26,6 +28,7 @@ import java.util.*
 
 class FragmentTaxiPost :Fragment() {
     var postId = ""
+    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
     private var mBinding: FragTaxiPostBinding? = null
     private val binding get() = mBinding!!
@@ -53,11 +56,6 @@ class FragmentTaxiPost :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         getPost()
-
-        /*val content = Content("생자대->밀양역 가실분", "주넝이", LocalDateTime.now(),
-            "생자대", "밀양역", LocalDateTime.parse("2022-04-04T15:10:00"), 2,6600,
-            "밀양역 가실분 구해요", /*mutableListOf(Comment("동동이", "저요!",
-                LocalDateTime.now(), 0, 0, 0, "ehdehd"))*/)*/
 
 
     }
@@ -117,9 +115,88 @@ class FragmentTaxiPost :Fragment() {
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 binding.rvComment.setHasFixedSize(true)
                 //binding.rvComment.adapter = CommentAdapter(content.comment)
+
+                setBottomBtn(taxiPost)
             }
 
             override fun onFailure(call: Call<TaxiPostModel>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    fun setBottomBtn(taxiPost: TaxiPostModel) {
+        println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        println("userId: ${userId}, 작성자Id: ${taxiPost.user_id}, isClosed: ${taxiPost.is_closed}, joinUsers: ${taxiPost.join_users}")
+        if (taxiPost.is_closed) {
+            if (userId == taxiPost.user_id) {
+                binding.tvBottom.text = "동승자 다시받기"
+                println("@@@@@@@@@@@@1")
+
+                binding.btnBottom.setOnClickListener { switchCondition() }
+            } else {
+                binding.tvBottom.text = "마감되었습니다."
+                println("@@@@@@@@@@@@2")
+                binding.btnBottom.setOnClickListener { }
+            }
+        }
+        else {
+            if (userId == taxiPost.user_id) {
+                binding.tvBottom.text = "동승자 그만받기"
+                binding.btnBottom.setOnClickListener { switchCondition() }
+            } else {
+                if (userId in taxiPost.join_users){
+                    binding.tvBottom.text = "동승 취소하기"
+                    println("@@@@@@@@@@@@3")
+                    binding.btnBottom.setOnClickListener { taxiJoin() }
+                } else {
+                    binding.tvBottom.text = "동승 신청하기"
+                    println("@@@@@@@@@@@@4")
+                    binding.btnBottom.setOnClickListener { taxiJoin() }
+                }
+            }
+        }
+    }
+
+    fun switchCondition() {
+        api.switchCondition(mapOf("post_id" to postId)).enqueue(object : Callback<TaxiSwitchConditionResponse> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<TaxiSwitchConditionResponse>, response: Response<TaxiSwitchConditionResponse>) {
+                val res = response.body()!!
+
+                Log.d("log", response.toString())
+                Log.d("log", res.toString())
+
+                if (res.condition) binding.tvBottom.text = "동승자 그만받기"
+                else binding.tvBottom.text = "동승자 다시받기"
+
+
+            }
+
+            override fun onFailure(call: Call<TaxiSwitchConditionResponse>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    fun taxiJoin() {
+        api.taxiJoin(postId).enqueue(object : Callback<TaxiJoinResponse> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<TaxiJoinResponse>, response: Response<TaxiJoinResponse>) {
+                val res = response.body()!!
+
+                Log.d("log", response.toString())
+                Log.d("log", res.toString())
+
+                if (res.join) binding.tvBottom.text = "동승 취소하기"
+                else binding.tvBottom.text = "동승 신청하기"
+            }
+
+            override fun onFailure(call: Call<TaxiJoinResponse>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")

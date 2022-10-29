@@ -28,7 +28,7 @@ interface TaxiAPIS {
 
     @GET("taxi/post/join")                  // 306 동승 신청/취소
     fun taxiJoin(
-        @Body jsonparams: Map<String, String>
+        @Query("post_id") postId: String
     ): Call<TaxiJoinResponse>
 
     @GET("taxi/posts")                      // 307 택시 게시글 리스트 조회

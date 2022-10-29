@@ -13,7 +13,7 @@ data class TaxiPostingModel(
 
 /** 303 택시 게시글 조회 모델 */
 data class TaxiPostModel(
-    val user_id: Int,
+    val user_id: Long,
     val nick_name: String,
     val title: String,
     val content: String?,

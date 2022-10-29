@@ -287,48 +287,47 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="41dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/btn_propose"
+                    android:id="@+id/btn_bottom"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
+                    android:layout_height="28dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/btn_taxi_propose"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_content" >
+                    app:layout_constraintTop_toBottomOf="@id/tv_content">
 
                     <TextView
-                        android:id="@+id/tv_order"
+                        android:id="@+id/tv_bottom"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="4dp"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="4dp"
-                        android:text="동승신청하기"
+                        android:text="동승"
                         android:textColor="#000000"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/iv_order"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
-                        android:id="@+id/iv_order"
+                        android:id="@+id/iv_bottom"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="4dp"
                         android:layout_marginBottom="4dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tv_bottom"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/finger" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -341,7 +340,7 @@
                     android:layout_marginTop="16dp"
                     android:background="?android:attr/listDivider"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btn_propose" />
+                    app:layout_constraintTop_toBottomOf="@+id/btn_bottom" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
