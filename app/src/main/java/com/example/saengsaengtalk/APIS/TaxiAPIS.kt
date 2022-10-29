@@ -6,7 +6,7 @@ import retrofit2.http.*
 
 interface TaxiAPIS {
     @POST("taxi/post")                      // 302 택시 게시글 등록
-    fun postPosting(
+    fun taxiPosting(
         @Body jsonparams: TaxiPostingModel
     ): Call<PostingResponse>
 

@@ -91,45 +91,50 @@
                 android:id="@+id/et_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxHeight="140dp"
                 android:ems="10"
                 android:gravity="start|top"
-                android:hint="내용"
-                android:inputType="textMultiLine" />
-
+                android:hint="상세사항"
+                android:inputType="textMultiLine"
+                android:maxHeight="140dp" />
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/textView"
+                <RadioGroup
+                    android:id="@+id/radioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
-                    android:text="출발지"
+                    android:checkedButton="@id/rbtn_to_school"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="목적지"
-                    app:layout_constraintStart_toStartOf="@+id/textView"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+                    <RadioButton
+                        android:id="@+id/rbtn_to_school"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="생자대방면" />
+
+                    <RadioButton
+                        android:id="@+id/rbtn_to_station"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="밀양역방면" />
+                </RadioGroup>
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:text="출발시간"
-                    app:layout_constraintStart_toStartOf="@+id/textView2"
-                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
                 <TextView
                     android:id="@+id/textView4"
@@ -145,58 +150,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="신청인원"
+                    android:text="최소모집인원"
                     app:layout_constraintStart_toStartOf="@+id/textView4"
                     app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_depart"
-                    android:layout_width="210dp"
+                <TextView
+                    android:id="@+id/textView18"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    android:background="@drawable/box_style_search"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView">
-
-                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                        android:id="@+id/spn_depart"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="-12dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_dest"
-                    android:layout_width="210dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/box_style_search"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
-                    app:layout_constraintTop_toTopOf="@+id/textView2">
-
-                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                        android:id="@+id/spn_dest"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="-12dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="최대모집인원"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/lyt_time"
                     android:layout_width="210dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
                     android:background="@drawable/box_style_search"
                     app:layout_constraintBottom_toBottomOf="@+id/textView3"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView3">
 
                     <TextView
@@ -228,7 +204,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="@+id/textView4"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_time"
                     app:layout_constraintTop_toTopOf="@+id/textView4">
 
                     <Button
@@ -244,7 +220,7 @@
                         android:id="@+id/tv_member"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TextView"
+                        android:text="1"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/btn_sub"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -261,15 +237,15 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_propose_member"
+                    android:id="@+id/lyt_min_member"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="@+id/textView5"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_depart"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_time"
                     app:layout_constraintTop_toTopOf="@+id/textView5">
 
                     <Button
-                        android:id="@+id/btn_propose_sub"
+                        android:id="@+id/btn_min_sub"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:text="Button"
@@ -278,21 +254,58 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tv_propose_member"
+                        android:id="@+id/tv_min_member"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TextView"
+                        android:text="2"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/btn_propose_sub"
+                        app:layout_constraintStart_toEndOf="@+id/btn_min_sub"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/btn_propose_add"
+                        android:id="@+id/btn_min_add"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:text="Button"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/tv_propose_member"
+                        app:layout_constraintStart_toEndOf="@+id/tv_min_member"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/lyt_max_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                    app:layout_constraintEnd_toEndOf="@+id/lyt_time"
+                    app:layout_constraintTop_toTopOf="@+id/textView18">
+
+                    <Button
+                        android:id="@+id/btn_max_sub"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:text="Button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_max_member"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btn_max_sub"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/btn_max_add"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:text="Button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tv_max_member"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
