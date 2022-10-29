@@ -2,6 +2,7 @@ package com.example.saengsaengtalk.fragmentTaxi.adapterTaxi
 
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
@@ -21,13 +22,13 @@ class TaxiTableRowAdapter(val taxiTableRow: MutableList<TaxiTableRow>) : Recycle
         val row = taxiTableRow.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(row.postNum)
+            itemClickListener.onClick(row.postId)
         }
         holder.bind(row)
     }
 
     interface OnItemClickListener {
-        fun onClick(postNum: Int)
+        fun onClick(postId: String)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -50,7 +51,8 @@ class TaxiTableRowAdapter(val taxiTableRow: MutableList<TaxiTableRow>) : Recycle
             binding.tvDest.text = row.dest
             binding.tvTime.text = row.time.format(DateTimeFormatter.ofPattern("HH:mm"))
             binding.tvMember.text = "${row.member}명"
-            binding.tvPrice.text = "${dec.format(row.price/row.member)}원"
+            binding.tvPrice.visibility = View.GONE
+            //binding.tvPrice.text = "${dec.format(row.price/row.member)}원"
         }
     }
 }

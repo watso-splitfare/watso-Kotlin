@@ -291,10 +291,10 @@ class FragmentHome :Fragment() {
         taxiAdapter.setItemClickListener(object: TaxiPreAdapter.OnItemClickListener {
             override fun onClick(v: View, position: Int) {
                 //Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
-                Log.d("홈프래그먼트 온클릭", "${taxiPosts[position]._id}")
+                Log.d("홈프래그먼트 온클릭", "${taxiPosts[position].post_id}")
                 setFrag(
                     FragmentTaxiPost(),
-                    mapOf("postId" to taxiPosts[position]._id),
+                    mapOf("postId" to taxiPosts[position].post_id),
                     fragIndex = 2
                 )
             }

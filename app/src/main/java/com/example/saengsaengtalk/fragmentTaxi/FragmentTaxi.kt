@@ -2,17 +2,25 @@ package com.example.saengsaengtalk.fragmentTaxi
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
+import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragTaxiBinding
+import com.example.saengsaengtalk.fragmentBaedal.Baedal.BaedalListAdapter
+import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTable
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTableAdapter
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTableRow
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -21,6 +29,7 @@ class FragmentTaxi :Fragment() {
 
     private var mBinding: FragTaxiBinding? = null
     private val binding get() = mBinding!!
+    val api= APIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,35 +43,52 @@ class FragmentTaxi :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentTaxiAdd()) }
+        binding.constraintLayout8.visibility = View.GONE    // 출발지, 목적지 필터 숨김
+        binding.constraintLayout9.visibility = View.GONE
+        binding.textView7.visibility = View.GONE            // 예상비용 숨김
+        getPostPreview()
+    }
 
-        val taxiTable = mutableListOf(
-            TaxiTable(LocalDate.parse("2022-06-22"), mutableListOf(
-                TaxiTableRow(1,"생자대", "밀양역", LocalDateTime.parse("2022-06-22T15:10:00"), 3, 6600),
-                TaxiTableRow(2,"밀양역", "생자대", LocalDateTime.parse("2022-06-22T16:10:00"), 2, 6600),
-                TaxiTableRow(3,"생자대", "삼문동", LocalDateTime.parse("2022-06-22T17:10:00"), 1, 6600)
-            )), TaxiTable(LocalDate.parse("2022-06-23"), mutableListOf(
-                TaxiTableRow(4,"생자대", "밀양역", LocalDateTime.parse("2022-06-23T15:10:00"), 3, 6600),
-                TaxiTableRow(5,"생자대", "밀양역", LocalDateTime.parse("2022-06-23T16:10:00"), 2, 6600),
-                TaxiTableRow(6,"생자대", "밀양역", LocalDateTime.parse("2022-06-23T17:10:00"), 1, 6600),
-                TaxiTableRow(7,"생자대", "밀양역", LocalDateTime.parse("2022-06-23T17:10:00"), 2, 6600),
-                TaxiTableRow(8,"생자대", "밀양역", LocalDateTime.parse("2022-06-23T17:10:00"), 3, 6600)
-            )), TaxiTable(LocalDate.parse("2022-06-24"), mutableListOf(
-                TaxiTableRow(9,"생자대", "밀양역", LocalDateTime.parse("2022-06-24T15:10:00"), 3, 6600),
-                TaxiTableRow(10,"생자대", "밀양역", LocalDateTime.parse("2022-06-24T16:10:00"), 2, 6600),
-                TaxiTableRow(11,"생자대", "밀양역", LocalDateTime.parse("2022-06-24T17:10:00"), 1, 6600)
-            )), TaxiTable(LocalDate.parse("2022-06-25"), mutableListOf(
-                TaxiTableRow(12,"생자대", "밀양역", LocalDateTime.parse("2022-06-25T15:10:00"), 3, 6600),
-                TaxiTableRow(13,"생자대", "밀양역", LocalDateTime.parse("2022-06-25T16:10:00"), 2, 6600),
-                TaxiTableRow(14,"생자대", "밀양역", LocalDateTime.parse("2022-06-25T17:10:00"), 1, 6600)
-            )))
+    fun getPostPreview() {
+        api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
+                val taxiPosts = response.body()!!
+                mappingAdapter(taxiPosts)
+                Log.d("log", response.toString())
+                Log.d("log", taxiPosts.toString())
+            }
 
-        binding.rvTaxiTable.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val adapter = TaxiTableAdapter(requireContext(), taxiTable)
+            override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun mappingAdapter(taxiPosts: List<TaxiPostPreviewModel>) {
+        val posts = mutableListOf<TaxiTable>()
+        val dateList = mutableListOf<LocalDate>()
+        for (post in taxiPosts) {
+            val dest_date = LocalDate.parse(post.depart_time.substring(0 until 10))
+            if (dest_date !in dateList) {
+                dateList.add(dest_date)
+                posts.add(TaxiTable(dest_date, mutableListOf()))
+            }
+            val idx = dateList.indexOf(dest_date)
+            posts[idx].rows.add(TaxiTableRow(
+                post.post_id, post.depart_name, post.dest_name, LocalDateTime.parse(post.depart_time), post.join_users.size))
+        }
+        binding.rvTaxiTable.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvTaxiTable.setHasFixedSize(true)
+
+        val adapter = TaxiTableAdapter(requireContext(), posts)
         binding.rvTaxiTable.adapter = adapter
-
         adapter.addListener(object: TaxiTableAdapter.OnItemClickListener{
-            override fun onClick(postNum: Int) {
-                setFrag(FragmentTaxiPost(), mapOf("postNum" to postNum.toString()))
+            override fun onClick(postId: String) {
+                setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
             }
         })
     }

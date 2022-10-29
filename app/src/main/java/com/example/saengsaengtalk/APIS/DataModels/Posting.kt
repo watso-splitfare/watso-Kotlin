@@ -18,3 +18,8 @@ data class Comment(
     val group: Int,
     val update_date: String
 )
+
+data class PostingResponse(
+    val post_id: String,
+    val success: Boolean
+)

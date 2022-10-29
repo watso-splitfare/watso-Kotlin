@@ -26,13 +26,13 @@ class TaxiTableAdapter(val context: Context, val taxiTable: MutableList<TaxiTabl
     }
 
     interface OnItemClickListener {
-        fun onClick(postNum: Int)
+        fun onClick(postId: String)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(postNum: Int) {
-        listener.get()?.onClick(postNum)
+    fun itemClick(postId: String) {
+        listener.get()?.onClick(postId)
     }
 
     fun addListener(listener: TaxiTableAdapter.OnItemClickListener) {
@@ -52,8 +52,8 @@ class TaxiTableAdapter(val context: Context, val taxiTable: MutableList<TaxiTabl
             binding.rvDateTable.adapter = adapter
 
             adapter.setItemClickListener(object: TaxiTableRowAdapter.OnItemClickListener{
-                override fun onClick(postNum:Int) {
-                    itemClick(postNum)
+                override fun onClick(postId: String) {
+                    itemClick(postId)
                 }
             })
         }

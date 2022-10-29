@@ -55,8 +55,8 @@ class TaxiPreAdapter(val taxiPosts: List<TaxiPostPreviewModel>) : RecyclerView.A
             val dec = DecimalFormat("#,###원")
             val currentMember = post.join_users.size
             val text = getDateTimeFormating(post.depart_time) + ("\n${post.depart_name} -> ${post.depart_name}\n" +
-                    "현인원 ${currentMember}명" +
-                    "\n예상 택시비 ${dec.format(post.fee/currentMember)}")
+                    "현인원 ${currentMember}명")/* +
+                    "\n예상 택시비 ${dec.format(post.fee/currentMember)}")*/
             binding.tvTaxiPre.text = text
         }
 
