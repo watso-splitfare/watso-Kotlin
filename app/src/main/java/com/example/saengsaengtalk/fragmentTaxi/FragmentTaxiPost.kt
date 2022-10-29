@@ -28,7 +28,7 @@ import java.util.*
 
 class FragmentTaxiPost :Fragment() {
     var postId = ""
-    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
+    var userId = 1.toLong() //MainActivity.prefs.getString("userId", "-1").toLong()
 
     private var mBinding: FragTaxiPostBinding? = null
     private val binding get() = mBinding!!
@@ -56,6 +56,7 @@ class FragmentTaxiPost :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         getPost()
+
 
 
     }
@@ -94,6 +95,10 @@ class FragmentTaxiPost :Fragment() {
                 binding.tvPostTitle.text = post.title
                 binding.tvPostWriter.text = post.writer
 
+                if (userId == taxiPost.user_id){
+                    binding.tvDelete.setOnClickListener { deletePost() }
+                } else binding.tvDelete.visibility = View.GONE
+
                 val created = post.created
                 val today = LocalDate.now().atTime(0, 0)
                 binding.tvPostCreated.text = when (created.isBefore(today)) {
@@ -123,6 +128,26 @@ class FragmentTaxiPost :Fragment() {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+            }
+        })
+    }
+
+    fun deletePost() {
+        api.delTaxiPost(postId).enqueue(object: Callback<PostingResponse> {
+            override fun onResponse(
+                call: Call<PostingResponse>,
+                response: Response<PostingResponse>
+            ) {
+                val res = response.body()!!
+                if (res.success) onBackPressed() // 새로고침하기
+                else println("삭제 실패")
+            }
+            override fun onFailure(call: Call<PostingResponse>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+
+                println("삭제 실패")
             }
         })
     }

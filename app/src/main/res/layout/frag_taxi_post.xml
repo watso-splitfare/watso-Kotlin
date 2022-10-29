@@ -107,9 +107,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:text="TextView"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_post_title" />
+
+                <TextView
+                    android:id="@+id/tv_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="삭제"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_post_created"
+                    app:layout_constraintTop_toTopOf="@+id/tv_post_writer" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
