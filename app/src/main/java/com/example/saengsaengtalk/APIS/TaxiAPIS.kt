@@ -11,12 +11,13 @@ interface TaxiAPIS {
     ): Call<PostingResponse>
 
     @GET("taxi/post")                       // 303 택시 게시글 조회
-    fun getPosting(
-        @Path("post_id") postId: String
+    fun getTaxiPost(
+        //@Path("post_id") postId: String
+        @Query("post_id") postId: String
     ): Call<TaxiPostModel>
 
     @GET("taxi/post/delete")                // 304 택시 게시글 삭제
-    fun delPosting(
+    fun delTaxiPost(
         @Query("post_id") postId: String
     ): Call<PostingResponse>
 
