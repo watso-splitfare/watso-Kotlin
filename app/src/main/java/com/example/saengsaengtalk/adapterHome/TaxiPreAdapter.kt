@@ -62,7 +62,7 @@ class TaxiPreAdapter(val taxiPosts: List<TaxiPostPreviewModel>) : RecyclerView.A
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun getDateTimeFormating(dateTimeStr: String): String {
-            val dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            val dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ISO_DATE_TIME)
             val formatter = DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))
             return dateTime.format(formatter)
         }

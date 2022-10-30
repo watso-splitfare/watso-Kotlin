@@ -21,7 +21,7 @@ data class TaxiPostModel(
     val min_member: Int?,
     val max_member: Int?,
     val views: Int,
-    val reg_date: String,
+    val update_date: String,
     val is_closed: Boolean,
     val join_users: List<Long>,
     val depart_name: String,
@@ -44,7 +44,7 @@ data class TaxiJoinResponse(
 
 /** 307 택시 게시글 미리보기 모델 */
 data class TaxiPostPreviewModel(
-    val post_id: String,
+    val _id: String,
     val depart_time: String,
     val depart_name: String,
     val dest_name: String,

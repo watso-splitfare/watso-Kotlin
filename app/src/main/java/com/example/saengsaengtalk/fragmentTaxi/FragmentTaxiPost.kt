@@ -28,7 +28,7 @@ import java.util.*
 
 class FragmentTaxiPost :Fragment() {
     var postId = ""
-    var userId = 1.toLong() //MainActivity.prefs.getString("userId", "-1").toLong()
+    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
     private var mBinding: FragTaxiPostBinding? = null
     private val binding get() = mBinding!!
@@ -39,7 +39,7 @@ class FragmentTaxiPost :Fragment() {
         arguments?.let {
             postId = it.getString("postId")!!
         }
-        //println(postNum)
+        println("postId: ${postId}")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -82,10 +82,10 @@ class FragmentTaxiPost :Fragment() {
                 val post = Content(
                     taxiPost.title,
                     taxiPost.nick_name,
-                    LocalDateTime.parse(taxiPost.reg_date),
+                    LocalDateTime.parse(taxiPost.update_date, DateTimeFormatter.ISO_DATE_TIME),
                     taxiPost.depart_name,
                     taxiPost.dest_name,
-                    LocalDateTime.parse(taxiPost.depart_time),
+                    LocalDateTime.parse(taxiPost.depart_time, DateTimeFormatter.ISO_DATE_TIME),
                     taxiPost.join_users.size,
                     taxiPost.content
                 )
@@ -209,7 +209,7 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun taxiJoin() {
-        api.taxiJoin(postId).enqueue(object : Callback<TaxiJoinResponse> {
+        api.taxiJoin(mapOf("post_id" to postId)).enqueue(object : Callback<TaxiJoinResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<TaxiJoinResponse>, response: Response<TaxiJoinResponse>) {
                 val res = response.body()!!

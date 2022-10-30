@@ -78,8 +78,9 @@ class FragmentTaxi :Fragment() {
                 posts.add(TaxiTable(dest_date, mutableListOf()))
             }
             val idx = dateList.indexOf(dest_date)
+            println(post)
             posts[idx].rows.add(TaxiTableRow(
-                post.post_id, post.depart_name, post.dest_name, LocalDateTime.parse(post.depart_time), post.join_users.size))
+                post._id, post.depart_name, post.dest_name, LocalDateTime.parse(post.depart_time), post.join_users.size))
         }
         binding.rvTaxiTable.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvTaxiTable.setHasFixedSize(true)
