@@ -33,8 +33,6 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceUtil(applicationContext)
-        //prefs.setString("Authentication", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo")
-        prefs.setString("Authentication", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo")
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,8 +51,19 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun makeToast(message: String){
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    override fun onBackPressed() {
+        val fm = supportFragmentManager
+        val count = fm.backStackEntryCount
+        if (count > 0)
+            super.onBackPressed()
+        else {
+            if(System.currentTimeMillis() - mBackWait >= 2000) {
+                mBackWait = System.currentTimeMillis()
+                Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                finish()
+            }
+        }
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
@@ -74,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
 
-        if (popBackStack == -1) {
+        if (popBackStack == -1) {   // -1 일 경우 새로운 화면으로 이동, 0은 뒤로가기, else 각 탭 대표화면 (홈, 배달, 택시 등)
             transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
             transaction.add(R.id.main_frame, fragment).addToBackStack(null)
         } else if (popBackStack == 0) {
@@ -91,18 +100,15 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
     }
 
-    override fun onBackPressed() {
-        val fm = supportFragmentManager
-        val count = fm.backStackEntryCount
-        if (count > 0)
-            super.onBackPressed()
-        else {
-            if(System.currentTimeMillis() - mBackWait >= 2000) {
-                mBackWait = System.currentTimeMillis()
-                Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                finish()
-            }
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        println("루핑 호출 loopStart: ${loopStart}")
+        return if (loopStart) {
+            val newLoopingDialog = LoopingDialog(this)
+            newLoopingDialog.show()
+            newLoopingDialog
+        } else {
+            loopingDialog!!.dismiss()
+            null
         }
     }
 
@@ -158,5 +164,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         bottomBarIndex = fragindex
+    }
+
+    fun makeToast(message: String){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }

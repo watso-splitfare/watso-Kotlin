@@ -20,11 +20,12 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS {
     ): Call<TestModel>
 
     companion object {
-        private const val BASE_URL = "http://52.78.106.235:5000/" //"http://59.8.74.204:5000/" //"http://10.0.2.2:5000/" //"http://52.78.106.235:5000/"
-        var auth = MainActivity.prefs.getString("Authentication", "")
+        private const val BASE_URL = "http://10.0.2.2:5000/" //"http://59.8.74.204:5000/" //"http://10.0.2.2:5000/" //"http://52.78.106.235:5000/"
 
         fun create(): APIS {
-            var auth = MainActivity.prefs.getString("Authentication", "")
+            //prefs.setString("Authentication", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo")
+            val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
+            val auth = MainActivity.prefs.getString("Authentication", authDebug)
             Log.d("auth 키", auth)
 
             val gson :Gson = GsonBuilder().setLenient().create();

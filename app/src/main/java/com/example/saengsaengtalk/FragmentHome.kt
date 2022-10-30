@@ -1,20 +1,12 @@
 package com.example.saengsaengtalk
 
-/*import com.example.saengsaengtalk.APIS.PostModel
-import com.example.saengsaengtalk.APIS.PostResult
-import com.example.saengsaengtalk.APIS.TestModel
-import com.example.saengsaengtalk.APIS.TestResult*/
-
 import APIS
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -86,95 +78,11 @@ class FragmentHome :Fragment() {
             Log.d("캐시삭제", auth)
         }
 
-        /*binding.btnTest1.setOnClickListener {
-            /*val data = PostModel(binding.etTest1.text.toString(),binding.etTest2.text.toString()
-                ,binding.etTest3.text.toString(),binding.etTest4.text.toString(),binding.etTest5.text.toString())*/
-            GlobalScope.launch() {
-                api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
-                    override fun onResponse(
-                        call: Call<List<StoreListModel>>,
-                        response: Response<List<StoreListModel>>
-                    ) {
-                        Log.d("log", response.toString())
-                        Log.d("log", response.body().toString())
-                        if (!response.body().toString().isEmpty())
-                            binding.tvTest.setText(response.body().toString());
-                    }
 
-                    override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
-                        // 실패
-                        Log.d("log", t.message.toString())
-                        Log.d("log", "fail")
-                    }
-                })
-            }
-        }*/
-
-        binding.btnTest2.setOnClickListener {
-            //val data = binding.etTest2.text.toString().toInt()
-            api.getTest().enqueue(object : Callback<TestModel> {
-                override fun onResponse(call: Call<TestModel>, response: Response<TestModel>) {
-                    Log.d("log",response.toString())
-                    Log.d("log", response.body().toString())
-                }
-
-                override fun onFailure(call: Call<TestModel>, t: Throwable) {
-                    // 실패
-                    Log.d("log",t.message.toString())
-                    Log.d("log","fail")
-                }
-            })
-        }
-
-        /*binding.btnTest3.setOnClickListener {
-            val data = binding.etTest3.text.toString().toInt()
-            api.getGroupOption(data).enqueue(object : Callback<List<GroupOptionModel>> {
-                override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
-                    Log.d("log",response.toString())
-                    Log.d("log", response.body().toString())
-                    if(!response.body().toString().isEmpty())
-                        binding.tvTest.setText(response.body().toString());
-                }
-
-                override fun onFailure(call: Call<List<GroupOptionModel>>, t: Throwable) {
-                    // 실패
-                    Log.d("log",t.message.toString())
-                    Log.d("log","fail")
-                }
-            })
-        }*/
-
-        /*binding.btnTest1.setOnClickListener {
-            val data = TestModel("테스트 바디")
-            api.test("gdfdgd").enqueue(object : Callback<TestResult> {
-                override fun onResponse(call: Call<TestResult>, response: Response<TestResult>) {
-                    Log.d("log",response.toString())
-                    Log.d("log", response.body().toString())
-                    if(!response.body().toString().isEmpty())
-                        binding.tvTest.setText(response.body().toString());
-                }
-
-                override fun onFailure(call: Call<TestResult>, t: Throwable) {
-                    // 실패
-                    Log.d("log",t.message.toString())
-                    Log.d("log","fail")
-                }
-            })
-        }*/
-
-        /*binding.btnTest1.setOnClickListener {
-            val data = TestModel("테스트 바디")
-            api.test(data).enqueue(object: Callback<TestResult> {
-                override fun onResponse(call: Call<TestResult>, response: Response<TestResult>) {
-                    Log.d("log", response.toString())
-                    Log.d("log", response.body().toString())
-                }
-            })
-        }*/
 
         /** 배달 */
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
-        //getBaedalPostPreview()
+        getBaedalPostPreview()
 
         /* 택시 */
         binding.btnTaxiAdd.setOnClickListener { setFrag(FragmentTaxiAdd(), fragIndex=2) }
@@ -230,18 +138,21 @@ class FragmentHome :Fragment() {
     }
 
     fun getBaedalPostPreview() {
+        val loopingDialog = looping()
         api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
                 val baedalPosts = response.body()!!
                 mappingBaedalAdapter(baedalPosts)
                 Log.d("log", response.toString())
                 Log.d("log", baedalPosts.toString())
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                looping(false, loopingDialog)
             }
         })
     }
@@ -266,18 +177,21 @@ class FragmentHome :Fragment() {
     }
 
     fun getTaxiPostPreview() {
+        val loopingDialog = looping()
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
                 val taxiPosts = response.body()!!
                 mappingTaxiAdapter(taxiPosts)
                 Log.d("log", response.toString())
                 Log.d("log", taxiPosts.toString())
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                looping(false, loopingDialog)
             }
         })
     }
@@ -299,6 +213,12 @@ class FragmentHome :Fragment() {
                 )
             }
         })
+    }
+
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex: Int) {
