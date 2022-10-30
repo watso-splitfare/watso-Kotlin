@@ -73,9 +73,10 @@
         app:layout_constraintTop_toBottomOf="@+id/lyt_head">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="400dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -97,140 +98,175 @@
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?android:attr/listDivider"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="?android:attr/listDivider" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView_id"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="16dp"
-                    android:text="아이디"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_margin="8dp">
+
+                    <TextView
+                        android:id="@+id/textView_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="아이디"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_username_overlap_check"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/btn_username_overlap_check" />
+
+                    <TextView
+                        android:id="@+id/tv_id_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:textSize="13dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView_id"
+                        app:layout_constraintStart_toEndOf="@+id/textView_id"
+                        app:layout_constraintTop_toTopOf="@+id/textView_id" />
+
+                    <Button
+                        android:id="@+id/btn_username_overlap_check"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="아이디 중복확인"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
                     android:id="@+id/et_id"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/box_style_sign_up_input"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="@+id/btn_username_overlap_check"
-                    app:layout_constraintStart_toStartOf="@+id/textView_id"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_id" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/textView_pw"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_margin="8dp"
                     android:text="비밀번호"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/textView_id"
-                    app:layout_constraintTop_toBottomOf="@+id/et_id" />
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/et_pw"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/box_style_sign_up_input"
                     android:ems="10"
                     android:hint="비밀번호는 6~20자까지 사용가능합니다."
                     android:inputType="textPassword"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/et_id"
-                    app:layout_constraintStart_toStartOf="@+id/et_id"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_pw" />
+                    android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/textView_pw_confirm"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="비밀번호 확인"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/et_pw"
-                    app:layout_constraintTop_toBottomOf="@+id/et_pw" />
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp">
 
-                <TextView
-                    android:id="@+id/tv_pw_confirm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    app:layout_constraintStart_toEndOf="@+id/textView_pw_confirm"
-                    app:layout_constraintTop_toTopOf="@+id/textView_pw_confirm" />
+                    <TextView
+                        android:id="@+id/textView_pw_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="비밀번호 확인"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_pw_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:textSize="13dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView_pw_confirm" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
                     android:id="@+id/et_pw_confirm"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/box_style_sign_up_input"
                     android:ems="10"
-                    android:hint="비밀번호를 다시 입력해 주세요"
+                    android:hint="비밀번호를 다시 입력해 주세요."
                     android:inputType="textPassword"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/et_pw"
-                    app:layout_constraintStart_toStartOf="@+id/et_id"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_pw_confirm" />
+                    android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/textView_nickname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="닉네임"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/textView_id"
-                    app:layout_constraintTop_toBottomOf="@+id/et_pw_confirm" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp">
+
+                    <TextView
+                        android:id="@+id/textView_nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="닉네임"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_nickname_overlap_check"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/btn_nickname_overlap_check" />
+
+                    <TextView
+                        android:id="@+id/tv_nickname_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:textSize="13dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView_nickname"
+                        app:layout_constraintStart_toEndOf="@+id/textView_nickname"
+                        app:layout_constraintTop_toTopOf="@+id/textView_nickname" />
+
+                    <Button
+                        android:id="@+id/btn_nickname_overlap_check"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="닉네임 중복확인"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
                     android:id="@+id/et_nickname"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/box_style_sign_up_input"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="@+id/btn_nickname_overlap_check"
-                    app:layout_constraintStart_toStartOf="@+id/et_id"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_nickname" />
+                    android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/btn_username_overlap_check"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="12dp"
-                    android:text="아이디 중복확인"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/btn_nickname_overlap_check"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginTop="8dp"
-                    android:text="닉네임 중복확인"
-                    app:layout_constraintEnd_toEndOf="@+id/et_pw_confirm"
-                    app:layout_constraintTop_toBottomOf="@+id/et_pw_confirm" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/lyt_mail"
@@ -389,11 +425,11 @@
                 android:id="@+id/divider2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?android:attr/listDivider"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="?android:attr/listDivider" />
 
             <Button
-                android:id="@+id/btn_next"
+                android:id="@+id/btn_signup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"

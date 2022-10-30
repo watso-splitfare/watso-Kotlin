@@ -41,6 +41,8 @@ class FragmentAccount :Fragment() {
         }
 
         binding.btnLogout.setOnClickListener {
+            MainActivity.prefs.removeString("Authentication")
+            MainActivity.prefs.removeString("userId")
             api.logout().enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
                     Log.d("로그아웃", response.toString())
@@ -54,6 +56,7 @@ class FragmentAccount :Fragment() {
                     Log.d("로그아웃","fail")
                 }
             })
+            onBackPressed()
         }
     }
 

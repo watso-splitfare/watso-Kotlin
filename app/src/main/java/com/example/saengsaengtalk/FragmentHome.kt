@@ -15,6 +15,7 @@ import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
+import com.example.saengsaengtalk.fragmentAccount.FragmentAccount
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
 import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
@@ -61,11 +62,11 @@ class FragmentHome :Fragment() {
         binding.btnOption.setOnClickListener {
             var auth = MainActivity.prefs.getString("Authentication", "")
             Log.d("계정 버튼", auth)
-            setFrag(FragmentLogin(), fragIndex=-1)
-            /*if (auth == "" || auth == "null")
+            //setFrag(FragmentLogin(), fragIndex=-1)
+            if (auth == "" || auth == "null")
                 setFrag(FragmentLogin(), fragIndex=-1)
             else
-                setFrag(FragmentAccount(), fragIndex=-1)*/
+                setFrag(FragmentAccount(), fragIndex=-1)
         }
 
         /** api test */

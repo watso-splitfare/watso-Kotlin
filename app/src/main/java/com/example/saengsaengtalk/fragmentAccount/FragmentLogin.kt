@@ -50,24 +50,29 @@ class FragmentLogin :Fragment() {
             val decode1 = decoder.decode(chunks[0])
             val decode2 = decoder.decode(chunks[1])
             val decode3 = decoder.decode(chunks[2])*/
-            /** 토큰 테스트 */
+
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
+                    val res = response.body()!!
                     Log.d("로그인", response.toString())
                     Log.d("로그인", response.body().toString())
                     Log.d("로그인응답 헤더", response.headers().toString())
-                    val user_id = response.body()!!.user_id
-                    println("유저 ID: ${response.body()!!.user_id}")
-                    MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
-                    MainActivity.prefs.setString("userId", user_id.toString())
-                    onBackPressed()
+                    if (response.body()!!.result) {
+                        val user_id = res.user_id.toString()
+                        println("유저 ID: ${res.user_id}")
+                        MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
+                        MainActivity.prefs.setString("userId", user_id)
+                        onBackPressed()
+                    } else {
+                        makeToast("등록된 계정 정보가 일치하지 않습니다.")
+                    }
                 }
 
                 override fun onFailure(call: Call<LoginResult>, t: Throwable) {
                     // 실패
                     Log.d("로그인",t.message.toString())
                     Log.d("로그인","fail")
-                    onBackPressed()
+                    makeToast("로그인에 실패하였습니다.")
                 }
             })
         }
@@ -76,6 +81,11 @@ class FragmentLogin :Fragment() {
             setFrag(FragmentFindAccount())
         }
         binding.tvSignUp.setOnClickListener { setFrag(FragmentSignUp())}
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

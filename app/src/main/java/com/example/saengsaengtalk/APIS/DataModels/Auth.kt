@@ -13,7 +13,7 @@ data class SignUpResult(
 data class SignUpModel(
     val user_name: String,
     val pw: String,
-    val student_num: Int,
+    val student_num: Int?,
     val nick_name: String
 )
 

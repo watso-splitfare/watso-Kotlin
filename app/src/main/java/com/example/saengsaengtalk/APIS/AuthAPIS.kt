@@ -22,13 +22,13 @@ interface AuthAPIS {
     ): Call<OverlapResult>
 
     @POST("auth/signup")                    // 103 회원가입
-    @Headers("accept: application/json", "content-type: application/json")
+    //@Headers("accept: application/json", "content-type: application/json")
     fun signup(
         @Body jsonparams: SignUpModel
     ): Call<SignUpResult>
 
     @POST("auth/login")                     // 104 로그인
-    @Headers("accept: application/json", "content-type: application/json")
+    //@Headers("accept: application/json", "content-type: application/json")
     fun login(
         @Body jsonparams: LoginModel
     ): Call<LoginResult>
