@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
+    <ImageView
+        android:id="@+id/btn_previous"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/previous" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,13 +84,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/btn_previous"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/previous" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_logout">
+
+        <EditText
+            android:id="@+id/et_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toStartOf="@+id/btn_admin" />
+
+        <Button
+            android:id="@+id/btn_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="관리자 화면" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

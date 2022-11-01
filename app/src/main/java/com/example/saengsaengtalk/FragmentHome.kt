@@ -74,7 +74,7 @@ class FragmentHome :Fragment() {
             if (auth == "" || auth == "null")
                 setFrag(FragmentLogin(), fragIndex=-1)
             else
-                setFrag(FragmentAdmin(), fragIndex=-1)    // setFrag(FragmentAccount(), fragIndex=-1)
+                setFrag(FragmentAccount(), fragIndex=-1)
 
         }
 

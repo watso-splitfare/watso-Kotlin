@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.APIS.LogoutResult
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragAccountBinding
+import com.example.saengsaengtalk.fragmentAccount.admin.FragmentAdmin
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -57,6 +58,10 @@ class FragmentAccount :Fragment() {
                 }
             })
             onBackPressed()
+        }
+
+        binding.btnAdmin.setOnClickListener {
+            if (binding.etAdmin.text.toString() == "a") setFrag(FragmentAdmin())
         }
     }
 

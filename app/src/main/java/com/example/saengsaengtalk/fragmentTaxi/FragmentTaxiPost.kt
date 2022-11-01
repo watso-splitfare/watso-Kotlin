@@ -54,10 +54,8 @@ class FragmentTaxiPost :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-
+        binding.lytComment.visibility = View.GONE       // 댓글 비활성화
         getPost()
-
-
 
     }
 

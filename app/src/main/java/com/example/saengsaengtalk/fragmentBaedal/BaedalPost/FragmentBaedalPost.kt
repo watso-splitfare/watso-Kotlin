@@ -67,6 +67,7 @@ class FragmentBaedalPost :Fragment() {
     fun refreshView(inflater: LayoutInflater) {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.tvDelete.visibility = View.GONE     // 삭제 비활성화
+        binding.lytComment.visibility = View.GONE   // 댓글 비활성화
 
         getPostInfo()
 

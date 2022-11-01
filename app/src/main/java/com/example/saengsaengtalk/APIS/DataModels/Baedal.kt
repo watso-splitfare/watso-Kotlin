@@ -154,18 +154,17 @@ data class OrderingResponse(
 /** 213 배달 게시글 미리보기 모델 */
 data class BaedalPostPreviewModel(
     val _id: String,
-    val user_id: Long,
+    //val user_id: Long,
     val join_user: List<Long>,
-    val nick_name: String,
+    //val nick_name: String,
     val store: Store,
     val title: String,
-    val place: String,
+    //val place: String,
     val order_time: String,
-    val min_member: Int,
-    val max_member: Int,
-    //val current_member: Int,
-    val update_date: String,
-    val views: Int,
+    //val min_member: Int,
+    //val max_member: Int,
+    //val update_date: String,
+    //val views: Int,
     val is_closed: Boolean
 )
 
