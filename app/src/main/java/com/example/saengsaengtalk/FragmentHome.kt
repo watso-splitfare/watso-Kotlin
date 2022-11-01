@@ -17,6 +17,7 @@ import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentAccount
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
+import com.example.saengsaengtalk.fragmentAccount.admin.FragmentAdmin
 import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
@@ -25,6 +26,10 @@ import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +41,7 @@ class FragmentHome :Fragment() {
     private var mBinding: FragHomeBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
+    val baeminApi = BaeminAPIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,17 +66,20 @@ class FragmentHome :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnOption.setOnClickListener {
-            var auth = MainActivity.prefs.getString("Authentication", "")
+            //var auth = MainActivity.prefs.getString("Authentication", "")
+            val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
+            val auth = MainActivity.prefs.getString("Authentication", authDebug)
             Log.d("계정 버튼", auth)
             //setFrag(FragmentLogin(), fragIndex=-1)
             if (auth == "" || auth == "null")
                 setFrag(FragmentLogin(), fragIndex=-1)
             else
-                setFrag(FragmentAccount(), fragIndex=-1)
+                setFrag(FragmentAdmin(), fragIndex=-1)    // setFrag(FragmentAccount(), fragIndex=-1)
+
         }
 
         /** api test */
-        binding.lytApiTest.visibility = View.GONE
+        //binding.lytApiTest.visibility = View.GONE
 
         binding.btnRemoveCache.setOnClickListener {
             MainActivity.prefs.removeString("Authentication")
@@ -79,6 +88,40 @@ class FragmentHome :Fragment() {
             Log.d("캐시삭제", auth)
         }
 
+        binding.btnTest1.setOnClickListener {
+            /*baeminApi.getMenuDetail(10087212, 12476325).enqueue(object : Callback<JsonObject> {
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                    val detail = response.body()!!
+                    Log.d("log", response.toString())
+                    Log.d("log", detail.toString())
+
+                    val b = JSONObject(detail.toString())
+                    println(b)
+                    println(b.getString("status"))
+                    println(b.getString("message"))
+                    println(b.getJSONObject("data"))
+
+                }
+
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                    // 실패
+                    Log.d("log",t.message.toString())
+                    Log.d("log","fail")
+                }
+            })*/
+        }
+
+        binding.btnTest2.setOnClickListener {
+            val a = "[" +
+                    "{\"optionId\": 1000559268, \"name\": \"zz\",\"discountPrice\": 0,\"price\": 24900,\"soldOut\": false}," +
+                    "{\"optionId\": 1000559269, \"name\": \"xx\",\"discountPrice\": 0,\"price\": 25900,\"soldOut\": false}," +
+                    "{\"optionId\": 1000559280, \"name\": \"cc\",\"discountPrice\": 0,\"price\": 26900,\"soldOut\": false}," +
+                    "]"
+            val b = JSONArray(a)
+            println(b)
+            println(b.getJSONObject(0))
+            println(b.getJSONObject(0).getString("name"))
+        }
 
 
         /** 배달 */

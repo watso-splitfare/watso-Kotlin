@@ -13,12 +13,12 @@ interface AuthAPIS {
 
     @GET("auth/overlap/studentnum")   // 101 학번 중복조회
     fun studentnumOverlapCheck(
-        @Query("studentnum") studentnum: Int
+        @Query("studen_tnum") studentnum: Int
     ): Call<OverlapResult>
 
     @GET("auth/overlap/nickname")     // 102 닉네임 중복조회
     fun nicknameOverlapCheck(
-        @Query("nickname") nickname: String
+        @Query("nick_name") nickname: String
     ): Call<OverlapResult>
 
     @POST("auth/signup")                    // 103 회원가입
