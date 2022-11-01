@@ -1,11 +1,14 @@
 package com.example.saengsaengtalk.fragmentAccount.admin
 
+import android.R
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.BaeminAPIS
@@ -17,6 +20,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.min
 
 class FragmentAdmin :Fragment() {
 
@@ -43,12 +47,60 @@ class FragmentAdmin :Fragment() {
             onBackPressed()
         }
 
+        getShopList()
+
         binding.btnGetDetail.setOnClickListener { getMenuDetail()}
 
     }
 
-    fun getShopList() {
+    data class addStoreModel(
+        val store_name: String,
+        val fee: Int,
+        val min_order: Int
+    )
 
+    fun getShopList() {
+        api.getShopList().enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                val detail = JSONObject(response.body()!!.toString()).getJSONObject("data")
+                Log.d("log", response.toString())
+                Log.d("log", detail.toString())
+                val shopObjects = detail.getJSONArray("shops")
+                val storeNames = mutableListOf<String>()
+                var storeName = ""
+                var selectedIdx = 0
+                val storeModels = mutableListOf<addStoreModel>()
+
+                for (idx in 0 until shopObjects.length()){
+                    val shop = shopObjects.getJSONObject(idx)
+                    val _name = shop.getJSONObject("shopInfo").getString("shopName")
+                    val min_order = shop.getJSONObject("deliveryInfo").getInt("minimumOrderPrice")
+
+                    storeNames.add(_name)
+                    storeModels.add(addStoreModel(_name, 10000, min_order))
+                }
+
+                val searchmethod =
+                    ArrayAdapter(requireContext(), R.layout.simple_spinner_item, storeNames)
+
+                searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spnStores!!.adapter = searchmethod
+                binding.spnStores.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        selectedIdx = position
+                        println("가게이름: ${storeNames[selectedIdx]}")
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) { }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
     }
 
     fun getMenuDetail() {

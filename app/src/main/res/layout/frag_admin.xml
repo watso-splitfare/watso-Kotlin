@@ -52,7 +52,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                    android:id="@+id/spn_store"
+                    android:id="@+id/spn_stores"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="-12dp"
