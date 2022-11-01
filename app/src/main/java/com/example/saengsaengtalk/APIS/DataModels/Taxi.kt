@@ -2,6 +2,7 @@ package com.example.saengsaengtalk.APIS.DataModels
 
 /** 302 택시 게시글 등록 모델 */
 data class TaxiPostingModel(
+    val user_id: Long,
     val depart_name: String,
     val dest_name: String,
     val title: String,

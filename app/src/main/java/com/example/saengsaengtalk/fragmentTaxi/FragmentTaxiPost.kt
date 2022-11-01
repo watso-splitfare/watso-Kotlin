@@ -33,6 +33,7 @@ class FragmentTaxiPost :Fragment() {
     private var mBinding: FragTaxiPostBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
+    var member = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +73,7 @@ class FragmentTaxiPost :Fragment() {
         val dest: String,
         val time: LocalDateTime,
         val member: Int,
+        val isClosed: Boolean,
         //val price: Int,
         val content: String?,
         //val comment: MutableList<Comment>
@@ -82,7 +84,7 @@ class FragmentTaxiPost :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<TaxiPostModel>, response: Response<TaxiPostModel>) {
                 val taxiPost = response.body()!!
-                val post = Content(
+                /*val post = Content(
                     taxiPost.title,
                     taxiPost.nick_name,
                     LocalDateTime.parse(taxiPost.update_date, DateTimeFormatter.ISO_DATE_TIME),
@@ -90,33 +92,37 @@ class FragmentTaxiPost :Fragment() {
                     taxiPost.dest_name,
                     LocalDateTime.parse(taxiPost.depart_time, DateTimeFormatter.ISO_DATE_TIME),
                     taxiPost.join_users.size,
+                    taxiPost.is_closed,
                     taxiPost.content
-                )
+                )*/
                 Log.d("log", response.toString())
                 Log.d("log", taxiPost.toString())
 
-                binding.tvPostTitle.text = post.title
-                binding.tvPostWriter.text = post.writer
+                binding.tvPostTitle.text = taxiPost.title
+                binding.tvPostWriter.text = taxiPost.nick_name
 
                 if (userId == taxiPost.user_id){
                     binding.tvDelete.setOnClickListener { deletePost() }
                 } else binding.tvDelete.visibility = View.GONE
 
-                val created = post.created
+                val created = LocalDateTime.parse(taxiPost.update_date, DateTimeFormatter.ISO_DATE_TIME)
                 val today = LocalDate.now().atTime(0, 0)
                 binding.tvPostCreated.text = when (created.isBefore(today)) {
                     true -> created.format(DateTimeFormatter.ofPattern("MM/dd"))
                     else -> created.format(DateTimeFormatter.ofPattern("HH:mm"))
                 }
-                binding.tvDepart.text = post.depart
-                binding.tvDest.text = post.dest
-                binding.tvTime.text = post.time.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
+                binding.tvDepart.text = taxiPost.depart_name
+                binding.tvDest.text = taxiPost.dest_name
+                val departTime = LocalDateTime.parse(taxiPost.depart_time, DateTimeFormatter.ISO_DATE_TIME)
+                binding.tvTime.text = departTime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
                     Locale.forLanguageTag("ko")))
-                binding.tvMember.text = "${post.member}명"
+                member = taxiPost.join_users.size
+                binding.tvMember.text = "${member}명"
+
 
                 val dec = DecimalFormat("#,###")
                 //binding.tvPrice.text = "${dec.format(content.price/content.member)}원"
-                binding.tvContent.text = post.content
+                binding.tvContent.text = taxiPost.content
 
                 //binding.tvCommentCount.text = "댓글 ${content.comment.size}"
                 binding.rvComment.layoutManager =
@@ -156,17 +162,15 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun setBottomBtn(taxiPost: TaxiPostModel) {
-        println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        println("userId: ${userId}, 작성자Id: ${taxiPost.user_id}, isClosed: ${taxiPost.is_closed}, joinUsers: ${taxiPost.join_users}")
+        //println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        //println("userId: ${userId}, 작성자Id: ${taxiPost.user_id}, isClosed: ${taxiPost.is_closed}, joinUsers: ${taxiPost.join_users}")
         if (taxiPost.is_closed) {
             if (userId == taxiPost.user_id) {
                 binding.tvBottom.text = "동승자 다시받기"
-                println("@@@@@@@@@@@@1")
 
                 binding.btnBottom.setOnClickListener { switchCondition() }
             } else {
                 binding.tvBottom.text = "마감되었습니다."
-                println("@@@@@@@@@@@@2")
                 binding.btnBottom.setOnClickListener { }
             }
         }
@@ -177,11 +181,9 @@ class FragmentTaxiPost :Fragment() {
             } else {
                 if (userId in taxiPost.join_users){
                     binding.tvBottom.text = "동승 취소하기"
-                    println("@@@@@@@@@@@@3")
                     binding.btnBottom.setOnClickListener { taxiJoin() }
                 } else {
                     binding.tvBottom.text = "동승 신청하기"
-                    println("@@@@@@@@@@@@4")
                     binding.btnBottom.setOnClickListener { taxiJoin() }
                 }
             }
@@ -199,8 +201,6 @@ class FragmentTaxiPost :Fragment() {
 
                 if (res.condition) binding.tvBottom.text = "동승자 그만받기"
                 else binding.tvBottom.text = "동승자 다시받기"
-
-
             }
 
             override fun onFailure(call: Call<TaxiSwitchConditionResponse>, t: Throwable) {
@@ -212,7 +212,7 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun taxiJoin() {
-        api.taxiJoin(mapOf("post_id" to postId)).enqueue(object : Callback<TaxiJoinResponse> {
+        api.taxiJoin(mapOf("post_id" to postId, "user_id" to userId.toString())).enqueue(object : Callback<TaxiJoinResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<TaxiJoinResponse>, response: Response<TaxiJoinResponse>) {
                 val res = response.body()!!
@@ -220,8 +220,14 @@ class FragmentTaxiPost :Fragment() {
                 Log.d("log", response.toString())
                 Log.d("log", res.toString())
 
-                if (res.join) binding.tvBottom.text = "동승 취소하기"
-                else binding.tvBottom.text = "동승 신청하기"
+                if (res.join) {
+                    binding.tvBottom.text = "동승 취소하기"
+                    member += 1
+                } else  {
+                    binding.tvBottom.text = "동승 신청하기"
+                    member -= 1
+                }
+                binding.tvMember.text = "${member}명"
             }
 
             override fun onFailure(call: Call<TaxiJoinResponse>, t: Throwable) {

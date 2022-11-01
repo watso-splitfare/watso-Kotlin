@@ -25,6 +25,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentTaxiAdd :Fragment() {
+    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
+
     @RequiresApi(Build.VERSION_CODES.O)
     var departTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")).toString()
 
@@ -137,6 +139,7 @@ class FragmentTaxiAdd :Fragment() {
 
     fun taxiPosting() {
         val taxiPostingModel = TaxiPostingModel(
+            userId,
             "생자대",
             "밀양역",
             binding.etTitle.text.toString(),
