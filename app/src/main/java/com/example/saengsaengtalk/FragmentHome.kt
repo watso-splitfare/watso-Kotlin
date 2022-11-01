@@ -67,11 +67,10 @@ class FragmentHome :Fragment() {
     fun refreshView() {
         binding.btnOption.setOnClickListener {
             //var auth = MainActivity.prefs.getString("Authentication", "")
-            val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
-            val auth = MainActivity.prefs.getString("Authentication", authDebug)
-            Log.d("계정 버튼", auth)
-            //setFrag(FragmentLogin(), fragIndex=-1)
-            if (auth == "" || auth == "null")
+            //val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
+
+            val userId = MainActivity.prefs.getString("userId", "")
+            if (userId == "")
                 setFrag(FragmentLogin(), fragIndex=-1)
             else
                 setFrag(FragmentAccount(), fragIndex=-1)

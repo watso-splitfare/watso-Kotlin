@@ -52,7 +52,7 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS {
                 //var auth = MainActivity.prefs.getString("Authentication", "")
                 val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
                 val auth = MainActivity.prefs.getString("Authentication", authDebug)
-                Log.d("auth 키-인터셉터", auth)
+                //Log.d("auth 키-인터셉터", auth)
                 val newRequest = request().newBuilder()
                     .addHeader("Authorization", auth)
                     .build()

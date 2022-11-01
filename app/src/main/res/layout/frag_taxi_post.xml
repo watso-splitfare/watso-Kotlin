@@ -220,7 +220,7 @@
                     <View
                         android:id="@+id/divider16"
                         android:layout_width="1dp"
-                        android:layout_height="100dp"
+                        android:layout_height="85dp"
                         android:layout_weight="0"
                         android:background="?android:attr/listDivider" />
 

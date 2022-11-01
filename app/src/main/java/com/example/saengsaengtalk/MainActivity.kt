@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceUtil(applicationContext)
+        println("유저 id: ${prefs.getString("userId", "")}")
+        println("인증 토큰: ${prefs.getString("Authentication", "")}")
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        println("루핑 호출 loopStart: ${loopStart}")
+        //println("루핑 호출 loopStart: ${loopStart}")
         return if (loopStart) {
             val newLoopingDialog = LoopingDialog(this)
             newLoopingDialog.show()

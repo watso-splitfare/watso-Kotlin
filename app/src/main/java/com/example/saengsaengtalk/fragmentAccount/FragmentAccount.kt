@@ -41,6 +41,10 @@ class FragmentAccount :Fragment() {
             onBackPressed()
         }
 
+        binding.tvUsername.text = MainActivity.prefs.getString("userId", "")
+        binding.textView22.visibility = View.GONE
+        binding.tvNickname.visibility = View.GONE
+
         binding.btnLogout.setOnClickListener {
             MainActivity.prefs.removeString("Authentication")
             MainActivity.prefs.removeString("userId")

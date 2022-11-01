@@ -55,6 +55,11 @@ class FragmentTaxiPost :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.lytComment.visibility = View.GONE       // 댓글 비활성화
+        binding.textView16.visibility = View.GONE
+        binding.divider20.visibility = View.GONE
+        binding.tvPrice.visibility = View.GONE
+        binding.divider24.visibility = View.GONE
+
         getPost()
 
     }
