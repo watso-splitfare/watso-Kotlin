@@ -8,7 +8,6 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
 import com.example.saengsaengtalk.databinding.LytBaedalTableRowBinding
-import com.example.saengsaengtalk.databinding.LytTaxiTableRowBinding
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

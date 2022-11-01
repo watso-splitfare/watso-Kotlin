@@ -8,7 +8,6 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.databinding.LytBaedalTableBinding
-import com.example.saengsaengtalk.databinding.LytTaxiTableBinding
 import java.lang.ref.WeakReference
 import java.time.format.DateTimeFormatter
 import java.util.*
