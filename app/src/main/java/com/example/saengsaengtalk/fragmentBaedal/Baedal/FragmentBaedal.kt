@@ -17,6 +17,8 @@ import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class FragmentBaedal :Fragment() {
     val fragIndex = 1
@@ -47,6 +49,7 @@ class FragmentBaedal :Fragment() {
 
     fun getPostPreview() {
         api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
                 val baedalPosts = response.body()!!
                 mappingAdapter(baedalPosts)
@@ -62,16 +65,29 @@ class FragmentBaedal :Fragment() {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun mappingAdapter(baedalPosts: List<BaedalPostPreviewModel>) {
         binding.rvBaedalList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalList.setHasFixedSize(true)
 
-        val adapter = BaedalListAdapter(baedalPosts)
+        val tables = mutableListOf<Table>()
+        val dates = mutableListOf<LocalDate>()
+        var tableIdx = -1
+            for (post in baedalPosts) {
+            val date = LocalDate.parse(post.order_time, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            if (date !in dates) {
+                dates.add(date)
+                tables.add(Table(date, mutableListOf(post)))
+                tableIdx += 1
+            } else tables[tableIdx].rows.add(post)
+        }
+
+        val adapter = TableAdapter(requireContext(), tables)
         binding.rvBaedalList.adapter = adapter
-        adapter.setItemClickListener(object: BaedalListAdapter.OnItemClickListener{
-            override fun onClick(v: View, position: Int) {
-                Log.d("배달프래그먼트 온클릭", "${baedalPosts[position]._id}")
-                setFrag(FragmentBaedalPost(), mapOf("postId" to baedalPosts[position]._id))
+        adapter.addListener(object: TableAdapter.OnItemClickListener{
+            override fun onClick(postId: String) {
+                Log.d("배달프래그먼트 온클릭", "${postId}")
+                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
             }
         })
     }

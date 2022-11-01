@@ -79,48 +79,13 @@ class FragmentHome :Fragment() {
         }
 
         /** api test */
-        //binding.lytApiTest.visibility = View.GONE
+        binding.lytApiTest.visibility = View.GONE
 
         binding.btnRemoveCache.setOnClickListener {
             MainActivity.prefs.removeString("Authentication")
 
             var auth = MainActivity.prefs.getString("Authentication", "")
             Log.d("캐시삭제", auth)
-        }
-
-        binding.btnTest1.setOnClickListener {
-            /*baeminApi.getMenuDetail(10087212, 12476325).enqueue(object : Callback<JsonObject> {
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    val detail = response.body()!!
-                    Log.d("log", response.toString())
-                    Log.d("log", detail.toString())
-
-                    val b = JSONObject(detail.toString())
-                    println(b)
-                    println(b.getString("status"))
-                    println(b.getString("message"))
-                    println(b.getJSONObject("data"))
-
-                }
-
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    // 실패
-                    Log.d("log",t.message.toString())
-                    Log.d("log","fail")
-                }
-            })*/
-        }
-
-        binding.btnTest2.setOnClickListener {
-            val a = "[" +
-                    "{\"optionId\": 1000559268, \"name\": \"zz\",\"discountPrice\": 0,\"price\": 24900,\"soldOut\": false}," +
-                    "{\"optionId\": 1000559269, \"name\": \"xx\",\"discountPrice\": 0,\"price\": 25900,\"soldOut\": false}," +
-                    "{\"optionId\": 1000559280, \"name\": \"cc\",\"discountPrice\": 0,\"price\": 26900,\"soldOut\": false}," +
-                    "]"
-            val b = JSONArray(a)
-            println(b)
-            println(b.getJSONObject(0))
-            println(b.getJSONObject(0).getString("name"))
         }
 
 

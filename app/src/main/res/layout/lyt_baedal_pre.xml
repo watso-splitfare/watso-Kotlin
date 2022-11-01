@@ -19,7 +19,7 @@
         <TextView
             android:id="@+id/tv_baedal_pre"
             android:layout_width="180dp"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             android:background="@drawable/box_style_pre_baedal"
             android:text="3/11(금) 18:30\n네네치킨 3팀\n예상 배달비 3,300원"
             android:textAlignment="center"
