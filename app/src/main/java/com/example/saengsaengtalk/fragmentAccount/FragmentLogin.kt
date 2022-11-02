@@ -65,6 +65,7 @@ class FragmentLogin :Fragment() {
                             println("유저 ID: ${res.user_id}")
                             MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
                             MainActivity.prefs.setString("userId", user_id)
+                            println("로그인 Auth: ${MainActivity.prefs.getString("Authentication", "")}")
                             onBackPressed()
                             looping(false, loopingDialog)
                         } else makeToast("등록된 계정 정보가 일치하지 않습니다.")

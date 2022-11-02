@@ -178,13 +178,15 @@ class FragmentBaedalMenu :Fragment() {
     fun getOrdersObject(){
         api.getOrders(postId).enqueue(object : Callback<UserOrder> {
             override fun onResponse(call: Call<UserOrder>, response: Response<UserOrder>) {
-                val orderingModel = response.body()!!
-                Log.d("log", response.toString())
-                //Log.d("log", sectionMenu.toString())
-                val ordersString = apiModelToObject(orderingModel)
-                println("api모델에서 네이밍 변경: $ordersString")
-                orders = JSONArray(ordersString)
-                setCartBtn()
+                if (response.code() == 200) {
+                    val orderingModel = response.body()!!
+                    Log.d("log", response.toString())
+                    //Log.d("log", sectionMenu.toString())
+                    val ordersString = apiModelToObject(orderingModel)
+                    println("api모델에서 네이밍 변경: $ordersString")
+                    orders = JSONArray(ordersString)
+                    setCartBtn()
+                } else onBackPressed()
             }
 
             override fun onFailure(call: Call<UserOrder>, t: Throwable) {

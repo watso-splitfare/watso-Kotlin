@@ -173,7 +173,69 @@ class FragmentBaedalPost :Fragment() {
 
                     if (userId == baedalPost.user_id) binding.lytClose.setOnClickListener { switchIsClosed() }
                     else binding.lytClose.visibility = View.GONE
-                    setBottomBtn()
+                    //setBottomBtn()
+
+                    if (isClosed) {             // 마감 됐을 때
+                        if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
+                            binding.tvClose.text = "추가 주문받기"
+                            binding.tvClose.setTextColor(Color.BLACK)
+                            binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                        }
+
+                        binding.tvOrder.text = "주문이 마감되었습니다."
+                        binding.ivOrder.visibility = View.GONE
+                        binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                        binding.lytOrder.isEnabled = false
+
+                    } else {                                // 마감 안됐을 때
+                        if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
+                            binding.tvClose.text = "주문 마감하기"
+                            binding.tvClose.setTextColor(Color.WHITE)
+                            binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_close)
+                        }
+
+                        binding.ivOrder.visibility = View.VISIBLE
+                        binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order)
+                        binding.lytOrder.isEnabled = true
+
+                        val currentMember = baedalPost.join_users.size
+                        val store = baedalPost.store
+                        if (isMember) {
+                            binding.tvOrder.text = "주문 수정하기"
+                            binding.lytOrder.setOnClickListener {
+                                //goToOrderingFrag(true)
+                                println("배달 포스트 주문 수정하기 currentMember: ${currentMember}, joinUsers: ${baedalPost.join_users.size}")
+                                Log.d("배달 포스트", "수정하기 currentMember: ${currentMember}, joinUsers: ${baedalPost.join_users.size}")
+                                setFrag(FragmentBaedalMenu(), mapOf(
+                                    "isPosting" to "false",
+                                    "postId" to postId!!,
+                                    "currentMember" to currentMember.toString(),
+                                    "isUpdating" to true.toString(),
+                                    "storeName" to store.store_name,
+                                    "storeId" to store._id,
+                                    "baedalFee" to store.fee.toString(),
+                                    "orders" to ""
+                                ))
+                            }
+                        } else {
+                            binding.tvOrder.text = "나도 주문하기"
+                            binding.lytOrder.setOnClickListener {
+                                println("배달 포스트 나도 주문하기 currentMember: ${currentMember}, joinUsers: ${baedalPost.join_users.size}")
+                                Log.d("배달 포스트", "주문하기 currentMember: ${currentMember}, joinUsers: ${baedalPost.join_users.size}")
+                                //goToOrderingFrag(false)
+                                setFrag(FragmentBaedalMenu(), mapOf(
+                                    "isPosting" to "false",
+                                    "postId" to postId!!,
+                                    "currentMember" to currentMember.toString(),
+                                    "isUpdating" to false.toString(),
+                                    "storeName" to store.store_name,
+                                    "storeId" to store._id,
+                                    "baedalFee" to store.fee.toString(),
+                                    "orders" to ""
+                                ))
+                            }
+                        }
+                    }
 
                     /*if (baedalPost.is_closed) {
                     binding.tvOrder.text = "주문이 마감되었습니다."
@@ -317,6 +379,8 @@ class FragmentBaedalPost :Fragment() {
 
     fun setBottomBtn() {
         println("배달 포스트 setBottomBtn함수 userId:${userId}, postUserId: ${baedalPost.user_id}")
+        println("@@@@@@@@@@@@@@@@@@@@@@@@")
+        println("배달 포스트 setBottomBtn함수 isClosed:${isClosed}, isMember: ${isMember}")
 
         if (isClosed) {             // 마감 됐을 때
             if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
@@ -340,12 +404,39 @@ class FragmentBaedalPost :Fragment() {
             binding.ivOrder.visibility = View.VISIBLE
             binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order)
             binding.lytOrder.isEnabled = true
+
+            val currentMember = baedalPost.join_users.size
+            val store = baedalPost.store
             if (isMember) {
                 binding.tvOrder.text = "주문 수정하기"
-                binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
+                binding.lytOrder.setOnClickListener {
+                    //goToOrderingFrag(true)
+                    setFrag(FragmentBaedalMenu(), mapOf(
+                        "isPosting" to "false",
+                        "postId" to postId!!,
+                        "currentMember" to currentMember.toString(),
+                        "isUpdating" to true.toString(),
+                        "storeName" to store.store_name,
+                        "storeId" to store._id,
+                        "baedalFee" to store.fee.toString(),
+                        "orders" to ""
+                    ))
+                }
             } else {
                 binding.tvOrder.text = "나도 주문하기"
-                binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
+                binding.lytOrder.setOnClickListener {
+                    //goToOrderingFrag(false)
+                    setFrag(FragmentBaedalMenu(), mapOf(
+                        "isPosting" to "false",
+                        "postId" to postId!!,
+                        "currentMember" to currentMember.toString(),
+                        "isUpdating" to false.toString(),
+                        "storeName" to store.store_name,
+                        "storeId" to store._id,
+                        "baedalFee" to store.fee.toString(),
+                        "orders" to ""
+                    ))
+                }
             }
         }
     }
@@ -354,18 +445,21 @@ class FragmentBaedalPost :Fragment() {
         val currentMember = baedalPost.join_users.size
         val store = baedalPost.store
 
-        binding.lytOrder.setOnClickListener {
-            setFrag(FragmentBaedalMenu(), mapOf(
-                "isPosting" to "false",
-                "postId" to postId!!,
-                "currentMember" to currentMember.toString(),
-                "isUpdating" to isUpdating.toString(),
-                "storeName" to store.store_name,
-                "storeId" to store._id,
-                "baedalFee" to store.fee.toString(),
-                "orders" to ""
-            ))
-        }
+        println("배달 포스트 주문 수정하기/나도주문하기 currentMember: ${currentMember}")
+        println("배달 포스트 주문 수정하기/나도주문하기 baedalPost: ${baedalPost}")
+
+
+        setFrag(FragmentBaedalMenu(), mapOf(
+            "isPosting" to "false",
+            "postId" to postId!!,
+            "currentMember" to currentMember.toString(),
+            "isUpdating" to isUpdating.toString(),
+            "storeName" to store.store_name,
+            "storeId" to store._id,
+            "baedalFee" to store.fee.toString(),
+            "orders" to ""
+        ))
+
     }
 
     fun switchIsClosed(){
@@ -375,7 +469,10 @@ class FragmentBaedalPost :Fragment() {
                 if (response.code() == 200) {
                     val res = response.body()!!
                     isClosed = res.is_closed
-                    setBottomBtn()
+                    //setBottomBtn()
+                    if(isClosed) binding.tvClose.text = "다시 주문받기"
+                    else binding.tvClose.text = "주문 마감하기"
+
                 } else makeToast("다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
