@@ -50,8 +50,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, fragIndex=0) }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, fragIndex=1) }
         binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2) }
-        binding.btnKara.setOnClickListener { setFrag(FragmentKara(), popBackStack = 0, fragIndex=3) }
-        binding.btnFreeBoard.setOnClickListener { setFrag(FragmentFreeBoard(), popBackStack = 0, fragIndex=4) }
+        binding.btnKara.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentKara(), popBackStack = 0, fragIndex=3)*/ }
+        binding.btnFreeBoard.setOnClickListener { makeToast("게시판 준비중입니다.") /*setFrag(FragmentFreeBoard(), popBackStack = 0, fragIndex=4)*/ }
     }
 
     override fun onDestroy() {

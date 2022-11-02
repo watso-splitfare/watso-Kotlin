@@ -15,6 +15,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.*
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalAddBinding
@@ -210,40 +211,44 @@ class FragmentBaedalAdd :Fragment() {
     }
 
     fun setStoreSpinner(){
+        val loopingDialog = looping()
         api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
-            override fun onResponse(
-                call: Call<List<StoreListModel>>,
-                response: Response<List<StoreListModel>>
-            ) {
+            override fun onResponse(call: Call<List<StoreListModel>>, response: Response<List<StoreListModel>>) {
                 Log.d("log", response.toString())
                 Log.d("log", response.body().toString())
-                stores = response.body()!!
-                stores.forEach {
-                    storeIds.add(it.store_id)
-                    storeNames.add(it.store_name)
-                    storeFees.add(it.fee)
-                }
-
-                val searchmethod =
-                    ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, storeNames)
-
-                searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                binding.spnStore!!.adapter = searchmethod
-                binding.spnStore.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        baedalfee = storeFees[position]
-                        setBindText()
-                        selectedIdx = position
+                if (response.code() == 200) {
+                    stores = response.body()!!
+                    stores.forEach {
+                        storeIds.add(it.store_id)
+                        storeNames.add(it.store_name)
+                        storeFees.add(it.fee)
                     }
 
-                    override fun onNothingSelected(p0: AdapterView<*>?) { }
-                }
+                    val searchmethod = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, storeNames)
+
+                    searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    binding.spnStore!!.adapter = searchmethod
+                    binding.spnStore.onItemSelectedListener =
+                        object : AdapterView.OnItemSelectedListener {
+                            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                                baedalfee = storeFees[position]
+                                setBindText()
+                                selectedIdx = position
+                            }
+
+                            override fun onNothingSelected(p0: AdapterView<*>?) {}
+                        }
+                } else setStoreSpinner()
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
                 // 실패
                 Log.d("log", t.message.toString())
                 Log.d("log", "fail")
+                makeToast("가게 리스트 조회 실패")
+                looping(false, loopingDialog)
+                onBackPressed()
             }
         })
     }
@@ -394,7 +399,12 @@ class FragmentBaedalAdd :Fragment() {
         return OrderingGroup(group.groupId!!, options)
     }
 
-    fun makeToast(message: String) {
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
         val mActivity = activity as MainActivity
         mActivity.makeToast(message)
     }

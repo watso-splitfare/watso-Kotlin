@@ -392,6 +392,7 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun apiModelToAdapterModel(order: Order): BaedalOrder {
+        println("배달포스트 오류 order: ${order}")
         val groups = mutableListOf<Group>()
         for (group in order.groups) {
             val options = mutableListOf<Option>()

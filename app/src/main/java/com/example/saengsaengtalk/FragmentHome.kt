@@ -51,8 +51,8 @@ class FragmentHome :Fragment() {
 
         binding.lytHomeBaedallist.setOnClickListener { setFrag(FragmentBaedal(), fragIndex=1) }
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), fragIndex=2) }
-        binding.lytHomeKaralist.setOnClickListener { setFrag(FragmentKara(), fragIndex=3) }
-        binding.lytHomeFreeboard.setOnClickListener { setFrag(FragmentFreeBoard(), fragIndex=4) }
+        binding.lytHomeKaralist.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentKara(), fragIndex=3)*/ }
+        binding.lytHomeFreeboard.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentFreeBoard(), fragIndex=4)*/ }
         //binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
@@ -154,7 +154,7 @@ class FragmentHome :Fragment() {
                     mappingBaedalAdapter(baedalPosts)
                     Log.d("log", response.toString())
                     Log.d("log", baedalPosts.toString())
-                } else makeToast("배달 리스트를 불러오는데 실패했습니다.")
+                } else makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
 
@@ -162,7 +162,7 @@ class FragmentHome :Fragment() {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
-                makeToast("배달 리스트를 불러오는데 실패했습니다.")
+                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
         })
@@ -199,7 +199,7 @@ class FragmentHome :Fragment() {
                     mappingTaxiAdapter(taxiPosts)
                     Log.d("log", response.toString())
                     Log.d("log", taxiPosts.toString())
-                } else makeToast("택시 리스트를 불러오는데 실패했습니다.")
+                } else makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
 
@@ -207,7 +207,7 @@ class FragmentHome :Fragment() {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
-                makeToast("택시 리스트를 불러오는데 실패했습니다.")
+                makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
         })

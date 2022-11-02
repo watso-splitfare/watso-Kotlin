@@ -30,6 +30,7 @@ class FragmentTaxiAdd :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     var departTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")).toString()
 
+
     var currentMember = 1
     var minMember = 2
     var maxMember = 4
@@ -45,6 +46,7 @@ class FragmentTaxiAdd :Fragment() {
         mBinding = FragTaxiAddBinding.inflate(inflater, container, false)
 
         refreshView()
+        //println("택시1: ${departTime}")
 
         return binding.root
     }
@@ -55,7 +57,7 @@ class FragmentTaxiAdd :Fragment() {
         binding.lytTable.visibility = View.GONE
 
         binding.lytTime.setOnClickListener { showCalendar() }
-        binding.tvTime.text = departTime
+        binding.tvTime.text = getDateTimeFormating(departTime.toString())
 
         setMemberCountButton()
 
@@ -75,7 +77,7 @@ class FragmentTaxiAdd :Fragment() {
                         run {
                             var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:00"
                             departTime = LocalDateTime.parse(dateString+timeString).toString()
-                            //println(orderTime)
+                            //println("택시: ${departTime}")
                             binding.tvTime.text = getDateTimeFormating(departTime.toString())
                         }
                     }

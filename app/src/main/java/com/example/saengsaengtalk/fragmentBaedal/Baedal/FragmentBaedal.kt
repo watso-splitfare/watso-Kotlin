@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragBaedalBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
@@ -48,19 +49,25 @@ class FragmentBaedal :Fragment() {
     }
 
     fun getPostPreview() {
+        val loopingDialog = looping()
         api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
-                val baedalPosts = response.body()!!
-                mappingAdapter(baedalPosts)
-                Log.d("log", response.toString())
-                Log.d("log", baedalPosts.toString())
+                if (response.code() == 200) {
+                    val baedalPosts = response.body()!!
+                    mappingAdapter(baedalPosts)
+                    Log.d("log", response.toString())
+                    Log.d("log", baedalPosts.toString())
+                } else makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                looping(false, loopingDialog)
             }
         })
     }
@@ -90,6 +97,16 @@ class FragmentBaedal :Fragment() {
                 setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
             }
         })
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
