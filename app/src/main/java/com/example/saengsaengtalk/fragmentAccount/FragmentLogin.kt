@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.APIS.LoginModel
 import com.example.saengsaengtalk.APIS.LoginResult
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragLoginBinding
 import retrofit2.Call
@@ -51,21 +52,24 @@ class FragmentLogin :Fragment() {
             val decode2 = decoder.decode(chunks[1])
             val decode3 = decoder.decode(chunks[2])*/
 
+            val loopingDialog = looping()
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
                     val res = response.body()!!
                     Log.d("로그인", response.toString())
                     Log.d("로그인", response.body().toString())
                     Log.d("로그인응답 헤더", response.headers().toString())
-                    if (response.body()!!.result) {
-                        val user_id = res.user_id.toString()
-                        println("유저 ID: ${res.user_id}")
-                        MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
-                        MainActivity.prefs.setString("userId", user_id)
-                        onBackPressed()
-                    } else {
-                        makeToast("등록된 계정 정보가 일치하지 않습니다.")
-                    }
+                    if (response.code()==200) {
+                        if (response.body()!!.result) {
+                            val user_id = res.user_id.toString()
+                            println("유저 ID: ${res.user_id}")
+                            MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
+                            MainActivity.prefs.setString("userId", user_id)
+                            onBackPressed()
+                            looping(false, loopingDialog)
+                        } else makeToast("등록된 계정 정보가 일치하지 않습니다.")
+                    } else makeToast("다시 시도해주세요.")
+                    looping(false, loopingDialog)
                 }
 
                 override fun onFailure(call: Call<LoginResult>, t: Throwable) {
@@ -73,6 +77,7 @@ class FragmentLogin :Fragment() {
                     Log.d("로그인",t.message.toString())
                     Log.d("로그인","fail")
                     makeToast("로그인에 실패하였습니다.")
+                    looping(false, loopingDialog)
                 }
             })
         }
@@ -81,6 +86,11 @@ class FragmentLogin :Fragment() {
             setFrag(FragmentFindAccount())
         }
         binding.tvSignUp.setOnClickListener { setFrag(FragmentSignUp())}
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

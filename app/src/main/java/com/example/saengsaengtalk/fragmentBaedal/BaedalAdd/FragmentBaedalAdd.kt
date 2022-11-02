@@ -299,42 +299,47 @@ class FragmentBaedalAdd :Fragment() {
                 })
         } else {
             /** 게시글 신규 등록 */
-            var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
-            val baedalPostModel = BaedalPostingModel(
-                storeIds[selectedIdx],
-                binding.etTitle.text.toString(),
-                binding.etContent.text.toString(),
-                orderTimeString,
-                binding.spnPlace.selectedItem.toString(),
-                minMember,
-                maxMember
-            )
+            if (binding.tvTitle.text.toString() == "") makeToast("제목을 입력해 주세요")
+            else if (orders.length() == 0) makeToast("메뉴를 선택해 주세요")
+            else {
+                makeToast("주문을 등록합니다.")
+                var orderTimeString =
+                    orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
+                val baedalPostModel = BaedalPostingModel(
+                    storeIds[selectedIdx],
+                    binding.etTitle.text.toString(),
+                    binding.etContent.text.toString(),
+                    orderTimeString,
+                    binding.spnPlace.selectedItem.toString(),
+                    minMember,
+                    maxMember
+                )
 
-            api.baedalPosting(baedalPostModel)
-                .enqueue(object : Callback<BaedalPostingResponse> {
-                    override fun onResponse(
-                        call: Call<BaedalPostingResponse>,
-                        response: Response<BaedalPostingResponse>
-                    ) {
-                        println("성공")
-                        Log.d("log", response.toString())
-                        Log.d("log", response.body().toString())
-                        val postingResult = response.body()!!
-                        //println(postingResult)
-                        if (!postingResult.success) {
-                            makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                            println(postingResult)
+                api.baedalPosting(baedalPostModel)
+                    .enqueue(object : Callback<BaedalPostingResponse> {
+                        override fun onResponse(
+                            call: Call<BaedalPostingResponse>,
+                            response: Response<BaedalPostingResponse>
+                        ) {
+                            println("성공")
+                            Log.d("log", response.toString())
+                            Log.d("log", response.body().toString())
+                            val postingResult = response.body()!!
+                            //println(postingResult)
+                            if (!postingResult.success) {
+                                makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                                println(postingResult)
+                            } else baedalOrdering(postingResult.post_id)
+
                         }
-                        else baedalOrdering(postingResult.post_id)
 
-                    }
-
-                    override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                        println("실패")
-                        Log.d("log", t.message.toString())
-                        Log.d("log", "fail")
-                    }
-                })
+                        override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
+                            println("실패")
+                            Log.d("log", t.message.toString())
+                            Log.d("log", "fail")
+                        }
+                    })
+            }
         }
     }
 

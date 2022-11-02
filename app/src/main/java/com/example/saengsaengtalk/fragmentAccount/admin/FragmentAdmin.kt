@@ -11,10 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.BaeminAPIS
-import com.example.saengsaengtalk.APIS.GroupsAdd
-import com.example.saengsaengtalk.APIS.MenuAdd
-import com.example.saengsaengtalk.APIS.StoreListModel
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragAdminBinding
 import com.google.gson.JsonObject
@@ -150,7 +147,8 @@ class FragmentAdmin :Fragment() {
         binding.rvOptionGroups.adapter = optionGroupAdapter
     }
 
-    fun menuPost(menu: MenuAdd){
+    fun addMenu(menu: MenuAdd){
+
         appApi.addMenu(menu).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 val detail = JSONObject(response.body()!!.toString())
@@ -173,8 +171,9 @@ class FragmentAdmin :Fragment() {
         })
     }
 
-    fun groupPost(group: GroupsAdd){
-        appApi.addGroup(group).enqueue(object : Callback<JsonObject> {
+
+    fun groupPost(groups: GroupsAdd){
+        /*appApi.addGroup(group).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 val detail = JSONArray(response.body()!!.toString())
                 Log.d("log", response.toString())
@@ -193,7 +192,11 @@ class FragmentAdmin :Fragment() {
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
             }
-        })
+        })*/
+    }
+
+    fun optionPost(options: OptionsAdd) {
+
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

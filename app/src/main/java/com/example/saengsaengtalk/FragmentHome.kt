@@ -149,10 +149,12 @@ class FragmentHome :Fragment() {
         val loopingDialog = looping()
         api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
-                val baedalPosts = response.body()!!
-                mappingBaedalAdapter(baedalPosts)
-                Log.d("log", response.toString())
-                Log.d("log", baedalPosts.toString())
+                if (response.code() == 200) {
+                    val baedalPosts = response.body()!!
+                    mappingBaedalAdapter(baedalPosts)
+                    Log.d("log", response.toString())
+                    Log.d("log", baedalPosts.toString())
+                } else makeToast("배달 리스트를 불러오는데 실패했습니다.")
                 looping(false, loopingDialog)
             }
 
@@ -160,6 +162,7 @@ class FragmentHome :Fragment() {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("배달 리스트를 불러오는데 실패했습니다.")
                 looping(false, loopingDialog)
             }
         })
@@ -168,18 +171,21 @@ class FragmentHome :Fragment() {
     fun mappingBaedalAdapter(baedalPosts: List<BaedalPostPreviewModel>) {
         binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBaedal.setHasFixedSize(true)
-        val baedalAdapter = BaedalPreAdapter(baedalPosts)
+        var baedalAdapter: BaedalPreAdapter
+        if (baedalPosts.isEmpty()) {
+            val emptyBaedalPosts = listOf<BaedalPostPreviewModel>(
+                BaedalPostPreviewModel("-1", listOf<Long>(), Store("0", "0", 0, 0), "0", "0", false))
+            baedalAdapter = BaedalPreAdapter(emptyBaedalPosts)
+        } else { baedalAdapter = BaedalPreAdapter(baedalPosts) }
+
         binding.rvBaedal.adapter = baedalAdapter
 
         baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener {
             override fun onClick(v: View, position: Int) {
                 //Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
-                Log.d("홈프래그먼트 온클릭", "${baedalPosts[position]._id}")
-                setFrag(
-                    FragmentBaedalPost(),
-                    mapOf("postId" to baedalPosts[position]._id),
-                    fragIndex = 1
-                )
+                //Log.d("홈프래그먼트 온클릭", "${baedalPosts[position]._id}")
+                if (baedalPosts.isEmpty()) { setFrag(FragmentBaedalAdd(), fragIndex=1) }
+                else { setFrag(FragmentBaedalPost(), mapOf("postId" to baedalPosts[position]._id), fragIndex = 1) }
             }
         })
     }
@@ -188,10 +194,12 @@ class FragmentHome :Fragment() {
         val loopingDialog = looping()
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
-                val taxiPosts = response.body()!!
-                mappingTaxiAdapter(taxiPosts)
-                Log.d("log", response.toString())
-                Log.d("log", taxiPosts.toString())
+                if (response.code() == 200) {
+                    val taxiPosts = response.body()!!
+                    mappingTaxiAdapter(taxiPosts)
+                    Log.d("log", response.toString())
+                    Log.d("log", taxiPosts.toString())
+                } else makeToast("택시 리스트를 불러오는데 실패했습니다.")
                 looping(false, loopingDialog)
             }
 
@@ -199,6 +207,7 @@ class FragmentHome :Fragment() {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("택시 리스트를 불러오는데 실패했습니다.")
                 looping(false, loopingDialog)
             }
         })
@@ -207,31 +216,43 @@ class FragmentHome :Fragment() {
     fun mappingTaxiAdapter(taxiPosts: List<TaxiPostPreviewModel>) {
         binding.rvTaxi.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvTaxi.setHasFixedSize(true)
-        val taxiAdapter = TaxiPreAdapter(taxiPosts)
+        var taxiAdapter: TaxiPreAdapter
+        if (taxiPosts.isEmpty()) {
+            val emptyTaxiPosts = listOf<TaxiPostPreviewModel>(
+            TaxiPostPreviewModel("-1", "0", "0", "0", listOf<Long>()))
+            taxiAdapter = TaxiPreAdapter(emptyTaxiPosts)
+        } else { taxiAdapter = TaxiPreAdapter(taxiPosts) }
+
         binding.rvTaxi.adapter = taxiAdapter
 
         taxiAdapter.setItemClickListener(object: TaxiPreAdapter.OnItemClickListener {
             override fun onClick(v: View, position: Int) {
                 //Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
-                Log.d("홈프래그먼트 온클릭", "${taxiPosts[position]._id}")
-                setFrag(
-                    FragmentTaxiPost(),
-                    mapOf("postId" to taxiPosts[position]._id),
-                    fragIndex = 2
-                )
+                //Log.d("홈프래그먼트 온클릭", "${taxiPosts[position]._id}")
+                if (taxiPosts.isEmpty()) { setFrag(FragmentTaxiAdd(), fragIndex=2) }
+                else { setFrag(FragmentTaxiPost(), mapOf("postId" to taxiPosts[position]._id), fragIndex = 2) }
             }
         })
     }
-
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity
         return mActivity.looping(loopStart, loopingDialog)
     }
 
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
+    }
+
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex: Int) {
         println("setIndex = ${fragIndex}")
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
+    }
+
+    fun onBackPressed() {
+        val mActivity =activity as MainActivity
+        mActivity.onBackPressed()
     }
 }
