@@ -262,9 +262,9 @@ class FragmentBaedalAdd :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun baedalPosting() {
-        val minMember = if (binding.cbMinMember.isChecked)
+        val minMember = if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
             binding.etMinMember.text.toString().toInt() else null
-        val maxMember = if (binding.cbMaxMember.isChecked)
+        val maxMember = if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
             binding.etMaxMember.text.toString().toInt() else null
 
 
