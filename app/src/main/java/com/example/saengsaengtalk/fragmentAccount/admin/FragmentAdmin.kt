@@ -12,6 +12,9 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.BaeminAPIS
+import com.example.saengsaengtalk.APIS.GroupsAdd
+import com.example.saengsaengtalk.APIS.MenuAdd
+import com.example.saengsaengtalk.APIS.StoreListModel
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragAdminBinding
 import com.google.gson.JsonObject
@@ -24,9 +27,18 @@ import kotlin.math.min
 
 class FragmentAdmin :Fragment() {
 
+    var stores = listOf<StoreListModel>()
+    var storeIds = mutableListOf<String>()
+    var storeNames = mutableListOf<String>()
+    var storeFees = mutableListOf<Int>()
+    var selectedIdx = 0
+    var baedalfee = 0
+
     private var mBinding: FragAdminBinding? = null
     private val binding get() = mBinding!!
-    val api= BaeminAPIS.create()
+
+    val appApi = APIS.create()
+    val BaeminApi = BaeminAPIS.create()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAdminBinding.inflate(inflater, container, false)
@@ -60,24 +72,18 @@ class FragmentAdmin :Fragment() {
     )
 
     fun getShopList() {
-        api.getShopList().enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+        appApi.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
+            override fun onResponse(call: Call<List<StoreListModel>>, response: Response<List<StoreListModel>>) {
                 val detail = JSONObject(response.body()!!.toString()).getJSONObject("data")
                 Log.d("log", response.toString())
                 Log.d("log", detail.toString())
-                val shopObjects = detail.getJSONArray("shops")
-                val storeNames = mutableListOf<String>()
-                var storeName = ""
-                var selectedIdx = 0
-                val storeModels = mutableListOf<addStoreModel>()
 
-                for (idx in 0 until shopObjects.length()){
-                    val shop = shopObjects.getJSONObject(idx)
-                    val _name = shop.getJSONObject("shopInfo").getString("shopName")
-                    val min_order = shop.getJSONObject("deliveryInfo").getInt("minimumOrderPrice")
+                stores = response.body()!!
 
-                    storeNames.add(_name)
-                    storeModels.add(addStoreModel(_name, 10000, min_order))
+                stores.forEach {
+                    storeIds.add(it.store_id)
+                    storeNames.add(it.store_name)
+                    storeFees.add(it.fee)
                 }
 
                 val searchmethod =
@@ -87,15 +93,16 @@ class FragmentAdmin :Fragment() {
                 binding.spnStores!!.adapter = searchmethod
                 binding.spnStores.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        baedalfee = storeFees[position]
                         selectedIdx = position
-                        println("가게이름: ${storeNames[selectedIdx]}")
+
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) { }
                 }
             }
 
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+            override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
@@ -107,7 +114,7 @@ class FragmentAdmin :Fragment() {
         val shopId = 10087212
         val menuId = 12476325
 
-        api.getMenuDetail(shopId, menuId).enqueue(object : Callback<JsonObject> {
+        BaeminApi.getMenuDetail(shopId, menuId).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 val detail = JSONObject(response.body()!!.toString()).getJSONObject("data")
                 Log.d("log", response.toString())
@@ -141,6 +148,52 @@ class FragmentAdmin :Fragment() {
         binding.rvOptionGroups.setHasFixedSize(true)
         val optionGroupAdapter = AdminGroupAdapter(requireContext(), optionGroups)
         binding.rvOptionGroups.adapter = optionGroupAdapter
+    }
+
+    fun menuPost(menu: MenuAdd){
+        appApi.addMenu(menu).enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                val detail = JSONObject(response.body()!!.toString())
+                Log.d("log", response.toString())
+                Log.d("log", detail.toString())
+
+                val menuRes = detail.getString("menu_name")
+                if (menuRes != "") {
+                    println("메뉴추가 성공: $menuRes")
+                    println("${menuRes == menu.menu_name}")
+                }
+
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
+    }
+
+    fun groupPost(group: GroupsAdd){
+        appApi.addGroup(group).enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                val detail = JSONArray(response.body()!!.toString())
+                Log.d("log", response.toString())
+                Log.d("log", detail.toString())
+
+
+                /*if (detail != null) {
+                    println("그룹추가 성공: ${}")
+                    println("${menuRes == menu.menu_name}")
+                }*/
+
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // 실패
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

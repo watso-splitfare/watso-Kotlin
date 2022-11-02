@@ -11,7 +11,6 @@ import org.json.JSONObject
 class AdminPriceAdapter(val priceOptions: JSONArray) : RecyclerView.Adapter<AdminPriceAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        println("프라이스 어댑터 진입: ${priceOptions}")
         val binding = LytAdminPriceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
@@ -28,7 +27,6 @@ class AdminPriceAdapter(val priceOptions: JSONArray) : RecyclerView.Adapter<Admi
 
     inner class CustomViewHolder(var binding: LytAdminPriceBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(priceOption: JSONObject) {
-            println("프라이스 이너 클래스: ${priceOption}")
             binding.tvName.text = priceOption.getString("name")
             binding.tvId.text = priceOption.getString("optionId")
             binding.tvPrice.text = priceOption.getString("price")

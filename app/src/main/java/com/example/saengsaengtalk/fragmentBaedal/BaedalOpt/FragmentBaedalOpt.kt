@@ -24,10 +24,10 @@ class FragmentBaedalOpt :Fragment() {
     var menuPrice = 0
     var storeId = ""
 
-    val groupNames = mutableMapOf<Long, String>()
-    val optionNames = mutableMapOf<Long, String>()
-    val groupOptionPrice = mutableMapOf<Long, MutableMap<Long, Int>>()
-    val groupOptionChecked = mutableMapOf<Long, MutableMap<Long, Boolean>>()
+    val groupNames = mutableMapOf<String, String>()
+    val optionNames = mutableMapOf<String, String>()
+    val groupOptionPrice = mutableMapOf<String, MutableMap<String, Int>>()
+    val groupOptionChecked = mutableMapOf<String, MutableMap<String, Boolean>>()
     var count = 1
 
     var groupOption = listOf<GroupOptionModel>()                   // 옵션 전체. 현재화면 구성에 사용
@@ -158,7 +158,7 @@ class FragmentBaedalOpt :Fragment() {
 
 
         adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
-            override fun onClick(groupId: Long, isRadio: Boolean, optionId: Long, isChecked: Boolean) {
+            override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
                 //println("group: ${groupId}, optionId:${optionId}, isChecked:${isChecked}")
                 setChecked(groupId, isRadio, optionId, isChecked)
                 //binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
@@ -177,8 +177,8 @@ class FragmentBaedalOpt :Fragment() {
             val maxQ = it.max_orderable_quantity
 
             groupNames[groupId] = groupName
-            groupOptionChecked[groupId] = mutableMapOf<Long, Boolean>()
-            groupOptionPrice[groupId] = mutableMapOf<Long, Int>()
+            groupOptionChecked[groupId] = mutableMapOf<String, Boolean>()
+            groupOptionPrice[groupId] = mutableMapOf<String, Int>()
 
             it.options.forEach{
                 val optionId = it.option_id
@@ -196,7 +196,7 @@ class FragmentBaedalOpt :Fragment() {
         println(groupOptionChecked)
     }
 
-    fun setChecked(groupId: Long, isRadio:Boolean, optionId: Long, isChecked: Boolean){
+    fun setChecked(groupId: String, isRadio:Boolean, optionId: String, isChecked: Boolean){
         if (isRadio) {
             for (i in groupOptionChecked[groupId]!!.keys) {
                 groupOptionChecked[groupId]!![i] = (i == optionId)

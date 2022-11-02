@@ -3,11 +3,11 @@ package com.example.saengsaengtalk.APIS
 /** 계정 API 관련 데이터 모델 */
 
 data class OverlapResult(
-    val result: Boolean
+    val isOverlapped: Boolean
 )
 
 data class SignUpResult(
-    val result: Boolean
+    val success: Boolean
 )
 
 data class SignUpModel(

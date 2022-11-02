@@ -30,18 +30,18 @@ data class TaxiPostModel(
 )
 
 /** 305 동승 가능 여부 변경 응답 모델 */
-data class TaxiSwitchConditionResponse(
+/*data class TaxiSwitchConditionResponse(
     val post_id: String,
     val success: Boolean,
     val condition: Boolean
-)
+)*/
 
 /** 306 동승 신청/취소 응답 모델 */
-data class TaxiJoinResponse(
+/*data class TaxiJoinResponse(
     val post_id: String,
     val success: Boolean,
     val join: Boolean
-)
+)*/
 
 /** 307 택시 게시글 미리보기 모델 */
 data class TaxiPostPreviewModel(

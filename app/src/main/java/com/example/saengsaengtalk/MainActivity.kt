@@ -1,10 +1,13 @@
 package com.example.saengsaengtalk
 
+import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.preference.Preference
 import android.util.TypedValue
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +36,9 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceUtil(applicationContext)
+        //val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
+        //prefs.setString("Authentication", authDebug)
+
         println("유저 id: ${prefs.getString("userId", "")}")
         println("인증 토큰: ${prefs.getString("Authentication", "")}")
         super.onCreate(savedInstanceState)
@@ -67,6 +73,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        return true
+    }
+
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
         println("argument = ${arguments}")

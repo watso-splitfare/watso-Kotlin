@@ -7,5 +7,5 @@ class BaedalPre(
     val shop: String,
     val member: Int,
     val fee:Int,
-    val postId: Int
+    val postId: String
     ) { }

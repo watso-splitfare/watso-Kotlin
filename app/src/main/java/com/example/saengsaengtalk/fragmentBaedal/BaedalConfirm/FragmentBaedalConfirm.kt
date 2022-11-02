@@ -187,30 +187,32 @@ class FragmentBaedalConfirm :Fragment() {
                 Log.d("log", response.body().toString())
                 val result = response.body()!!
                 println(result)
-                orderingComplete(result.success)
+                //orderingComplete(result.success)
+                goToPosting(true)
             }
 
             override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
                 println("실패")
                 Log.d("log", t.message.toString())
                 Log.d("log", "fail")
-                orderingComplete(false)
+                //orderingComplete(false)
+                goToPosting(false)
             }
         })
     }
 
     fun orderingComplete(success: Boolean){
         if (success) {
-            api.baedalOrderCancel(postId).enqueue(object : Callback<BaedalPostingResponse> {
-                override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
+            api.SwitchBaedalJoin(mapOf("post_id" to postId)).enqueue(object : Callback<JoinResponse> {
+                override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
 
-                    println("주문취소 성공(주문등록)")
+                    println("주문등록 성공(그룹 조인)")
                     Log.d("log", response.toString())
                     goToPosting(success)
                 }
 
-                override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                    println("주문취소 실패(주문등록)")
+                override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
+                    println("주문등록 실패(그룹 조인)")
                     Log.d("log", t.message.toString())
                     Log.d("log", "fail")
                     goToPosting(success)
@@ -244,7 +246,7 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun getGroup(group: Group): OrderingGroup {
-        val options = mutableListOf<Long>()
+        val options = mutableListOf<String>()
         for (option in group.options){
             options.add(option.optionId!!)
         }

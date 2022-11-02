@@ -23,7 +23,7 @@ data class MenuModel(
 
 /** 203 그룹 및 옵션 모델 */
 data class GroupOptionModel(
-    val group_id: Long,
+    val group_id: String,
     val group_name: String,
     val min_orderable_quantity: Int,
     val max_orderable_quantity: Int,
@@ -31,7 +31,7 @@ data class GroupOptionModel(
 )
 
 data class OptionModel(
-    val option_id: Long,
+    val option_id: String,
     val option_name: String,
     val option_price: Int
 )
@@ -57,7 +57,7 @@ data class BaedalPostModel(
     val user_id: Long,
     val nick_name: String,
     val _id: String,
-    val join_user: List<Long>,
+    val join_users: List<Long>,
     val store: Store,
     val title: String,
     val content: String?,
@@ -96,13 +96,13 @@ data class Order(
 )
 
 data class Group(
-    val group_id: Long,
+    val group_id: String,
     val group_name: String,
     val options: List<Option>
 )
 
 data class Option(
-    val option_id: Long,
+    val option_id: String,
     val option_name: String,
     val option_price: Int
 )
@@ -118,11 +118,11 @@ data class BaedalUpdateModel(
     val max_member: Int?
 )
 
-/** 207 주문 가능 여부 변경 응답 모델*/
-data class BaedalConditionResponse(
+/** 207, 305 마감 여부 응답 모델 */
+data class IsClosedResponse(
     val success: Boolean,
     val post_id: String,
-    val condition: Boolean
+    val is_closed: Boolean
 )
 
 /** 209 배달 주문 등록 모델 */
@@ -139,8 +139,8 @@ data class OrderingOrder(
 )
 
 data class OrderingGroup(
-    val group_id: Long,
-    val options: List<Long>
+    val group_id: String,
+    val options: List<String>
 )
 
 data class OrderingResponse(
@@ -148,14 +148,18 @@ data class OrderingResponse(
     val post_id: String
 )
 
-/** 210 배달 주문 수정용 데이터 응답 모델 = UserOrder*/
-
+/** 211, 306 그룹 참가 응답 모델 */
+data class JoinResponse(
+    val post_id: String,
+    val success: Boolean,
+    val join: Boolean
+)
 
 /** 213 배달 게시글 미리보기 모델 */
 data class BaedalPostPreviewModel(
     val _id: String,
     //val user_id: Long,
-    val join_user: List<Long>,
+    val join_users: List<Long>,
     //val nick_name: String,
     val store: Store,
     val title: String,

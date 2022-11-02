@@ -37,10 +37,10 @@ interface BaedalAPIS {
         @Body jsonparams: BaedalUpdateModel
     ): Call<BaedalPostingResponse>
 
-    @PATCH("order/post/condition-switch")    // 207 배달 주문 가능 여부 변경
-    fun setClosed(
+    @PATCH("order/post/isClosed/condition-switch")    // 207 배달 주문 가능 여부 변경
+    fun switchBaedalIsClosed(
         @Body jsonparams: Map<String, String>
-    ): Call<BaedalConditionResponse>
+    ): Call<IsClosedResponse>
 
     @POST("order/ordering")                 // 209 배달 주문 등록
     fun baedalOrdering(
@@ -57,10 +57,10 @@ interface BaedalAPIS {
         @Body jsonparams: OrderingModel
     ): Call<OrderingResponse>
 
-    @GET("order/post/join/condition-switch")// 211 배달 주문 취소
-    fun baedalOrderCancel(
-        @Query("post_id") postId: String,
-    ): Call<BaedalPostingResponse>
+    @PATCH("order/post/join/condition-switch")// 211 배달 그룹 참여 및 탈퇴
+    fun SwitchBaedalJoin(
+        @Body jsonparams: Map<String, String>
+    ): Call<JoinResponse>
 
     @GET("order/post/list")                 // 213 배달 게시글 리스트 조회
     fun getBaedalOrderListPreview(

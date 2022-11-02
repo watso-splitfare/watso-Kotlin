@@ -21,16 +21,16 @@ interface TaxiAPIS {
         @Query("post_id") postId: String
     ): Call<PostingResponse>
 
-    @PATCH("taxi/post/condition-switch")                     // 305 동승 가능 여부 변경
-    fun switchCondition(
+    @PATCH("/taxi/post/isClosed/condition-switch")                     // 305 동승 가능 여부 변경
+    fun switchTaxiIsClosed(
         @Body jsonparams: Map<String, String>
-    ): Call<TaxiSwitchConditionResponse>
+    ): Call<IsClosedResponse>
 
     @PATCH("/taxi/post/join/condition-switch")                  // 306 동승 신청/취소
-    fun taxiJoin(
+    fun switchTaxiJoin(
         @Body jsonparams: Map<String, String>
     //@Query("post_id") postId: String
-    ): Call<TaxiJoinResponse>
+    ): Call<JoinResponse>
 
     @GET("/taxi/post/list")                      // 307 택시 게시글 리스트 조회
     fun getTaxiPostListPreview(

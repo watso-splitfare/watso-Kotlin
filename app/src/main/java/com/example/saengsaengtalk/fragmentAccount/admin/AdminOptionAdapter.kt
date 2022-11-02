@@ -12,7 +12,6 @@ import org.json.JSONObject
 class AdminOptionAdapter(val options: JSONArray) : RecyclerView.Adapter<AdminOptionAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        println("옵션 어댑터 진입: ${options}")
         val binding = LytAdminOptionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
@@ -29,7 +28,6 @@ class AdminOptionAdapter(val options: JSONArray) : RecyclerView.Adapter<AdminOpt
 
     inner class CustomViewHolder(var binding: LytAdminOptionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(option: JSONObject) {
-            println("옵션 이너 클래스: ${option}")
             binding.tvName.text = option.getString("name")
             binding.tvId.text = option.getString("optionId")
             binding.tvPrice.text = option.getString("price")

@@ -80,7 +80,7 @@ class FragmentSignUp :Fragment() {
                 override fun onResponse(call: Call<OverlapResult>, response: Response<OverlapResult>) {
                     Log.d("아이디 중복확인",response.toString())
                     Log.d("아이디 중복확인", response.body().toString())
-                    if (response.body()!!.result) {
+                    if (response.body()!!.isOverlapped) {
                         signUpCheck["username"] = false
                         binding.tvIdConfirm.text = "사용 불가능한 아이디입니다."
                     }
@@ -160,7 +160,7 @@ class FragmentSignUp :Fragment() {
                 override fun onResponse(call: Call<OverlapResult>, response: Response<OverlapResult>) {
                     Log.d("닉네임 중복확인",response.toString())
                     Log.d("닉네임 중복확인", response.body().toString())
-                    if (response.body()!!.result) {
+                    if (response.body()!!.isOverlapped) {
                         signUpCheck["nickname"] = false
                         binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
                     }
@@ -214,7 +214,7 @@ class FragmentSignUp :Fragment() {
                 override fun onResponse(call: Call<SignUpResult>, response: Response<SignUpResult>) {
                     Log.d("회원가입",response.toString())
                     Log.d("회원가입", response.body().toString())
-                    if (response.body()!!.result) {
+                    if (response.body()!!.success) {
                         makeToast("회원가입에 성공하였습니다.")
                         onBackPressed()
                     } else makeToast("다시 시도해 주세요")

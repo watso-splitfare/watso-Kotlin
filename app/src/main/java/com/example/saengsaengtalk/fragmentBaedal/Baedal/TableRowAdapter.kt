@@ -53,7 +53,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreviewModel>) : RecyclerVie
             binding.tvBaedalListViewed.visibility = View.GONE
 
             val dec = DecimalFormat("#,###")
-            val currentMember = post.join_user.size
+            val currentMember = post.join_users.size
             //val text = "%s\n".format(post.title) + getDateTimeFormating(post.order_time) + "\n%s\n%d팀\n예상 배달비 %s원".format(post.store.store_name, currentMember, dec.format(post.store.fee/currentMember))
             val text = "${post.title}\n" +
                     "${getDateTimeFormating(post.order_time)}\n" +

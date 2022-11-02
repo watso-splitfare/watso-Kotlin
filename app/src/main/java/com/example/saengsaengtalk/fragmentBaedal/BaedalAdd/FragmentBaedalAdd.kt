@@ -382,7 +382,7 @@ class FragmentBaedalAdd :Fragment() {
     }
 
     fun getGroup(group: Group): OrderingGroup {
-        val options = mutableListOf<Long>()
+        val options = mutableListOf<String>()
         for (option in group.options){
             options.add(option.optionId!!)
         }

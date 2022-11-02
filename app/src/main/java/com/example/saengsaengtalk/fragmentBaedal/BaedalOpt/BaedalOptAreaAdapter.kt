@@ -31,12 +31,12 @@ class BaedalOptAreaAdapter(val context: Context, val groupOption: List<GroupOpti
     }
 
     interface OnItemClickListener {
-        fun onClick(groupId: Long, isRadio: Boolean, optionId: Long, isChecked: Boolean)
+        fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(groupId: Long, isRadio:Boolean, optionId: Long, isChecked: Boolean) {
+    fun itemClick(groupId: String, isRadio:Boolean, optionId: String, isChecked: Boolean) {
         listener.get()?.onClick(groupId, isRadio, optionId, isChecked)
     }
 
@@ -62,7 +62,7 @@ class BaedalOptAreaAdapter(val context: Context, val groupOption: List<GroupOpti
             binding.rvMenuArea.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener {
-                override fun onClick(isRadio:Boolean, optionId: Long, isChecked: Boolean) {
+                override fun onClick(isRadio:Boolean, optionId: String, isChecked: Boolean) {
                     itemClick(group.group_id, isRadio, optionId, isChecked)
                 }
             })

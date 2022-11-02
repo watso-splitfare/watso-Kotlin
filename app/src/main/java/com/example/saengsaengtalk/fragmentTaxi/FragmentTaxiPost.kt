@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.DataModels.TaxiJoinResponse
 import com.example.saengsaengtalk.APIS.DataModels.TaxiPostModel
 import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
-import com.example.saengsaengtalk.APIS.DataModels.TaxiSwitchConditionResponse
+import com.example.saengsaengtalk.APIS.IsClosedResponse
+import com.example.saengsaengtalk.APIS.JoinResponse
 import com.example.saengsaengtalk.APIS.PostingResponse
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
@@ -191,19 +191,19 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun switchCondition() {
-        api.switchCondition(mapOf("post_id" to postId)).enqueue(object : Callback<TaxiSwitchConditionResponse> {
+        api.switchTaxiIsClosed(mapOf("post_id" to postId)).enqueue(object : Callback<IsClosedResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<TaxiSwitchConditionResponse>, response: Response<TaxiSwitchConditionResponse>) {
+            override fun onResponse(call: Call<IsClosedResponse>, response: Response<IsClosedResponse>) {
                 val res = response.body()!!
 
                 Log.d("log", response.toString())
                 Log.d("log", res.toString())
 
-                if (res.condition) binding.tvBottom.text = "동승자 그만받기"
+                if (res.is_closed) binding.tvBottom.text = "동승자 그만받기"
                 else binding.tvBottom.text = "동승자 다시받기"
             }
 
-            override fun onFailure(call: Call<TaxiSwitchConditionResponse>, t: Throwable) {
+            override fun onFailure(call: Call<IsClosedResponse>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
@@ -212,9 +212,9 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun taxiJoin() {
-        api.taxiJoin(mapOf("post_id" to postId, "user_id" to userId.toString())).enqueue(object : Callback<TaxiJoinResponse> {
+        api.switchTaxiJoin(mapOf("post_id" to postId, "user_id" to userId.toString())).enqueue(object : Callback<JoinResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<TaxiJoinResponse>, response: Response<TaxiJoinResponse>) {
+            override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
                 val res = response.body()!!
 
                 Log.d("log", response.toString())
@@ -230,7 +230,7 @@ class FragmentTaxiPost :Fragment() {
                 binding.tvMember.text = "${member}명"
             }
 
-            override fun onFailure(call: Call<TaxiJoinResponse>, t: Throwable) {
+            override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")

@@ -14,7 +14,6 @@ import org.json.JSONObject
 class AdminGroupAdapter(val context: Context, val groups: JSONArray) : RecyclerView.Adapter<AdminGroupAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        println("그룹 어댑터 진입: ${groups}")
         val binding = LytAdminGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
@@ -31,7 +30,6 @@ class AdminGroupAdapter(val context: Context, val groups: JSONArray) : RecyclerV
 
     inner class CustomViewHolder(var binding: LytAdminGroupBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(group: JSONObject) {
-            println("그룹 이너 클래스: ${group}")
             binding.tvGroupName.text = group.getString("name")
             binding.tvGroupId.text = group.getString("optionGroupId")
             binding.tvMin.text = group.getString("minOrderableQuantity")

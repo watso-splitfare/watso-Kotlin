@@ -12,10 +12,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.BaedalConditionResponse
-import com.example.saengsaengtalk.APIS.BaedalPostModel
-import com.example.saengsaengtalk.APIS.BaedalPostingResponse
-import com.example.saengsaengtalk.APIS.Order
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
@@ -38,7 +35,8 @@ class FragmentBaedalPost :Fragment() {
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
     val dec = DecimalFormat("#,###")
 
-    var is_member = false
+    var isMember = false
+    var isClosed = false
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
@@ -95,10 +93,11 @@ class FragmentBaedalPost :Fragment() {
         api.getBaedalPost(postId!!).enqueue(object : Callback<BaedalPostModel> {
             override fun onResponse(call: Call<BaedalPostModel>, response: Response<BaedalPostModel>) {
                 baedalPost = response.body()!!
-                is_member = baedalPost.join_user.contains(userId)
+                isMember = baedalPost.join_users.contains(userId)
+                isClosed = baedalPost.is_closed
                 val store = baedalPost.store
                 //val comments = baedalPost.comments
-                val currentMember = baedalPost.join_user.size
+                val currentMember = baedalPost.join_users.size
 
                 val postCreated = LocalDateTime.parse(baedalPost.update_date, DateTimeFormatter.ISO_DATE_TIME)
                 val orderTime = LocalDateTime.parse(baedalPost.order_time, DateTimeFormatter.ISO_DATE_TIME)
@@ -158,7 +157,12 @@ class FragmentBaedalPost :Fragment() {
 
 
                 /** 주문하기 및 주문가능 여부 변경 */
-                if (baedalPost.is_closed) {
+
+                if (userId == baedalPost.user_id) binding.lytClose.setOnClickListener { switchIsClosed() }
+                else binding.lytClose.visibility = View.GONE
+                setBottomBtn()
+
+                /*if (baedalPost.is_closed) {
                     binding.tvOrder.text = "주문이 마감되었습니다."
                     binding.lytOrder.isEnabled = false
                     binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
@@ -171,7 +175,7 @@ class FragmentBaedalPost :Fragment() {
                         binding.lytClose.visibility = View.VISIBLE
                         /** 주문 가능 여부 변경 */
                         binding.lytClose.setOnClickListener {
-                            api.setClosed(mapOf("post_id" to postId!!)).enqueue(object : Callback<BaedalConditionResponse> {
+                            api.switchIsClosed(mapOf("post_id" to postId!!)).enqueue(object : Callback<BaedalConditionResponse> {
                                 override fun onResponse(call: Call<BaedalConditionResponse>, response: Response<BaedalConditionResponse>) {
                                     val res = response.body()!!
                                     if (res.condition) {
@@ -198,7 +202,7 @@ class FragmentBaedalPost :Fragment() {
 
                     /** 주문하기 및 주문수정 */
                     var isUpdating:Boolean
-                    if (is_member) {
+                    if (isMember) {
                         /** 주문수정 */
                         binding.lytCancel.visibility = View.VISIBLE
                         binding.tvOrder.text = "주문 수정하기"
@@ -208,7 +212,7 @@ class FragmentBaedalPost :Fragment() {
                         println("userId: ${userId}, baedalPost.user.user_id: ${baedalPost.user_id}")
                         if (userId != baedalPost.user_id) {
                             binding.lytCancel.setOnClickListener {
-                                api.baedalOrderCancel(postId!!).enqueue(object : Callback<BaedalPostingResponse> {
+                                api.SwitchOrderJoin(mapOf("post_id" to postId!!)).enqueue(object : Callback<BaedalPostingResponse> {
                                         override fun onResponse(call: Call<BaedalPostingResponse>,response: Response<BaedalPostingResponse>) {
                                             val res = response.toString()!!
                                             println("주문취소: ${res}")
@@ -246,7 +250,7 @@ class FragmentBaedalPost :Fragment() {
                             "orders" to ""
                         ))
                     }
-                }
+                }*/
 
                 /** 주문내역 바인딩 */
                 binding.rvOrderList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -287,7 +291,73 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
-    fun getOrders(){
+    fun setBottomBtn() {
+        println("배달 포스트 setBottomBtn함수 userId:${userId}, postUserId: ${baedalPost.user_id}")
+
+        if (isClosed) {             // 마감 됐을 때
+            if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
+                binding.tvClose.text = "추가 주문받기"
+                binding.tvClose.setTextColor(Color.BLACK)
+                binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+            }
+
+            binding.tvOrder.text = "주문이 마감되었습니다."
+            binding.ivOrder.visibility = View.GONE
+            binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+            binding.lytOrder.isEnabled = false
+
+        } else {                                // 마감 안됐을 때
+            if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
+                binding.tvClose.text = "주문 마감하기"
+                binding.tvClose.setTextColor(Color.WHITE)
+                binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_close)
+            }
+
+            binding.ivOrder.visibility = View.VISIBLE
+            binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order)
+            binding.lytOrder.isEnabled = true
+            if (isMember) {
+                binding.tvOrder.text = "주문 수정하기"
+                binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
+            } else {
+                binding.tvOrder.text = "나도 주문하기"
+                binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
+            }
+        }
+    }
+
+    fun goToOrderingFrag(isUpdating: Boolean) {
+        val currentMember = baedalPost.join_users.size
+        val store = baedalPost.store
+
+        binding.lytOrder.setOnClickListener {
+            setFrag(FragmentBaedalMenu(), mapOf(
+                "isPosting" to "false",
+                "postId" to postId!!,
+                "currentMember" to currentMember.toString(),
+                "isUpdating" to isUpdating.toString(),
+                "storeName" to store.store_name,
+                "storeId" to store._id,
+                "baedalFee" to store.fee.toString(),
+                "orders" to ""
+            ))
+        }
+    }
+
+    fun switchIsClosed(){
+        api.switchBaedalIsClosed(mapOf("post_id" to postId!!)).enqueue(object : Callback<IsClosedResponse> {
+            override fun onResponse(call: Call<IsClosedResponse>, response: Response<IsClosedResponse>) {
+                val res = response.body()!!
+                isClosed = res.is_closed
+                setBottomBtn()
+            }
+            override fun onFailure(call: Call<IsClosedResponse>, t: Throwable) {
+                // 실패
+                println("실패")
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+            }
+        })
 
     }
 
