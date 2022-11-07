@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
 
-        if (popBackStack == -1) {   // -1 일 경우 새로운 화면으로 이동, 0은 뒤로가기, else 각 탭 대표화면 (홈, 배달, 택시 등)
+        if (popBackStack == -1) {   // -1: 새로운 frag 추가, 0: 탭이동 (스택 초기화), else: 횟수만큼 뒤로 가기
             transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
             transaction.add(R.id.main_frame, fragment).addToBackStack(null)
         } else if (popBackStack == 0) {
