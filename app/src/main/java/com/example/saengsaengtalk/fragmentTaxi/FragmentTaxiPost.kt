@@ -1,5 +1,6 @@
 package com.example.saengsaengtalk.fragmentTaxi
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +15,9 @@ import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
 import com.example.saengsaengtalk.APIS.IsClosedResponse
 import com.example.saengsaengtalk.APIS.JoinResponse
 import com.example.saengsaengtalk.APIS.PostingResponse
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
+import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.adapterHome.CommentAdapter
 import com.example.saengsaengtalk.databinding.FragTaxiPostBinding
 import retrofit2.Call
@@ -65,7 +68,7 @@ class FragmentTaxiPost :Fragment() {
         binding.tvPrice.visibility = View.GONE
         binding.divider24.visibility = View.GONE
 
-        getPost()
+        getPostInfo()
 
     }
 
@@ -83,58 +86,73 @@ class FragmentTaxiPost :Fragment() {
         //val comment: MutableList<Comment>
     ) {}
 
-    fun getPost() {
+    fun getPostInfo() {
+        val loopingDialog = looping()
         api.getTaxiPost(postId).enqueue(object : Callback<TaxiPostModel> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<TaxiPostModel>, response: Response<TaxiPostModel>) {
-                taxiPost = response.body()!!
-                println("택시 포스트 userId: ${userId}, joinUsers: ${taxiPost.join_users}")
-                isMember = userId in taxiPost.join_users
-                isClosed = taxiPost.is_closed
-                if (userId == taxiPost.user_id) binding.ivBottom.visibility = View.GONE
+                if (response.code() == 200) {
+                    taxiPost = response.body()!!
+                    isMember = userId in taxiPost.join_users
+                    isClosed = taxiPost.is_closed
+                    if (userId == taxiPost.user_id) binding.ivBottom.visibility = View.GONE
 
-                Log.d("log", response.toString())
-                Log.d("log", taxiPost.toString())
+                    Log.d("log", response.toString())
+                    Log.d("log", taxiPost.toString())
 
-                binding.tvPostTitle.text = taxiPost.title
-                binding.tvPostWriter.text = taxiPost.nick_name
+                    binding.tvPostTitle.text = taxiPost.title
+                    binding.tvPostWriter.text = taxiPost.nick_name
 
-                if (userId == taxiPost.user_id){
-                    binding.tvDelete.setOnClickListener { deletePost() }
-                } else binding.tvDelete.visibility = View.GONE
+                    if (userId == taxiPost.user_id) {
+                        binding.tvDelete.setOnClickListener { deletePost() }
+                    } else binding.tvDelete.visibility = View.GONE
 
-                val created = LocalDateTime.parse(taxiPost.update_date, DateTimeFormatter.ISO_DATE_TIME)
-                val today = LocalDate.now().atTime(0, 0)
-                binding.tvPostCreated.text = when (created.isBefore(today)) {
-                    true -> created.format(DateTimeFormatter.ofPattern("MM/dd"))
-                    else -> created.format(DateTimeFormatter.ofPattern("HH:mm"))
+                    val created =
+                        LocalDateTime.parse(taxiPost.update_date, DateTimeFormatter.ISO_DATE_TIME)
+                    val today = LocalDate.now().atTime(0, 0)
+                    binding.tvPostCreated.text = when (created.isBefore(today)) {
+                        true -> created.format(DateTimeFormatter.ofPattern("MM/dd"))
+                        else -> created.format(DateTimeFormatter.ofPattern("HH:mm"))
+                    }
+                    binding.tvDepart.text = taxiPost.depart_name
+                    binding.tvDest.text = taxiPost.dest_name
+                    val departTime =
+                        LocalDateTime.parse(taxiPost.depart_time, DateTimeFormatter.ISO_DATE_TIME)
+                    binding.tvTime.text = departTime.format(
+                        DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
+                            Locale.forLanguageTag("ko")
+                        )
+                    )
+                    member = taxiPost.join_users.size
+                    binding.tvMember.text = "${member}명"
+
+
+                    val dec = DecimalFormat("#,###")
+                    //binding.tvPrice.text = "${dec.format(content.price/content.member)}원"
+                    binding.tvContent.text = taxiPost.content
+
+                    //binding.tvCommentCount.text = "댓글 ${content.comment.size}"
+                    binding.rvComment.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                    binding.rvComment.setHasFixedSize(true)
+                    //binding.rvComment.adapter = CommentAdapter(content.comment)
+
+                    setBottomBtn()
+                } else {
+                    makeToast("게시글 조회 실패")
+                    onBackPressed()
                 }
-                binding.tvDepart.text = taxiPost.depart_name
-                binding.tvDest.text = taxiPost.dest_name
-                val departTime = LocalDateTime.parse(taxiPost.depart_time, DateTimeFormatter.ISO_DATE_TIME)
-                binding.tvTime.text = departTime.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(
-                    Locale.forLanguageTag("ko")))
-                member = taxiPost.join_users.size
-                binding.tvMember.text = "${member}명"
-
-
-                val dec = DecimalFormat("#,###")
-                //binding.tvPrice.text = "${dec.format(content.price/content.member)}원"
-                binding.tvContent.text = taxiPost.content
-
-                //binding.tvCommentCount.text = "댓글 ${content.comment.size}"
-                binding.rvComment.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.rvComment.setHasFixedSize(true)
-                //binding.rvComment.adapter = CommentAdapter(content.comment)
-
-                setBottomBtn()
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<TaxiPostModel>, t: Throwable) {
                 // 실패
+                println("실패")
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("게시글 조회 실패")
+                onBackPressed()
+                looping(false, loopingDialog)
             }
         })
     }
@@ -163,15 +181,19 @@ class FragmentTaxiPost :Fragment() {
         //println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         //println("userId: ${userId}, 작성자Id: ${taxiPost.user_id}, isClosed: ${taxiPost.is_closed}, joinUsers: ${taxiPost.join_users}")
         if (isClosed) {
+            binding.btnBottom.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+            binding.ivBottom.visibility = View.GONE
             if (userId == taxiPost.user_id) {
                 binding.tvBottom.text = "동승자 다시받기"
                 binding.btnBottom.setOnClickListener { switchCondition() }
             } else {
                 binding.tvBottom.text = "마감되었습니다."
-                binding.btnBottom.setOnClickListener { }
+                binding.btnBottom.isEnabled = false
             }
         }
         else {
+            binding.btnBottom.setBackgroundResource(R.drawable.btn_taxi_propose)
+            binding.ivBottom.visibility = View.VISIBLE
             if (userId == taxiPost.user_id) {
                 binding.tvBottom.text = "동승자 그만받기"
                 binding.btnBottom.setOnClickListener { switchCondition() }
@@ -184,54 +206,65 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun switchCondition() {
+        val loopingDialog = looping()
         api.switchTaxiIsClosed(mapOf("post_id" to postId)).enqueue(object : Callback<IsClosedResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<IsClosedResponse>, response: Response<IsClosedResponse>) {
-                val res = response.body()!!
-
-                Log.d("log", response.toString())
-                Log.d("log", res.toString())
-
-                isClosed = res.is_closed
-                //setBottomBtn()
-                if (isClosed) binding.tvBottom.text = "동승자 다시받기"
-                else binding.tvBottom.text = "동승자 그만받기"
+                if (response.code() == 200) {
+                    isClosed = response.body()!!.is_closed
+                    setBottomBtn()
+                } else {
+                    makeToast("다시 시도해주세요.")
+                }
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<IsClosedResponse>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("다시 시도해주세요.")
+                looping(false, loopingDialog)
             }
         })
     }
 
     fun taxiJoin() {
+        val loopingDialog = looping()
         api.switchTaxiJoin(mapOf("post_id" to postId, "user_id" to userId.toString())).enqueue(object : Callback<JoinResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
-                val res = response.body()!!
+                if (response.code() == 200) {
+                    isMember = response.body()!!.join
+                    if (isMember) member += 1
+                    else member -= 1
 
-                Log.d("log", response.toString())
-                Log.d("log", res.toString())
-
-                isMember = res.join
-                if (isMember) {
-                    binding.tvBottom.text = "동승 취소하기"
-                    member += 1
-                } else  {
-                    binding.tvBottom.text = "동승 신청하기"
-                    member -= 1
+                    setBottomBtn()
+                    binding.tvMember.text = "${member}명"
+                } else {
+                    makeToast("다시 시도해주세요.")
                 }
-                binding.tvMember.text = "${member}명"
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("다시 시도해주세요.")
+                looping(false, loopingDialog)
             }
         })
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
