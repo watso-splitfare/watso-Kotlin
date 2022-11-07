@@ -55,11 +55,11 @@ class FragmentLogin :Fragment() {
             val loopingDialog = looping()
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
-                    val res = response.body()!!
                     Log.d("로그인", response.toString())
                     Log.d("로그인", response.body().toString())
                     Log.d("로그인응답 헤더", response.headers().toString())
                     if (response.code()==200) {
+                        val res = response.body()!!
                         if (response.body()!!.result) {
                             val user_id = res.user_id.toString()
                             println("유저 ID: ${res.user_id}")
