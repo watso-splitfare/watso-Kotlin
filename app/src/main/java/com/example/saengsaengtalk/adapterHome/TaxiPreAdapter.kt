@@ -56,14 +56,10 @@ class TaxiPreAdapter(val taxiPosts: List<TaxiPostPreviewModel>) : RecyclerView.A
 
             if (post._id == "-1") { text = "등록된 게시물이 없어요.\n새로운 게시물을 작성해보세요!" }
             else {
-                val dec = DecimalFormat("#,###원")
-                val currentMember = post.join_users.size
-                text =
-                    getDateTimeFormating(post.depart_time) + ("\n${post.depart_name} -> ${post.depart_name}\n" +
-                            "현인원 ${currentMember}명")/* +
-                    "\n예상 택시비 ${dec.format(post.fee/currentMember)}")*/
+                binding.tvRoute.text = post.dest_name + " -> " + post.depart_name
+                binding.tvCurrentMember.text = "현인원 ${post.join_users.size}명"
+                binding.tvDestTime.text = getDateTimeFormating(post.depart_time)
             }
-            binding.tvTaxiPre.text = text
         }
 
         @RequiresApi(Build.VERSION_CODES.O)

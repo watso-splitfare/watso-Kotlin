@@ -51,12 +51,10 @@ class BaedalPreAdapter(val baedalPosts: List<BaedalPostPreviewModel>) : Recycler
         fun bind(post: BaedalPostPreviewModel) {
             if (post._id == "-1") { text = "등록된 게시물이 없어요.\n새로운 게시물을 작성해보세요!" }
             else {
-                val dec = DecimalFormat("#,###")
-                val currentMember = post.join_users.size
-                text = getDateTimeFormating(post.order_time) + ("\n${post.store.store_name}" +
-                        "\n${currentMember}팀"/* + "\n예상 배달비 ${dec.format(post.store.fee/currentMember)}원"*/)
+                binding.tvStoreName.text = post.store.store_name
+                binding.tvCurrentMember.text = "현인원 ${post.join_users.size}팀"
+                binding.tvOrderTime.text = getDateTimeFormating(post.order_time)
             }
-            binding.tvBaedalPre.text = text
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
