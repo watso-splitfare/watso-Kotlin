@@ -173,6 +173,7 @@ class FragmentBaedalPost :Fragment() {
 
                     if (userId == baedalPost.user_id) binding.lytClose.setOnClickListener { switchIsClosed() }
                     else binding.lytClose.visibility = View.GONE
+                    binding.lytCancel.setOnClickListener { cancelJoin() }
                     setBottomBtn()
 
                     /** 주문내역 바인딩 */
@@ -230,6 +231,7 @@ class FragmentBaedalPost :Fragment() {
         println("@@@@@@@@@@@@@@@@@@@@@@@@")
         println("배달 포스트 setBottomBtn함수 isClosed:${isClosed}, isMember: ${isMember}")
 
+        binding.lytCancel.visibility = View.GONE
         if (isClosed) {                         // 마감 됐을 때
             if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
                 binding.tvClose.text = "추가 주문받기"
@@ -253,38 +255,15 @@ class FragmentBaedalPost :Fragment() {
             binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order)
             binding.lytOrder.isEnabled = true
 
-            val currentMember = baedalPost.join_users.size
-            val store = baedalPost.store
+            //val currentMember = baedalPost.join_users.size
+            //val store = baedalPost.store
             if (isMember) {
                 binding.tvOrder.text = "주문 수정하기"
-                binding.lytOrder.setOnClickListener {
-                    goToOrderingFrag(true)
-                    setFrag(FragmentBaedalMenu(), mapOf(
-                        "isPosting" to "false",
-                        "postId" to postId!!,
-                        "currentMember" to currentMember.toString(),
-                        "isUpdating" to true.toString(),
-                        "storeName" to store.store_name,
-                        "storeId" to store._id,
-                        "baedalFee" to store.fee.toString(),
-                        "orders" to ""
-                    ))
-                }
+                binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
+                binding.lytCancel.visibility = View.VISIBLE
             } else {
                 binding.tvOrder.text = "나도 주문하기"
-                binding.lytOrder.setOnClickListener {
-                    goToOrderingFrag(false)
-                    setFrag(FragmentBaedalMenu(), mapOf(
-                        "isPosting" to "false",
-                        "postId" to postId!!,
-                        "currentMember" to currentMember.toString(),
-                        "isUpdating" to false.toString(),
-                        "storeName" to store.store_name,
-                        "storeId" to store._id,
-                        "baedalFee" to store.fee.toString(),
-                        "orders" to ""
-                    ))
-                }
+                binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
             }
         }
     }
@@ -309,6 +288,40 @@ class FragmentBaedalPost :Fragment() {
                 looping(false, loopingDialog)
             }
         })
+    }
+
+    fun cancelJoin(){
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("주문 취소하기")
+            .setMessage("주문을 취소하시겠습니까? \n다시 주문하기 위해서는 주문을 다시 작성해야합니다.")
+            .setPositiveButton("확인",
+                DialogInterface.OnClickListener { dialog, id ->
+                    val loopingDialog = looping()
+                    api.switchBaedalJoin(mapOf("post_id" to postId!!)).enqueue(object: Callback<JoinResponse> {
+                        @RequiresApi(Build.VERSION_CODES.O)
+                        override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
+                            if (response.code() == 200) {
+                                val res = response.body()!!
+                                isMember = res.join
+                                getPostInfo()
+                            } else makeToast("다시 시도해주세요.")
+                            looping(false, loopingDialog)
+                        }
+                        override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
+                            // 실패
+                            println("실패")
+                            Log.d("log",t.message.toString())
+                            Log.d("log","fail")
+                            makeToast("다시 시도해주세요.")
+                            looping(false, loopingDialog)
+                        }
+                    })
+                })
+            .setNegativeButton("취소",
+                DialogInterface.OnClickListener { dialog, id ->
+                    println("취소")
+                })
+        builder.show()
     }
 
     fun goToOrderingFrag(isUpdating: Boolean) {

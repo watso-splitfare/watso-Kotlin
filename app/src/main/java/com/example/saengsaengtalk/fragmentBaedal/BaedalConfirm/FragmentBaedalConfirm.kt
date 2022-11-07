@@ -15,7 +15,6 @@ import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
-import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.example.saengsaengtalk.fragmentBaedal.Group
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -207,7 +206,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun orderingComplete(success: Boolean){
         if (success) {
-            api.SwitchBaedalJoin(mapOf("post_id" to postId)).enqueue(object : Callback<JoinResponse> {
+            api.switchBaedalJoin(mapOf("post_id" to postId)).enqueue(object : Callback<JoinResponse> {
                 override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
 
                     println("주문등록 성공(그룹 조인)")
