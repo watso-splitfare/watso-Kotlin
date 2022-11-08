@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragTaxiBinding
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTable
@@ -50,7 +50,7 @@ class FragmentTaxi :Fragment() {
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
-                val taxiPosts = response.body()!!
+                val taxiPosts = response.body()!!.sortedBy { it.depart_time }
                 mappingAdapter(taxiPosts)
                 Log.d("log", response.toString())
                 Log.d("log", taxiPosts.toString())

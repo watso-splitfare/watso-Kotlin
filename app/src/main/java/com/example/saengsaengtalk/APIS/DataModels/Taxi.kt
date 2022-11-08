@@ -1,4 +1,4 @@
-package com.example.saengsaengtalk.APIS.DataModels
+package com.example.saengsaengtalk.APIS
 
 /** 302 택시 게시글 등록 모델 */
 data class TaxiPostingModel(

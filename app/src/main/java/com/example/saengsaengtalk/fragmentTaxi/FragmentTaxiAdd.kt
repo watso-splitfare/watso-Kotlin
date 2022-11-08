@@ -11,9 +11,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.example.saengsaengtalk.APIS.BaedalPostingResponse
-import com.example.saengsaengtalk.APIS.DataModels.TaxiPostingModel
-import com.example.saengsaengtalk.APIS.PostingResponse
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragTaxiAddBinding
 import retrofit2.Call

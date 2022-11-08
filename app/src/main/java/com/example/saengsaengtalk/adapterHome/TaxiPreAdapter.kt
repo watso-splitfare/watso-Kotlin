@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
-import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.LytBaedalPreBinding
 import com.example.saengsaengtalk.databinding.LytTaxiPreBinding

@@ -10,11 +10,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.DataModels.TaxiPostModel
-import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
-import com.example.saengsaengtalk.APIS.IsClosedResponse
-import com.example.saengsaengtalk.APIS.JoinResponse
-import com.example.saengsaengtalk.APIS.PostingResponse
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R

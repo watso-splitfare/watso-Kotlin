@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.*
-import com.example.saengsaengtalk.APIS.DataModels.TaxiPostPreviewModel
 import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentAccount
@@ -153,7 +152,7 @@ class FragmentHome :Fragment() {
         api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
                 if (response.code() == 200) {
-                    val baedalPosts = response.body()!!
+                    val baedalPosts = response.body()!!.sortedBy { it.order_time }
                     mappingBaedalAdapter(baedalPosts)
                     Log.d("log", response.toString())
                     Log.d("log", baedalPosts.toString())
@@ -198,7 +197,7 @@ class FragmentHome :Fragment() {
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
                 if (response.code() == 200) {
-                    val taxiPosts = response.body()!!
+                    val taxiPosts = response.body()!!.sortedBy { it.depart_time }
                     mappingTaxiAdapter(taxiPosts)
                     Log.d("log", response.toString())
                     Log.d("log", taxiPosts.toString())

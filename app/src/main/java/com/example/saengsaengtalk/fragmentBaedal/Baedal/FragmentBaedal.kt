@@ -54,7 +54,7 @@ class FragmentBaedal :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
                 if (response.code() == 200) {
-                    val baedalPosts = response.body()!!
+                    val baedalPosts = response.body()!!.sortedBy { it.order_time }
                     mappingAdapter(baedalPosts)
                     Log.d("log", response.toString())
                     Log.d("log", baedalPosts.toString())
