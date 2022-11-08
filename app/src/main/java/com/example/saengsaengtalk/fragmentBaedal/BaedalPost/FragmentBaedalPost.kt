@@ -27,6 +27,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.DecimalFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -147,9 +148,11 @@ class FragmentBaedalPost :Fragment() {
                     /** 포스트 내용 바인딩 */
                     //binding.tvPostTitle.text = baedalPost.title
                     binding.tvPostWriter.text = baedalPost.nick_name
-                    binding.tvPostCreated.text = postCreated.format(
-                        DateTimeFormatter.ofPattern("YYYY. MM. dd HH:MM")
-                    )
+                    val today = LocalDate.now().atTime(0, 0)
+                    binding.tvPostCreated.text = when (postCreated.isBefore(today)) {
+                        true -> postCreated.format(DateTimeFormatter.ofPattern("MM/dd"))
+                        else -> postCreated.format(DateTimeFormatter.ofPattern("HH:mm"))
+                    }
 
 
                     binding.tvOrderTime.text =
