@@ -176,26 +176,25 @@ class FragmentTaxiPost :Fragment() {
     fun setBottomBtn() {
         //println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         //println("userId: ${userId}, 작성자Id: ${taxiPost.user_id}, isClosed: ${taxiPost.is_closed}, joinUsers: ${taxiPost.join_users}")
+        binding.ivBottom.visibility = View.GONE
+        binding.btnBottom.setOnClickListener { switchCondition() }
         if (isClosed) {
             binding.btnBottom.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-            binding.ivBottom.visibility = View.GONE
-            if (userId == taxiPost.user_id) {
-                binding.tvBottom.text = "동승자 다시받기"
-                binding.btnBottom.setOnClickListener { switchCondition() }
-            } else {
+            if (userId == taxiPost.user_id) binding.tvBottom.text = "동승자 다시받기"
+            else {
                 binding.tvBottom.text = "마감되었습니다."
                 binding.btnBottom.isEnabled = false
             }
         }
         else {
             binding.btnBottom.setBackgroundResource(R.drawable.btn_taxi_propose)
-            binding.ivBottom.visibility = View.VISIBLE
-            if (userId == taxiPost.user_id) {
-                binding.tvBottom.text = "동승자 그만받기"
-                binding.btnBottom.setOnClickListener { switchCondition() }
-            } else {
+            if (userId == taxiPost.user_id) binding.tvBottom.text = "동승자 그만받기"
+            else {
                 if (isMember) binding.tvBottom.text = "동승 취소하기"
-                else binding.tvBottom.text = "동승 신청하기"
+                else {
+                    binding.tvBottom.text = "동승 신청하기"
+                    binding.ivBottom.visibility = View.VISIBLE
+                }
                 binding.btnBottom.setOnClickListener { taxiJoin() }
             }
         }
