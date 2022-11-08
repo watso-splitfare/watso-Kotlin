@@ -33,7 +33,8 @@ class BaedalOrderUserAdapter(val context: Context, val baedalOrderUsers: Mutable
 
     inner class CustomViewHolder(var binding: LytBaedalOrderUserBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BaedalOrderUser) {
-            binding.tvOrderUser.text = "주문자: ${item.nickName}  주문금액: ${item.price}"
+            if (item.isMyOrder) binding.tvOrderUser.text = "주문금액: ${item.price}"
+            else binding.tvOrderUser.text = "주문자: ${item.nickName}  주문금액: ${item.price}"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
             val adapter = SelectedMenuAdapter(context, JSONArray(gson.toJson(item.menuList)), false)

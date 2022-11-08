@@ -177,11 +177,15 @@ class FragmentBaedalPost :Fragment() {
                     setBottomBtn()
 
                     /** 주문내역 바인딩 */
+                    binding.rvMyOrder.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                    binding.rvMyOrder.setHasFixedSize(true)
                     binding.rvOrderList.layoutManager =
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.rvOrderList.setHasFixedSize(true)
 
                     val baedalOrderUsers = mutableListOf<BaedalOrderUser>()
+                    val myOrder = mutableListOf<BaedalOrderUser>()
                     for (orderUser in baedalPost.user_orders) {
                         var orderPrice = 0
                         val baedalOrders = mutableListOf<BaedalOrder>()
@@ -191,13 +195,29 @@ class FragmentBaedalPost :Fragment() {
                             orderPrice += baedalOrder.count * baedalOrder.sumPrice
                         }
 
-                        baedalOrderUsers.add(
-                            BaedalOrderUser(
-                                orderUser.nick_name, "${dec.format(orderPrice)}원", baedalOrders
+                        if (userId == orderUser.user_id) {
+                            myOrder.add(BaedalOrderUser
+                                (
+                                    orderUser.nick_name, "${dec.format(orderPrice)}원", baedalOrders, true
+                                )
                             )
-                        )
+                        } else {
+                            baedalOrderUsers.add(BaedalOrderUser
+                                (
+                                    orderUser.nick_name, "${dec.format(orderPrice)}원", baedalOrders
+                                )
+                            )
+                        }
                     }
 
+                    if (myOrder.size > 0) {
+                        val myOrderAdapter = BaedalOrderUserAdapter(requireContext(), myOrder)
+                        binding.rvMyOrder.adapter = myOrderAdapter
+                    } else {
+                        binding.tvMyOrder.visibility = View.GONE
+                        binding.rvMyOrder.visibility = View.GONE
+                        binding.divider2.visibility = View.GONE
+                    }
                     val adapter = BaedalOrderUserAdapter(requireContext(), baedalOrderUsers)
                     binding.rvOrderList.adapter = adapter
 

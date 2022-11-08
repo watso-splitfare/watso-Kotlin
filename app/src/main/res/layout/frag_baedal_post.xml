@@ -397,12 +397,36 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/tv_my_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="내가 고른 메뉴"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_my_order"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="0dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
                 android:id="@+id/textView12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="주문내역"
+                android:text="다른 사람이 고른 메뉴"
                 android:textAlignment="center"
                 android:textSize="16sp"
                 android:textStyle="bold" />
