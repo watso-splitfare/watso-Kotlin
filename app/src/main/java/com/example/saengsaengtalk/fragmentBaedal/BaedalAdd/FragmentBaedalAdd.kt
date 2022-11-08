@@ -279,27 +279,27 @@ class FragmentBaedalAdd :Fragment() {
                 if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else null,
                 if (binding.cbMaxMember.isChecked) binding.etMaxMember.text.toString().toInt() else null
             )
+
+            val loopingDialog = looping()
             api.updateBaedalPost(baedalUpdateModel)
                 .enqueue(object : Callback<BaedalPostingResponse> {
-                    override fun onResponse(
-                        call: Call<BaedalPostingResponse>,
-                        response: Response<BaedalPostingResponse>
-                    ) {
-                        println("성공")
-                        Log.d("log", response.toString())
-                        Log.d("log", response.body().toString())
-                        val result = response.body()!!
-                        println(result)
-
-                        val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
-                        getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
-                        onBackPressed()
+                    override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
+                        if (response.code() == 200 && response.body()!!.success) {
+                            val result = response.body()!!
+                            val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
+                            getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
+                            onBackPressed()
+                        } else {
+                            Log.e("baedalAdd Fragment - updateBaedalPost", response.toString())
+                            makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
+                        }
+                        looping(false, loopingDialog)
                     }
 
                     override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                        println("실패")
-                        Log.d("log", t.message.toString())
-                        Log.d("log", "fail")
+                        Log.e("baedalAdd Fragment - updateBaedalPost", t.message.toString())
+                        makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
+                        looping(false, loopingDialog)
                     }
                 })
         } else {
@@ -308,8 +308,7 @@ class FragmentBaedalAdd :Fragment() {
             else if (orders.length() == 0) makeToast("메뉴를 선택해 주세요")
             else {
                 makeToast("주문을 등록합니다.")
-                var orderTimeString =
-                    orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
+                var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
                 val baedalPostModel = BaedalPostingModel(
                     storeIds[selectedIdx],
                     binding.etTitle.text.toString(),
@@ -320,28 +319,23 @@ class FragmentBaedalAdd :Fragment() {
                     maxMember
                 )
 
+                val loopingDialog = looping()
                 api.baedalPosting(baedalPostModel)
                     .enqueue(object : Callback<BaedalPostingResponse> {
-                        override fun onResponse(
-                            call: Call<BaedalPostingResponse>,
-                            response: Response<BaedalPostingResponse>
-                        ) {
-                            println("성공")
-                            Log.d("log", response.toString())
-                            Log.d("log", response.body().toString())
+                        override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                             val postingResult = response.body()!!
-                            //println(postingResult)
-                            if (!postingResult.success) {
+                            if (response.code() == 200 && postingResult.success) baedalOrdering(postingResult.post_id)
+                            else {
+                                Log.e("baedalAdd Fragment - baedalPosting", response.toString())
                                 makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                                println(postingResult)
-                            } else baedalOrdering(postingResult.post_id)
-
+                            }
+                            looping(false, loopingDialog)
                         }
 
                         override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                            println("실패")
-                            Log.d("log", t.message.toString())
-                            Log.d("log", "fail")
+                            Log.e("baedalAdd Fragment - baedalPosting", t.message.toString())
+                            makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                            looping(false, loopingDialog)
                         }
                     })
             }
@@ -361,24 +355,23 @@ class FragmentBaedalAdd :Fragment() {
             orderings
         )
         println(orderingModel)
+
+        val loopingDialog = looping()
         api.baedalOrdering(orderingModel).enqueue(object : Callback<OrderingResponse> {
             override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
-                println("성공")
-                Log.d("log", response.toString())
-                Log.d("log", response.body().toString())
-                val result = response.body()!!
-                if (!result.success) {
-                    makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                    println(result)
+                if (response.code() == 200 && response.body()!!.success) {
+                    setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.post_id))
+                } else {
+                    Log.e("baedalAdd Fragment - baedalOrdering", response.toString())
+                    makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                 }
-                else setFrag(FragmentBaedalPost(), mapOf("postId" to result.post_id))
-                //setFrag(FragmentBaedalPost(), mapOf("postId" to result.post_id))
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
-                println("실패")
-                Log.d("log", t.message.toString())
-                Log.d("log", "fail")
+                Log.e("baedalAdd Fragment - baedalOrdering", t.message.toString())
+                makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
             }
         })
     }

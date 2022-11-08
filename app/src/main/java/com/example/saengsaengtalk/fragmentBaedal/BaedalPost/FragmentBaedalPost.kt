@@ -128,12 +128,12 @@ class FragmentBaedalPost :Fragment() {
                                             "isUpdating" to "true",
                                             "postId" to postId!!,
                                             "title" to baedalPost.title,
-                                            "content" to if (baedalPost.content != "") baedalPost.content!! else "",
+                                            "content" to if (baedalPost.content != null) baedalPost.content!! else "",
                                             "orderTime" to orderTime.toString(),
                                             "storeName" to store.store_name,
                                             "place" to baedalPost.place,
-                                            "minMember" to baedalPost.min_member.toString(),
-                                            "maxMember" to baedalPost.max_member.toString(),
+                                            "minMember" to if (baedalPost.min_member != null) baedalPost.min_member.toString() else "0",
+                                            "maxMember" to if (baedalPost.max_member != null )baedalPost.max_member.toString() else "0",
                                             "fee" to store.fee.toString()
                                         )
                                     )

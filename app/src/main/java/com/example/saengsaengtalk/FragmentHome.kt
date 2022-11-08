@@ -97,6 +97,8 @@ class FragmentHome :Fragment() {
         getTaxiPostPreview()
 
         /* 노래방 */
+        binding.divBottom.visibility = View.GONE
+        //binding.lytHomeKaralist.visibility = View.GONE
         val karaList = arrayListOf(
             KaraPre(1, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), true),
             KaraPre(5, LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), false),
@@ -112,6 +114,7 @@ class FragmentHome :Fragment() {
 
 
         /* 자유게시판 */
+        //binding.lytHomeFreeboard.visibility = View.GONE
         val freeBoardList = arrayListOf(
             BoardPre("자유게시판입니다.", LocalDateTime.now()),
             BoardPre("자유게시판입니다.222", LocalDateTime.now()),
@@ -132,7 +135,7 @@ class FragmentHome :Fragment() {
 
 
         /* 구인게시판 */
-        binding.lytHomeClubboard.setVisibility(View.GONE)
+        binding.lytHomeClubboard.visibility = View.GONE
         /*val clubBoardList = arrayListOf(
             ClubBoardPre("구인구직게시판입니다.", LocalDateTime.now()),
             ClubBoardPre("구인게시판입니다.222", LocalDateTime.now()),
