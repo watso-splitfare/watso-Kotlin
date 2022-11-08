@@ -145,7 +145,7 @@ class FragmentBaedalPost :Fragment() {
                     }
 
                     /** 포스트 내용 바인딩 */
-                    binding.tvPostTitle.text = baedalPost.title
+                    //binding.tvPostTitle.text = baedalPost.title
                     binding.tvPostWriter.text = baedalPost.nick_name
                     binding.tvPostCreated.text = postCreated.format(
                         DateTimeFormatter.ofPattern("YYYY. MM. dd HH:MM")

@@ -100,7 +100,7 @@ class FragmentTaxiPost :Fragment() {
                     Log.d("log", response.toString())
                     Log.d("log", taxiPost.toString())
 
-                    binding.tvPostTitle.text = taxiPost.title
+                    //binding.tvPostTitle.text = taxiPost.title
                     binding.tvPostWriter.text = taxiPost.nick_name
 
                     if (userId == taxiPost.user_id) {
