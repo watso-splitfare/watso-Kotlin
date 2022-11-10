@@ -231,6 +231,7 @@ class FragmentBaedalPost :Fragment() {
                 binding.rvComment.setHasFixedSize(true)
                 binding.rvComment.adapter = CommentAdapter(comments, userId)*/
                 } else {
+                    Log.e("baedal Post Fragment - getBaedalPost", response.toString())
                     makeToast("게시글 조회 실패")
                     onBackPressed()
                 }
@@ -238,10 +239,7 @@ class FragmentBaedalPost :Fragment() {
             }
 
             override fun onFailure(call: Call<BaedalPostModel>, t: Throwable) {
-                // 실패
-                println("실패")
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("taxi Post Fragment - getTaxiPost", t.message.toString())
                 makeToast("게시글 조회 실패")
                 onBackPressed()
                 looping(false, loopingDialog)

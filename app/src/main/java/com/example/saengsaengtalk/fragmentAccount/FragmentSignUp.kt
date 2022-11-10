@@ -7,9 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.APIS.OverlapResult
 import com.example.saengsaengtalk.APIS.SignUpModel
@@ -81,16 +78,16 @@ class FragmentSignUp :Fragment() {
                             checkedUsername = binding.etId.text.toString()
                         }
                         setSignupBtnAble()
-                    } else makeToast("다시 시도해주세요.")
+                    } else {
+                        Log.e("signUp Fragment - usernameOverlapCheck", response.toString())
+                        makeToast("다시 시도해 주세요.")
+                    }
                     looping(false, loopingDialog)
-
                 }
 
                 override fun onFailure(call: Call<OverlapResult>, t: Throwable) {
-                    // 실패
-                    Log.d("아이디 중복확인",t.message.toString())
-                    Log.d("아이디 중복확인","fail")
-                    makeToast("다시 시도해주세요.")
+                    Log.e("signUp Fragment - usernameOverlapCheck", t.message.toString())
+                    makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
             })
@@ -145,16 +142,17 @@ class FragmentSignUp :Fragment() {
                             signUpCheck["nickname"] = true
                             checkedNickname = binding.etNickname.text.toString()
                         }
-                    } else makeToast("다시 시도해주세요.")
+                        setSignupBtnAble()
+                    } else {
+                        Log.e("signUp Fragment - nicknameOverlapCheck", response.toString())
+                        makeToast("다시 시도해 주세요.")
+                    }
                     looping(false, loopingDialog)
-                    setSignupBtnAble()
                 }
 
                 override fun onFailure(call: Call<OverlapResult>, t: Throwable) {
-                    // 실패
-                    Log.d("닉네임 중복확인",t.message.toString())
-                    Log.d("닉네임 중복확인","fail")
-                    makeToast("다시 시도해주세요.")
+                    Log.e("signUp Fragment - nicknameOverlapCheck", t.message.toString())
+                    makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
             })
@@ -193,21 +191,19 @@ class FragmentSignUp :Fragment() {
             )
             api.signup(data).enqueue(object : Callback<SignUpResult> {
                 override fun onResponse(call: Call<SignUpResult>, response: Response<SignUpResult>) {
-                    Log.d("회원가입",response.toString())
-                    Log.d("회원가입", response.body().toString())
-
                     if (response.code() == 200 && response.body()!!.success) {
                         makeToast("회원가입에 성공하였습니다.")
                         onBackPressed()
-                    } else makeToast("다시 시도해 주세요")
+                    } else {
+                        Log.e("signUp Fragment - signup", response.toString())
+                        makeToast("다시 시도해 주세요.")
+                    }
                     looping(false, loopingDialog)
                 }
 
                 override fun onFailure(call: Call<SignUpResult>, t: Throwable) {
-                    // 실패
-                    Log.d("회원가입",t.message.toString())
-                    Log.d("회원가입","fail")
-                    makeToast("다시 시도해 주세요")
+                    Log.e("signUp Fragment - nicknameOverlapCheck", t.message.toString())
+                    makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
             })

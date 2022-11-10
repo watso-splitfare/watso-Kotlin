@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.OrderingModel
 import com.example.saengsaengtalk.APIS.SectionMenuModel
 import com.example.saengsaengtalk.APIS.UserOrder
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
@@ -93,18 +94,23 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun getMenuData() {
+        val loopingDialog = looping()
         api.getSectionMenu(storeId).enqueue(object : Callback<List<SectionMenuModel>> {
             override fun onResponse(call: Call<List<SectionMenuModel>>, response: Response<List<SectionMenuModel>>) {
-                sectionMenu = response.body()!!
-                mappingAdapter()
-                Log.d("log", response.toString())
-                Log.d("log", sectionMenu.toString())
+                if (response.code() == 200) {
+                    sectionMenu = response.body()!!
+                    mappingAdapter()
+                } else {
+                    Log.e("baedalMenu Fragment - getSectionMenu", response.toString())
+                    makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                }
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<SectionMenuModel>>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("baedalMenu Fragment - getSectionMenu", t.message.toString())
+                makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
             }
         })
     }
@@ -176,23 +182,25 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun getOrdersObject(){
+        val loopingDialog = looping()
         api.getOrders(postId).enqueue(object : Callback<UserOrder> {
             override fun onResponse(call: Call<UserOrder>, response: Response<UserOrder>) {
                 if (response.code() == 200) {
-                    val orderingModel = response.body()!!
-                    Log.d("log", response.toString())
-                    //Log.d("log", sectionMenu.toString())
-                    val ordersString = apiModelToObject(orderingModel)
-                    println("api모델에서 네이밍 변경: $ordersString")
+                    val ordersString = apiModelToObject(response.body()!!)
                     orders = JSONArray(ordersString)
                     setCartBtn()
-                } else onBackPressed()
+                } else {
+                    Log.e("baedalMenu Fragment - getOrders", response.toString())
+                    makeToast("주문정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                    onBackPressed()
+                }
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<UserOrder>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("baedalMenu Fragment - getOrders", t.message.toString())
+                makeToast("주문정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
                 onBackPressed()
             }
         })
@@ -227,6 +235,16 @@ class FragmentBaedalMenu :Fragment() {
             orders.put(orderObject)
         }
         return orders.toString()
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

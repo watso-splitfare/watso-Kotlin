@@ -1,6 +1,5 @@
 package com.example.saengsaengtalk.fragmentAccount
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,8 +15,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class FragmentAccount :Fragment() {
-    var forgot = "id"
-
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
@@ -35,7 +32,6 @@ class FragmentAccount :Fragment() {
         super.onDestroyView()
     }
 
-    @SuppressLint("ResourceAsColor")
     fun refreshView() {
         binding.btnPrevious.setOnClickListener {
             onBackPressed()

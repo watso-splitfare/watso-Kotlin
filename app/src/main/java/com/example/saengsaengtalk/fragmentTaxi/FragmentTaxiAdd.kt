@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.saengsaengtalk.APIS.*
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragTaxiAddBinding
 import retrofit2.Call
@@ -148,26 +149,37 @@ class FragmentTaxiAdd :Fragment() {
             minMember,
             maxMember
         )
+        val loopingDialog = looping()
         api.taxiPosting(taxiPostingModel).enqueue(object : Callback<PostingResponse> {
             override fun onResponse(call: Call<PostingResponse>,response: Response<PostingResponse>) {
-                println("성공")
-                Log.d("log", response.toString())
-                Log.d("log", response.body().toString())
-                val result = response.body()!!
-                println(result)
-
-                val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
-                println(bundle)
-                getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
-                onBackPressed()
+                if (response.code() == 200) {
+                    val result = response.body()!!
+                    val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
+                    getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
+                    onBackPressed()
+                } else {
+                    Log.e("taxiAdd Fragment - taxiPosting", response.toString())
+                    makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                }
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<PostingResponse>, t: Throwable) {
-                println("실패")
-                Log.d("log", t.message.toString())
-                Log.d("log", "fail")
+                Log.e("taxiAdd Fragment - taxiPosting", t.message.toString())
+                makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
             }
         })
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

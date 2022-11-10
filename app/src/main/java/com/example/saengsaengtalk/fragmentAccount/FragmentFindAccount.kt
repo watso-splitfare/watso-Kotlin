@@ -1,6 +1,5 @@
 package com.example.saengsaengtalk.fragmentAccount
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +29,6 @@ class FragmentFindAccount :Fragment() {
         super.onDestroyView()
     }
 
-    @SuppressLint("ResourceAsColor")
     fun refreshView() {
         binding.btnPrevious.setOnClickListener {
             onBackPressed()

@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.*
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragTaxiBinding
 import com.example.saengsaengtalk.fragmentTaxi.adapterTaxi.TaxiTable
@@ -47,19 +48,24 @@ class FragmentTaxi :Fragment() {
     }
 
     fun getPostPreview() {
+        val loopingDialog = looping()
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
-                val taxiPosts = response.body()!!.sortedBy { it.depart_time }
-                mappingAdapter(taxiPosts)
-                Log.d("log", response.toString())
-                Log.d("log", taxiPosts.toString())
+                if (response.code() == 200) {
+                    val taxiPosts = response.body()!!.sortedBy { it.depart_time }
+                    mappingAdapter(taxiPosts)
+                } else {
+                    Log.e("taxi Fragment - getTaxiPostListPreview", response.toString())
+                    makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                }
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("taxi Fragment - getTaxiPostListPreview", t.message.toString())
+                makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                looping(false, loopingDialog)
             }
         })
     }
@@ -89,6 +95,16 @@ class FragmentTaxi :Fragment() {
                 setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
             }
         })
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

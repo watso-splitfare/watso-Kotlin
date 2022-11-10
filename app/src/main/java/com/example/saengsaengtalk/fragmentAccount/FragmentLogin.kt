@@ -69,15 +69,16 @@ class FragmentLogin :Fragment() {
                             onBackPressed()
                             looping(false, loopingDialog)
                         } else makeToast("등록된 계정 정보가 일치하지 않습니다.")
-                    } else makeToast("다시 시도해주세요.")
+                    } else {
+                        Log.e("login Fragment - login", response.toString())
+                        makeToast("다시 시도해 주세요.")
+                    }
                     looping(false, loopingDialog)
                 }
 
                 override fun onFailure(call: Call<LoginResult>, t: Throwable) {
-                    // 실패
-                    Log.d("로그인",t.message.toString())
-                    Log.d("로그인","fail")
-                    makeToast("로그인에 실패하였습니다.")
+                    Log.e("login Fragment - login", t.message.toString())
+                    makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
             })

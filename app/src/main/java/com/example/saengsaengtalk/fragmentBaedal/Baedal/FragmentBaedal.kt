@@ -56,16 +56,15 @@ class FragmentBaedal :Fragment() {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.order_time }
                     mappingAdapter(baedalPosts)
-                    Log.d("log", response.toString())
-                    Log.d("log", baedalPosts.toString())
-                } else makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                } else {
+                    Log.e("baedal Fragment - getBaedalOrderListPreview", response.toString())
+                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                }
                 looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("home Fragment - getBaedalOrderListPreview", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }

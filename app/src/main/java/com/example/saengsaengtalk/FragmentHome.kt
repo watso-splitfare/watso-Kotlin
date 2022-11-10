@@ -154,16 +154,15 @@ class FragmentHome :Fragment() {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.order_time }
                     mappingBaedalAdapter(baedalPosts)
-                    Log.d("log", response.toString())
-                    Log.d("log", baedalPosts.toString())
-                } else makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                } else {
+                    Log.e("home Fragment - getBaedalOrderListPreview", response.toString())
+                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                }
                 looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("home Fragment - getBaedalOrderListPreview", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
@@ -184,8 +183,6 @@ class FragmentHome :Fragment() {
 
         baedalAdapter.setItemClickListener(object: BaedalPreAdapter.OnItemClickListener {
             override fun onClick(v: View, position: Int) {
-                //Toast.makeText(v.context, "${baedalList[position].postId}번", Toast.LENGTH_SHORT).show()
-                //Log.d("홈프래그먼트 온클릭", "${baedalPosts[position]._id}")
                 if (baedalPosts.isEmpty()) { setFrag(FragmentBaedalAdd(), fragIndex=1) }
                 else { setFrag(FragmentBaedalPost(), mapOf("postId" to baedalPosts[position]._id), fragIndex = 1) }
             }
@@ -199,16 +196,15 @@ class FragmentHome :Fragment() {
                 if (response.code() == 200) {
                     val taxiPosts = response.body()!!.sortedBy { it.depart_time }
                     mappingTaxiAdapter(taxiPosts)
-                    Log.d("log", response.toString())
-                    Log.d("log", taxiPosts.toString())
-                } else makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                } else {
+                    Log.e("home Fragment - getTaxiPostListPreview", response.toString())
+                    makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                }
                 looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("home Fragment - getTaxiPostListPreview", t.message.toString())
                 makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
