@@ -82,9 +82,9 @@ class MainActivity : AppCompatActivity() {
 
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
-        println("argument = ${arguments}")
-        println("popBackStack = ${popBackStack}")
-        println("bottomBarIndex = ${bottomBarIndex}, fragIndex = ${fragIndex}")
+        //println("argument = ${arguments}")
+        //println("popBackStack = ${popBackStack}")
+        //println("bottomBarIndex = ${bottomBarIndex}, fragIndex = ${fragIndex}")
         if (bottomBarIndex != fragIndex) setBottomBarSize(fragIndex)
 
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크

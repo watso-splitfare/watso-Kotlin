@@ -81,7 +81,7 @@ class FragmentTaxi :Fragment() {
                 posts.add(TaxiTable(dest_date, mutableListOf()))
             }
             val idx = dateList.indexOf(dest_date)
-            println(post)
+            //println(post)
             posts[idx].rows.add(TaxiTableRow(
                 post._id, post.depart_name, post.dest_name, LocalDateTime.parse(post.depart_time), post.join_users.size))
         }
