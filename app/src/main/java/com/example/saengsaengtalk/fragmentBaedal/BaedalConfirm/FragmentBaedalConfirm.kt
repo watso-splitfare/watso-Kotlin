@@ -120,6 +120,8 @@ class FragmentBaedalConfirm :Fragment() {
             }
         })
 
+        bindSetText()
+
         binding.lytAddMenu.setOnClickListener {
             rectifyOrders()
             val bundle = bundleOf("ordersString" to gson.toJson(orders))
@@ -127,12 +129,11 @@ class FragmentBaedalConfirm :Fragment() {
             onBackPressed()
         }
 
-        bindSetText()
-
         if (isPosting) {
             /** 신규 게시글 작성 */
-            binding.lytRequest.setVisibility(View.GONE)
+            //binding.lytRequest.setVisibility(View.GONE)
             binding.btnConfirm.setOnClickListener {
+                rectifyOrders()
                 getActivity()?.getSupportFragmentManager()?.setFragmentResult("ConfirmToPosting", bundleOf("ordersString" to gson.toJson(orders)))
                 onBackPressed()
                 onBackPressed()
@@ -140,12 +141,14 @@ class FragmentBaedalConfirm :Fragment() {
         } else {
             /** 기존 게시글에 주문 작성 또는 수정 */
             binding.btnConfirm.setOnClickListener {
+                rectifyOrders()
                 if (isUpdating) baedalOrderUpdating()   /** 주문수정 */
                 else baedalOrdering()                   /** 주문작성 */            }
         }
     }
 
-    /** 메뉴 추가 Frag로 가기전 삭제된 데이터 교정*/
+    /** 메뉴 추가 Frag로 가기전 삭제된 데이터 교정
+     *  리사이클러뷰 어댑터 문제로 삭제된 주문은 개수 0으로 저장하고 넘겨주기 직전에 0개인 주문 제거 */
     fun rectifyOrders() {
         var removedIndex = mutableListOf<Int>()
         for (i in 0 until orders.size) {
