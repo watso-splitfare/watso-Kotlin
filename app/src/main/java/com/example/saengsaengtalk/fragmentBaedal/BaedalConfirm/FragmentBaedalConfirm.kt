@@ -131,7 +131,7 @@ class FragmentBaedalConfirm :Fragment() {
 
         if (isPosting) {
             /** 신규 게시글 작성 */
-            //binding.lytRequest.setVisibility(View.GONE)
+            binding.lytRequest.setVisibility(View.GONE)
             binding.btnConfirm.setOnClickListener {
                 rectifyOrders()
                 getActivity()?.getSupportFragmentManager()?.setFragmentResult("ConfirmToPosting", bundleOf("ordersString" to gson.toJson(orders)))

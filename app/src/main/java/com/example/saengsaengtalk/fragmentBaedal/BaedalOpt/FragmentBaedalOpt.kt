@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.GroupOptionModel
+import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragBaedalOptBinding
 import org.json.JSONArray
@@ -19,7 +20,6 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
-    //var menuId = 0
     var menuName = ""
     var menuPrice = 0
     var storeId = ""
@@ -39,7 +39,6 @@ class FragmentBaedalOpt :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            //menuId = it.getString("menuId")!!.toInt()
             menuName = it.getString("menuName")!!
             menuPrice = it.getString("menuPrice")!!.toInt()
             storeId = it.getString("storeId")!!
@@ -60,18 +59,18 @@ class FragmentBaedalOpt :Fragment() {
         binding.tvMenuName.text = menuName
 
         setRecyclerView()
-        binding.tvTotalPrice.text = "${dec.format(setSumPrice() * count)}원"
+        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
 
         binding.btnSub.setOnClickListener {
             if (count > 1) {
                 binding.tvCount.text = (--count).toString()
-                binding.tvTotalPrice.text = "${dec.format(setSumPrice() * count)}원"
+                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
             }
         }
         binding.btnAdd.setOnClickListener {
             if (count < 10) {
                 binding.tvCount.text = (++count).toString()
-                binding.tvTotalPrice.text = "${dec.format(setSumPrice() * count)}원"
+                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
             }
         }
 
@@ -105,7 +104,7 @@ class FragmentBaedalOpt :Fragment() {
                     groups.put(group)
                 }
             }
-            order.put("sumPrice", setSumPrice())
+            order.put("sumPrice", getSumPrice())
             order.put("groups", groups)
             println(order)
 
@@ -115,35 +114,26 @@ class FragmentBaedalOpt :Fragment() {
         }
     }
 
-    fun setSumPrice(): Int {
-        var totalPrice = 0
-        groupOptionChecked.forEach{
-            val groupId = it.key
-            it.value.forEach{
-                val optionId = it.key
-                if (it.value) {
-                    totalPrice += groupOptionPrice[groupId]!![optionId]!!
-                }
-            }
-        }
-        return menuPrice + totalPrice
-    }
-
-
     fun setRecyclerView() {
+        val loopingDialog = looping()
         api.getGroupOption(menuName, storeId).enqueue(object : Callback<List<GroupOptionModel>> {
             override fun onResponse(call: Call<List<GroupOptionModel>>, response: Response<List<GroupOptionModel>>) {
-                groupOption = response.body()!!
-                mappingAdapter()
-                setGroupOptionData()
-                Log.d("log옵션@@@@@@@@@@@@@@@@@@@@", response.toString())
-                Log.d("log", groupOption.toString())
+                if (response.code() == 200) {
+                    groupOption = response.body()!!
+                    mappingAdapter()
+                    setGroupOptionData()
+                    binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+                } else {
+                    Log.e("baedalOpt Fragment - getGroupOption", response.toString())
+                    makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                }
+                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<GroupOptionModel>>, t: Throwable) {
-                // 실패
-                Log.d("log",t.message.toString())
-                Log.d("log","fail")
+                Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
+                makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
             }
         })
     }
@@ -156,16 +146,11 @@ class FragmentBaedalOpt :Fragment() {
         val adapter = BaedalOptAreaAdapter(requireContext(), groupOption)
         binding.rvOptionGroup.adapter = adapter
 
-
         adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
             override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
-                //println("group: ${groupId}, optionId:${optionId}, isChecked:${isChecked}")
                 setChecked(groupId, isRadio, optionId, isChecked)
-                //binding.tvTotalPrice.text = "${dec.format(setTotalPrice())}원"
             }
         })
-
-        //adapter.notifyDataSetChanged()
     }
 
     fun setGroupOptionData() {
@@ -207,11 +192,32 @@ class FragmentBaedalOpt :Fragment() {
             groupOptionChecked[groupId]!!.forEach{
                 if (it.value) count += 1
             }
-            //println("[FragOpt] count: ${count}, max: ${groupOption[groupId].max_orderable_quantity}")
         }
-        //println("[FragOpt] isChecked: ${isChecked}")
-        //println("groupOptionChecked: ${groupOptionChecked}")
-        binding.tvTotalPrice.text = "${dec.format(setSumPrice() * count)}원"
+        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+    }
+
+    fun getSumPrice(): Int {
+        var totalPrice = 0
+        groupOptionChecked.forEach{
+            val groupId = it.key
+            it.value.forEach{
+                val optionId = it.key
+                if (it.value) {
+                    totalPrice += groupOptionPrice[groupId]!![optionId]!!
+                }
+            }
+        }
+        return menuPrice + totalPrice
+    }
+
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        val mActivity = activity as MainActivity
+        return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun onBackPressed() {
