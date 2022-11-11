@@ -50,7 +50,7 @@ interface BaedalAPIS {
     @GET("/order/ordering/update")          // 210 배달 주문 수정용 데이터 요청
     fun getOrders(
         @Query("post_id") postId: String
-    ): Call<UserOrder>
+    ): Call<UserOrder?>
 
     @PATCH("order/ordering/update")         // 210 배달 주문 수정
     fun baedalOrderUpdate(

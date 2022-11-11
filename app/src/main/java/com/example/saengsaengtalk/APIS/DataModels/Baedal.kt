@@ -70,7 +70,7 @@ data class BaedalPostModel(
     val update_date: String,
     val is_closed: Boolean,
     //val is_member: Boolean,
-    val user_orders: List<UserOrder>,
+    val user_orders: List<UserOrder>?,
     //val comments: List<Comment>
 )
 
@@ -111,7 +111,7 @@ data class Option(
 data class BaedalUpdateModel(
     val post_id: String,
     val title: String,
-    val content: String?,
+    val content: String? = null,
     val order_time: String,
     val place: String,
     val min_member: Int?,

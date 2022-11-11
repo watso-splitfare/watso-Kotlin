@@ -183,10 +183,11 @@ class FragmentBaedalMenu :Fragment() {
 
     fun getOrdersObject(){
         val loopingDialog = looping()
-        api.getOrders(postId).enqueue(object : Callback<UserOrder> {
-            override fun onResponse(call: Call<UserOrder>, response: Response<UserOrder>) {
+        api.getOrders(postId).enqueue(object : Callback<UserOrder?> {
+            override fun onResponse(call: Call<UserOrder?>, response: Response<UserOrder?>) {
                 if (response.code() == 200) {
-                    val ordersString = apiModelToObject(response.body()!!)
+                    var ordersString = ""
+                    if (response.body() != null) ordersString = apiModelToObject(response.body()!!)
                     orders = JSONArray(ordersString)
                     setCartBtn()
                 } else {
@@ -197,7 +198,7 @@ class FragmentBaedalMenu :Fragment() {
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<UserOrder>, t: Throwable) {
+            override fun onFailure(call: Call<UserOrder?>, t: Throwable) {
                 Log.e("baedalMenu Fragment - getOrders", t.message.toString())
                 makeToast("주문정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
                 looping(false, loopingDialog)
