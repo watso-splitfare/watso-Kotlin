@@ -16,7 +16,6 @@ import com.example.saengsaengtalk.adapterHome.*
 import com.example.saengsaengtalk.databinding.FragHomeBinding
 import com.example.saengsaengtalk.fragmentAccount.FragmentAccount
 import com.example.saengsaengtalk.fragmentAccount.FragmentLogin
-import com.example.saengsaengtalk.fragmentAccount.admin.FragmentAdmin
 import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.BaedalPost.FragmentBaedalPost
@@ -25,10 +24,6 @@ import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiAdd
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxiPost
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,7 +47,6 @@ class FragmentHome :Fragment() {
         binding.lytHomeTaxilist.setOnClickListener { setFrag(FragmentTaxi(), fragIndex=2) }
         binding.lytHomeKaralist.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentKara(), fragIndex=3)*/ }
         binding.lytHomeFreeboard.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentFreeBoard(), fragIndex=4)*/ }
-        //binding.lytHomeClubboard.setOnClickListener { setFrag(FragmentClubBoard()) }
 
         return binding.root
     }
@@ -98,7 +92,7 @@ class FragmentHome :Fragment() {
         binding.rvKara.adapter = KaraPreAdapter(karaList)
 
 
-        /* 자유게시판 */
+        /** 자유게시판 */
         binding.lytHomeFreeboard.visibility = View.GONE
         val freeBoardList = arrayListOf(
             BoardPre("자유게시판입니다.", LocalDateTime.now()),
@@ -117,19 +111,6 @@ class FragmentHome :Fragment() {
                 setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postId.toString()), fragIndex=4)
             }
         })*/
-
-
-        /* 구인게시판 */
-        binding.lytHomeClubboard.visibility = View.GONE
-        /*val clubBoardList = arrayListOf(
-            ClubBoardPre("구인구직게시판입니다.", LocalDateTime.now()),
-            ClubBoardPre("구인게시판입니다.222", LocalDateTime.now()),
-            ClubBoardPre("구인게시판입니다.33333", LocalDateTime.parse("2022-04-05T00:00:01")),
-            ClubBoardPre("구인게시판입니다.3333344", LocalDateTime.parse("2022-04-04T23:59:59")),
-        )
-        binding.rvClubBoard.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvClubBoard.setHasFixedSize(true)
-        binding.rvClubBoard.adapter = ClubBoardPreAdapter(clubBoardList)*/
 
     }
 
