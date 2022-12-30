@@ -1,26 +1,21 @@
 package com.example.saengsaengtalk.fragmentBaedal.BaedalOpt
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.saengsaengtalk.APIS.GroupOptionModel
-import com.example.saengsaengtalk.databinding.LytBaedalOptAreaBinding
+import com.example.saengsaengtalk.databinding.LytBaedalOptGroupBinding
 import java.lang.ref.WeakReference
 
 
-class BaedalOptAreaAdapter(val context: Context, val groupOption: List<GroupOptionModel>) : RecyclerView.Adapter<BaedalOptAreaAdapter.CustomViewHolder>() {
+class BaedalOptGroupAdapter(val context: Context, val groupOption: List<GroupOptionModel>) : RecyclerView.Adapter<BaedalOptGroupAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val binding = LytBaedalOptAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = LytBaedalOptGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
@@ -48,18 +43,18 @@ class BaedalOptAreaAdapter(val context: Context, val groupOption: List<GroupOpti
         return groupOption.size
     }
 
-    inner class CustomViewHolder(var binding: LytBaedalOptAreaBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CustomViewHolder(var binding: LytBaedalOptGroupBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(group: GroupOptionModel) {
             if (group.max_orderable_quantity > 1) {
-                binding.tvArea.text = group.group_name + " (최대 ${group.max_orderable_quantity.toString()}개)"
-            } else binding.tvArea.text = group.group_name
+                binding.tvGroup.text = group.group_name + " (최대 ${group.max_orderable_quantity.toString()}개)"
+            } else binding.tvGroup.text = group.group_name
 
-            binding.rvMenuArea.layoutManager =
+            binding.rvMenuGroup.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
             val adapter = BaedalOptAdapter(context, group.options, group.min_orderable_quantity, group.max_orderable_quantity)
-            binding.rvMenuArea.adapter = adapter
+            binding.rvMenuGroup.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener {
                 override fun onClick(isRadio:Boolean, optionId: String, isChecked: Boolean) {

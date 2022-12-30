@@ -143,10 +143,10 @@ class FragmentBaedalOpt :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOptionGroup.setHasFixedSize(true)
 
-        val adapter = BaedalOptAreaAdapter(requireContext(), groupOption)
+        val adapter = BaedalOptGroupAdapter(requireContext(), groupOption)
         binding.rvOptionGroup.adapter = adapter
 
-        adapter.addListener(object: BaedalOptAreaAdapter.OnItemClickListener {
+        adapter.addListener(object: BaedalOptGroupAdapter.OnItemClickListener {
             override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
                 setChecked(groupId, isRadio, optionId, isChecked)
             }
