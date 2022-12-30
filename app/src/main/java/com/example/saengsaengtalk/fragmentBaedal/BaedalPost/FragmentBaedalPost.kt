@@ -50,9 +50,6 @@ class FragmentBaedalPost :Fragment() {
         arguments?.let {
             postId = it.getString("postId")!!
         }
-
-        //println("유저아이디 쿠키: ${MainActivity.prefs.getString("userId", "")}")
-        Log.d("배달 포스트", "게시물 번호: ${postId}")
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -71,11 +68,10 @@ class FragmentBaedalPost :Fragment() {
 
         getPostInfo()
 
+        /** 게시글 수정 또는 주문추가를 하였을 경우, 리스너를 통해 확인하고 게시글을 다시 조회한다 */
         getActivity()?.getSupportFragmentManager()
             ?.setFragmentResultListener("updatePost", this) { requestKey, bundle ->
                 val success = bundle.getBoolean("success")
-                println("수정완료")
-                println(success)
                 postId = bundle.getString("postId")
                 getPostInfo()
             }
@@ -83,8 +79,6 @@ class FragmentBaedalPost :Fragment() {
         getActivity()?.getSupportFragmentManager()
             ?.setFragmentResultListener("ordering", this) { requestKey, bundle ->
                 val success = bundle.getBoolean("success")
-                println("주문완료")
-                println(success)
                 postId = bundle.getString("postId")
                 getPostInfo()
             }
@@ -108,9 +102,6 @@ class FragmentBaedalPost :Fragment() {
                     val orderTime =
                         LocalDateTime.parse(baedalPost.order_time, DateTimeFormatter.ISO_DATE_TIME)
 
-                    println("@@@@@@@@@@@@ userId: ${userId}")
-                    println("@@@@@@@@@@@@ baedalPost: ${baedalPost}")
-                    println("@@@@@@@@@@@@ post_user_id: ${baedalPost.user_id}")
                     if (userId != baedalPost.user_id) {
                         binding.tvDelete.visibility = View.GONE
                         binding.tvUpdate.visibility = View.GONE
@@ -121,32 +112,29 @@ class FragmentBaedalPost :Fragment() {
                         val builder = AlertDialog.Builder(requireContext())
                         builder.setTitle("게시글 수정하기")
                             .setMessage("게시글을 수정하시겠습니까? \n주문 수정은 주문수정 버튼을 이용해 주세요.")
-                            .setPositiveButton("확인",
-                                DialogInterface.OnClickListener { dialog, id ->
-                                    setFrag(
-                                        FragmentBaedalAdd(), mapOf(
-                                            "isUpdating" to "true",
-                                            "postId" to postId!!,
-                                            "title" to baedalPost.title,
-                                            "content" to if (baedalPost.content != null) baedalPost.content!! else "",
-                                            "orderTime" to orderTime.toString(),
-                                            "storeName" to store.store_name,
-                                            "place" to baedalPost.place,
-                                            "minMember" to if (baedalPost.min_member != null) baedalPost.min_member.toString() else "0",
-                                            "maxMember" to if (baedalPost.max_member != null )baedalPost.max_member.toString() else "0",
-                                            "fee" to store.fee.toString()
-                                        )
-                                    )
-                                })
+                            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                                setFrag(FragmentBaedalAdd(), mapOf(
+                                    "isUpdating" to "true",
+                                    "postId" to postId!!,
+                                    "title" to baedalPost.title,
+                                    "content" to if (baedalPost.content != null) baedalPost.content!! else "",
+                                    "orderTime" to orderTime.toString(),
+                                    "storeName" to store.store_name,
+                                    "place" to baedalPost.place,
+                                    "minMember" to if (baedalPost.min_member != null) baedalPost.min_member.toString() else "0",
+                                    "maxMember" to if (baedalPost.max_member != null )baedalPost.max_member.toString() else "0",
+                                    "fee" to store.fee.toString()
+                                ))
+                            })
                             .setNegativeButton("취소",
                                 DialogInterface.OnClickListener { dialog, id ->
                                     println("취소")
-                                })
+                                }
+                            )
                         builder.show()
                     }
 
                     /** 포스트 내용 바인딩 */
-                    //binding.tvPostTitle.text = baedalPost.title
                     binding.tvPostWriter.text = baedalPost.nick_name
                     val today = LocalDate.now().atTime(0, 0)
                     binding.tvPostCreated.text = when (postCreated.isBefore(today)) {
@@ -199,13 +187,14 @@ class FragmentBaedalPost :Fragment() {
                                 baedalOrders.add(baedalOrder)
                                 orderPrice += baedalOrder.count * baedalOrder.sumPrice
                             }
+                            val priceString = "${dec.format(orderPrice)}원"
 
                             if (userId == orderUser.user_id) {
                                 myOrder.add(
                                     BaedalOrderUser
                                         (
                                         orderUser.nick_name,
-                                        "${dec.format(orderPrice)}원",
+                                        priceString,
                                         baedalOrders,
                                         true
                                     )
@@ -215,8 +204,9 @@ class FragmentBaedalPost :Fragment() {
                                     BaedalOrderUser
                                         (
                                         orderUser.nick_name,
-                                        "${dec.format(orderPrice)}원",
-                                        baedalOrders
+                                        priceString,
+                                        baedalOrders,
+                                        false
                                     )
                                 )
                             }
@@ -241,10 +231,10 @@ class FragmentBaedalPost :Fragment() {
 
                     /** 댓글 */
                     /*binding.tvCommentCount.text = "댓글 ${comments.size}"
-                binding.rvComment.layoutManager =
+                    binding.rvComment.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.rvComment.setHasFixedSize(true)
-                binding.rvComment.adapter = CommentAdapter(comments, userId)*/
+                    binding.rvComment.setHasFixedSize(true)
+                    binding.rvComment.adapter = CommentAdapter(comments, userId)*/
                 } else {
                     Log.e("baedal Post Fragment - getBaedalPost", response.toString())
                     makeToast("게시글 조회 실패")
@@ -263,10 +253,6 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun setBottomBtn() {
-        println("배달 포스트 setBottomBtn함수 userId:${userId}, postUserId: ${baedalPost.user_id}")
-        println("@@@@@@@@@@@@@@@@@@@@@@@@")
-        println("배달 포스트 setBottomBtn함수 isClosed:${isClosed}, isMember: ${isMember}")
-
         binding.lytCancel.visibility = View.GONE
         if (isClosed) {                         // 마감 됐을 때
             if (userId == baedalPost.user_id) {         // 게시글 작성자 일 경우 마감버튼 바인딩
@@ -291,8 +277,6 @@ class FragmentBaedalPost :Fragment() {
             binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order)
             binding.lytOrder.isEnabled = true
 
-            //val currentMember = baedalPost.join_users.size
-            //val store = baedalPost.store
             if (isMember) {
                 binding.tvOrder.text = "주문 수정하기"
                 binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
@@ -316,8 +300,6 @@ class FragmentBaedalPost :Fragment() {
                 looping(false, loopingDialog)
             }
             override fun onFailure(call: Call<IsClosedResponse>, t: Throwable) {
-                // 실패
-                println("실패")
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
                 makeToast("다시 시도해주세요.")
@@ -344,8 +326,6 @@ class FragmentBaedalPost :Fragment() {
                             looping(false, loopingDialog)
                         }
                         override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
-                            // 실패
-                            println("실패")
                             Log.d("log",t.message.toString())
                             Log.d("log","fail")
                             makeToast("다시 시도해주세요.")
@@ -364,9 +344,6 @@ class FragmentBaedalPost :Fragment() {
         val currentMember = baedalPost.join_users.size
         val store = baedalPost.store
 
-        println("배달 포스트 주문 수정하기/나도주문하기 currentMember: ${currentMember}")
-        println("배달 포스트 주문 수정하기/나도주문하기 baedalPost: ${baedalPost}")
-
         setFrag(FragmentBaedalMenu(), mapOf(
             "isPosting" to "false",
             "postId" to postId!!,
@@ -379,8 +356,11 @@ class FragmentBaedalPost :Fragment() {
         ))
     }
 
+    /**
+     * 이 프로젝트에서는 카멜케이스를 사용하지만 API 모델에서는 스네이크 케이스를 사용하므로
+     * 데이터 모델간 변환이 필요합니다.
+     */
     fun apiModelToAdapterModel(order: Order): BaedalOrder {
-        println("배달포스트 order: ${order}")
         val groups = mutableListOf<Group>()
         for (group in order.groups) {
             val options = mutableListOf<Option>()

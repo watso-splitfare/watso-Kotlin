@@ -78,7 +78,6 @@ class FragmentBaedalOpt :Fragment() {
         binding.btnCartConfirm.setOnClickListener {
             val order = JSONObject()
             order.put("count", count)
-            //order.put("menuId", menuId)
             order.put("menuName", menuName)
             order.put("menuPrice", menuPrice)
 
@@ -106,7 +105,6 @@ class FragmentBaedalOpt :Fragment() {
             }
             order.put("sumPrice", getSumPrice())
             order.put("groups", groups)
-            println(order)
 
             val bundle = bundleOf("orderString" to order.toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("order", bundle)
@@ -178,7 +176,6 @@ class FragmentBaedalOpt :Fragment() {
                 groupOptionPrice[groupId]!![optionId] = it.option_price
             }
         }
-        println(groupOptionChecked)
     }
 
     fun setChecked(groupId: String, isRadio:Boolean, optionId: String, isChecked: Boolean){

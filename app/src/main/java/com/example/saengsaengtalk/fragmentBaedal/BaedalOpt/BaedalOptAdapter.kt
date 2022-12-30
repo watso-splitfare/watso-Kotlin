@@ -49,6 +49,7 @@ class BaedalOptAdapter(val context: Context, val option: List<OptionModel>, val 
     inner class CustomViewHolder(var binding: LytBaedalOptBinding) : RecyclerView.ViewHolder(binding.root) {
         lateinit var checkBtn: CompoundButton
         fun bind(option: OptionModel) {
+
             if (isRadio) {
                 binding.rbOption.text = option.option_name
                 binding.cbOption.setVisibility(View.INVISIBLE)
@@ -67,13 +68,11 @@ class BaedalOptAdapter(val context: Context, val option: List<OptionModel>, val 
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
                     itemClickListener.onClick(isRadio, option.option_id, true)
-                    println("0")
                 }
                 itemView.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
                     itemClickListener.onClick(isRadio, option.option_id, true)
-                    println("1")
                 }
             } else {
                 binding.cbOption.text = option.option_name

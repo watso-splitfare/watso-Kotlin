@@ -52,9 +52,6 @@ class FragmentBaedalMenu :Fragment() {
             baedalFee = it.getString("baedalFee")!!
             //orders = JSONArray(it.getString("orders"))
         }
-        Log.d("배달 메뉴", "게시물 번호: ${postId}")
-        Log.d("배달 메뉴", "주문 인원: ${currentMember}")
-        Log.d("배달 메뉴", "포스팅?: ${isPosting}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,7 +70,6 @@ class FragmentBaedalMenu :Fragment() {
         /** Option frag에서 메뉴 선택 후 담기 시 작동 */
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
             val orderString = bundle.getString("orderString")
-            println("메뉴 담기 ${bundle.getString("orderString")}")
             orders.put(JSONObject(orderString))
 
             setCartBtn()
@@ -82,7 +78,6 @@ class FragmentBaedalMenu :Fragment() {
         /** Confirm frag에서 뒤로가기(메뉴 더담기) 시 작동 */
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("changeOrder", this) { requestKey, bundle ->
             val ordersString = bundle.getString("ordersString")
-            println("메뉴 더 담기 ${bundle.getString("ordersString")}")
             orders = JSONArray(ordersString)
 
             setCartBtn()
@@ -125,17 +120,14 @@ class FragmentBaedalMenu :Fragment() {
         val adapter = BaedalMenuSectionAdapter(requireContext(), sectionMenu)
         binding.rvMenuSection.adapter = adapter
 
+        /** 이중 어댑터안의 메뉴 이름을 선택할 경우 해당 메뉴의 옵션을 보여주는 프래그먼트로 이동하기 위한 알고리즘 */
         adapter.addListener(object : BaedalMenuSectionAdapter.OnItemClickListener {
             override fun onClick(sectionName: String, menuName: String) {
-                //println("클릭: 섹션: ${section_id}, 메뉴: ${menu_id}")
                 loop@ for (s in sectionMenu) {
                     if (sectionName == s.section_name) {
                         for (m in s.menus) {
-                            //println("검색: 섹션: ${s.section_id}, 메뉴: ${m.menu_id}")
                             if (menuName == m.menu_name) {
-                                //println(m.toString())
                                 setFrag(FragmentBaedalOpt(), mapOf(
-                                    //"menuId" to menuId.toString(),
                                     "menuName" to m.menu_name,
                                     "menuPrice" to m.menu_price.toString(),
                                     "storeId" to storeId
@@ -176,7 +168,6 @@ class FragmentBaedalMenu :Fragment() {
             "baedalFee" to baedalFee,
             "orders" to orders.toString()
         )
-        //if (!isPosting) map["postId"] = postId!!
 
         setFrag(FragmentBaedalConfirm(), map)
     }
@@ -187,7 +178,7 @@ class FragmentBaedalMenu :Fragment() {
             override fun onResponse(call: Call<UserOrder?>, response: Response<UserOrder?>) {
                 if (response.code() == 200) {
                     var ordersString = ""
-                    if (response.body() != null) ordersString = apiModelToObject(response.body()!!)
+                    if (response.body() != null) ordersString = apiModelToJson(response.body()!!)
                     orders = JSONArray(ordersString)
                     setCartBtn()
                 } else {
@@ -207,7 +198,8 @@ class FragmentBaedalMenu :Fragment() {
         })
     }
 
-    fun apiModelToObject(userOrders: UserOrder): String{
+    /** api로 받은 데이터를 가공하기 편리하게 JSON 형식으로 변환 */
+    fun apiModelToJson(userOrders: UserOrder): String{
         val orders = JSONArray()
         for (order in userOrders.orders) {
             val orderObject = JSONObject()

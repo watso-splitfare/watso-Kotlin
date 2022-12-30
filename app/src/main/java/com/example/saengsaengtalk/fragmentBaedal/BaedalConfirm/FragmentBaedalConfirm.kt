@@ -52,21 +52,11 @@ class FragmentBaedalConfirm :Fragment() {
                 currentMember = it.getString("currentMember")!!.toInt()
                 isUpdating = it.getString("isUpdating").toBoolean()
                 storeId = it.getString("storeId")!!
-                //if (isUpdating) currentMember -= 1
             }
             storeName = it.getString("storeName")!!
             baedalFee = it.getString("baedalFee")!!.toInt()
             orders = gson.fromJson(it.getString("orders"), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
-                //JSONArray(it.getString("orders"))
-            //orderList = JSONArray(it.getString("orderList"))
-            //optInfo = JSONArray(it.getString("info"))
         }
-        println("배달 컨펌 스토어이름: ${storeName}")
-        println("배달 컨펌 메뉴: ${orders}")
-        println("배달 컨펌 currentMenber: ${currentMember}")
-        Log.d("배달 컨펌", "스토어이름: ${storeName}")
-        Log.d("배달 컨펌", "메뉴: ${orders}")
-        Log.d("배달 컨펌", "currentMenber: ${currentMember}")
 
     }
     @RequiresApi(Build.VERSION_CODES.O)

@@ -65,25 +65,11 @@ class FragmentHome :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnOption.setOnClickListener {
-            //var auth = MainActivity.prefs.getString("Authentication", "")
-            //val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
-
             val userId = MainActivity.prefs.getString("userId", "")
             if (userId == "")
                 setFrag(FragmentLogin(), fragIndex=-1)
             else
                 setFrag(FragmentAccount(), fragIndex=-1)
-
-        }
-
-        /** api test */
-        binding.lytApiTest.visibility = View.GONE
-
-        binding.btnRemoveCache.setOnClickListener {
-            MainActivity.prefs.removeString("Authentication")
-
-            var auth = MainActivity.prefs.getString("Authentication", "")
-            Log.d("캐시삭제", auth)
         }
 
 
@@ -91,11 +77,11 @@ class FragmentHome :Fragment() {
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
         getBaedalPostPreview()
 
-        /* 택시 */
+        /** 택시 */
         binding.btnTaxiAdd.setOnClickListener { setFrag(FragmentTaxiAdd(), fragIndex=2) }
         getTaxiPostPreview()
 
-        /* 노래방 */
+        /** 노래방 */
         //binding.divBottom.visibility = View.GONE
         binding.lytHomeKaralist.visibility = View.GONE
         val karaList = arrayListOf(
@@ -244,7 +230,6 @@ class FragmentHome :Fragment() {
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex: Int) {
-        println("setIndex = ${fragIndex}")
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
     }
