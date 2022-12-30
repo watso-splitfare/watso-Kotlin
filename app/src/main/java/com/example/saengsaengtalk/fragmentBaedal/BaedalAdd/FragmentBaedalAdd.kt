@@ -272,12 +272,12 @@ class FragmentBaedalAdd :Fragment() {
             /** 게시글 수정 */
             val baedalUpdateModel = BaedalUpdateModel(
                 postId.toString(),
-                title!!,
-                if (content!="") content!! else null,
-                orderTime!!,
-                place!!,
-                if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else null,
-                if (binding.cbMaxMember.isChecked) binding.etMaxMember.text.toString().toInt() else null
+                binding.tvTitle.text.toString(),
+                if (binding.etContent.text.toString()!="") binding.etContent.text.toString()!! else "같이 주문해요",
+                orderTime!!, // 수정하기
+                binding.spnPlace.selectedItem.toString(),
+                if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else -1,
+                if (binding.cbMaxMember.isChecked) binding.etMaxMember.text.toString().toInt() else -1
             )
 
             val loopingDialog = looping()
@@ -312,11 +312,11 @@ class FragmentBaedalAdd :Fragment() {
                 val baedalPostModel = BaedalPostingModel(
                     storeIds[selectedIdx],
                     binding.etTitle.text.toString(),
-                    binding.etContent.text.toString(),
+                    if (binding.etContent.text.toString()!="") binding.etContent.text.toString()!! else "같이 주문해요",
                     orderTimeString,
                     binding.spnPlace.selectedItem.toString(),
-                    minMember,
-                    maxMember
+                    if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else -1,
+                    if (binding.cbMaxMember.isChecked) binding.etMaxMember.text.toString().toInt() else -1
                 )
 
                 val loopingDialog = looping()

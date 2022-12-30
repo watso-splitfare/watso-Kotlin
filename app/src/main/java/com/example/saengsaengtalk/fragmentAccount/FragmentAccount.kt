@@ -38,12 +38,12 @@ class FragmentAccount :Fragment() {
         }
 
         binding.tvUsername.text = MainActivity.prefs.getString("userId", "")
-        binding.textView22.visibility = View.GONE
-        binding.tvNickname.visibility = View.GONE
+        binding.tvNickname.text = MainActivity.prefs.getString("nickname", "")
 
         binding.btnLogout.setOnClickListener {
             MainActivity.prefs.removeString("Authentication")
             MainActivity.prefs.removeString("userId")
+            MainActivity.prefs.removeString("nickname")
             api.logout().enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
                     Log.d("로그아웃", response.toString())
@@ -52,7 +52,6 @@ class FragmentAccount :Fragment() {
                 }
 
                 override fun onFailure(call: Call<LogoutResult>, t: Throwable) {
-                    // 실패
                     Log.d("로그아웃",t.message.toString())
                     Log.d("로그아웃","fail")
                 }
@@ -60,6 +59,8 @@ class FragmentAccount :Fragment() {
             onBackPressed()
         }
 
+        // 빈칸에 a를 입력 후 버튼을 누르면 어드민 화면에 진입합니다.
+        // 어드민 계정 인증 관련해서 논의 필요
         binding.btnAdmin.setOnClickListener {
             if (binding.etAdmin.text.toString() == "a") setFrag(FragmentAdmin())
         }

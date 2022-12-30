@@ -23,8 +23,7 @@ data class LoginModel(
 )
 
 data class LoginResult(
-    val result: Boolean,
-    val user_id: Long
+    val result: Boolean
 )
 
 data class LogoutResult(

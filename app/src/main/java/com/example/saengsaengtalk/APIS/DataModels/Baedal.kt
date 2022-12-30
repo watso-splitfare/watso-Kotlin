@@ -111,7 +111,7 @@ data class Option(
 data class BaedalUpdateModel(
     val post_id: String,
     val title: String,
-    val content: String? = null,
+    val content: String?,
     val order_time: String,
     val place: String,
     val min_member: Int?,

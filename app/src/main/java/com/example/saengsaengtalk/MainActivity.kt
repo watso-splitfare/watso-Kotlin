@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
-import android.preference.Preference
+import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -18,29 +18,25 @@ import com.example.saengsaengtalk.fragmentBaedal.Baedal.FragmentBaedal
 import com.example.saengsaengtalk.fragmentFreeBoard.FragmentFreeBoard
 import com.example.saengsaengtalk.fragmentKara.FragmentKara
 import com.example.saengsaengtalk.fragmentTaxi.FragmentTaxi
+import org.json.JSONObject
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        lateinit var prefs: PreferenceUtil
+    }
 
     private var mBinding: ActivityMainBinding? = null
     private val binding get() = mBinding!!
     var mBackWait:Long = 0
     var bottomBarIndex:Int = 0
 
-    companion object {
-        lateinit var prefs: PreferenceUtil
-    }
-
-    //val sharedPreference = getSharedPreferences("cache", 0)
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceUtil(applicationContext)
-        //val authDebug = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTY2Mzk4OTg4OTgyNiwibmlja19uYW1lIjoiYm9uZyJ9.FULK5UjhV7UnoRa8lUP7MrW0wccROJf9GUp7bac1tvo"
-        //prefs.setString("Authentication", authDebug)
 
-        println("유저 id: ${prefs.getString("userId", "")}")
-        println("인증 토큰: ${prefs.getString("Authentication", "")}")
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -80,11 +76,14 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-
+    /**
+     * fragment: 이동할 프래그먼트,
+     * arguments: 이동한 프래그먼트에 전달할 인자,
+     * popBackStack: 새로운 frag 일시에 -1, 다른탭으로 이동시에 0 (frag stack 초기화),
+     * fragIndex: 하단바 번호(홈:0, 배달:1, 택시:2)
+     */
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
-        //println("argument = ${arguments}")
-        //println("popBackStack = ${popBackStack}")
-        //println("bottomBarIndex = ${bottomBarIndex}, fragIndex = ${fragIndex}")
+        // fragIndex와 하단바 인덱스를 비교하여 다른 탭으로 이동하였을 경우 해당 탭 강조
         if (bottomBarIndex != fragIndex) setBottomBarSize(fragIndex)
 
         if (arguments != null) {        // 넘겨줄 인자가 있나 체크
@@ -98,34 +97,30 @@ class MainActivity : AppCompatActivity() {
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
 
-        if (popBackStack == -1) {   // -1: 새로운 frag 추가, 0: 탭이동 (스택 초기화), else: 횟수만큼 뒤로 가기
-            transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
-            transaction.add(R.id.main_frame, fragment).addToBackStack(null)
-        } else if (popBackStack == 0) {
-            val count = fm.backStackEntryCount
-            for (i in 0 until count) { fm.popBackStack() }
-            transaction.replace(R.id.main_frame, fragment)
-        } else {
-            for (i in 0 until popBackStack) { fm.popBackStack() }
-            transaction.replace(R.id.main_frame, fragment)
+        // -1: 새로운 frag 추가, 0: 탭이동 (스택 초기화), else: 횟수만큼 뒤로 가기
+        when (popBackStack) {
+            -1 -> {
+                transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
+                transaction.add(R.id.main_frame, fragment).addToBackStack(null)
+            }
+            0 -> {
+                val count = fm.backStackEntryCount
+                for (i in 0 until count) { fm.popBackStack() }
+                transaction.replace(R.id.main_frame, fragment)
+            }
+            else -> {
+                for (i in 0 until popBackStack) { fm.popBackStack() }
+                transaction.replace(R.id.main_frame, fragment)
+            }
         }
 
         transaction.commit()
     }
 
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        //println("루핑 호출 loopStart: ${loopStart}")
-        return if (loopStart) {
-            val newLoopingDialog = LoopingDialog(this)
-            newLoopingDialog.show()
-            newLoopingDialog
-        } else {
-            loopingDialog!!.dismiss()
-            null
-        }
-    }
-
-    fun setBottomBarSize(fragindex: Int) {
+    /**
+     * fragindex: 강조할 탭 인덱스
+     */
+    private fun setBottomBarSize(fragindex: Int) {
         val r: Resources = resources
         var smallSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,30F, r.displayMetrics).toInt()
         var bigSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,40F, r.displayMetrics).toInt()
@@ -179,7 +174,37 @@ class MainActivity : AppCompatActivity() {
         bottomBarIndex = fragindex
     }
 
+    /**
+     * Api 호출시 응답시간 동안 회전하는 다이얼로그 생성.
+     * loopStart 인자로 True를 전달 할 경우 loop가 시작되고 다이얼로그가 return 됨.
+     * loopingDialog 인자에 생성됐던 다이얼로그를 전달할 경우 해당 loop가 제거됨.
+     */
+    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
+        return if (loopStart) {
+            val newLoopingDialog = LoopingDialog(this)
+            newLoopingDialog.show()
+            newLoopingDialog
+        } else {
+            loopingDialog!!.dismiss()
+            null
+        }
+    }
+
     fun makeToast(message: String){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    fun decodeToken(jwt: String): String {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return "Requires SDK 26"
+        val parts = jwt.split(".")
+        return try {
+            val charset = charset("UTF-8")
+            val header = String(Base64.getUrlDecoder().decode(parts[0].toByteArray(charset)), charset)
+            val payload = String(Base64.getUrlDecoder().decode(parts[1].toByteArray(charset)), charset)
+            "$header"
+            "$payload"
+        } catch (e: Exception) {
+            "Error parsing JWT: $e"
+        }
     }
 }
