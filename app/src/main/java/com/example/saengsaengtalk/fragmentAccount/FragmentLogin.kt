@@ -50,7 +50,7 @@ class FragmentLogin :Fragment() {
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
                     if (response.code()==200) {
-                        if (response.body()!!.result) {
+                        if (response.body()!!.success!!) {
                             val payload = decodeToken(response.headers().get("Authentication").toString())
                             val dId = JSONObject(payload).getString("id")
                             val dNickname = JSONObject(payload).getString("nick_name")

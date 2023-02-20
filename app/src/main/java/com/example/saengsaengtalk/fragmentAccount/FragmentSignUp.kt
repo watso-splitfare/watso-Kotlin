@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.saengsaengtalk.APIS.OverlapResult
+import com.example.saengsaengtalk.APIS.DuplicationResult
 import com.example.saengsaengtalk.APIS.SignUpModel
 import com.example.saengsaengtalk.APIS.SignUpResult
 import com.example.saengsaengtalk.LoopingDialog
@@ -25,13 +25,13 @@ class FragmentSignUp :Fragment() {
     private var mBinding: FragSignUpBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
-    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false)
+    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "studentnum" to false)
     var checkedUsername: String? = null
     var checkedNickname: String? = null
+    var checkedStudentnum: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragSignUpBinding.inflate(inflater, container, false)
-        makeToast("테스트")
         refreshView()
 
         return binding.root
@@ -47,13 +47,13 @@ class FragmentSignUp :Fragment() {
         binding.btnSignup.setEnabled(false)
 
         /** 아이디 중복확인*/
-        binding.etId.addTextChangedListener(object: TextWatcher {
+        binding.etUsername.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                if (checkedUsername != null && binding.tvIdConfirm.text == checkedUsername) {
-                    binding.tvIdConfirm.text = "사용가능한 아이디입니다."
+                if (checkedUsername != null && binding.tvUsernameConfirm.text == checkedUsername) {
+                    binding.tvUsernameConfirm.text = "사용가능한 아이디입니다."
                     signUpCheck["username"] = true
                 } else {
-                    binding.tvIdConfirm.text = "아이디 중복확인이 필요합니다."
+                    binding.tvUsernameConfirm.text = "아이디 중복확인이 필요합니다."
                     signUpCheck["username"] = false
                 }
                 setSignupBtnAble()
@@ -62,31 +62,31 @@ class FragmentSignUp :Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
 
-        binding.btnUsernameOverlapCheck.setOnClickListener {
+        binding.btnUsernameDuplicationCheck.setOnClickListener {
             val loopingDialog = looping()
-            api.usernameOverlapCheck(binding.etId.text.toString()).enqueue(object : Callback<OverlapResult> {
-                override fun onResponse(call: Call<OverlapResult>, response: Response<OverlapResult>) {
+            api.usernameDuplicationCheck(binding.etUsername.text.toString()).enqueue(object : Callback<DuplicationResult> {
+                override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
                     Log.d("아이디 중복확인",response.toString())
                     Log.d("아이디 중복확인", response.body().toString())
                     if (response.code() == 200) {
-                        if (response.body()!!.isOverlapped) {
+                        if (response.body()!!.is_duplicated!!) {
                             signUpCheck["username"] = false
-                            binding.tvIdConfirm.text = "사용 불가능한 아이디입니다."
+                            binding.tvUsernameConfirm.text = "사용 불가능한 아이디입니다."
                         } else {
-                            binding.tvIdConfirm.text = "사용 가능한 아이디입니다."
+                            binding.tvUsernameConfirm.text = "사용 가능한 아이디입니다."
                             signUpCheck["username"] = true
-                            checkedUsername = binding.etId.text.toString()
+                            checkedUsername = binding.etUsername.text.toString()
                         }
                         setSignupBtnAble()
                     } else {
-                        Log.e("signUp Fragment - usernameOverlapCheck", response.toString())
+                        Log.e("signUp Fragment - usernameDuplicationCheck", response.toString())
                         makeToast("다시 시도해 주세요.")
                     }
                     looping(false, loopingDialog)
                 }
 
-                override fun onFailure(call: Call<OverlapResult>, t: Throwable) {
-                    Log.e("signUp Fragment - usernameOverlapCheck", t.message.toString())
+                override fun onFailure(call: Call<DuplicationResult>, t: Throwable) {
+                    Log.e("signUp Fragment - usernameDuplicationCheck", t.message.toString())
                     makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
@@ -127,14 +127,14 @@ class FragmentSignUp :Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
 
-        binding.btnNicknameOverlapCheck.setOnClickListener {
+        binding.btnNicknameDuplicationCheck.setOnClickListener {
             val loopingDialog = looping()
-            api.nicknameOverlapCheck(binding.etNickname.text.toString()).enqueue(object : Callback<OverlapResult> {
-                override fun onResponse(call: Call<OverlapResult>, response: Response<OverlapResult>) {
+            api.nicknameDuplicationCheck(binding.etNickname.text.toString()).enqueue(object : Callback<DuplicationResult> {
+                override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
                     Log.d("닉네임 중복확인",response.toString())
                     Log.d("닉네임 중복확인", response.body().toString())
                     if (response.code() == 200) {
-                        if (response.body()!!.isOverlapped) {
+                        if (response.body()!!.is_duplicated!!) {
                             signUpCheck["nickname"] = false
                             binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
                         } else {
@@ -144,14 +144,14 @@ class FragmentSignUp :Fragment() {
                         }
                         setSignupBtnAble()
                     } else {
-                        Log.e("signUp Fragment - nicknameOverlapCheck", response.toString())
+                        Log.e("signUp Fragment - nicknameDuplicationCheck", response.toString())
                         makeToast("다시 시도해 주세요.")
                     }
                     looping(false, loopingDialog)
                 }
 
-                override fun onFailure(call: Call<OverlapResult>, t: Throwable) {
-                    Log.e("signUp Fragment - nicknameOverlapCheck", t.message.toString())
+                override fun onFailure(call: Call<DuplicationResult>, t: Throwable) {
+                    Log.e("signUp Fragment - nicknameDuplicationCheck", t.message.toString())
                     makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
@@ -159,7 +159,7 @@ class FragmentSignUp :Fragment() {
         }
 
         /** 메일 관련 */
-        binding.lytMail.visibility = View.GONE
+        //binding.lytMail.visibility = View.GONE
         /*val domains = resources.getStringArray(R.array.domains)
 
         binding.spnMailDomain.adapter = ArrayAdapter.createFromResource(
@@ -180,18 +180,69 @@ class FragmentSignUp :Fragment() {
             }
         }*/
 
+        /** 학번 */
+        binding.etStudentnum.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if (checkedStudentnum != null && binding.tvStudentnumConfirm.text == checkedStudentnum) {
+                    binding.tvStudentnumConfirm.text = "사용 가능한 학번입니다."
+                    signUpCheck["studentnum"] = true
+                } else {
+                    binding.tvStudentnumConfirm.text = "학번 중복확인이 필요합니다."
+                    signUpCheck["studentnum"] = false
+                }
+                setSignupBtnAble()
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+
+        binding.btnStudentnumDuplicationCheck.setOnClickListener {
+            val loopingDialog = looping()
+            api.studentnumDuplicationCheck(binding.etStudentnum.text.toString()).enqueue(object : Callback<DuplicationResult> {
+                override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
+                    Log.d("학번 중복확인",response.toString())
+                    Log.d("학번 중복확인", response.body().toString())
+                    if (response.code() == 200) {
+                        if (response.body()!!.is_duplicated!!) {
+                            signUpCheck["studentnum"] = false
+                            binding.tvStudentnumConfirm.text = "사용 불가능한 학번입니다."
+                        } else {
+                            binding.tvStudentnumConfirm.text = "사용 가능한 학번입니다."
+                            signUpCheck["studentnum"] = true
+                            checkedStudentnum = binding.etStudentnum.text.toString()
+                        }
+                        setSignupBtnAble()
+                    } else if (response.code() == 500) {
+                        Log.e("signUp Fragment - studentnumDuplicationCheck", response.body()!!.message!!)
+                    } else {
+                        Log.e("signUp Fragment - studentnumDuplicationCheck", response.toString())
+                        makeToast("다시 시도해 주세요.")
+                    }
+                    looping(false, loopingDialog)
+                }
+
+                override fun onFailure(call: Call<DuplicationResult>, t: Throwable) {
+                    Log.e("signUp Fragment - studentnumDuplicationCheck", t.message.toString())
+                    makeToast("다시 시도해 주세요.")
+                    looping(false, loopingDialog)
+                }
+            })
+        }
+
         /** 회원가입 */
         binding.btnSignup.setOnClickListener {
             val loopingDialog = looping()
             var data = SignUpModel(
-                binding.etId.text.toString(),
+                binding.etUsername.text.toString(),
                 binding.etPw.text.toString(),
-                null, //Integer.parseInt(binding.etMail.text.toString()),   //입력값 꼭 있어야함
-                binding.etNickname.text.toString()
+                binding.etNickname.text.toString(),
+                binding.etStudentnum.text.toString(),
+                "123 농협",
+                binding.etMail.text.toString() + "@" + binding.etMailDomain.text.toString()
             )
             api.signup(data).enqueue(object : Callback<SignUpResult> {
                 override fun onResponse(call: Call<SignUpResult>, response: Response<SignUpResult>) {
-                    if (response.code() == 200 && response.body()!!.success) {
+                    if (response.code() == 204) {
                         makeToast("회원가입에 성공하였습니다.")
                         onBackPressed()
                     } else {
@@ -202,13 +253,12 @@ class FragmentSignUp :Fragment() {
                 }
 
                 override fun onFailure(call: Call<SignUpResult>, t: Throwable) {
-                    Log.e("signUp Fragment - nicknameOverlapCheck", t.message.toString())
+                    Log.e("signUp Fragment - nicknameDuplicationCheck", t.message.toString())
                     makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }
             })
         }
-
     }
 
     fun setSignupBtnAble() {
@@ -219,7 +269,6 @@ class FragmentSignUp :Fragment() {
             binding.btnSignup.setEnabled(false)
             binding.btnSignup.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
         }
-
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {

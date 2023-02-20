@@ -6,34 +6,37 @@ import retrofit2.http.*
 interface AuthAPIS {
     /** 계정 관련 API */
 
-    @GET("auth/check/overlap/username")     // 100 아이디 중복조회
-    fun usernameOverlapCheck(
-        @Query("user_name") username: String
-    ): Call<OverlapResult>
+    @GET("auth/signup/duplication/username")     // 100 아이디 중복조회
+    fun usernameDuplicationCheck(
+        @Query("username") username: String
+    ): Call<DuplicationResult>
 
-    @GET("auth/check/overlap/studentnum")   // 101 학번 중복조회
-    fun studentnumOverlapCheck(
-        @Query("studen_tnum") studentnum: Int
-    ): Call<OverlapResult>
+    @GET("auth/signup/duplication/studentnum")   // 101 학번 중복조회
+    fun studentnumDuplicationCheck(
+        @Query("studentnum") studentnum: String
+    ): Call<DuplicationResult>
 
-    @GET("auth/check/overlap/nickname")     // 102 닉네임 중복조회
-    fun nicknameOverlapCheck(
-        @Query("nick_name") nickname: String
-    ): Call<OverlapResult>
+    @GET("auth/signup/duplication/nickname")     // 102 닉네임 중복조회
+    fun nicknameDuplicationCheck(
+        @Query("nickname") nickname: String
+    ): Call<DuplicationResult>
 
     @POST("auth/signup")                    // 103 회원가입
-    //@Headers("accept: application/json", "content-type: application/json")
     fun signup(
         @Body jsonparams: SignUpModel
     ): Call<SignUpResult>
 
-    @POST("auth/login")                     // 104 로그인
-    //@Headers("accept: application/json", "content-type: application/json")
+    @POST("auth/signin")                     // 104 로그인
     fun login(
         @Body jsonparams: LoginModel
     ): Call<LoginResult>
 
-    @POST("auth/logout")                    // 105 로그아웃
+    @GET("auth/logout")                    // 105 로그아웃
     fun logout(
     ): Call<LogoutResult>
+
+    @GET("auth/signin/refresh")             // 토큰 갱신
+    fun refresh(
+
+    )
 }

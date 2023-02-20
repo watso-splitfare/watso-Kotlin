@@ -83,6 +83,7 @@
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_baedal_order.xml" value="0.151" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/drawable/btn_taxi_propose.xml" value="0.151" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_account.xml" value="0.18795289855072464" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_add.xml" value="0.25" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_confirm.xml" value="0.20018115942028986" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_baedal_list.xml" value="0.16530797101449277" />
@@ -99,6 +100,7 @@
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara.xml" value="0.25" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_kara_use.xml" value="0.33" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_login.xml" value="0.19021739130434784" />
+        <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_sign_up.xml" value="0.33" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_taxi.xml" value="0.19021739130434784" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_taxi_add.xml" value="0.4740740740740741" />
         <entry key="..\:/Users/JH/AndroidStudioProjects/SaengSaengTalk/app/src/main/res/layout/frag_taxi_list.xml" value="0.33" />

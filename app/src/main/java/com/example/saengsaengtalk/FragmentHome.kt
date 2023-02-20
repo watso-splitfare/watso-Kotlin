@@ -65,7 +65,7 @@ class FragmentHome :Fragment() {
             else
                 setFrag(FragmentAccount(), fragIndex=-1)
         }
-
+        binding.lytApiTest.visibility = View.GONE
 
         /** 배달 */
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
@@ -111,6 +111,8 @@ class FragmentHome :Fragment() {
                 setFrag(FragmentFreeBoardPost(), mapOf("postNum" to baedalList[position].postId.toString()), fragIndex=4)
             }
         })*/
+
+        binding.lytHomeClubboard.visibility = View.GONE
 
     }
 

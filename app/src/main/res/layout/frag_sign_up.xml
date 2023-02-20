@@ -113,29 +113,29 @@
                     android:layout_margin="8dp">
 
                     <TextView
-                        android:id="@+id/textView_id"
+                        android:id="@+id/textView_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:text="아이디"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/btn_username_overlap_check"
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_username_duplication_check"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/btn_username_overlap_check" />
+                        app:layout_constraintTop_toTopOf="@+id/btn_username_duplication_check" />
 
                     <TextView
-                        android:id="@+id/tv_id_confirm"
+                        android:id="@+id/tv_username_confirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:textSize="13dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView_id"
-                        app:layout_constraintStart_toEndOf="@+id/textView_id"
-                        app:layout_constraintTop_toTopOf="@+id/textView_id" />
+                        app:layout_constraintBottom_toBottomOf="@+id/textView_username"
+                        app:layout_constraintStart_toEndOf="@+id/textView_username"
+                        app:layout_constraintTop_toTopOf="@+id/textView_username" />
 
                     <Button
-                        android:id="@+id/btn_username_overlap_check"
+                        android:id="@+id/btn_username_duplication_check"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:text="아이디 중복확인"
@@ -146,7 +146,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
-                    android:id="@+id/et_id"
+                    android:id="@+id/et_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -231,9 +231,9 @@
                         android:text="닉네임"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/btn_nickname_overlap_check"
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_nickname_duplication_check"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/btn_nickname_overlap_check" />
+                        app:layout_constraintTop_toTopOf="@+id/btn_nickname_duplication_check" />
 
                     <TextView
                         android:id="@+id/tv_nickname_confirm"
@@ -246,7 +246,7 @@
                         app:layout_constraintTop_toTopOf="@+id/textView_nickname" />
 
                     <Button
-                        android:id="@+id/btn_nickname_overlap_check"
+                        android:id="@+id/btn_nickname_duplication_check"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:text="닉네임 중복확인"
@@ -257,6 +257,54 @@
 
                 <EditText
                     android:id="@+id/et_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/box_style_sign_up_input"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:textSize="12sp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp">
+
+                    <TextView
+                        android:id="@+id/textView_studentnum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="학번"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_studentnum_duplication_check"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/btn_studentnum_duplication_check" />
+
+                    <TextView
+                        android:id="@+id/tv_studentnum_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:textSize="13dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView_studentnum"
+                        app:layout_constraintStart_toEndOf="@+id/textView_studentnum"
+                        app:layout_constraintTop_toTopOf="@+id/textView_studentnum" />
+
+                    <Button
+                        android:id="@+id/btn_studentnum_duplication_check"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="학번 중복확인"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <EditText
+                    android:id="@+id/et_studentnum"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

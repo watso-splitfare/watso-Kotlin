@@ -37,15 +37,23 @@ class FragmentAccount :Fragment() {
             onBackPressed()
         }
 
+        binding.tvAuth.text = MainActivity.prefs.getString("Authentication", "")
         binding.tvUsername.text = MainActivity.prefs.getString("userId", "")
         binding.tvNickname.text = MainActivity.prefs.getString("nickname", "")
 
         binding.btnLogout.setOnClickListener {
-            MainActivity.prefs.removeString("Authentication")
-            MainActivity.prefs.removeString("userId")
-            MainActivity.prefs.removeString("nickname")
             api.logout().enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
+                    if (response.code() == 204) {
+                        MainActivity.prefs.removeString("Authentication")
+                        MainActivity.prefs.removeString("userId")
+                        MainActivity.prefs.removeString("nickname")
+                        makeToast("로그아웃 되었습니다.")
+                        onBackPressed()
+                    } else if (response.code() == 500) {
+                        Log.d("로그아웃 에러", response.body()!!.message!!)
+                        makeToast("다시 시도해 주세요.")
+                    }
                     Log.d("로그아웃", response.toString())
                     Log.d("로그아웃", response.body().toString())
                     Log.d("로그아웃", response.headers().toString())
@@ -56,14 +64,24 @@ class FragmentAccount :Fragment() {
                     Log.d("로그아웃","fail")
                 }
             })
-            onBackPressed()
         }
 
+        binding.btnRemoveCache.setOnClickListener {
+            MainActivity.prefs.removeString("Authentication")
+            MainActivity.prefs.removeString("userId")
+            MainActivity.prefs.removeString("nickname")
+
+        }
         // 빈칸에 a를 입력 후 버튼을 누르면 어드민 화면에 진입합니다.
         // 어드민 계정 인증 관련해서 논의 필요
         binding.btnAdmin.setOnClickListener {
             if (binding.etAdmin.text.toString() == "a") setFrag(FragmentAdmin())
         }
+    }
+
+    fun makeToast(message: String){
+        val mActivity = activity as MainActivity
+        mActivity.makeToast(message)
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {

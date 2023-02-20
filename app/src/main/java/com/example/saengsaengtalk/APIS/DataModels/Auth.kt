@@ -2,19 +2,22 @@ package com.example.saengsaengtalk.APIS
 
 /** 계정 API 관련 데이터 모델 */
 
-data class OverlapResult(
-    val isOverlapped: Boolean
-)
-
-data class SignUpResult(
-    val success: Boolean
+data class DuplicationResult(
+    val is_duplicated: Boolean?,
+    val message: String?
 )
 
 data class SignUpModel(
     val user_name: String,
     val pw: String,
-    val student_num: Int?,
-    val nick_name: String
+    val nick_name: String,
+    val student_num: String,
+    val account_number: String,
+    val email: String
+)
+
+data class SignUpResult(
+    val message: String?
 )
 
 data class LoginModel(
@@ -23,10 +26,12 @@ data class LoginModel(
 )
 
 data class LoginResult(
-    val result: Boolean
+    val success: Boolean?,
+    val id: String?,
+    val nick_name: String?,
+    val message: String?
 )
 
 data class LogoutResult(
-    val result: Boolean,
-    //val code: Int
+    val message: String?
 )
