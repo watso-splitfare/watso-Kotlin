@@ -33,6 +33,7 @@ interface AuthAPIS {
 
     @GET("auth/logout")                    // 105 로그아웃
     fun logout(
+        @Header("Authorization") refreshTK: String
     ): Call<LogoutResult>
 
     @GET("auth/signin/refresh")             // 토큰 갱신

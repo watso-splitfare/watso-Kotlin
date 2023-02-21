@@ -144,7 +144,7 @@ class FragmentHome :Fragment() {
         var baedalAdapter: BaedalPreAdapter
         if (baedalPosts.isEmpty()) {
             val emptyBaedalPosts = listOf<BaedalPostPreviewModel>(
-                BaedalPostPreviewModel("-1", listOf<Long>(), Store("0", "0", 0, 0), "0", "0", false))
+                BaedalPostPreviewModel("-1", listOf<Long>(), Store("0", "0", 0, 0, ""), "0", "0", false))
             baedalAdapter = BaedalPreAdapter(emptyBaedalPosts)
         } else { baedalAdapter = BaedalPreAdapter(baedalPosts) }
 

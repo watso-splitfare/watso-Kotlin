@@ -42,10 +42,13 @@ class FragmentAccount :Fragment() {
         binding.tvNickname.text = MainActivity.prefs.getString("nickname", "")
 
         binding.btnLogout.setOnClickListener {
-            api.logout().enqueue(object: Callback<LogoutResult> {
+            val refreshTK = MainActivity.prefs.getString("refresh", "")
+            Log.d("refresh", refreshTK)
+            api.logout(refreshTK).enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
                     if (response.code() == 204) {
                         MainActivity.prefs.removeString("Authentication")
+                        MainActivity.prefs.removeString("refresh")
                         MainActivity.prefs.removeString("userId")
                         MainActivity.prefs.removeString("nickname")
                         makeToast("로그아웃 되었습니다.")

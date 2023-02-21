@@ -2,11 +2,11 @@ package com.example.saengsaengtalk.APIS
 import java.util.*
 
 /** 201 배달 가게 목록 모델 */
-data class StoreListModel(
+/*data class StoreListModel(
     val store_id: String,
     val store_name: String,
     val fee: Int
-)
+)*/
 
 /** 202 섹션 및 메뉴 모델 */
 data class SectionMenuModel(
@@ -76,9 +76,10 @@ data class BaedalPostModel(
 
 data class Store(
     val _id: String,
-    val store_name: String,
+    val name: String,
     val fee: Int,
-    val min_order: Int
+    val min_order: Int,
+    val message: String?
 )
 
 data class UserOrder(

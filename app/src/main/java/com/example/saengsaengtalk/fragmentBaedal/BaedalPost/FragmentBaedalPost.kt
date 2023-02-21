@@ -119,7 +119,7 @@ class FragmentBaedalPost :Fragment() {
                                     "title" to baedalPost.title,
                                     "content" to if (baedalPost.content != null) baedalPost.content!! else "",
                                     "orderTime" to orderTime.toString(),
-                                    "storeName" to store.store_name,
+                                    "storeName" to store.name,
                                     "place" to baedalPost.place,
                                     "minMember" to if (baedalPost.min_member != null) baedalPost.min_member.toString() else "0",
                                     "maxMember" to if (baedalPost.max_member != null )baedalPost.max_member.toString() else "0",
@@ -150,7 +150,7 @@ class FragmentBaedalPost :Fragment() {
                                 Locale.KOREAN
                             )
                         )
-                    binding.tvStore.text = store.store_name
+                    binding.tvStore.text = store.name
                     binding.tvCurrentMember.text = currentMember.toString()
                     binding.tvFee.text = "${dec.format(store.fee)}원"
 
@@ -349,7 +349,7 @@ class FragmentBaedalPost :Fragment() {
             "postId" to postId!!,
             "currentMember" to currentMember.toString(),
             "isUpdating" to isUpdating.toString(),
-            "storeName" to store.store_name,
+            "storeName" to store.name,
             "storeId" to store._id,
             "baedalFee" to store.fee.toString(),
             "orders" to ""

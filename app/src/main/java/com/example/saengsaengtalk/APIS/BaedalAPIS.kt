@@ -6,12 +6,12 @@ import retrofit2.http.*
 interface BaedalAPIS {
     /** 배달 게시물 관련 api */
 
-    @GET("order/store/list")                // 201 가게 리스트 조회
-    fun getStoreList(): Call<List<StoreListModel>>
+    @GET("delivery/store")                // 201 가게 리스트 조회
+    fun getStoreList(): Call<List<Store>>
 
-    @GET("order/menu/list")                 // 202 메뉴 조회
+    @GET("delivery/store/{store_id}")                 // 202 메뉴 조회
     fun getSectionMenu(
-        @Query("store_id") storeId: String
+        @Path("store_id") storeId: String
     ): Call<List<SectionMenuModel>>
 
     @GET("order/menu/detail")               // 203 옵션 조회

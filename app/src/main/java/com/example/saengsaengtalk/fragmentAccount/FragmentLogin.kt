@@ -55,12 +55,18 @@ class FragmentLogin :Fragment() {
                             val dId = JSONObject(payload).getString("id")
                             val dNickname = JSONObject(payload).getString("nick_name")
 
-                            MainActivity.prefs.setString("Authentication", response.headers().get("Authentication").toString())
+                            val tokens = response.headers().get("Authentication").toString().split("/")
+
+                            MainActivity.prefs.setString("Authentication", tokens[0])
+                            MainActivity.prefs.setString("refresh", tokens[1])
                             MainActivity.prefs.setString("userId", dId)
                             MainActivity.prefs.setString("nickname", dNickname)
 
                             onBackPressed()
                             looping(false, loopingDialog)
+
+                            Log.d("AUTH", MainActivity.prefs.getString("Authentication", ""))
+                            Log.d("refresh", MainActivity.prefs.getString("refresh", ""))
                         } else makeToast("등록된 계정 정보가 일치하지 않습니다.")
                     } else {
                         Log.e("login Fragment - login", response.toString())

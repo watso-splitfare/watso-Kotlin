@@ -24,7 +24,7 @@ import kotlin.math.min
 
 class FragmentAdmin :Fragment() {
 
-    var stores = listOf<StoreListModel>()
+    var stores = listOf<Store>()
     var storeIds = mutableListOf<String>()
     var storeNames = mutableListOf<String>()
     var storeFees = mutableListOf<Int>()
@@ -69,8 +69,8 @@ class FragmentAdmin :Fragment() {
     )
 
     fun getShopList() {
-        appApi.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
-            override fun onResponse(call: Call<List<StoreListModel>>, response: Response<List<StoreListModel>>) {
+        appApi.getStoreList().enqueue(object : Callback<List<Store>> {
+            override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {
                 val detail = JSONObject(response.body()!!.toString()).getJSONObject("data")
                 Log.d("log", response.toString())
                 Log.d("log", detail.toString())
@@ -78,8 +78,8 @@ class FragmentAdmin :Fragment() {
                 stores = response.body()!!
 
                 stores.forEach {
-                    storeIds.add(it.store_id)
-                    storeNames.add(it.store_name)
+                    storeIds.add(it._id)
+                    storeNames.add(it.name)
                     storeFees.add(it.fee)
                 }
 
@@ -99,7 +99,7 @@ class FragmentAdmin :Fragment() {
                 }
             }
 
-            override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<Store>>, t: Throwable) {
                 // 실패
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")

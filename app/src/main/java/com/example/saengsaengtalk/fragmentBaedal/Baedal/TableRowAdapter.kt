@@ -51,7 +51,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreviewModel>) : RecyclerVie
 
             binding.lytBaedalListLikeview.visibility = View.GONE
 
-            binding.tvStoreName.text = post.store.store_name
+            binding.tvStoreName.text = post.store.name
             binding.tvOrderTime.text = "주문예정: " + getDateTimeFormating(post.order_time)
             binding.tvMember.text = "모인인원: " + currentMember + "팀"
             binding.tvTitle.text = post.title

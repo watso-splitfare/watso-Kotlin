@@ -51,7 +51,7 @@ class FragmentBaedalAdd :Fragment() {
     var orderPrice = 0
     var orders = JSONArray()
 
-    var stores = listOf<StoreListModel>()
+    var stores = listOf<Store>()
     var storeIds = mutableListOf<String>()
     var storeNames = mutableListOf<String>()
     var storeFees = mutableListOf<Int>()
@@ -212,15 +212,15 @@ class FragmentBaedalAdd :Fragment() {
 
     fun setStoreSpinner(){
         val loopingDialog = looping()
-        api.getStoreList().enqueue(object : Callback<List<StoreListModel>> {
-            override fun onResponse(call: Call<List<StoreListModel>>, response: Response<List<StoreListModel>>) {
+        api.getStoreList().enqueue(object : Callback<List<Store>> {
+            override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {
                 Log.d("log", response.toString())
                 Log.d("log", response.body().toString())
                 if (response.code() == 200) {
                     stores = response.body()!!
                     stores.forEach {
-                        storeIds.add(it.store_id)
-                        storeNames.add(it.store_name)
+                        storeIds.add(it._id)
+                        storeNames.add(it.name)
                         storeFees.add(it.fee)
                     }
 
@@ -238,11 +238,20 @@ class FragmentBaedalAdd :Fragment() {
 
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
                         }
-                } else setStoreSpinner()
+                } else {
+
+
+                    Log.d("가게조회", response.toString())
+                    Log.d("가게조회", response.body().toString())
+                    Log.d("가게조회", response.headers().toString())
+
+                    Log.d("log", response.toString())
+                    makeToast("가게 리스트 조회 실패")
+                }
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<List<StoreListModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<Store>>, t: Throwable) {
                 // 실패
                 Log.d("log", t.message.toString())
                 Log.d("log", "fail")
