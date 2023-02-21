@@ -3,8 +3,7 @@ package com.example.saengsaengtalk.APIS
 /** 계정 API 관련 데이터 모델 */
 
 data class DuplicationResult(
-    val is_duplicated: Boolean?,
-    val message: String?
+    val is_duplicated: Boolean,
 )
 
 data class SignUpModel(
@@ -26,10 +25,9 @@ data class LoginModel(
 )
 
 data class LoginResult(
-    val success: Boolean?,
-    val id: String?,
-    val nick_name: String?,
-    val message: String?
+    val success: Boolean,
+    val id: String,
+    val nick_name: String
 )
 
 data class LogoutResult(

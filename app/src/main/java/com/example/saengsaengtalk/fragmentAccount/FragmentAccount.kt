@@ -50,8 +50,8 @@ class FragmentAccount :Fragment() {
                         MainActivity.prefs.removeString("nickname")
                         makeToast("로그아웃 되었습니다.")
                         onBackPressed()
-                    } else if (response.code() == 500) {
-                        Log.d("로그아웃 에러", response.body()!!.message!!)
+                    } else {
+                        Log.e("로그아웃 에러", response.toString())
                         makeToast("다시 시도해 주세요.")
                     }
                     Log.d("로그아웃", response.toString())

@@ -212,8 +212,6 @@ class FragmentSignUp :Fragment() {
                             checkedStudentnum = binding.etStudentnum.text.toString()
                         }
                         setSignupBtnAble()
-                    } else if (response.code() == 500) {
-                        Log.e("signUp Fragment - studentnumDuplicationCheck", response.body()!!.message!!)
                     } else {
                         Log.e("signUp Fragment - studentnumDuplicationCheck", response.toString())
                         makeToast("다시 시도해 주세요.")
