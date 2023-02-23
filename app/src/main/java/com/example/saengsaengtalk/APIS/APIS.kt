@@ -15,15 +15,23 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
     companion object {
         private const val BASE_URL = "http://52.78.106.235:5000/"
 
-        fun create(): APIS {
+        fun create(forLogOut: Boolean=false): APIS {
             val gson :Gson = GsonBuilder().setLenient().create();
 
-            return Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(provideOkHttpClient(AppInterceptor()))
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-                .create(APIS::class.java)
+            if (forLogOut) {
+                return Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build()
+                    .create(APIS::class.java)
+            } else {
+                return Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(provideOkHttpClient(AppInterceptor()))
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build()
+                    .create(APIS::class.java)
+            }
         }
 
         private fun provideOkHttpClient(interceptor: AppInterceptor):
