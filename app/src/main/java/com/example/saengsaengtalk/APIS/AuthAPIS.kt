@@ -31,7 +31,7 @@ interface AuthAPIS {
         @Body jsonparams: LoginModel
     ): Call<LoginResult>
 
-    @GET("auth/logout")                    // 105 로그아웃
+    /*@GET("auth/logout")                    // 105 로그아웃
     fun logout(
         @Header("Authorization") refreshTK: String
     ): Call<LogoutResult>
@@ -39,5 +39,5 @@ interface AuthAPIS {
     @GET("auth/signin/refresh")             // 토큰 갱신
     fun refresh(
 
-    )
+    )*/
 }

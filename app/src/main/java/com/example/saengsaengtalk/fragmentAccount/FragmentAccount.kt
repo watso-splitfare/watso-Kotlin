@@ -17,7 +17,7 @@ import retrofit2.Response
 class FragmentAccount :Fragment() {
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= AuthA.create()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
@@ -42,9 +42,9 @@ class FragmentAccount :Fragment() {
         binding.tvNickname.text = MainActivity.prefs.getString("nickname", "")
 
         binding.btnLogout.setOnClickListener {
-            val refreshTK = MainActivity.prefs.getString("refresh", "")
-            Log.d("refresh", refreshTK)
-            api.logout(refreshTK).enqueue(object: Callback<LogoutResult> {
+            val refreshToken = MainActivity.prefs.getString("refresh", "")
+            Log.d("refresh", refreshToken)
+            api.logout(refreshToken).enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
                     if (response.code() == 204) {
                         MainActivity.prefs.removeString("Authentication")

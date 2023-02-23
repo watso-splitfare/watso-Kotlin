@@ -33,3 +33,6 @@ data class LoginResult(
 data class LogoutResult(
     val message: String?
 )
+data class RefreshResult(
+    val message: String?
+)
