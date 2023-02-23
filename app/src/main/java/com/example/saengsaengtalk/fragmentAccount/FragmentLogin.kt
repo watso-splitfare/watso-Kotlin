@@ -50,23 +50,23 @@ class FragmentLogin :Fragment() {
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
                     if (response.code()==200) {
-                        if (response.body()!!.success!!) {
-                            val payload = decodeToken(response.headers().get("Authentication").toString())
+                        if (response.body()!!.success) {
+                            val tokens = response.headers().get("Authentication").toString().split("/")
+
+                            val payload = decodeToken(tokens[0])
                             val dId = JSONObject(payload).getString("id")
                             val dNickname = JSONObject(payload).getString("nick_name")
 
-                            val tokens = response.headers().get("Authentication").toString().split("/")
-
-                            MainActivity.prefs.setString("Authentication", tokens[0])
-                            MainActivity.prefs.setString("refresh", tokens[1])
+                            MainActivity.prefs.setString("accessToken", tokens[0])
+                            MainActivity.prefs.setString("refreshToken", tokens[1])
                             MainActivity.prefs.setString("userId", dId)
                             MainActivity.prefs.setString("nickname", dNickname)
 
                             onBackPressed()
                             looping(false, loopingDialog)
 
-                            Log.d("AUTH", MainActivity.prefs.getString("Authentication", ""))
-                            Log.d("refresh", MainActivity.prefs.getString("refresh", ""))
+                            Log.d("access", MainActivity.prefs.getString("accessToken", ""))
+                            Log.d("refresh", MainActivity.prefs.getString("refreshToken", ""))
                         } else makeToast("등록된 계정 정보가 일치하지 않습니다.")
                     } else {
                         Log.e("login Fragment - login", response.toString())

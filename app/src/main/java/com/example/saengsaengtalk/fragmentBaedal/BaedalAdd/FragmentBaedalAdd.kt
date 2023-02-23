@@ -80,7 +80,6 @@ class FragmentBaedalAdd :Fragment() {
                 fee = it.getString("fee")?.toInt()
             }
         }
-        println("${isUpdating}, ${postId}, ${title}, ${content}, ${orderTime}, ${storeName}, ${place}, ${minMember}, ${maxMember}, ${fee}")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -98,7 +97,6 @@ class FragmentBaedalAdd :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         binding.lytTime.setOnClickListener { showCalendar() }
-
 
         val places = listOf("생자대", "기숙사")
         val placeSpinerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, places)
@@ -239,8 +237,6 @@ class FragmentBaedalAdd :Fragment() {
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
                         }
                 } else {
-
-
                     Log.d("가게조회", response.toString())
                     Log.d("가게조회", response.body().toString())
                     Log.d("가게조회", response.headers().toString())

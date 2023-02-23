@@ -117,7 +117,7 @@ class FragmentHome :Fragment() {
     }
 
     fun getBaedalPostPreview() {
-        val loopingDialog = looping()
+        /*val loopingDialog = looping()
         api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
             override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
                 if (response.code() == 200) {
@@ -135,7 +135,7 @@ class FragmentHome :Fragment() {
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
-        })
+        })*/
     }
 
     fun mappingBaedalAdapter(baedalPosts: List<BaedalPostPreviewModel>) {
@@ -159,7 +159,7 @@ class FragmentHome :Fragment() {
     }
 
     fun getTaxiPostPreview() {
-        val loopingDialog = looping()
+        /*val loopingDialog = looping()
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
                 if (response.code() == 200) {
@@ -177,7 +177,7 @@ class FragmentHome :Fragment() {
                 makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
-        })
+        })*/
     }
 
     fun mappingTaxiAdapter(taxiPosts: List<TaxiPostPreviewModel>) {

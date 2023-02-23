@@ -37,18 +37,18 @@ class FragmentAccount :Fragment() {
             onBackPressed()
         }
 
-        binding.tvAuth.text = MainActivity.prefs.getString("Authentication", "")
+        binding.tvAuth.text = MainActivity.prefs.getString("accessToken", "")
         binding.tvUsername.text = MainActivity.prefs.getString("userId", "")
         binding.tvNickname.text = MainActivity.prefs.getString("nickname", "")
 
         binding.btnLogout.setOnClickListener {
-            val refreshToken = MainActivity.prefs.getString("refresh", "")
+            val refreshToken = MainActivity.prefs.getString("refreshToken", "")
             Log.d("refresh", refreshToken)
             api.logout(refreshToken).enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
                     if (response.code() == 204) {
-                        MainActivity.prefs.removeString("Authentication")
-                        MainActivity.prefs.removeString("refresh")
+                        MainActivity.prefs.removeString("accessToken")
+                        MainActivity.prefs.removeString("refreshToken")
                         MainActivity.prefs.removeString("userId")
                         MainActivity.prefs.removeString("nickname")
                         makeToast("로그아웃 되었습니다.")
@@ -70,7 +70,8 @@ class FragmentAccount :Fragment() {
         }
 
         binding.btnRemoveCache.setOnClickListener {
-            MainActivity.prefs.removeString("Authentication")
+            MainActivity.prefs.removeString("accessToken")
+            MainActivity.prefs.removeString("refreshToken")
             MainActivity.prefs.removeString("userId")
             MainActivity.prefs.removeString("nickname")
 
