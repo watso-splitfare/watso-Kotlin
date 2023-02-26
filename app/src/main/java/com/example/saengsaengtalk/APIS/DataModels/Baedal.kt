@@ -1,5 +1,16 @@
 package com.example.saengsaengtalk.APIS
+import com.google.gson.annotations.SerializedName
 import java.util.*
+
+
+data class Store(
+    val _id: String,
+    val name: String,
+    val fee: Int,
+    @SerializedName("min_order")
+    val minOrder: Int,
+    val message: String?
+)
 
 /** 201 배달 가게 목록 모델 */
 /*data class StoreListModel(
@@ -9,7 +20,7 @@ import java.util.*
 )*/
 
 /** 202 섹션 및 메뉴 모델 */
-data class SectionMenuModel(
+/*data class SectionMenuModel(
     //val section_id: Int,
     val section_name: String,
     val menus: List<MenuModel>
@@ -19,10 +30,24 @@ data class MenuModel(
     //val menu_id: Int,
     val menu_name: String,
     val menu_price: Int
+)*/
+data class StoreInfo(
+    val _id: String,
+    val name: String,
+    @SerializedName("min_order")
+    val minOrder: Int,
+    val fee: Int,
+    val menus: List<Menu>
+)
+
+data class Menu(
+    val section: String,
+    val name: String,
+    val price: Int
 )
 
 /** 203 그룹 및 옵션 모델 */
-data class GroupOptionModel(
+/*data class GroupOptionModel(
     val group_id: String,
     val group_name: String,
     val min_orderable_quantity: Int,
@@ -34,6 +59,27 @@ data class OptionModel(
     val option_id: String,
     val option_name: String,
     val option_price: Int
+)*/
+
+data class MenuInfo(
+    val section: String,
+    val name: String,
+    val price: Int,
+    val groups: List<Group>
+)
+
+data class Group(
+    val _id: String,
+    val name: String,
+    val min_order_quantity: Int,
+    val max_order_quantity: Int,
+    val options: List<Option>
+)
+
+data class Option(
+    val _id: String,
+    val name: String,
+    val price: Int
 )
 
 /** 204 배달 게시글 등록 모델 */
@@ -74,13 +120,6 @@ data class BaedalPostModel(
     //val comments: List<Comment>
 )
 
-data class Store(
-    val _id: String,
-    val name: String,
-    val fee: Int,
-    val min_order: Int,
-    val message: String?
-)
 
 data class UserOrder(
     val user_id: Long,
@@ -96,7 +135,7 @@ data class Order(
     val groups: List<Group>
 )
 
-data class Group(
+/*data class Group(
     val group_id: String,
     val group_name: String,
     val options: List<Option>
@@ -106,7 +145,7 @@ data class Option(
     val option_id: String,
     val option_name: String,
     val option_price: Int
-)
+)*/
 
 /** 206 배달 게시글 수정 모델 */
 data class BaedalUpdateModel(
@@ -171,18 +210,4 @@ data class BaedalPostPreviewModel(
     //val update_date: String,
     //val views: Int,
     val is_closed: Boolean
-)
-
-data class TestModel(
-    val a: Int,
-    val inner1: List<Inner1>,
-    val inner2: Inner2
-)
-
-data class Inner1(
-    val b: Int
-)
-
-data class Inner2(
-    val c: Int
 )

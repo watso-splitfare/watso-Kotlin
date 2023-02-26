@@ -6,20 +6,22 @@ import retrofit2.http.*
 interface BaedalAPIS {
     /** 배달 게시물 관련 api */
 
-    @GET("delivery/store")                // 201 가게 리스트 조회
+    /** 가게 리스트 조회 */
+    @GET("delivery/store")
     fun getStoreList(): Call<List<Store>>
 
-    @GET("delivery/store/{store_id}")                 // 202 메뉴 조회
-    fun getSectionMenu(
+    /** 가게 상세정보(메뉴) 조회 */
+    @GET("delivery/store/{store_id}")
+    fun getStoreInfo(
         @Path("store_id") storeId: String
-    ): Call<List<SectionMenuModel>>
+    ): Call<StoreInfo>
 
-    @GET("order/menu/detail")               // 203 옵션 조회
-    fun getGroupOption(
-        //@Query("menu_id") menuId: Int,      // 테스트용(실제 사용 x)
-        @Query("menu_name") menuName: String,
-        @Query("store_id") storeId: String
-    ): Call<List<GroupOptionModel>>
+    /** 메뉴 상세정보(옵션) 조회 */
+    @GET("delivery/store/{store_id}/{menu_name}")
+    fun getMenuInfo(
+        @Path("store_id") storeId: String,
+        @Path("menu_name") menuName: String
+    ): Call<MenuInfo>
 
     @POST("order/post/posting")             // 204 배달 게시글 등록
     fun baedalPosting(

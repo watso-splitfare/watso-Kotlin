@@ -365,9 +365,9 @@ class FragmentBaedalPost :Fragment() {
         for (group in order.groups) {
             val options = mutableListOf<Option>()
             for (option in group.options) {
-                options.add(Option(null, option.option_name, option.option_price))
+                options.add(Option(null, option.name, option.price))
             }
-            groups.add(Group(null, group.group_name, options))
+            groups.add(Group(null, group.name, options))
         }
 
         return BaedalOrder(
