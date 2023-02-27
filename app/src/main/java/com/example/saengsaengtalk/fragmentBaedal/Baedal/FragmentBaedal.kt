@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
+import com.example.saengsaengtalk.APIS.BaedalPostPreview
 import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.databinding.FragBaedalBinding
@@ -50,20 +50,20 @@ class FragmentBaedal :Fragment() {
 
     fun getPostPreview() {
         val loopingDialog = looping()
-        api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
+        api.getBaedalPostList().enqueue(object : Callback<List<BaedalPostPreview>> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
+            override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.order_time }
                     mappingAdapter(baedalPosts)
                 } else {
-                    Log.e("baedal Fragment - getBaedalOrderListPreview", response.toString())
+                    Log.e("baedal Fragment - getBaedalPostList", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<BaedalPostPreview>>, t: Throwable) {
                 Log.e("home Fragment - getBaedalOrderListPreview", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
@@ -72,7 +72,7 @@ class FragmentBaedal :Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun mappingAdapter(baedalPosts: List<BaedalPostPreviewModel>) {
+    fun mappingAdapter(baedalPosts: List<BaedalPostPreview>) {
         binding.rvBaedalList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalList.setHasFixedSize(true)
 
@@ -80,7 +80,7 @@ class FragmentBaedal :Fragment() {
         val dates = mutableListOf<LocalDate>()
         var tableIdx = -1
             for (post in baedalPosts) {
-            val date = LocalDate.parse(post.order_time, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            val date = LocalDate.parse(post.order_time.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
             if (date !in dates) {
                 dates.add(date)
                 tables.add(Table(date, mutableListOf(post)))

@@ -6,18 +6,15 @@ import retrofit2.http.*
 interface BaedalAPIS {
     /** 배달 게시물 관련 api */
 
-    /** 가게 리스트 조회 */
-    @GET("delivery/store")
+    @GET("delivery/store")              // 가게 리스트 조회
     fun getStoreList(): Call<List<Store>>
 
-    /** 가게 상세정보(메뉴) 조회 */
-    @GET("delivery/store/{store_id}")
+    @GET("delivery/store/{store_id}")   // 가게 상세정보(메뉴) 조회
     fun getStoreInfo(
         @Path("store_id") storeId: String
     ): Call<StoreInfo>
 
-    /** 메뉴 상세정보(옵션) 조회 */
-    @GET("delivery/store/{store_id}/{menu_name}")
+    @GET("delivery/store/{store_id}/{menu_name}")   // 메뉴 상세정보(옵션) 조회
     fun getMenuInfo(
         @Path("store_id") storeId: String,
         @Path("menu_name") menuName: String
@@ -64,8 +61,7 @@ interface BaedalAPIS {
         @Body jsonparams: Map<String, String>
     ): Call<JoinResponse>
 
-    @GET("order/post/list")                 // 213 배달 게시글 리스트 조회
-    fun getBaedalOrderListPreview(
-        //@Query("from_index") fromIndex: Int,
-    ): Call<List<BaedalPostPreviewModel>>
+    @GET("delivery/post")                 // 배달 게시글 목록 조회
+    fun getBaedalPostList(
+    ): Call<List<BaedalPostPreview>>
 }

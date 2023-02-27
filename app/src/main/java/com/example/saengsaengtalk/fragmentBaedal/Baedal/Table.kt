@@ -1,9 +1,9 @@
 package com.example.saengsaengtalk.fragmentBaedal.Baedal
 
-import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
+import com.example.saengsaengtalk.APIS.BaedalPostPreview
 import java.time.LocalDate
 
 class Table(
     val date: LocalDate,
-    val rows: MutableList<BaedalPostPreviewModel>
+    val rows: MutableList<BaedalPostPreview>
     ) {}

@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.saengsaengtalk.APIS.BaedalPostPreviewModel
+import com.example.saengsaengtalk.APIS.BaedalPostPreview
 import com.example.saengsaengtalk.databinding.LytBaedalTableRowBinding
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TableRowAdapter(val tableRows: List<BaedalPostPreviewModel>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalTableRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -46,7 +46,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreviewModel>) : RecyclerVie
 
     class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(post: BaedalPostPreviewModel) {
+        fun bind(post: BaedalPostPreview) {
             val currentMember = post.join_users.size
 
             binding.lytBaedalListLikeview.visibility = View.GONE
@@ -60,7 +60,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreviewModel>) : RecyclerVie
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun getDateTimeFormating(dateTimeStr: String): String {
-            val dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            val dateTime = LocalDateTime.parse(dateTimeStr.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
             val formatter = DateTimeFormatter.ofPattern("HH시 mm분").withLocale(Locale.forLanguageTag("ko"))
             return dateTime.format(formatter)
         }

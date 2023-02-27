@@ -8,8 +8,7 @@ data class Store(
     val name: String,
     val fee: Int,
     @SerializedName("min_order")
-    val minOrder: Int,
-    val message: String?
+    val minOrder: Int
 )
 
 /** 201 배달 가게 목록 모델 */
@@ -196,18 +195,12 @@ data class JoinResponse(
 )
 
 /** 213 배달 게시글 미리보기 모델 */
-data class BaedalPostPreviewModel(
+data class BaedalPostPreview(
     val _id: String,
+    val title: String,
     //val user_id: Long,
     val join_users: List<Long>,
     //val nick_name: String,
     val store: Store,
-    val title: String,
-    //val place: String,
-    val order_time: String,
-    //val min_member: Int,
-    //val max_member: Int,
-    //val update_date: String,
-    //val views: Int,
-    val is_closed: Boolean
+    val order_time: String
 )

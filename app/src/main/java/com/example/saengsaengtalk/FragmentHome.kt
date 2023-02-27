@@ -35,7 +35,7 @@ class FragmentHome :Fragment() {
     private var mBinding: FragHomeBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
-    val baeminApi = BaeminAPIS.create()
+    //val baeminApi = BaeminAPIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -118,33 +118,33 @@ class FragmentHome :Fragment() {
 
     fun getBaedalPostPreview() {
         /*val loopingDialog = looping()
-        api.getBaedalOrderListPreview().enqueue(object : Callback<List<BaedalPostPreviewModel>> {
-            override fun onResponse(call: Call<List<BaedalPostPreviewModel>>, response: Response<List<BaedalPostPreviewModel>>) {
+        api.getBaedalPostList().enqueue(object : Callback<List<BaedalPostPreview>> {
+            override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.order_time }
                     mappingBaedalAdapter(baedalPosts)
                 } else {
-                    Log.e("home Fragment - getBaedalOrderListPreview", response.toString())
+                    Log.e("home Fragment - getBaedalPostList", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<List<BaedalPostPreviewModel>>, t: Throwable) {
-                Log.e("home Fragment - getBaedalOrderListPreview", t.message.toString())
+            override fun onFailure(call: Call<List<BaedalPostPreview>>, t: Throwable) {
+                Log.e("home Fragment - getBaedalPostList", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
         })*/
     }
 
-    fun mappingBaedalAdapter(baedalPosts: List<BaedalPostPreviewModel>) {
-        binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    fun mappingBaedalAdapter(baedalPosts: List<BaedalPostPreview>) {
+        /*binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBaedal.setHasFixedSize(true)
         var baedalAdapter: BaedalPreAdapter
         if (baedalPosts.isEmpty()) {
-            val emptyBaedalPosts = listOf<BaedalPostPreviewModel>(
-                BaedalPostPreviewModel("-1", listOf<Long>(), Store("0", "0", 0, 0, ""), "0", "0", false))
+            val emptyBaedalPosts = listOf<BaedalPostPreview>(
+                BaedalPostPreview("-1", "0",listOf<Long>(), Store("0", "0", 0, 0),  "0"))
             baedalAdapter = BaedalPreAdapter(emptyBaedalPosts)
         } else { baedalAdapter = BaedalPreAdapter(baedalPosts) }
 
@@ -155,7 +155,7 @@ class FragmentHome :Fragment() {
                 if (baedalPosts.isEmpty()) { setFrag(FragmentBaedalAdd(), fragIndex=1) }
                 else { setFrag(FragmentBaedalPost(), mapOf("postId" to baedalPosts[position]._id), fragIndex = 1) }
             }
-        })
+        })*/
     }
 
     fun getTaxiPostPreview() {
