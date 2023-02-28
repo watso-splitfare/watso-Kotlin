@@ -25,11 +25,10 @@ interface BaedalAPIS {
         @Body jsonparams: BaedalPostingModel
     ): Call<BaedalPostingResponse>
 
-    @GET("order/post/detail/{post_id}")     // 205 배달 게시글 조회
+    @GET("delivery/post/{post_id}")     // 205 배달 게시글 조회
     fun getBaedalPost(
         @Path("post_id") postId: String
-        //@Query("post_id") postId: Int,
-    ): Call<BaedalPostModel>
+    ): Call<BaedalPost>
 
     @PATCH("order/post/update")             // 206 배달 게시글 수정
     fun updateBaedalPost(

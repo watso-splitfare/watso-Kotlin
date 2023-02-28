@@ -11,25 +11,6 @@ data class Store(
     val minOrder: Int
 )
 
-/** 201 배달 가게 목록 모델 */
-/*data class StoreListModel(
-    val store_id: String,
-    val store_name: String,
-    val fee: Int
-)*/
-
-/** 202 섹션 및 메뉴 모델 */
-/*data class SectionMenuModel(
-    //val section_id: Int,
-    val section_name: String,
-    val menus: List<MenuModel>
-)
-
-data class MenuModel(
-    //val menu_id: Int,
-    val menu_name: String,
-    val menu_price: Int
-)*/
 data class StoreInfo(
     val _id: String,
     val name: String,
@@ -44,21 +25,6 @@ data class Menu(
     val name: String,
     val price: Int
 )
-
-/** 203 그룹 및 옵션 모델 */
-/*data class GroupOptionModel(
-    val group_id: String,
-    val group_name: String,
-    val min_orderable_quantity: Int,
-    val max_orderable_quantity: Int,
-    val options: List<OptionModel>
-)
-
-data class OptionModel(
-    val option_id: String,
-    val option_name: String,
-    val option_price: Int
-)*/
 
 data class MenuInfo(
     val section: String,
@@ -98,53 +64,64 @@ data class BaedalPostingResponse(
 )
 
 /** 205 배달 게시글 조회 모델 */
-data class BaedalPostModel(
-    val user_id: Long,
-    val nick_name: String,
+data class BaedalPost(          // 배달 게시글 조회 모델
     val _id: String,
-    val join_users: List<Long>,
+    @SerializedName("user_id")
+    val userId: Long,
+    @SerializedName("join_users")
+    val joinUsers: List<Long>,
+    @SerializedName("nick_name")
+    val nickName: String,
     val store: Store,
     val title: String,
-    val content: String?,
-    val order_time: String,
+    val content: String,
     val place: String,
-    //val current_member: Int,
-    val min_member: Int?,
-    val max_member: Int?,
-    val views: Int,
-    val update_date: String,
-    val is_closed: Boolean,
-    //val is_member: Boolean,
-    val user_orders: List<UserOrder>?,
-    //val comments: List<Comment>
+    @SerializedName("order_time")
+    val orderTime: String,
+    @SerializedName("min_member")
+    val minMember: Int,
+    @SerializedName("max_member")
+    val maxMember: Int,
+    @SerializedName("update_date")
+    val updateDate: String,
+    val open: Boolean,
+    @SerializedName("user_orders")
+    val userOrders: List<UserOrder>
 )
 
-
 data class UserOrder(
-    val user_id: Long,
-    val nick_name: String,
-    val orders: List<Order>
+    @SerializedName("user_id")
+    val userId: Long,
+    @SerializedName("nick_name")
+    val nickName: String,
+    val orders: List<Order>,
+    val isMyOrder: Boolean?     // 데이터 전송 X, 어댑터 연결시 사용
 )
 
 data class Order(
-    val menu_name: String,
+    val _id: String,
     val quantity: Int,
     val menu_price: Int,
     val sum_price: Int,
-    val groups: List<Group>
+    val menu: OrderMenu
 )
 
-/*data class Group(
-    val group_id: String,
-    val group_name: String,
-    val options: List<Option>
+data class OrderMenu(
+    val name: String,
+    val groups: List<OrderGroup>
 )
 
-data class Option(
-    val option_id: String,
-    val option_name: String,
-    val option_price: Int
-)*/
+data class OrderGroup(
+    val _id: String,
+    val name: String,
+    val options: List<OrderOption>
+)
+
+data class OrderOption(
+    val _id: String,
+    val name: String,
+    val price: Int
+)
 
 /** 206 배달 게시글 수정 모델 */
 data class BaedalUpdateModel(
