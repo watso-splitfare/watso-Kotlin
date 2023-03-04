@@ -2,7 +2,7 @@ package com.example.saengsaengtalk.APIS
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
-
+/** 가게 목록 조회 모델*/
 data class Store(
     val _id: String,
     val name: String,
@@ -11,6 +11,7 @@ data class Store(
     val minOrder: Int
 )
 
+/** 가게 상세 정보(메뉴) 조회 모델 */
 data class StoreInfo(
     val _id: String,
     val name: String,
@@ -26,6 +27,7 @@ data class Menu(
     val price: Int
 )
 
+/** 메뉴 상세 정보(옵션) 조회 모델 */
 data class MenuInfo(
     val section: String,
     val name: String,
@@ -36,8 +38,10 @@ data class MenuInfo(
 data class Group(
     val _id: String,
     val name: String,
-    val min_order_quantity: Int,
-    val max_order_quantity: Int,
+    @SerializedName("min_order_quantity")
+    val minOrderQuantity: Int,
+    @SerializedName("max_order_quantity")
+    val maxOrderQuantity: Int,
     val options: List<Option>
 )
 
@@ -47,47 +51,48 @@ data class Option(
     val price: Int
 )
 
-/** 204 배달 게시글 등록 모델 */
-data class BaedalPostingModel(
-    val store_id: String,
+/** 배달 게시글 등록 모델 */
+data class BaedalPosting(
+    @SerializedName("store_id")
+    val storeId: String,
     val title: String,
     val content: String?,
-    val order_time: String,
+    @SerializedName("order_time")
+    val orderTime: String,
     val place: String,
-    val min_member: Int?,
-    val max_member: Int?
+    @SerializedName("min_member")
+    val minMember: Int?,
+    @SerializedName("max_member")
+    val maxMember: Int?
 )
 
 data class BaedalPostingResponse(
-    val success: Boolean,
-    val post_id: String
+    @SerializedName("post_id")
+    val postId: String
 )
 
-/** 205 배달 게시글 조회 모델 */
-data class BaedalPost(          // 배달 게시글 조회 모델
+/** 배달 게시글 조회 모델 */
+data class BaedalPost(
     val _id: String,
     @SerializedName("user_id")
     val userId: Long,
-    @SerializedName("join_users")
-    val joinUsers: List<Long>,
     @SerializedName("nick_name")
     val nickName: String,
     val store: Store,
     val title: String,
-    val content: String,
     val place: String,
     @SerializedName("order_time")
     val orderTime: String,
+    @SerializedName("update_time")
+    val updateTime: String,
     @SerializedName("min_member")
     val minMember: Int,
     @SerializedName("max_member")
     val maxMember: Int,
-    @SerializedName("update_date")
-    val updateDate: String,
-    val open: Boolean,
-    @SerializedName("user_orders")
+    @SerializedName("users")
     val userOrders: List<UserOrder>
 )
+
 
 data class UserOrder(
     @SerializedName("user_id")
@@ -95,25 +100,27 @@ data class UserOrder(
     @SerializedName("nick_name")
     val nickName: String,
     val orders: List<Order>,
-    val isMyOrder: Boolean?     // 데이터 전송 X, 어댑터 연결시 사용
+    val isMyOrder: Boolean?     // 데이터 조회 X, 어댑터 연결시에만 사용
 )
 
 data class Order(
     val _id: String,
     val quantity: Int,
-    val menu_price: Int,
-    val sum_price: Int,
+    @SerializedName("order_price")
+    val orderPrice: Int,
     val menu: OrderMenu
 )
 
 data class OrderMenu(
     val name: String,
+    @SerializedName("menu_price")
+    val menuPrice: Int,
     val groups: List<OrderGroup>
 )
 
 data class OrderGroup(
     val _id: String,
-    val name: String,
+    val name: String?,  // 현재 API에 조회안됨, 수정요청 필요함
     val options: List<OrderOption>
 )
 
@@ -141,27 +148,29 @@ data class IsClosedResponse(
     val is_closed: Boolean
 )
 
-/** 209 배달 주문 등록 모델 */
-data class OrderingModel(
+/** 배달 주문 등록 모델 */
+data class Ordering(
     val store_id: String,
-    val post_id: String?,
     val orders: List<OrderingOrder>
 )
 
 data class OrderingOrder(
     val quantity: Int,
-    val menu_name: String,
-    val groups: List<OrderingGroup>
+    val menu: List<OrderingMenu>
 )
 
-data class OrderingGroup(
-    val group_id: String,
+data class OrderingMenu(
+    val name: String,
+    val groups: List<OrderingGroups>
+)
+
+data class OrderingGroups(
+    val _id: String,
     val options: List<String>
 )
 
 data class OrderingResponse(
-    val success: Boolean,
-    val post_id: String
+    val message: String?
 )
 
 /** 211, 306 그룹 참가 응답 모델 */
@@ -171,7 +180,7 @@ data class JoinResponse(
     val join: Boolean
 )
 
-/** 213 배달 게시글 미리보기 모델 */
+/** 배달 게시글 목록 조회 모델 */
 data class BaedalPostPreview(
     val _id: String,
     val title: String,

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.saengsaengtalk.APIS.Menu
-import com.example.saengsaengtalk.APIS.OrderingModel
+import com.example.saengsaengtalk.APIS.Ordering
 import com.example.saengsaengtalk.APIS.StoreInfo
 import com.example.saengsaengtalk.APIS.UserOrder
 import com.example.saengsaengtalk.LoopingDialog
@@ -196,7 +196,7 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun getOrdersObject(){
-        val loopingDialog = looping()
+        /*val loopingDialog = looping()
         api.getOrders(postId).enqueue(object : Callback<UserOrder?> {
             override fun onResponse(call: Call<UserOrder?>, response: Response<UserOrder?>) {
                 if (response.code() == 200) {
@@ -218,11 +218,11 @@ class FragmentBaedalMenu :Fragment() {
                 looping(false, loopingDialog)
                 onBackPressed()
             }
-        })
+        })*/
     }
 
     /** api로 받은 데이터를 가공하기 편리하게 JSON 형식으로 변환 */
-    fun apiModelToJson(userOrders: UserOrder): String{
+    /*fun apiModelToJson(userOrders: UserOrder): String{
         val orders = JSONArray()
         for (order in userOrders.orders) {
             val orderObject = JSONObject()
@@ -251,7 +251,7 @@ class FragmentBaedalMenu :Fragment() {
             orders.put(orderObject)
         }
         return orders.toString()
-    }
+    }*/
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity

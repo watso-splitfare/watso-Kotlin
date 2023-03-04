@@ -46,14 +46,14 @@ class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>) : Rec
     inner class CustomViewHolder(var binding: LytBaedalOptGroupBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(group: Group) {
-            if (group.max_order_quantity > 1) {
-                binding.tvGroup.text = group.name + " (최대 ${group.max_order_quantity.toString()}개)"
+            if (group.maxOrderQuantity > 1) {
+                binding.tvGroup.text = group.name + " (최대 ${group.maxOrderQuantity.toString()}개)"
             } else binding.tvGroup.text = group.name
 
             binding.rvMenuGroup.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalOptAdapter(context, group.options, group.min_order_quantity, group.max_order_quantity)
+            val adapter = BaedalOptAdapter(context, group.options, group.minOrderQuantity, group.maxOrderQuantity)
             binding.rvMenuGroup.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener {

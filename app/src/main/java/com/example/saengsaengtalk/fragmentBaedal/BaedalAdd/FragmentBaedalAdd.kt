@@ -289,9 +289,9 @@ class FragmentBaedalAdd :Fragment() {
             api.updateBaedalPost(baedalUpdateModel)
                 .enqueue(object : Callback<BaedalPostingResponse> {
                     override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
-                        if (response.code() == 200 && response.body()!!.success) {
+                        if (response.code() == 204) {
                             val result = response.body()!!
-                            val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
+                            val bundle = bundleOf("success" to true, "postId" to result.postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
                             onBackPressed()
                         } else {
@@ -311,7 +311,7 @@ class FragmentBaedalAdd :Fragment() {
             /** 게시글 신규 등록 */
             if (binding.tvTitle.text.toString() == "") makeToast("제목을 입력해 주세요")
             else if (orders.length() == 0) makeToast("메뉴를 선택해 주세요")
-            else {
+            /*else {
                 makeToast("주문을 등록합니다.")
                 var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
                 val baedalPostModel = BaedalPostingModel(
@@ -343,11 +343,11 @@ class FragmentBaedalAdd :Fragment() {
                             looping(false, loopingDialog)
                         }
                     })
-            }
+            }*/
         }
     }
 
-    fun baedalOrdering(postId: String){
+    /*fun baedalOrdering(postId: String){
         val ordersObject: List<BaedalOrder> = gson.fromJson(orders.toString(), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
         val orderings = mutableListOf<OrderingOrder>()
         for (order in ordersObject) {
@@ -395,7 +395,7 @@ class FragmentBaedalAdd :Fragment() {
             options.add(option.optionId!!)
         }
         return OrderingGroup(group.groupId!!, options)
-    }
+    }*/
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity

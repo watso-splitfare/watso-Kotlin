@@ -151,11 +151,11 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun baedalOrderUpdating(){
-        val orderingModel = getOrderingModel()
+        /*val orderingModel = getOrderingModel()
         val loopingDialog = looping()
         api.baedalOrderUpdate(orderingModel).enqueue(object : Callback<OrderingResponse> {
             override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
-                if (response.code() == 200 && response.body()!!.success) {
+                if (response.code() == 200) {
                     goToPosting(true)
                 } else {
                     Log.e("baedal Confirm Fragment - baedalOrderUpdate", response.toString())
@@ -170,11 +170,11 @@ class FragmentBaedalConfirm :Fragment() {
                 looping(false, loopingDialog)
                 goToPosting(false)
             }
-        })
+        })*/
     }
 
     fun baedalOrdering(){
-        val orderingModel = getOrderingModel()
+        /*val orderingModel = getOrderingModel()
         val loopingDialog = looping()
         api.baedalOrdering(orderingModel).enqueue(object : Callback<OrderingResponse> {
             override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
@@ -191,7 +191,7 @@ class FragmentBaedalConfirm :Fragment() {
                 makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
-        })
+        })*/
     }
 
     fun orderingComplete(){
@@ -220,7 +220,7 @@ class FragmentBaedalConfirm :Fragment() {
         onBackPressed()
     }
 
-    fun getOrderingModel(): OrderingModel {
+    /*fun getOrderingModel(): OrderingModel {
         val orderings = mutableListOf<OrderingOrder>()
         for (order in orders) {
             orderings.add(getOrdering(order))
@@ -243,7 +243,7 @@ class FragmentBaedalConfirm :Fragment() {
             options.add(option.optionId!!)
         }
         return OrderingGroup(group.groupId!!, options)
-    }
+    }*/
 
     fun bindSetText() {
         var temp = 0

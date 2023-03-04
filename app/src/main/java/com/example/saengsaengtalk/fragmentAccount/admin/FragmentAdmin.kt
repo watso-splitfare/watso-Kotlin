@@ -62,12 +62,6 @@ class FragmentAdmin :Fragment() {
 
     }
 
-    data class addStoreModel(
-        val store_name: String,
-        val fee: Int,
-        val min_order: Int
-    )
-
     fun getShopList() {
         appApi.getStoreList().enqueue(object : Callback<List<Store>> {
             override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {

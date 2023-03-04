@@ -20,12 +20,12 @@ interface BaedalAPIS {
         @Path("menu_name") menuName: String
     ): Call<MenuInfo>
 
-    @POST("order/post/posting")             // 204 배달 게시글 등록
+    @POST("delivery/post")             // 배달 게시글 등록
     fun baedalPosting(
-        @Body jsonparams: BaedalPostingModel
+        @Body jsonparams: BaedalPosting
     ): Call<BaedalPostingResponse>
 
-    @GET("delivery/post/{post_id}")     // 205 배달 게시글 조회
+    @GET("delivery/post/{post_id}")     // 배달 게시글 조회
     fun getBaedalPost(
         @Path("post_id") postId: String
     ): Call<BaedalPost>
@@ -40,9 +40,10 @@ interface BaedalAPIS {
         @Body jsonparams: Map<String, String>
     ): Call<IsClosedResponse>
 
-    @POST("order/ordering")                 // 209 배달 주문 등록
+    @POST("delivery/post/{post_id}/order")                 // 배달 주문 등록
     fun baedalOrdering(
-        @Body jsonparams: OrderingModel
+        @Path("post_id") postId: String,
+        @Body jsonparams: Ordering
     ): Call<OrderingResponse>
 
     @GET("/order/ordering/update")          // 210 배달 주문 수정용 데이터 요청
@@ -52,7 +53,7 @@ interface BaedalAPIS {
 
     @PATCH("order/ordering/update")         // 210 배달 주문 수정
     fun baedalOrderUpdate(
-        @Body jsonparams: OrderingModel
+        @Body jsonparams: Ordering
     ): Call<OrderingResponse>
 
     @PATCH("order/post/join/condition-switch")// 211 배달 그룹 참여 및 탈퇴

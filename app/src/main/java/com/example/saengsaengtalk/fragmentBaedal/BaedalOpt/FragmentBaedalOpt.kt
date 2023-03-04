@@ -29,7 +29,7 @@ class FragmentBaedalOpt :Fragment() {
     val optionNames = mutableMapOf<String, String>()
     val groupOptionPrice = mutableMapOf<String, MutableMap<String, Int>>()
     val groupOptionChecked = mutableMapOf<String, MutableMap<String, Boolean>>()
-    var count = 1
+    var quantity = 1
 
     var groups = listOf<Group>()                   // 옵션 전체. 현재화면 구성에 사용
     private var mBinding: FragBaedalOptBinding? = null
@@ -60,25 +60,25 @@ class FragmentBaedalOpt :Fragment() {
         binding.tvMenuName.text = menuName
 
         setRecyclerView()
-        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
 
         binding.btnSub.setOnClickListener {
-            if (count > 1) {
-                binding.tvCount.text = (--count).toString()
-                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+            if (quantity > 1) {
+                binding.tvQuantity.text = (--quantity).toString()
+                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
             }
         }
         binding.btnAdd.setOnClickListener {
-            if (count < 10) {
-                binding.tvCount.text = (++count).toString()
-                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+            if (quantity < 10) {
+                binding.tvQuantity.text = (++quantity).toString()
+                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
             }
         }
 
         /** 메뉴 담기 버튼*/
         binding.btnCartConfirm.setOnClickListener {
             val order = JSONObject()
-            order.put("count", count)
+            order.put("quantity", quantity)
             order.put("menuName", menuName)
             order.put("menuPrice", menuPrice)
 
@@ -121,7 +121,7 @@ class FragmentBaedalOpt :Fragment() {
                     groups = response.body()!!.groups
                     mappingAdapter()
                     setGroupOptionData()
-                    binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+                    binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
                 } else {
                     Log.e("baedalOpt Fragment - getGroupOption", response.toString())
                     makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
@@ -157,8 +157,8 @@ class FragmentBaedalOpt :Fragment() {
             val groupId = it._id
             val groupName = it.name
             var radioFirst = true
-            val minQ = it.min_order_quantity
-            val maxQ = it.max_order_quantity
+            val minQ = it.minOrderQuantity
+            val maxQ = it.maxOrderQuantity
 
             groupNames[groupId] = groupName
             groupOptionChecked[groupId] = mutableMapOf<String, Boolean>()
@@ -186,12 +186,12 @@ class FragmentBaedalOpt :Fragment() {
             }
         } else {
             groupOptionChecked[groupId]!![optionId] = isChecked
-            var count = 0
+            var quantity = 0
             groupOptionChecked[groupId]!!.forEach{
-                if (it.value) count += 1
+                if (it.value) quantity += 1
             }
         }
-        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * count)}원"
+        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
     }
 
     fun getSumPrice(): Int {
