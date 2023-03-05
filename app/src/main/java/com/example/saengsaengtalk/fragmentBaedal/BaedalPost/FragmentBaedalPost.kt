@@ -16,13 +16,12 @@ import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
-import com.example.saengsaengtalk.adapterHome.CommentAdapter
 import com.example.saengsaengtalk.databinding.FragBaedalPostBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.example.saengsaengtalk.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
-import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
+/*import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
 import com.example.saengsaengtalk.fragmentBaedal.Group
-import com.example.saengsaengtalk.fragmentBaedal.Option
+import com.example.saengsaengtalk.fragmentBaedal.Option*/
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,6 +43,7 @@ class FragmentBaedalPost :Fragment() {
     private val binding get() = mBinding!!
     val api= APIS.create()
     lateinit var baedalPost: BaedalPost
+    val joinUsers = mutableListOf<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,16 +93,18 @@ class FragmentBaedalPost :Fragment() {
             override fun onResponse(call: Call<BaedalPost>, response: Response<BaedalPost>) {
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
-                    isMember = baedalPost.joinUsers.contains(userId)
+
+                    for (user in baedalPost.userOrders) joinUsers.add(user.userId!!)
+                    isMember = joinUsers.contains(userId)
                     isOpen = baedalPost.open
                     val store = baedalPost.store
                     //val comments = baedalPost.comments
-                    val currentMember = baedalPost.joinUsers.size
+                    val currentMember = joinUsers.size
 
                     val updateDate =
-                        LocalDateTime.parse(baedalPost.updateDate.substring(0 until 16), DateTimeFormatter.ISO_DATE_TIME)
+                        LocalDateTime.parse(baedalPost.updateTime, DateTimeFormatter.ISO_DATE_TIME)
                     val orderTime =
-                        LocalDateTime.parse(baedalPost.orderTime.substring(0 until 16), DateTimeFormatter.ISO_DATE_TIME)
+                        LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
 
                     if (userId != baedalPost.userId) {
                         binding.tvDelete.visibility = View.GONE
@@ -119,7 +121,7 @@ class FragmentBaedalPost :Fragment() {
                                     "isUpdating" to "true",
                                     "postId" to postId!!,
                                     "title" to baedalPost.title,
-                                    "content" to if (baedalPost.content != null) baedalPost.content!! else "",
+                                    //"content" to if (baedalPost.content != null) baedalPost.content!! else "",
                                     "orderTime" to orderTime.toString(),
                                     "storeName" to store.name,
                                     "place" to baedalPost.place,
@@ -156,7 +158,7 @@ class FragmentBaedalPost :Fragment() {
                     binding.tvCurrentMember.text = currentMember.toString()
                     binding.tvFee.text = "${dec.format(store.fee)}원"
 
-                    if (baedalPost.content != null) binding.tvContent.text = baedalPost.content
+                    //if (baedalPost.content != null) binding.tvContent.text = baedalPost.content
 
                     binding.ivLike.visibility = View.GONE
                     binding.tvLike.visibility = View.GONE
@@ -177,59 +179,32 @@ class FragmentBaedalPost :Fragment() {
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.rvOrderList.setHasFixedSize(true)
 
-                    /*val baedalOrderUsers = mutableListOf<BaedalOrderUser>()
-                    val myOrder = mutableListOf<BaedalOrderUser>()
 
                     if (baedalPost.userOrders != null) {
-                        for (userOrder in baedalPost.userOrders!!) {
-                            var orderPrice = 0
-                            val baedalOrders = mutableListOf<BaedalOrder>()
-                            for (order in userOrder.orders) {
-                                val baedalOrder = apiModelToAdapterModel(order)
-                                baedalOrders.add(baedalOrder)
-                                orderPrice += baedalOrder.count * baedalOrder.sumPrice
-                            }
-                            val priceString = "${dec.format(orderPrice)}원"
+                        val myOrder = mutableListOf<UserOrder>()
+                        val otherOrders = mutableListOf<UserOrder>()
 
-                            if (userId == userOrder.user_id) {
-                                myOrder.add(
-                                    BaedalOrderUser
-                                        (
-                                        userOrder.nick_name,
-                                        priceString,
-                                        baedalOrders,
-                                        true
-                                    )
-                                )
-                            } else {
-                                baedalOrderUsers.add(
-                                    BaedalOrderUser
-                                        (
-                                        userOrder.nick_name,
-                                        priceString,
-                                        baedalOrders,
-                                        false
-                                    )
-                                )
-                            }
+                        for (userOrder in baedalPost.userOrders) {
+                            if (userId == userOrder.userId) myOrder.add(userOrder)
+                            else otherOrders.add(userOrder)
                         }
 
                         if (myOrder.size > 0) {
-                            val myOrderAdapter = BaedalOrderUserAdapter(requireContext(), myOrder)
+                            val myOrderAdapter = BaedalUserOrderAdapter(requireContext(), myOrder)
                             binding.rvMyOrder.adapter = myOrderAdapter
                         } else {
                             binding.tvMyOrder.visibility = View.GONE
                             binding.rvMyOrder.visibility = View.GONE
                             binding.divider2.visibility = View.GONE
                         }
-                        if (baedalOrderUsers.size > 0) {
-                            val adapter = BaedalOrderUserAdapter(requireContext(), baedalOrderUsers)
+                        if (otherOrders.size > 0) {
+                            val adapter = BaedalUserOrderAdapter(requireContext(), otherOrders)
                             binding.rvOrderList.adapter = adapter
                         } else {
                             binding.tvOrderList.visibility = View.GONE
                             binding.rvOrderList.visibility = View.GONE
                         }
-                    }*/
+                    }
 
                     /** 댓글 */
                     /*binding.tvCommentCount.text = "댓글 ${comments.size}"
@@ -311,7 +286,7 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun cancelJoin(){
-        val builder = AlertDialog.Builder(requireContext())
+        /*val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("주문 취소하기")
             .setMessage("주문을 취소하시겠습니까? \n다시 주문하기 위해서는 주문을 다시 작성해야합니다.")
             .setPositiveButton("확인",
@@ -339,11 +314,11 @@ class FragmentBaedalPost :Fragment() {
                 DialogInterface.OnClickListener { dialog, id ->
                     println("취소")
                 })
-        builder.show()
+        builder.show()*/
     }
 
     fun goToOrderingFrag(isUpdating: Boolean) {
-        val currentMember = baedalPost.joinUsers.size
+        val currentMember = joinUsers.size
         val store = baedalPost.store
 
         setFrag(FragmentBaedalMenu(), mapOf(

@@ -56,7 +56,6 @@ data class BaedalPosting(
     @SerializedName("store_id")
     val storeId: String,
     val title: String,
-    val content: String?,
     @SerializedName("order_time")
     val orderTime: String,
     val place: String,
@@ -89,6 +88,7 @@ data class BaedalPost(
     val minMember: Int,
     @SerializedName("max_member")
     val maxMember: Int,
+    val open: Boolean,
     @SerializedName("users")
     val userOrders: List<UserOrder>
 )
@@ -96,7 +96,7 @@ data class BaedalPost(
 
 data class UserOrder(
     @SerializedName("user_id")
-    val userId: Long,
+    val userId: Long?,          // 데이터 조회는 하지만 어댑터 연결시에는 사용 X
     @SerializedName("nick_name")
     val nickName: String,
     val orders: List<Order>,
@@ -104,8 +104,8 @@ data class UserOrder(
 )
 
 data class Order(
-    val _id: String,
-    val quantity: Int,
+    val _id: String?,           // 데이터 조회는 하지만 어댑터 연결시에는 사용 X
+    var quantity: Int,
     @SerializedName("order_price")
     val orderPrice: Int,
     val menu: OrderMenu
@@ -120,7 +120,7 @@ data class OrderMenu(
 
 data class OrderGroup(
     val _id: String,
-    val name: String?,  // 현재 API에 조회안됨, 수정요청 필요함
+    val name: String?,                  /** 현재 API에 조회안됨, 수정요청 필요함*/
     val options: List<OrderOption>
 )
 
@@ -161,10 +161,10 @@ data class OrderingOrder(
 
 data class OrderingMenu(
     val name: String,
-    val groups: List<OrderingGroups>
+    val groups: List<OrderingGroup>
 )
 
-data class OrderingGroups(
+data class OrderingGroup(
     val _id: String,
     val options: List<String>
 )
@@ -173,11 +173,9 @@ data class OrderingResponse(
     val message: String?
 )
 
-/** 211, 306 그룹 참가 응답 모델 */
+/** 그룹 참가 응답 모델 */
 data class JoinResponse(
-    val post_id: String,
-    val success: Boolean,
-    val join: Boolean
+    val message: String?
 )
 
 /** 배달 게시글 목록 조회 모델 */

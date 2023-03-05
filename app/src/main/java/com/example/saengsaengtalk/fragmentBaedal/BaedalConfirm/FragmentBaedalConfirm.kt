@@ -15,8 +15,8 @@ import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalConfirmBinding
-import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
-import com.example.saengsaengtalk.fragmentBaedal.Group
+/*import com.example.saengsaengtalk.fragmentBaedal.BaedalOrder
+import com.example.saengsaengtalk.fragmentBaedal.Group*/
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
@@ -33,7 +33,7 @@ class FragmentBaedalConfirm :Fragment() {
     var storeName = ""
     var storeId = "0"
     var baedalFee = 0
-    var orders = mutableListOf<BaedalOrder>()
+    var orders = mutableListOf<Order>()
 
     var orderPrice = 0
 
@@ -45,6 +45,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var ordersString = ""
         arguments?.let {
             isPosting = it.getString("isPosting").toBoolean()
             if (!isPosting) {
@@ -55,13 +56,16 @@ class FragmentBaedalConfirm :Fragment() {
             }
             storeName = it.getString("storeName")!!
             baedalFee = it.getString("baedalFee")!!.toInt()
-            orders = gson.fromJson(it.getString("orders"), object: TypeToken<MutableList<BaedalOrder>>() {}.type)
+            ordersString = it.getString("orders")!!
+            orders = gson.fromJson(it.getString("orders"), object: TypeToken<MutableList<Order>>() {}.type)
         }
 
+        Log.d("FragBaedalConfirm onCreate orders", ordersString)
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
+        Log.d("FragBaedalConfirm onCreate View orders", orders.toString())
 
         refreshView()
 
@@ -82,27 +86,27 @@ class FragmentBaedalConfirm :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
-        val adapter = SelectedMenuAdapter(requireContext(), JSONArray(gson.toJson(orders)))
+        val adapter = SelectedMenuAdapter(requireContext(), orders)
         binding.rvOrderList.adapter = adapter
 
         adapter.setItemClickListener(object: SelectedMenuAdapter.OnItemClickListener {
             override fun onChange(position: Int, change: String) {
                 val order = orders[position]
                 if (change == "remove") {
-                    order.count = 0
+                    order.quantity = 0
                 }
                 else if (change == "sub") {
-                    order.count -= 1
+                    order.quantity -= 1
                 }
                 else {
-                    order.count += 1
+                    order.quantity += 1
                 }
 
                 bindSetText()
 
                 var confirmAble = false
                 orders.forEach {
-                    if (it.count > 0) confirmAble = true
+                    if (it.quantity > 0) confirmAble = true
                 }
                 if (!confirmAble) {
                     binding.btnConfirm.setEnabled(false)
@@ -143,7 +147,7 @@ class FragmentBaedalConfirm :Fragment() {
     fun rectifyOrders() {
         var removedIndex = mutableListOf<Int>()
         for (i in 0 until orders.size) {
-            if (orders[i].count == 0) removedIndex.add(i)
+            if (orders[i].quantity == 0) removedIndex.add(i)
         }
         removedIndex.reversed().forEach() {
             orders.removeAt(it)
@@ -151,11 +155,11 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun baedalOrderUpdating(){
-        /*val orderingModel = getOrderingModel()
+        /*val orderingModel = getOrdering()
         val loopingDialog = looping()
         api.baedalOrderUpdate(orderingModel).enqueue(object : Callback<OrderingResponse> {
             override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
-                if (response.code() == 200) {
+                if (response.code() == 204) {
                     goToPosting(true)
                 } else {
                     Log.e("baedal Confirm Fragment - baedalOrderUpdate", response.toString())
@@ -174,11 +178,11 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun baedalOrdering(){
-        /*val orderingModel = getOrderingModel()
+        val ordering = getOrdering()
         val loopingDialog = looping()
-        api.baedalOrdering(orderingModel).enqueue(object : Callback<OrderingResponse> {
+        api.baedalOrdering(postId, ordering).enqueue(object : Callback<OrderingResponse> {
             override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
-                if (response.code() == 200) orderingComplete()
+                if (response.code() == 204) orderingComplete()
                 else {
                     Log.e("baedal Confirm Fragment - baedalOrdering", response.toString())
                     makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
@@ -191,14 +195,14 @@ class FragmentBaedalConfirm :Fragment() {
                 makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
-        })*/
+        })
     }
 
     fun orderingComplete(){
         val loopingDialog = looping()
-        api.switchBaedalJoin(mapOf("post_id" to postId)).enqueue(object : Callback<JoinResponse> {
+        api.switchBaedalJoin(postId).enqueue(object : Callback<JoinResponse> {
             override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
-                if (response.code() == 200 && response.body()!!.success) goToPosting(true)
+                if (response.code() == 200) goToPosting(true)
                 else {
                     Log.e("baedal Confirm Fragment - switchBaedalJoin", response.toString())
                     makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
@@ -220,37 +224,41 @@ class FragmentBaedalConfirm :Fragment() {
         onBackPressed()
     }
 
-    /*fun getOrderingModel(): OrderingModel {
-        val orderings = mutableListOf<OrderingOrder>()
+    fun getOrdering(): Ordering {
+        return Ordering(storeId, getOrderingOrders())
+    }
+
+    private fun getOrderingOrders(): List<OrderingOrder> {
+        val orderingOrders = mutableListOf<OrderingOrder>()
         for (order in orders) {
-            orderings.add(getOrdering(order))
+            orderingOrders.add(OrderingOrder(order.quantity, getOrderingMenu(order)))
         }
-
-        return OrderingModel(storeId, postId, orderings)
+        return orderingOrders
     }
 
-    fun getOrdering(order: BaedalOrder): OrderingOrder {
-        val groups = mutableListOf<OrderingGroup>()
-        for (group in order.groups) {
-            groups.add(getGroup(group))
+    private fun getOrderingMenu(order: Order): List<OrderingMenu> {
+        val orderingMenu = mutableListOf<OrderingMenu>()
+        for (group in order.menu.groups) {
+            orderingMenu.add(OrderingMenu(order.menu.name, getOrderingGroups(group)))
         }
-        return OrderingOrder(order.count, order.menuName, groups)
+        return orderingMenu
     }
 
-    fun getGroup(group: Group): OrderingGroup {
+    private fun getOrderingGroups(group: OrderGroup): List<OrderingGroup> {
+        val orderingGroups = mutableListOf<OrderingGroup>()
         val options = mutableListOf<String>()
-        for (option in group.options){
-            options.add(option.optionId!!)
+        for (option in group.options) {
+            options.add(option._id)
         }
-        return OrderingGroup(group.groupId!!, options)
-    }*/
+        orderingGroups.add(OrderingGroup(group._id, options))
+        return orderingGroups
+    }
 
     fun bindSetText() {
-        var temp = 0
+        orderPrice = 0
         orders.forEach {
-            temp += it.sumPrice!! * it.count
+            orderPrice += it.orderPrice * it.quantity
         }
-        orderPrice = temp
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvBaedalFee.text = "${dec.format(baedalFee/currentMember)}원"
         binding.tvTotalPrice.text = "${dec.format(orderPrice + baedalFee/currentMember)}원"

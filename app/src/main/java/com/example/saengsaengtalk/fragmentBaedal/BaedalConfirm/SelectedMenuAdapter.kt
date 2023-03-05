@@ -2,21 +2,20 @@ package com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.APIS.Order
 import com.example.saengsaengtalk.databinding.LytBaedalConfirmMenuBinding
-import org.json.JSONArray
-import org.json.JSONObject
 import java.text.DecimalFormat
 
 
-class SelectedMenuAdapter(val context: Context, val orders: JSONArray, val isRectifiable: Boolean=true):
+class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isRectifiable: Boolean=true):
     RecyclerView.Adapter<SelectedMenuAdapter.CustomViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
@@ -24,7 +23,7 @@ class SelectedMenuAdapter(val context: Context, val orders: JSONArray, val isRec
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val order = orders.getJSONObject(position)
+        val order = orders[position]
         holder.bind(order)
     }
 
@@ -39,62 +38,62 @@ class SelectedMenuAdapter(val context: Context, val orders: JSONArray, val isRec
     private lateinit var itemClickListener : OnItemClickListener
 
     override fun getItemCount(): Int {
-        return orders.length()
+        return orders.size
     }
 
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(order: JSONObject) {
+        fun bind(order: Order) {
             val dec = DecimalFormat("#,###")
-            var menuPrice = " (${dec.format(order.getInt("menuPrice"))}원)"
-            var count = order.getInt("count")
-            var sumPrice = order.getInt("sumPrice")
-            var priceString = "${dec.format(sumPrice * count)}원"
+            var menuPrice = " (${dec.format(order.menu.menuPrice)}원)"
+            var quantity = order.quantity
+            var orderPrice = order.orderPrice
+            var priceString = "${dec.format(orderPrice * quantity)}원"
 
             if (isRectifiable) {
-                binding.tvCountString.visibility = View.GONE
+                binding.tvQuantityString.visibility = View.GONE
             } else {
                 binding.divider.visibility = View.GONE
                 binding.btnSub.visibility = View.GONE
                 binding.btnAdd.visibility = View.GONE
                 binding.btnRemove.visibility = View.GONE
-                binding.tvCount.visibility = View.GONE
+                binding.tvQuantity.visibility = View.GONE
                 binding.tvPrice.visibility = View.GONE
             }
 
-            binding.tvMenuName.text = order.getString("menuName") + menuPrice
+            binding.tvMenuName.text = order.menu.name + menuPrice
 
             binding.rvMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val adapter = SelectedOptionAdapter(order.getJSONArray("groups"))
+            val adapter = SelectedOptionAdapter(order.menu.groups)
             binding.rvMenu.adapter = adapter
 
-            setBindText(priceString, count)
+            setBindText(priceString, quantity)
 
             binding.btnRemove.setOnClickListener {
                 itemClickListener.onChange(adapterPosition, "remove")
                 binding.lytBaedalConfirm.visibility = View.GONE
             }
             binding.btnSub.setOnClickListener {
-                if (count > 1) {
-                    count -= 1
-                    priceString = "${dec.format(sumPrice * count)}원"
-                    setBindText(priceString, count)
+                if (quantity > 1) {
+                    quantity -= 1
+                    priceString = "${dec.format(orderPrice * quantity)}원"
+                    setBindText(priceString, quantity)
                     itemClickListener.onChange(adapterPosition, "sub")
                 }
             }
             binding.btnAdd.setOnClickListener {
-                if (count < 10) {
-                    count += 1
-                    priceString = "${dec.format(sumPrice * count)}원"
-                    setBindText(priceString, count)
+                if (quantity < 10) {
+                    quantity += 1
+                    priceString = "${dec.format(orderPrice * quantity)}원"
+                    setBindText(priceString, quantity)
                     itemClickListener.onChange(adapterPosition, "add")
                 }
             }
         }
 
-        fun setBindText(priceString: String, count: Int) {
-            binding.tvCountString.text = "${count}개 (${priceString})"
+        fun setBindText(priceString: String, quantity: Int) {
+            binding.tvQuantityString.text = "${quantity}개 (${priceString})"
             binding.tvPrice.text = priceString
-            binding.tvCount.text = count.toString()
+            binding.tvQuantity.text = quantity.toString()
         }
     }
 }

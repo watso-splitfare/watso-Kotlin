@@ -1,7 +1,7 @@
 package com.example.saengsaengtalk.fragmentBaedal
 
 
-data class BaedalOrder (
+/*data class BaedalOrder (
     var count: Int,
     //val menuId: Int?,
     val menuName: String,
@@ -20,4 +20,4 @@ data class Option(
     val optionId: String?,
     val optionName: String,
     val optionPrice: Int
-)
+)*/

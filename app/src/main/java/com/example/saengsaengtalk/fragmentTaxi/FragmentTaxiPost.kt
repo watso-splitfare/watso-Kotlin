@@ -223,7 +223,7 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun taxiJoin() {
-        val loopingDialog = looping()
+        /*val loopingDialog = looping()
         api.switchTaxiJoin(mapOf("post_id" to postId, "user_id" to userId.toString())).enqueue(object : Callback<JoinResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
@@ -247,7 +247,7 @@ class FragmentTaxiPost :Fragment() {
                 makeToast("다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
-        })
+        })*/
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {

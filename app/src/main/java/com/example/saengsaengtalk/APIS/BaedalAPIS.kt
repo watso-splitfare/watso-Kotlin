@@ -56,9 +56,9 @@ interface BaedalAPIS {
         @Body jsonparams: Ordering
     ): Call<OrderingResponse>
 
-    @PATCH("order/post/join/condition-switch")// 211 배달 그룹 참여 및 탈퇴
+    @PATCH("delivery/post/{post_id}/join")// 배달 그룹 참여
     fun switchBaedalJoin(
-        @Body jsonparams: Map<String, String>
+        @Path("post_id") postId: String
     ): Call<JoinResponse>
 
     @GET("delivery/post")                 // 배달 게시글 목록 조회

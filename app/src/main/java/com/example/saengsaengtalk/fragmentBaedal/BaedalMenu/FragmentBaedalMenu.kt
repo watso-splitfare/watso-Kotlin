@@ -72,7 +72,7 @@ class FragmentBaedalMenu :Fragment() {
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
             val orderString = bundle.getString("orderString")
             orders.put(JSONObject(orderString))
-
+            Log.d("FragBaedalMenu 옵션->메뉴 담기", orders.toString())
             setCartBtn()
         }
 
@@ -80,6 +80,7 @@ class FragmentBaedalMenu :Fragment() {
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("changeOrder", this) { requestKey, bundle ->
             val ordersString = bundle.getString("ordersString")
             orders = JSONArray(ordersString)
+            Log.d("FragBaedalMenu confirm->뒤로가기", orders.toString())
 
             setCartBtn()
         }
@@ -113,13 +114,8 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun setSections(menus: List<Menu>) {
-        Log.d("메뉴 길이", menus.size.toString())
         for (menu in menus) {
             var flag = 0
-            Log.d("섹션", menu.section)
-            Log.d("이름", menu.name)
-            Log.d("가격", menu.price.toString())
-            Log.d("섹션 리스트 길이", sections.size.toString())
             for (i in sections.indices) {
                 if (sections[i].name == menu.section) {
                     sections[i].menus.add(menu)

@@ -80,9 +80,7 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
                 checkBtn = binding.cbOption
 
 
-                checkBtn.setOnClickListener {
-                    callItemClickListener(option._id)
-                }
+                checkBtn.setOnClickListener { callItemClickListener(option._id) }
                 itemView.setOnClickListener {
                     checkBtn.setChecked(!checkBtn.isChecked)
                     callItemClickListener(option._id)

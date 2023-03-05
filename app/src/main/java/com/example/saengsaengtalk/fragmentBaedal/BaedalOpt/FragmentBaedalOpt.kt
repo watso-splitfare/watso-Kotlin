@@ -60,42 +60,45 @@ class FragmentBaedalOpt :Fragment() {
         binding.tvMenuName.text = menuName
 
         setRecyclerView()
-        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
+        setOrderPrice()
 
         binding.btnSub.setOnClickListener {
             if (quantity > 1) {
                 binding.tvQuantity.text = (--quantity).toString()
-                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
+                setOrderPrice()
             }
         }
         binding.btnAdd.setOnClickListener {
             if (quantity < 10) {
                 binding.tvQuantity.text = (++quantity).toString()
-                binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
+                setOrderPrice()
             }
         }
 
         /** 메뉴 담기 버튼*/
         binding.btnCartConfirm.setOnClickListener {
             val order = JSONObject()
+            val menu = JSONObject()
+            /** 데이터 직렬화를 위해 orderPrice와 menuPrice는 키값을 snake case로 작성 */
             order.put("quantity", quantity)
-            order.put("menuName", menuName)
-            order.put("menuPrice", menuPrice)
+            order.put("order_price", setOrderPrice())
+            menu.put("name", menuName)
+            menu.put("menu_price", menuPrice)
 
             val groups = JSONArray()
             groupOptionChecked.forEach {
                 val group = JSONObject()
                 val groupId = it.key
-                group.put("groupId", groupId)
-                group.put("groupName", groupNames[groupId])
+                group.put("_id", groupId)
+                group.put("name", groupNames[groupId])
                 val options = JSONArray()
                 it.value.forEach {
                     if (it.value) {
                         val option = JSONObject()
                         val optionId = it.key
-                        option.put("optionId", optionId)
-                        option.put("optionName", optionNames[optionId])
-                        option.put("optionPrice", groupOptionPrice[groupId]!![optionId])
+                        option.put("_id", optionId)
+                        option.put("name", optionNames[optionId])
+                        option.put("price", groupOptionPrice[groupId]!![optionId])
                         options.put(option)
                     }
                 }
@@ -104,9 +107,10 @@ class FragmentBaedalOpt :Fragment() {
                     groups.put(group)
                 }
             }
-            order.put("sumPrice", getSumPrice())
-            order.put("groups", groups)
-
+            if (groups.length() > 0) {
+                menu.put("groups", groups)
+            }
+            order.put("menu", menu)
             val bundle = bundleOf("orderString" to order.toString())
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("order", bundle)
             onBackPressed()
@@ -121,7 +125,7 @@ class FragmentBaedalOpt :Fragment() {
                     groups = response.body()!!.groups
                     mappingAdapter()
                     setGroupOptionData()
-                    binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
+                    setOrderPrice()
                 } else {
                     Log.e("baedalOpt Fragment - getGroupOption", response.toString())
                     makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
@@ -143,13 +147,14 @@ class FragmentBaedalOpt :Fragment() {
         binding.rvOptionGroup.setHasFixedSize(true)
 
         val adapter = BaedalOptGroupAdapter(requireContext(), groups)
-        binding.rvOptionGroup.adapter = adapter
 
         adapter.addListener(object: BaedalOptGroupAdapter.OnItemClickListener {
             override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
                 setChecked(groupId, isRadio, optionId, isChecked)
+                setOrderPrice()
             }
         })
+        binding.rvOptionGroup.adapter = adapter
     }
 
     fun setGroupOptionData() {
@@ -191,10 +196,10 @@ class FragmentBaedalOpt :Fragment() {
                 if (it.value) quantity += 1
             }
         }
-        binding.tvTotalPrice.text = "${dec.format(getSumPrice() * quantity)}원"
+
     }
 
-    fun getSumPrice(): Int {
+    fun setOrderPrice(): Int {
         var totalPrice = 0
         groupOptionChecked.forEach{
             val groupId = it.key
@@ -205,7 +210,10 @@ class FragmentBaedalOpt :Fragment() {
                 }
             }
         }
-        return menuPrice + totalPrice
+        val orderPrice = menuPrice + totalPrice
+        val orderPriceStr = "${dec.format(orderPrice * quantity)}원"
+        binding.tvOrderPrice.text = orderPriceStr
+        return orderPrice
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {

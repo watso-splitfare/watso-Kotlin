@@ -7,14 +7,13 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.saengsaengtalk.APIS.UserOrder
 import com.example.saengsaengtalk.databinding.LytBaedalOrderUserBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.SelectedMenuAdapter
-import com.google.gson.Gson
-import org.json.JSONArray
+import java.text.DecimalFormat
 
 
-class BaedalOrderUserAdapter(val context: Context, val baedalOrderUsers: MutableList<BaedalOrderUser>) : RecyclerView.Adapter<BaedalOrderUserAdapter.CustomViewHolder>() {
-    val gson = Gson()
+class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrder>) : RecyclerView.Adapter<BaedalUserOrderAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOrderUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -23,21 +22,24 @@ class BaedalOrderUserAdapter(val context: Context, val baedalOrderUsers: Mutable
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val orderUser = baedalOrderUsers[position]
-        holder.bind(orderUser)
+        val userOrder = userOrders[position]
+        holder.bind(userOrder)
     }
 
     override fun getItemCount(): Int {
-        return baedalOrderUsers.size
+        return userOrders.size
     }
 
     inner class CustomViewHolder(var binding: LytBaedalOrderUserBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BaedalOrderUser) {
-            if (item.isMyOrder) binding.tvOrderUser.text = "주문금액: ${item.price}"
-            else binding.tvOrderUser.text = "주문자: ${item.nickName}  주문금액: ${item.price}"
+        fun bind(userOrder: UserOrder) {
+            val dec = DecimalFormat("#,###")
+            var sumPrice = 0
+            userOrder.orders.forEach { sumPrice += it.orderPrice }
+            if (userOrder.isMyOrder!!) binding.tvOrderUser.text = "주문금액: ${dec.format(sumPrice)}원"
+            else binding.tvOrderUser.text = "주문자: ${userOrder.nickName}  주문금액: ${dec.format(sumPrice)}원"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = SelectedMenuAdapter(context, JSONArray(gson.toJson(item.menuList)), false)
+            val adapter = SelectedMenuAdapter(context, userOrder.orders, false)
             binding.rvOrderMenu.adapter = adapter
         }
     }
