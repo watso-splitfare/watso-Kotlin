@@ -55,13 +55,15 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                     Log.d("어세스 토큰 갱신 시도", accessToken)
                     val refreshToken = MainActivity.prefs.getString("refreshToken", "")
                     val refreshRequest = chain.request().newBuilder()
-                        .addHeader("Authentication", refreshToken)
+                        .addHeader("Authorization", refreshToken)
                         .method("GET", null)
                         .url(BASE_URL + "auth/signin/refresh")
                         .build()
 
                     val refreshResponse = chain.proceed(refreshRequest)
-                    val tokens = refreshResponse.headers().get("Authentication").toString().split("/")
+                    val tokens = refreshResponse.headers().get("Authorization").toString().split("/")
+                    for (token in tokens)
+                        Log.d("APIS.kt - tokens", token)
 
                     MainActivity.prefs.setString("accessToken", tokens[0])
                     MainActivity.prefs.setString("refreshToken", tokens[1])
@@ -70,10 +72,8 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                     val newRequest = chain.request().newBuilder()
                         .addHeader("Authorization", tokens[0])
                         .build()
-
                     return chain.proceed(newRequest)
                 }
-
                 return response
             }
         }

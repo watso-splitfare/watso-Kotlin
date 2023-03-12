@@ -70,8 +70,8 @@ class FragmentBaedalAdd :Fragment() {
             isUpdating = it.getString("isUpdating").toBoolean()
             if (isUpdating) {
                 postId = it.getString("postId")
-                title = it.getString("title")
-                content = it.getString("content")
+                //title = it.getString("title")
+                //content = it.getString("content")
                 orderTime = it.getString("orderTime")
                 storeName = it.getString("storeName")
                 place = it.getString("place")
@@ -97,6 +97,9 @@ class FragmentBaedalAdd :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         binding.lytTime.setOnClickListener { showCalendar() }
+
+        binding.etTitle.visibility = View.GONE
+        binding.etContent.visibility = View.GONE
 
         val places = listOf("생자대", "기숙사")
         val placeSpinerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, places)
@@ -275,10 +278,8 @@ class FragmentBaedalAdd :Fragment() {
 
         if (isUpdating) {
             /** 게시글 수정 */
-            /*val baedalUpdateModel = BaedalUpdateModel(
-                postId.toString(),
-                binding.tvTitle.text.toString(),
-                if (binding.etContent.text.toString()!="") binding.etContent.text.toString()!! else "같이 주문해요",
+            val baedalPosting = BaedalPosting(
+                null, //binding.tvTitle.text.toString(),
                 orderTime!!, // 수정하기
                 binding.spnPlace.selectedItem.toString(),
                 if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else -1,
@@ -286,12 +287,11 @@ class FragmentBaedalAdd :Fragment() {
             )
 
             val loopingDialog = looping()
-            api.updateBaedalPost(baedalUpdateModel)
-                .enqueue(object : Callback<BaedalPostingResponse> {
-                    override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
+            api.updateBaedalPost(postId!!, baedalPosting)
+                .enqueue(object : Callback<VoidResponse> {
+                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         if (response.code() == 204) {
-                            val result = response.body()!!
-                            val bundle = bundleOf("success" to true, "postId" to result.postId)
+                            val bundle = bundleOf("success" to true, "postId" to postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
                             onBackPressed()
                         } else {
@@ -301,22 +301,23 @@ class FragmentBaedalAdd :Fragment() {
                         looping(false, loopingDialog)
                     }
 
-                    override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
+                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                         Log.e("baedalAdd Fragment - updateBaedalPost", t.message.toString())
                         makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
                         looping(false, loopingDialog)
                     }
-                })*/
+                })
         } else {
             /** 게시글 신규 등록 */
-            if (binding.tvTitle.text.toString() == "") makeToast("제목을 입력해 주세요")
-            else if (orders.isEmpty()) makeToast("메뉴를 선택해 주세요")
+            //if (binding.tvTitle.text.toString() == "") makeToast("제목을 입력해 주세요")
+
+            if (orders.isEmpty()) makeToast("메뉴를 선택해 주세요")
             else {
                 makeToast("주문을 등록합니다.")
                 var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
                 val baedalPosting = BaedalPosting(
                     storeIds[selectedIdx],
-                    if (binding.etTitle.text.toString() !="") binding.etTitle.text.toString()!! else "같이 주문해요",
+                    //if (binding.etTitle.text.toString() !="") binding.etTitle.text.toString()!! else "같이 주문해요",
                     orderTimeString,
                     binding.spnPlace.selectedItem.toString(),
                     if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else -1,
@@ -370,15 +371,20 @@ class FragmentBaedalAdd :Fragment() {
     }
 
     fun getOrdering(): Ordering {
-        return Ordering(storeIds[selectedIdx], getOrderingOrders())
+        //return Ordering(storeIds[selectedIdx], getOrderingOrders())
+        return Ordering(storeIds[selectedIdx], getOrderingOrder())
     }
 
-    private fun getOrderingOrders(): List<OrderingOrder> {
+    /*private fun getOrderingOrders(): List<OrderingOrder> {
         val orderingOrders = mutableListOf<OrderingOrder>()
         for (order in orders) {
             orderingOrders.add(OrderingOrder(order.quantity, getOrderingMenu(order)))
         }
         return orderingOrders
+    }*/
+
+    private fun getOrderingOrder(): OrderingOrder {
+        return OrderingOrder(orders[0].quantity, getOrderingMenu(orders[0]))
     }
 
     private fun getOrderingMenu(order: Order): List<OrderingMenu> {

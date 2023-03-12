@@ -357,7 +357,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/lyt_close"
+                        android:id="@+id/lyt_switch_status"
                         android:layout_width="match_parent"
                         android:layout_height="28dp"
                         android:layout_marginStart="16dp"
@@ -368,7 +368,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/tv_close"
+                            android:id="@+id/tv_switch_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"

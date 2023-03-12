@@ -49,25 +49,25 @@ class FragmentLogin :Fragment() {
             val loopingDialog = looping()
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
+                    Log.d("FragLogin response.code()", response.code().toString())
                     if (response.code()==200) {
-                        if (response.body()!!.success) {
-                            val tokens = response.headers().get("Authentication").toString().split("/")
+                        val tokens = response.headers().get("Authentication").toString().split("/")
 
-                            val payload = decodeToken(tokens[0])
-                            val dId = JSONObject(payload).getString("id")
-                            val dNickname = JSONObject(payload).getString("nick_name")
+                        val payload = decodeToken(tokens[0])
+                        val dId = JSONObject(payload).getString("id")
+                        val dNickname = JSONObject(payload).getString("nick_name")
 
-                            MainActivity.prefs.setString("accessToken", tokens[0])
-                            MainActivity.prefs.setString("refreshToken", tokens[1])
-                            MainActivity.prefs.setString("userId", dId)
-                            MainActivity.prefs.setString("nickname", dNickname)
+                        MainActivity.prefs.setString("accessToken", tokens[0])
+                        MainActivity.prefs.setString("refreshToken", tokens[1])
+                        MainActivity.prefs.setString("userId", dId)
+                        MainActivity.prefs.setString("nickname", dNickname)
 
-                            onBackPressed()
-                            looping(false, loopingDialog)
+                        onBackPressed()
+                        looping(false, loopingDialog)
 
-                            Log.d("access", MainActivity.prefs.getString("accessToken", ""))
-                            Log.d("refresh", MainActivity.prefs.getString("refreshToken", ""))
-                        } else makeToast("등록된 계정 정보가 일치하지 않습니다.")
+                        Log.d("access", MainActivity.prefs.getString("accessToken", ""))
+                        Log.d("refresh", MainActivity.prefs.getString("refreshToken", ""))
+
                     } else {
                         Log.e("login Fragment - login", response.toString())
                         makeToast("다시 시도해 주세요.")

@@ -7,16 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.saengsaengtalk.APIS.Menu
-import com.example.saengsaengtalk.APIS.Ordering
-import com.example.saengsaengtalk.APIS.StoreInfo
-import com.example.saengsaengtalk.APIS.UserOrder
+import com.example.saengsaengtalk.APIS.*
 import com.example.saengsaengtalk.LoopingDialog
 import com.example.saengsaengtalk.MainActivity
 import com.example.saengsaengtalk.R
 import com.example.saengsaengtalk.databinding.FragBaedalMenuBinding
 import com.example.saengsaengtalk.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
 import com.example.saengsaengtalk.fragmentBaedal.BaedalOpt.FragmentBaedalOpt
+import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
@@ -66,7 +64,7 @@ class FragmentBaedalMenu :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         getMenuData()
-        if (isUpdating) getOrdersObject()
+        if (isUpdating) getOrders()
 
         /** Option frag에서 메뉴 선택 후 담기 시 작동 */
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
@@ -191,14 +189,15 @@ class FragmentBaedalMenu :Fragment() {
         setFrag(FragmentBaedalConfirm(), map)
     }
 
-    fun getOrdersObject(){
-        /*val loopingDialog = looping()
-        api.getOrders(postId).enqueue(object : Callback<UserOrder?> {
-            override fun onResponse(call: Call<UserOrder?>, response: Response<UserOrder?>) {
+    fun getOrders(){
+        val loopingDialog = looping()
+        api.getOrders(postId).enqueue(object : Callback<UserOrder> {
+            override fun onResponse(call: Call<UserOrder>, response: Response<UserOrder>) {
                 if (response.code() == 200) {
-                    var ordersString = ""
-                    if (response.body() != null) ordersString = apiModelToJson(response.body()!!)
-                    orders = JSONArray(ordersString)
+                    // apiModelToJson(response.body()!!.orders)
+
+                    val gson = Gson()
+                    orders = JSONArray(gson.toJson(response.body()!!.orders))
                     setCartBtn()
                 } else {
                     Log.e("baedalMenu Fragment - getOrders", response.toString())
@@ -214,16 +213,16 @@ class FragmentBaedalMenu :Fragment() {
                 looping(false, loopingDialog)
                 onBackPressed()
             }
-        })*/
+        })
     }
 
     /** api로 받은 데이터를 가공하기 편리하게 JSON 형식으로 변환 */
-    /*fun apiModelToJson(userOrders: UserOrder): String{
+    /*fun apiModelToJson(Orders: List<Order>): String{
         val orders = JSONArray()
-        for (order in userOrders.orders) {
+        for (order in Orders) {
             val orderObject = JSONObject()
-            orderObject.put("count", order.quantity)
-            orderObject.put("menuName", order.menu_name)
+            orderObject.put("quantity", order.quantity)
+            orderObject.put("menuName", order.name)
             orderObject.put("menuPrice", order.menu_price)
             orderObject.put("sumPrice", order.sum_price)
 

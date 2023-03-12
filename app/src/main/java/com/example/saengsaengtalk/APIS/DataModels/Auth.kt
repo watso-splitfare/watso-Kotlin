@@ -1,5 +1,7 @@
 package com.example.saengsaengtalk.APIS
 
+import com.google.gson.annotations.SerializedName
+
 /** 계정 API 관련 데이터 모델 */
 
 data class DuplicationResult(
@@ -7,11 +9,15 @@ data class DuplicationResult(
 )
 
 data class SignUpModel(
-    val user_name: String,
+    @SerializedName("user_name")
+    val userName: String,
     val pw: String,
-    val nick_name: String,
-    val student_num: String,
-    val account_number: String,
+    @SerializedName("nick_name")
+    val nickName: String,
+    @SerializedName("student_num")
+    val studentNum: String,
+    @SerializedName("account_number")
+    val accountNumber: String,
     val email: String
 )
 
@@ -25,7 +31,6 @@ data class LoginModel(
 )
 
 data class LoginResult(
-    val success: Boolean,
     val id: String,
     val nick_name: String
 )

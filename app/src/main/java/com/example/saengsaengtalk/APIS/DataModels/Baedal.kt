@@ -54,8 +54,7 @@ data class Option(
 /** 배달 게시글 등록 모델 */
 data class BaedalPosting(
     @SerializedName("store_id")
-    val storeId: String,
-    val title: String,
+    val storeId: String?,
     @SerializedName("order_time")
     val orderTime: String,
     val place: String,
@@ -73,22 +72,23 @@ data class BaedalPostingResponse(
 /** 배달 게시글 조회 모델 */
 data class BaedalPost(
     val _id: String,
+    val title: String,
     @SerializedName("user_id")
     val userId: Long,
     @SerializedName("nick_name")
     val nickName: String,
-    val store: Store,
-    val title: String,
     val place: String,
     @SerializedName("order_time")
     val orderTime: String,
-    @SerializedName("update_time")
-    val updateTime: String,
+    val store: Store,
+    @SerializedName("open")
+    val isOpen: Boolean,
+    //@SerializedName("update_time")
+    //val updateTime: String,
     @SerializedName("min_member")
     val minMember: Int,
     @SerializedName("max_member")
     val maxMember: Int,
-    val open: Boolean,
     @SerializedName("users")
     val userOrders: List<UserOrder>
 )
@@ -100,7 +100,7 @@ data class UserOrder(
     @SerializedName("nick_name")
     val nickName: String,
     val orders: List<Order>,
-    val isMyOrder: Boolean?     // 데이터 조회 X, 어댑터 연결시에만 사용
+    var isMyOrder: Boolean = false     // 데이터 조회 X, 어댑터 연결시에만 사용
 )
 
 data class Order(
@@ -130,17 +130,6 @@ data class OrderOption(
     val price: Int
 )
 
-/** 206 배달 게시글 수정 모델 */
-data class BaedalUpdateModel(
-    val post_id: String,
-    val title: String,
-    val content: String?,
-    val order_time: String,
-    val place: String,
-    val min_member: Int?,
-    val max_member: Int?
-)
-
 /** 207, 305 마감 여부 응답 모델 */
 data class IsClosedResponse(
     val success: Boolean,
@@ -149,9 +138,14 @@ data class IsClosedResponse(
 )
 
 /** 배달 주문 등록 모델 */
-data class Ordering(
+/*data class Ordering(
     val store_id: String,
     val orders: List<OrderingOrder>
+)*/
+
+data class Ordering(
+    val store_id: String,
+    val order: OrderingOrder
 )
 
 data class OrderingOrder(
@@ -178,13 +172,23 @@ data class JoinResponse(
     val message: String?
 )
 
+data class VoidResponse(
+    val message: String?
+)
+
 /** 배달 게시글 목록 조회 모델 */
 data class BaedalPostPreview(
     val _id: String,
     val title: String,
     //val user_id: Long,
-    val join_users: List<Long>,
     //val nick_name: String,
+    //val place: String,
+    @SerializedName("order_time")
+    val orderTime: String,
     val store: Store,
-    val order_time: String
+    //val open: Boolean,
+    @SerializedName("user_count")
+    val userCount: Int
 )
+
+data class SwitchStatus(val open: Boolean)

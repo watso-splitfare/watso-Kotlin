@@ -52,8 +52,8 @@ class BaedalPreAdapter(val baedalPosts: List<BaedalPostPreview>) : RecyclerView.
             if (post._id == "-1") { text = "등록된 게시물이 없어요.\n새로운 게시물을 작성해보세요!" }
             else {
                 binding.tvStoreName.text = post.store.name
-                binding.tvCurrentMember.text = "현인원 ${post.join_users.size}팀"
-                binding.tvOrderTime.text = getDateTimeFormating(post.order_time)
+                binding.tvCurrentMember.text = "현인원 ${post.userCount}팀"
+                binding.tvOrderTime.text = getDateTimeFormating(post.orderTime)
             }
         }
 

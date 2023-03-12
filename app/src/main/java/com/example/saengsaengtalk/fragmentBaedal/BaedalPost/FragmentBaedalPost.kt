@@ -96,13 +96,12 @@ class FragmentBaedalPost :Fragment() {
 
                     for (user in baedalPost.userOrders) joinUsers.add(user.userId!!)
                     isMember = joinUsers.contains(userId)
-                    isOpen = baedalPost.open
+                    isOpen = baedalPost.isOpen
                     val store = baedalPost.store
                     //val comments = baedalPost.comments
                     val currentMember = joinUsers.size
 
-                    val updateDate =
-                        LocalDateTime.parse(baedalPost.updateTime, DateTimeFormatter.ISO_DATE_TIME)
+                    //val updateDate = LocalDateTime.parse(baedalPost.updateTime, DateTimeFormatter.ISO_DATE_TIME)
                     val orderTime =
                         LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
 
@@ -120,8 +119,8 @@ class FragmentBaedalPost :Fragment() {
                                 setFrag(FragmentBaedalAdd(), mapOf(
                                     "isUpdating" to "true",
                                     "postId" to postId!!,
-                                    "title" to baedalPost.title,
-                                    //"content" to if (baedalPost.content != null) baedalPost.content!! else "",
+                                    // "title" to baedalPost.title,
+                                    // "content" to if (baedalPost.content != null) baedalPost.content!! else "",
                                     "orderTime" to orderTime.toString(),
                                     "storeName" to store.name,
                                     "place" to baedalPost.place,
@@ -140,20 +139,16 @@ class FragmentBaedalPost :Fragment() {
 
                     /** 포스트 내용 바인딩 */
                     binding.tvPostWriter.text = baedalPost.nickName
-                    val today = LocalDate.now().atTime(0, 0)
+                    binding.tvPostCreated.visibility = View.GONE
+                    /*val today = LocalDate.now().atTime(0, 0)
                     binding.tvPostCreated.text = when (updateDate.isBefore(today)) {
                         true -> updateDate.format(DateTimeFormatter.ofPattern("MM/dd"))
                         else -> updateDate.format(DateTimeFormatter.ofPattern("HH:mm"))
-                    }
+                    }*/
 
-
-                    binding.tvOrderTime.text =
-                        orderTime.format(
-                            DateTimeFormatter.ofPattern(
-                                "M월 d일(E) H시 m분",
-                                Locale.KOREAN
-                            )
-                        )
+                    binding.tvOrderTime.text = orderTime.format(
+                        DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
+                    )
                     binding.tvStore.text = store.name
                     binding.tvCurrentMember.text = currentMember.toString()
                     binding.tvFee.text = "${dec.format(store.fee)}원"
@@ -166,9 +161,9 @@ class FragmentBaedalPost :Fragment() {
 
                     /** 주문하기 및 주문가능 여부 변경 */
 
-                    if (userId == baedalPost.userId) binding.lytClose.setOnClickListener { switchIsClosed() }
-                    else binding.lytClose.visibility = View.GONE
-                    binding.lytCancel.setOnClickListener { cancelJoin() }
+                    if (userId == baedalPost.userId) binding.lytSwitchStatus.setOnClickListener { switchStatus() }
+                    else binding.lytSwitchStatus.visibility = View.GONE
+                    binding.lytCancel.setOnClickListener { leaveGroup() }
                     setBottomBtn()
 
                     /** 주문내역 바인딩 */
@@ -185,8 +180,12 @@ class FragmentBaedalPost :Fragment() {
                         val otherOrders = mutableListOf<UserOrder>()
 
                         for (userOrder in baedalPost.userOrders) {
-                            if (userId == userOrder.userId) myOrder.add(userOrder)
-                            else otherOrders.add(userOrder)
+                            if (userOrder.orders.isNotEmpty()) {
+                                if (userId == userOrder.userId) {
+                                    myOrder.add(userOrder)
+                                    myOrder[-1].isMyOrder = true
+                                } else otherOrders.add(userOrder)
+                            }
                         }
 
                         if (myOrder.size > 0) {
@@ -233,9 +232,9 @@ class FragmentBaedalPost :Fragment() {
         binding.lytCancel.visibility = View.GONE
         if (isOpen) {                                // 마감 안됐을 때
             if (userId == baedalPost.userId) {         // 게시글 작성자 일 경우 마감버튼 바인딩
-                binding.tvClose.text = "주문 마감하기"
-                binding.tvClose.setTextColor(Color.WHITE)
-                binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_close)
+                binding.tvSwitchStatus.text = "주문 마감하기"
+                binding.tvSwitchStatus.setTextColor(Color.WHITE)
+                binding.lytSwitchStatus.setBackgroundResource(R.drawable.btn_baedal_close)
             }
 
             binding.ivOrder.visibility = View.VISIBLE
@@ -252,9 +251,9 @@ class FragmentBaedalPost :Fragment() {
             }
         } else {                         // 마감 됐을 때
             if (userId == baedalPost.userId) {         // 게시글 작성자 일 경우 마감버튼 바인딩
-                binding.tvClose.text = "추가 주문받기"
-                binding.tvClose.setTextColor(Color.BLACK)
-                binding.lytClose.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                binding.tvSwitchStatus.text = "추가 주문받기"
+                binding.tvSwitchStatus.setTextColor(Color.BLACK)
+                binding.lytSwitchStatus.setBackgroundResource(R.drawable.btn_baedal_order_closed)
             }
 
             binding.tvOrder.text = "주문이 마감되었습니다."
@@ -265,44 +264,42 @@ class FragmentBaedalPost :Fragment() {
         }
     }
 
-    fun switchIsClosed(){
-        /*val loopingDialog = looping()
-        api.switchBaedalIsClosed(mapOf("post_id" to postId!!)).enqueue(object : Callback<IsClosedResponse> {
-            override fun onResponse(call: Call<IsClosedResponse>, response: Response<IsClosedResponse>) {
-                if (response.code() == 200) {
-                    val res = response.body()!!
-                    isClosed = res.is_closed
+    fun switchStatus(){
+        val loopingDialog = looping()
+        api.baedalSwitchStatus(postId!!, SwitchStatus(isOpen)).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                if (response.code() == 204) {
+                    isOpen = !isOpen
                     setBottomBtn()
                 } else makeToast("다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
-            override fun onFailure(call: Call<IsClosedResponse>, t: Throwable) {
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
                 makeToast("다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
-        })*/
+        })
     }
 
-    fun cancelJoin(){
-        /*val builder = AlertDialog.Builder(requireContext())
+    fun leaveGroup(){
+        val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("주문 취소하기")
             .setMessage("주문을 취소하시겠습니까? \n다시 주문하기 위해서는 주문을 다시 작성해야합니다.")
             .setPositiveButton("확인",
                 DialogInterface.OnClickListener { dialog, id ->
                     val loopingDialog = looping()
-                    api.switchBaedalJoin(mapOf("post_id" to postId!!)).enqueue(object: Callback<JoinResponse> {
+                    api.baedalLeaveGroup(postId!!).enqueue(object: Callback<VoidResponse> {
                         @RequiresApi(Build.VERSION_CODES.O)
-                        override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
-                            if (response.code() == 200) {
-                                val res = response.body()!!
-                                isMember = res.join
+                        override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                            if (response.code() == 204) {
+                                isMember = false
                                 getPostInfo()
                             } else makeToast("다시 시도해주세요.")
                             looping(false, loopingDialog)
                         }
-                        override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
+                        override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                             Log.d("log",t.message.toString())
                             Log.d("log","fail")
                             makeToast("다시 시도해주세요.")
@@ -314,7 +311,7 @@ class FragmentBaedalPost :Fragment() {
                 DialogInterface.OnClickListener { dialog, id ->
                     println("취소")
                 })
-        builder.show()*/
+        builder.show()
     }
 
     fun goToOrderingFrag(isUpdating: Boolean) {
@@ -332,25 +329,6 @@ class FragmentBaedalPost :Fragment() {
             "orders" to ""
         ))
     }
-
-    /**
-     * 이 프로젝트에서는 카멜케이스를 사용하지만 API 모델에서는 스네이크 케이스를 사용하므로
-     * 데이터 모델간 변환이 필요합니다.
-     */
-    /*fun apiModelToAdapterModel(order: Order): BaedalOrder {
-        val groups = mutableListOf<Group>()
-        for (group in order.groups) {
-            val options = mutableListOf<Option>()
-            for (option in group.options) {
-                options.add(Option(null, option.name, option.price))
-            }
-            groups.add(Group(null, group.name, options))
-        }
-
-        return BaedalOrder(
-            order.quantity, order.menu_name, order.menu_price, order.sum_price, groups
-        )
-    }*/
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity

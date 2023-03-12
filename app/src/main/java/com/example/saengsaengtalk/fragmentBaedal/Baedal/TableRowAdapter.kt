@@ -47,12 +47,12 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Ada
     class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(post: BaedalPostPreview) {
-            val currentMember = post.join_users.size
+            val currentMember = post.userCount
 
             binding.lytBaedalListLikeview.visibility = View.GONE
 
             binding.tvStoreName.text = post.store.name
-            binding.tvOrderTime.text = "주문예정: " + getDateTimeFormating(post.order_time)
+            binding.tvOrderTime.text = "주문예정: " + getDateTimeFormating(post.orderTime)
             binding.tvMember.text = "모인인원: " + currentMember + "팀"
             binding.tvTitle.text = post.title
 

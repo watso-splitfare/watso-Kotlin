@@ -54,7 +54,7 @@ class FragmentBaedal :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
                 if (response.code() == 200) {
-                    val baedalPosts = response.body()!!.sortedBy { it.order_time }
+                    val baedalPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingAdapter(baedalPosts)
                 } else {
                     Log.e("baedal Fragment - getBaedalPostList", response.toString())
@@ -80,7 +80,7 @@ class FragmentBaedal :Fragment() {
         val dates = mutableListOf<LocalDate>()
         var tableIdx = -1
             for (post in baedalPosts) {
-            val date = LocalDate.parse(post.order_time.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            val date = LocalDate.parse(post.orderTime.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
             if (date !in dates) {
                 dates.add(date)
                 tables.add(Table(date, mutableListOf(post)))
@@ -88,14 +88,16 @@ class FragmentBaedal :Fragment() {
             } else tables[tableIdx].rows.add(post)
         }
 
-        val adapter = TableAdapter(requireContext(), tables)
-        binding.rvBaedalList.adapter = adapter
-        adapter.addListener(object: TableAdapter.OnItemClickListener{
-            override fun onClick(postId: String) {
-                Log.d("배달프래그먼트 온클릭", "${postId}")
-                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
-            }
-        })
+        if (tables.size > 0) {
+            val adapter = TableAdapter(requireContext(), tables)
+            binding.rvBaedalList.adapter = adapter
+            adapter.addListener(object : TableAdapter.OnItemClickListener {
+                override fun onClick(postId: String) {
+                    Log.d("배달프래그먼트 온클릭", "${postId}")
+                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+                }
+            })
+        }
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {

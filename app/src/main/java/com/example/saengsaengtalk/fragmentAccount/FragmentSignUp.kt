@@ -64,7 +64,7 @@ class FragmentSignUp :Fragment() {
 
         binding.btnUsernameDuplicationCheck.setOnClickListener {
             val loopingDialog = looping()
-            api.usernameDuplicationCheck(binding.etUsername.text.toString()).enqueue(object : Callback<DuplicationResult> {
+            api.duplicateCheck("username", binding.etUsername.text.toString()).enqueue(object : Callback<DuplicationResult> {
                 override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
                     Log.d("아이디 중복확인",response.toString())
                     Log.d("아이디 중복확인", response.body().toString())
@@ -129,7 +129,7 @@ class FragmentSignUp :Fragment() {
 
         binding.btnNicknameDuplicationCheck.setOnClickListener {
             val loopingDialog = looping()
-            api.nicknameDuplicationCheck(binding.etNickname.text.toString()).enqueue(object : Callback<DuplicationResult> {
+            api.duplicateCheck("nickname", binding.etNickname.text.toString()).enqueue(object : Callback<DuplicationResult> {
                 override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
                     Log.d("닉네임 중복확인",response.toString())
                     Log.d("닉네임 중복확인", response.body().toString())
@@ -198,7 +198,7 @@ class FragmentSignUp :Fragment() {
 
         binding.btnStudentnumDuplicationCheck.setOnClickListener {
             val loopingDialog = looping()
-            api.studentnumDuplicationCheck(binding.etStudentnum.text.toString()).enqueue(object : Callback<DuplicationResult> {
+            api.duplicateCheck("studentNumber", binding.etStudentnum.text.toString()).enqueue(object : Callback<DuplicationResult> {
                 override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
                     Log.d("학번 중복확인",response.toString())
                     Log.d("학번 중복확인", response.body().toString())
