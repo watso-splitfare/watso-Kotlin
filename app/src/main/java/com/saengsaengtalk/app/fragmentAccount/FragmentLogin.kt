@@ -47,7 +47,9 @@ class FragmentLogin :Fragment() {
         /** 로그인 */
         binding.btnLogin.setOnClickListener {
             val loopingDialog = looping()
-            api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString())).enqueue(object: Callback<LoginResult> {
+            val prefs = MainActivity.prefs
+            val reg = prefs.getString("registration", "")
+            api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
                     Log.d("FragLogin response.code()", response.code().toString())
                     if (response.code()==200) {
@@ -57,16 +59,16 @@ class FragmentLogin :Fragment() {
                         val dId = JSONObject(payload).getString("id")
                         val dNickname = JSONObject(payload).getString("nick_name")
 
-                        MainActivity.prefs.setString("accessToken", tokens[0])
-                        MainActivity.prefs.setString("refreshToken", tokens[1])
-                        MainActivity.prefs.setString("userId", dId)
-                        MainActivity.prefs.setString("nickname", dNickname)
+                        prefs.setString("accessToken", tokens[0])
+                        prefs.setString("refreshToken", tokens[1])
+                        prefs.setString("userId", dId)
+                        prefs.setString("nickname", dNickname)
 
                         onBackPressed()
                         looping(false, loopingDialog)
 
-                        Log.d("access", MainActivity.prefs.getString("accessToken", ""))
-                        Log.d("refresh", MainActivity.prefs.getString("refreshToken", ""))
+                        Log.d("access", prefs.getString("accessToken", ""))
+                        Log.d("refresh", prefs.getString("refreshToken", ""))
 
                     } else {
                         Log.e("login Fragment - login", response.toString())

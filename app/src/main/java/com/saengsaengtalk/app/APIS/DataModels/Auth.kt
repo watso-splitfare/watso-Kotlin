@@ -26,8 +26,11 @@ data class SignUpResult(
 )
 
 data class LoginModel(
-    val user_name: String,
-    val pw: String
+    @SerializedName("user_name")
+    val userName: String,
+    val pw: String,
+    @SerializedName("registration_token")
+    val registrationToken: String
 )
 
 data class LoginResult(

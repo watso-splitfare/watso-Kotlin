@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -37,6 +38,12 @@ class MainActivity : AppCompatActivity() {
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        /** FCM설정, Token값 가져오기 */
+        MyFirebaseMessagingService().getFirebaseToken()
+
+        /** DynamicLink 수신확인 */
+        initDynamicLink()
+
         setFrag(FragmentHome())
 
         binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, fragIndex=0) }
@@ -44,6 +51,20 @@ class MainActivity : AppCompatActivity() {
         binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2) }
         binding.btnKara.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentKara(), popBackStack = 0, fragIndex=3)*/ }
         binding.btnFreeBoard.setOnClickListener { makeToast("게시판 준비중입니다.") /*setFrag(FragmentFreeBoard(), popBackStack = 0, fragIndex=4)*/ }
+    }
+
+    /** DynamicLink */
+    private fun initDynamicLink() {
+        val dynamicLinkData = intent.extras
+        if (dynamicLinkData != null) {
+            var dataStr = "DynamicLink 수신받은 값\n"
+            for (key in dynamicLinkData.keySet()) {
+                dataStr += "key: $key / value: ${dynamicLinkData.getString(key)}\n"
+            }
+
+            Log.d("FCM 수신", dataStr)
+            //binding.tvToken.text = dataStr
+        }
     }
 
     override fun onDestroy() {
