@@ -23,6 +23,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /** Token 생성 메서드(FirebaseInstanceIdService 사라짐) */
     override fun onNewToken(token: String) {
         Log.d(TAG, "new Token: $token")
+        MainActivity.prefs.setString("registration", token)
 
         // 토큰 값을 따로 저장
         /*val pref = this.getSharedPreferences("token", Context.MODE_PRIVATE)

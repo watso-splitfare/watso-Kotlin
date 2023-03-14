@@ -134,7 +134,7 @@ class FragmentBaedalAdd :Fragment() {
                     sumPrice = 0
                     for (order in orders/*i in 0 until orders.length()*/) {
                         //val order = orders.getJSONObject(i)
-                        sumPrice += order.orderPrice * order.quantity
+                        sumPrice += order.price * order.quantity
                     }
                     setBindText()
 
@@ -350,8 +350,8 @@ class FragmentBaedalAdd :Fragment() {
         val ordering = getOrdering()
 
         val loopingDialog = looping()
-        api.baedalOrdering(postId, ordering).enqueue(object : Callback<OrderingResponse> {
-            override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
+        api.baedalOrdering(postId, ordering).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) {
                     setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 1)
                 } else {
@@ -361,7 +361,7 @@ class FragmentBaedalAdd :Fragment() {
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 Log.e("baedalAdd Fragment - baedalOrdering", t.message.toString())
                 makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                 looping(false, loopingDialog)

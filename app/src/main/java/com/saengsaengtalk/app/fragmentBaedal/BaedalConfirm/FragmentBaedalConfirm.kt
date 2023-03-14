@@ -137,7 +137,7 @@ class FragmentBaedalConfirm :Fragment() {
             binding.btnConfirm.setOnClickListener {
                 rectifyOrders()
                 if (isUpdating) baedalOrderUpdating()   /** 주문수정 */
-                else baedalJoin()                   /** 주문작성 */            }
+                else ordering()                   /** 주문작성 */            }
         }
     }
 
@@ -177,10 +177,10 @@ class FragmentBaedalConfirm :Fragment() {
         })
     }
 
-    fun baedalJoin(){
+    /*fun baedalJoin(){
         val loopingDialog = looping()
-        api.baedalJoin(postId).enqueue(object : Callback<JoinResponse> {
-            override fun onResponse(call: Call<JoinResponse>, response: Response<JoinResponse>) {
+        api.baedalJoin(postId).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) ordering()
                 else {
                     Log.e("baedal Confirm Fragment - baedalJoin", response.toString())
@@ -189,19 +189,19 @@ class FragmentBaedalConfirm :Fragment() {
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 Log.e("baedal Confirm Fragment - baedalJoin", t.message.toString())
                 makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
         })
-    }
+    }*/
 
     fun ordering(){
         val ordering = getOrdering()
         val loopingDialog = looping()
-        api.baedalOrdering(postId, ordering).enqueue(object : Callback<OrderingResponse> {
-            override fun onResponse(call: Call<OrderingResponse>, response: Response<OrderingResponse>) {
+        api.baedalOrdering(postId, ordering).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) goToPosting(true)
                 else {
                     Log.e("baedal Confirm Fragment - ordering", response.toString())
@@ -210,7 +210,7 @@ class FragmentBaedalConfirm :Fragment() {
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<OrderingResponse>, t: Throwable) {
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 Log.e("baedal Confirm Fragment - ordering", t.message.toString())
                 makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 looping(false, loopingDialog)
@@ -219,7 +219,7 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun goToPosting(success: Boolean){
-        getActivity()?.getSupportFragmentManager()?.setFragmentResult("ordering", bundleOf("success" to success, "postId" to postId))
+        getActivity()?.getSupportFragmentManager()?.setFragmentResult("ordering", bundleOf("success" to success))
         onBackPressed()
         onBackPressed()
     }
@@ -262,7 +262,7 @@ class FragmentBaedalConfirm :Fragment() {
     fun bindSetText() {
         orderPrice = 0
         orders.forEach {
-            orderPrice += it.orderPrice * it.quantity
+            orderPrice += it.price * it.quantity
         }
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvBaedalFee.text = "${dec.format(baedalFee/currentMember)}원"

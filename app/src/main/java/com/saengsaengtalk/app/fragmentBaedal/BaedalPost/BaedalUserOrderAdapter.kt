@@ -34,7 +34,7 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrde
         fun bind(userOrder: UserOrder) {
             val dec = DecimalFormat("#,###")
             var sumPrice = 0
-            userOrder.orders.forEach { sumPrice += it.orderPrice }
+            userOrder.orders.forEach { sumPrice += it.price }
             if (userOrder.isMyOrder!!) binding.tvOrderUser.text = "주문금액: ${dec.format(sumPrice)}원"
             else binding.tvOrderUser.text = "주문자: ${userOrder.nickName}  주문금액: ${dec.format(sumPrice)}원"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

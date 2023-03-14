@@ -43,9 +43,9 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(order: Order) {
             val dec = DecimalFormat("#,###")
-            var menuPrice = " (${dec.format(order.menu.menuPrice)}원)"
+            var menuPrice = " (${dec.format(order.menu.price)}원)"
             var quantity = order.quantity
-            var orderPrice = order.orderPrice
+            var orderPrice = order.price
             var priceString = "${dec.format(orderPrice * quantity)}원"
 
             if (isRectifiable) {

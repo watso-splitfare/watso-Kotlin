@@ -6,6 +6,10 @@ import retrofit2.http.*
 interface BaedalAPIS {
     /** 배달 게시물 관련 api */
 
+    @GET("api/delivery/post")                 // 배달 게시글 목록 조회
+    fun getBaedalPostList(
+    ): Call<List<BaedalPostPreview>>
+
     @GET("api/delivery/store")              // 가게 리스트 조회
     fun getStoreList(): Call<List<Store>>
 
@@ -19,10 +23,6 @@ interface BaedalAPIS {
         @Path("store_id") storeId: String,
         @Path("menu_name") menuName: String
     ): Call<MenuInfo>
-
-    @GET("api/delivery/post")                 // 배달 게시글 목록 조회
-    fun getBaedalPostList(
-    ): Call<List<BaedalPostPreview>>
 
     @POST("api/delivery/post")             // 배달 게시글 등록
     fun baedalPosting(
@@ -43,13 +43,13 @@ interface BaedalAPIS {
     @PATCH("api/delivery/post/{post_id}/join")  // 배달 그룹 참여
     fun baedalJoin(
         @Path("post_id") postId: String
-    ): Call<JoinResponse>
+    ): Call<VoidResponse>
 
     @POST("api/delivery/post/{post_id}/order")                 // 배달 주문 등록
     fun baedalOrdering(
         @Path("post_id") postId: String,
         @Body jsonparams: Ordering
-    ): Call<OrderingResponse>
+    ): Call<VoidResponse>
 
     @GET("api/delivery/post/{post_id}/order")          // 배달 주문 수정용 데이터 요청
     fun getOrders(

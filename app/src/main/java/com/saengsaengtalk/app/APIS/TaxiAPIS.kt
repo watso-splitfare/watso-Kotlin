@@ -29,7 +29,7 @@ interface TaxiAPIS {
     fun switchTaxiJoin(
         @Body jsonparams: Map<String, String>
     //@Query("post_id") postId: String
-    ): Call<JoinResponse>
+    ): Call<VoidResponse>
 
     @GET("/taxi/post/list")                      // 307 택시 게시글 리스트 조회
     fun getTaxiPostListPreview(

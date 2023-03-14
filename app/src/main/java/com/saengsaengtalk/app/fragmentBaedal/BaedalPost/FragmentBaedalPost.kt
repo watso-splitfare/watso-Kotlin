@@ -42,7 +42,7 @@ class FragmentBaedalPost :Fragment() {
     private val binding get() = mBinding!!
     val api= APIS.create()
     lateinit var baedalPost: BaedalPost
-    val joinUsers = mutableListOf<Long>()
+    val userOrders = mutableMapOf<Long, List<Order>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,15 +73,13 @@ class FragmentBaedalPost :Fragment() {
         getActivity()?.getSupportFragmentManager()
             ?.setFragmentResultListener("updatePost", this) { requestKey, bundle ->
                 val success = bundle.getBoolean("success")
-                postId = bundle.getString("postId")
-                getPostInfo()
+                if (success) getPostInfo()
             }
 
         getActivity()?.getSupportFragmentManager()
             ?.setFragmentResultListener("ordering", this) { requestKey, bundle ->
                 val success = bundle.getBoolean("success")
-                postId = bundle.getString("postId")
-                getPostInfo()
+                if (success) getPostInfo()
             }
     }
 
@@ -93,7 +91,8 @@ class FragmentBaedalPost :Fragment() {
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
 
-                    for (user in baedalPost.userOrders) joinUsers.add(user.userId!!)
+                    for (user in baedalPost.userOrders) userOrders[user.userId!!] = user.orders
+                    val joinUsers = userOrders.keys
                     isMember = joinUsers.contains(userId)
                     isOpen = baedalPost.isOpen
                     val store = baedalPost.store
@@ -160,9 +159,27 @@ class FragmentBaedalPost :Fragment() {
 
                     /** 주문하기 및 주문가능 여부 변경 */
 
-                    if (userId == baedalPost.userId) binding.lytSwitchStatus.setOnClickListener { switchStatus() }
-                    else binding.lytSwitchStatus.visibility = View.GONE
-                    binding.lytCancel.setOnClickListener { leaveGroup() }
+                    if (userId == baedalPost.userId) {  // 사용자가 대표자라면
+                        binding.lytGroup.visibility = View.GONE
+                        binding.lytStatus.setOnClickListener { switchStatus() }
+                    }
+                    else {
+                        binding.lytStatus.visibility = View.GONE
+                        binding.lytGroup.setOnClickListener { if (isMember)
+                        {
+                            val builder = AlertDialog.Builder(requireContext())
+                            builder.setTitle("그룹 참여 하기")
+                                .setMessage("그룹에 참여 하시겠습니까?\n")
+                                .setPositiveButton("네", DialogInterface.OnClickListener {
+                                        dialog, id -> joinGroup()
+                                })
+                                .setNegativeButton("아니요",
+                                    DialogInterface.OnClickListener { dialog, id -> })
+                            builder.show()
+                        }
+                        else leaveGroup()
+                        }
+                    }
                     setBottomBtn()
 
                     /** 주문내역 바인딩 */
@@ -228,39 +245,45 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun setBottomBtn() {
-        binding.lytCancel.visibility = View.GONE
-        if (isOpen) {                                // 마감 안됐을 때
-            if (userId == baedalPost.userId) {         // 게시글 작성자 일 경우 마감버튼 바인딩
-                binding.tvSwitchStatus.text = "주문 마감하기"
-                binding.tvSwitchStatus.setTextColor(Color.WHITE)
-                binding.lytSwitchStatus.setBackgroundResource(R.drawable.btn_baedal_close)
-            }
-
-            binding.ivOrder.visibility = View.VISIBLE
-            binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order)
-            binding.lytOrder.isEnabled = true
-
-            if (isMember) {
-                binding.tvOrder.text = "주문 수정하기"
-                binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
-                binding.lytCancel.visibility = View.VISIBLE
+        if (userId == baedalPost.userId) {       // 사용자가 대표자라면
+            if (isOpen) {
+                binding.tvStatus.text = "참여 마감하기"
+                binding.tvStatus.setTextColor(Color.WHITE)
+                binding.lytStatus.setBackgroundResource(R.drawable.btn_baedal_close)
             } else {
-                binding.tvOrder.text = "나도 주문하기"
+                binding.tvStatus.text = "마감 취소하기"
+                binding.tvStatus.setTextColor(Color.BLACK)
+                binding.lytStatus.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+            }
+        } else {
+            if (isMember) {
+                binding.tvGroup.text = "그룹 탈퇴하기"
+                binding.tvGroup.setTextColor(Color.WHITE)
+                binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_close)
+            } else {
+                if (isOpen) {
+                    binding.tvGroup.text = "그룹 참가하기"
+                    binding.tvGroup.setTextColor(Color.WHITE)
+                    binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order)
+                } else {
+                    binding.tvGroup.text = "마감되었습니다."
+                    binding.tvGroup.setTextColor(Color.BLACK)
+                    binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                }
+            }
+        }
+
+        if (isMember) {
+            binding.ivOrder.visibility = View.VISIBLE
+            if (userOrders[userId]!!.isNotEmpty()) {
+                binding.tvOrder.text = "메뉴 수정하기"
+                binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
+                binding.lytGroup.visibility = View.VISIBLE
+            } else {
+                binding.tvOrder.text = "메뉴 담기"
                 binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
             }
-        } else {                         // 마감 됐을 때
-            if (userId == baedalPost.userId) {         // 게시글 작성자 일 경우 마감버튼 바인딩
-                binding.tvSwitchStatus.text = "추가 주문받기"
-                binding.tvSwitchStatus.setTextColor(Color.BLACK)
-                binding.lytSwitchStatus.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-            }
-
-            binding.tvOrder.text = "주문이 마감되었습니다."
-            binding.ivOrder.visibility = View.GONE
-            binding.lytOrder.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-            binding.lytOrder.isEnabled = false
-
-        }
+        } else binding.ivOrder.visibility = View.GONE
     }
 
     fun switchStatus(){
@@ -276,6 +299,37 @@ class FragmentBaedalPost :Fragment() {
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
+                makeToast("다시 시도해주세요.")
+                looping(false, loopingDialog)
+            }
+        })
+    }
+
+    fun joinGroup() {
+        val loopingDialog = looping()
+        api.baedalJoin(postId!!).enqueue(object: Callback<VoidResponse> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                if (response.code() == 204) {
+                    isMember = true
+                    setBottomBtn()
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("그룹 참여 완료")
+                        .setMessage("주문을 작성하시겠습니까?\n")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener {
+                            dialog, id -> goToOrderingFrag(false)
+                        })
+                        .setNegativeButton("조금 있다 할게요!",
+                            DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
+                } else {
+                    makeToast("다시 시도해주세요.")
+                    Log.d("FragBaedalPost joinGroup 그룹 참여 실패", "response code ${response.code()}")
+                }
+                looping(false, loopingDialog)
+            }
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                Log.d("FragBaedalPost joinGroup 그룹참여 실패", t.message.toString())
                 makeToast("다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
@@ -314,7 +368,7 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun goToOrderingFrag(isUpdating: Boolean) {
-        val currentMember = joinUsers.size
+        val currentMember = userOrders.size
         val store = baedalPost.store
 
         setFrag(FragmentBaedalMenu(), mapOf(

@@ -82,8 +82,8 @@ data class BaedalPost(
     val store: Store,
     @SerializedName("open")
     val isOpen: Boolean,
-    //@SerializedName("update_time")
-    //val updateTime: String,
+    @SerializedName("order_completed")
+    val orderCompleted: Boolean,
     @SerializedName("min_member")
     val minMember: Int,
     @SerializedName("max_member")
@@ -105,15 +105,15 @@ data class UserOrder(
 data class Order(
     val _id: String?,           // 데이터 조회는 하지만 어댑터 연결시에는 사용 X
     var quantity: Int,
-    @SerializedName("order_price")
-    val orderPrice: Int,
+    @SerializedName("price")
+    val price: Int,
     val menu: OrderMenu
 )
 
 data class OrderMenu(
     val name: String,
-    @SerializedName("menu_price")
-    val menuPrice: Int,
+    @SerializedName("price")
+    val price: Int,
     val groups: List<OrderGroup>
 )
 
@@ -162,15 +162,6 @@ data class OrderingGroup(
     val options: List<String>
 )
 
-data class OrderingResponse(
-    val message: String?
-)
-
-/** 그룹 참가 응답 모델 */
-data class JoinResponse(
-    val message: String?
-)
-
 data class VoidResponse(
     val message: String?
 )
@@ -186,8 +177,8 @@ data class BaedalPostPreview(
     val orderTime: String,
     val store: Store,
     //val open: Boolean,
-    @SerializedName("user_count")
-    val userCount: Int
+    //val order_completed,
+    val users: Int
 )
 
 data class SwitchStatus(val open: Boolean)

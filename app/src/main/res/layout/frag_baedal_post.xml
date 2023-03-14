@@ -307,7 +307,7 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="8dp"
                             android:layout_marginBottom="4dp"
-                            android:text="TextView"
+                            android:text="메뉴 수정하기"
                             android:textColor="#FFFFFF"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -329,7 +329,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/lyt_cancel"
+                        android:id="@+id/lyt_group"
                         android:layout_width="match_parent"
                         android:layout_height="28dp"
                         android:layout_marginStart="16dp"
@@ -340,14 +340,14 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/tv_cancel"
+                            android:id="@+id/tv_group"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="8dp"
                             android:layout_marginBottom="4dp"
-                            android:text="주문 취소하기"
+                            android:text="나도 주문하기"
                             android:textColor="#FFFFFF"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -357,7 +357,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/lyt_switch_status"
+                        android:id="@+id/lyt_status"
                         android:layout_width="match_parent"
                         android:layout_height="28dp"
                         android:layout_marginStart="16dp"
@@ -368,14 +368,14 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/tv_switch_status"
+                            android:id="@+id/tv_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="8dp"
                             android:layout_marginBottom="4dp"
-                            android:text="TextView"
+                            android:text="참여 마감하기"
                             android:textColor="#FFFFFF"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"

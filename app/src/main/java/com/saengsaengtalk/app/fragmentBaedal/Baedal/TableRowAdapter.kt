@@ -46,7 +46,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Ada
     class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(post: BaedalPostPreview) {
-            val currentMember = post.userCount
+            val currentMember = post.users
 
             binding.lytBaedalListLikeview.visibility = View.GONE
 
@@ -59,9 +59,11 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Ada
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun getDateTimeFormating(dateTimeStr: String): String {
-            val dateTime = LocalDateTime.parse(dateTimeStr.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
-            val formatter = DateTimeFormatter.ofPattern("HH시 mm분").withLocale(Locale.forLanguageTag("ko"))
-            return dateTime.format(formatter)
+            val orderTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ISO_DATE_TIME)
+            //val dateTime = LocalDateTime.parse(dateTimeStr.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            //val formatter = DateTimeFormatter.ofPattern("HH시 mm분").withLocale(Locale.forLanguageTag("ko"))
+            return orderTime.format(
+                DateTimeFormatter.ofPattern("HH시 mm분",Locale.KOREAN)) //dateTime.format(formatter)
         }
     }
 }
