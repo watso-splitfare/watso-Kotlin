@@ -166,13 +166,7 @@ class FragmentBaedalAdd :Fragment() {
             binding.btnPostAdd.isEnabled = true
             binding.btnPostAdd.setBackgroundResource(R.drawable.btn_baedal_confirm)
         }
-        binding.btnPostAdd.setOnClickListener {
-            if (binding.etTitle.text.toString() == "") {
-                makeToast("제목을 입력해주세요.")
-            } else {
-                baedalPosting()
-            }
-        }
+        binding.btnPostAdd.setOnClickListener { baedalPosting() }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -281,8 +275,10 @@ class FragmentBaedalAdd :Fragment() {
                 null, //binding.tvTitle.text.toString(),
                 orderTime!!, // 수정하기
                 binding.spnPlace.selectedItem.toString(),
-                if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else -1,
-                if (binding.cbMaxMember.isChecked) binding.etMaxMember.text.toString().toInt() else -1
+                if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
+                    binding.etMinMember.text.toString().toInt() else -1,
+                if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
+                    binding.etMaxMember.text.toString().toInt() else -1
             )
 
             val loopingDialog = looping()
@@ -308,19 +304,18 @@ class FragmentBaedalAdd :Fragment() {
                 })
         } else {
             /** 게시글 신규 등록 */
-            //if (binding.tvTitle.text.toString() == "") makeToast("제목을 입력해 주세요")
-
             if (orders.isEmpty()) makeToast("메뉴를 선택해 주세요")
             else {
                 makeToast("주문을 등록합니다.")
                 var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
                 val baedalPosting = BaedalPosting(
                     storeIds[selectedIdx],
-                    //if (binding.etTitle.text.toString() !="") binding.etTitle.text.toString()!! else "같이 주문해요",
                     orderTimeString,
                     binding.spnPlace.selectedItem.toString(),
-                    if (binding.cbMinMember.isChecked) binding.etMinMember.text.toString().toInt() else -1,
-                    if (binding.cbMaxMember.isChecked) binding.etMaxMember.text.toString().toInt() else -1
+                    if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
+                        binding.etMinMember.text.toString().toInt() else -1,
+                    if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
+                        binding.etMaxMember.text.toString().toInt() else -1
                 )
 
                 val loopingDialog = looping()
@@ -370,37 +365,31 @@ class FragmentBaedalAdd :Fragment() {
     }
 
     fun getOrdering(): Ordering {
-        //return Ordering(storeIds[selectedIdx], getOrderingOrders())
-        return Ordering(storeIds[selectedIdx], getOrderingOrder())
+        return Ordering(getOrderingOrders())
     }
 
-    /*private fun getOrderingOrders(): List<OrderingOrder> {
+    private fun getOrderingOrders(): List<OrderingOrder> {
         val orderingOrders = mutableListOf<OrderingOrder>()
         for (order in orders) {
             orderingOrders.add(OrderingOrder(order.quantity, getOrderingMenu(order)))
         }
         return orderingOrders
-    }*/
-
-    private fun getOrderingOrder(): OrderingOrder {
-        return OrderingOrder(orders[0].quantity, getOrderingMenu(orders[0]))
     }
 
-    private fun getOrderingMenu(order: Order): List<OrderingMenu> {
-        val orderingMenu = mutableListOf<OrderingMenu>()
-        for (group in order.menu.groups) {
-            orderingMenu.add(OrderingMenu(order.menu.name, getOrderingGroups(group)))
-        }
-        return orderingMenu
+    private fun getOrderingMenu(order: Order): OrderingMenu {
+        return if (order.menu.groups == null)
+            OrderingMenu(order.menu.name, null)
+        else
+            OrderingMenu(order.menu.name, getOrderingGroups(order.menu.groups))
     }
 
-    private fun getOrderingGroups(group: OrderGroup): List<OrderingGroup> {
+    private fun getOrderingGroups(groups: List<OrderGroup>): List<OrderingGroup> {
         val orderingGroups = mutableListOf<OrderingGroup>()
-        val options = mutableListOf<String>()
-        for (option in group.options) {
-            options.add(option._id)
+        for (group in groups) {
+            val options = mutableListOf<String>()
+            group.options.forEach { options.add(it._id) }
+            orderingGroups.add(OrderingGroup(group._id, options))
         }
-        orderingGroups.add(OrderingGroup(group._id, options))
         return orderingGroups
     }
 

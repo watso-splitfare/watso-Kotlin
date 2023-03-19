@@ -9,13 +9,13 @@ data class DuplicationResult(
 )
 
 data class SignUpModel(
-    @SerializedName("user_name")
+    @SerializedName("username")
     val userName: String,
     val pw: String,
-    @SerializedName("nick_name")
+    @SerializedName("nickname")
     val nickName: String,
-    @SerializedName("student_num")
-    val studentNum: String,
+    //@SerializedName("student_number")
+    //val studentNum: String,
     @SerializedName("account_number")
     val accountNumber: String,
     val email: String
@@ -26,7 +26,7 @@ data class SignUpResult(
 )
 
 data class LoginModel(
-    @SerializedName("user_name")
+    @SerializedName("username")
     val userName: String,
     val pw: String,
     @SerializedName("registration_token")
@@ -35,7 +35,8 @@ data class LoginModel(
 
 data class LoginResult(
     val id: String,
-    val nick_name: String
+    @SerializedName("nickname")
+    val nickName: String
 )
 
 data class LogoutResult(

@@ -165,19 +165,19 @@ class FragmentBaedalPost :Fragment() {
                     }
                     else {
                         binding.lytStatus.visibility = View.GONE
-                        binding.lytGroup.setOnClickListener { if (isMember)
-                        {
-                            val builder = AlertDialog.Builder(requireContext())
-                            builder.setTitle("그룹 참여 하기")
-                                .setMessage("그룹에 참여 하시겠습니까?\n")
-                                .setPositiveButton("네", DialogInterface.OnClickListener {
-                                        dialog, id -> joinGroup()
-                                })
-                                .setNegativeButton("아니요",
-                                    DialogInterface.OnClickListener { dialog, id -> })
-                            builder.show()
-                        }
-                        else leaveGroup()
+                        binding.lytGroup.setOnClickListener {
+                            if (isMember) leaveGroup()
+                            else {
+                                val builder = AlertDialog.Builder(requireContext())
+                                builder.setTitle("그룹 참여 하기")
+                                    .setMessage("그룹에 참여 하시겠습니까?\n")
+                                    .setPositiveButton("네", DialogInterface.OnClickListener {
+                                            dialog, id -> joinGroup()
+                                    })
+                                    .setNegativeButton("아니요",
+                                        DialogInterface.OnClickListener { dialog, id -> })
+                                builder.show()
+                            }
                         }
                     }
                     setBottomBtn()
@@ -198,8 +198,14 @@ class FragmentBaedalPost :Fragment() {
                         for (userOrder in baedalPost.userOrders) {
                             if (userOrder.orders.isNotEmpty()) {
                                 if (userId == userOrder.userId) {
-                                    myOrder.add(userOrder)
-                                    myOrder[-1].isMyOrder = true
+                                    myOrder.add(UserOrder(
+                                        userOrder.userId,
+                                        userOrder.nickName,
+                                        userOrder.orderConfirmation,
+                                        userOrder.orders,
+                                        true
+                                    ))
+                                    //myOrder[-1].isMyOrder = true
                                 } else otherOrders.add(userOrder)
                             }
                         }
@@ -274,8 +280,8 @@ class FragmentBaedalPost :Fragment() {
         }
 
         if (isMember) {
-            binding.ivOrder.visibility = View.VISIBLE
-            if (userOrders[userId]!!.isNotEmpty()) {
+            binding.lytOrder.visibility = View.VISIBLE
+            if (userOrders.keys.contains(userId) && userOrders[userId]!!.isNotEmpty()) {
                 binding.tvOrder.text = "메뉴 수정하기"
                 binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
                 binding.lytGroup.visibility = View.VISIBLE
@@ -283,12 +289,12 @@ class FragmentBaedalPost :Fragment() {
                 binding.tvOrder.text = "메뉴 담기"
                 binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
             }
-        } else binding.ivOrder.visibility = View.GONE
+        } else binding.lytOrder.visibility = View.GONE
     }
 
     fun switchStatus(){
         val loopingDialog = looping()
-        api.baedalSwitchStatus(postId!!, SwitchStatus(isOpen)).enqueue(object : Callback<VoidResponse> {
+        api.baedalSwitchStatus(postId!!, SwitchStatus(!isOpen)).enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) {
                     isOpen = !isOpen
@@ -338,8 +344,8 @@ class FragmentBaedalPost :Fragment() {
 
     fun leaveGroup(){
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("주문 취소하기")
-            .setMessage("주문을 취소하시겠습니까? \n다시 주문하기 위해서는 주문을 다시 작성해야합니다.")
+        builder.setTitle("그룹 탙퇴하기")
+            .setMessage("그룹을 탈퇴하시겠습니까? \n다시 주문하기 위해서는 주문을 다시 작성해야합니다.")
             .setPositiveButton("확인",
                 DialogInterface.OnClickListener { dialog, id ->
                     val loopingDialog = looping()

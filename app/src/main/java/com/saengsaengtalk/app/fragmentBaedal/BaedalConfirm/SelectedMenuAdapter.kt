@@ -61,10 +61,12 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
 
             binding.tvMenuName.text = order.menu.name + menuPrice
 
-            binding.rvMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val adapter = SelectedOptionAdapter(order.menu.groups)
-            binding.rvMenu.adapter = adapter
-
+            if (order.menu.groups != null) {
+                binding.rvMenu.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                val adapter = SelectedOptionAdapter(order.menu.groups)
+                binding.rvMenu.adapter = adapter
+            }
             setBindText(priceString, quantity)
 
             binding.btnRemove.setOnClickListener {

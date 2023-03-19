@@ -54,14 +54,15 @@ class FragmentLogin :Fragment() {
                     Log.d("FragLogin response.code()", response.code().toString())
                     if (response.code()==200) {
                         val tokens = response.headers().get("Authentication").toString().split("/")
-
                         val payload = decodeToken(tokens[0])
-                        val dId = JSONObject(payload).getString("id")
-                        val dNickname = JSONObject(payload).getString("nick_name")
+                        Log.d("FragLogin token[0]", tokens[0])
+                        Log.d("FragLogin payload", payload)
+                        val dUserId = JSONObject(payload).getString("user_id")
+                        val dNickname = JSONObject(payload).getString("nickname")
 
                         prefs.setString("accessToken", tokens[0])
                         prefs.setString("refreshToken", tokens[1])
-                        prefs.setString("userId", dId)
+                        prefs.setString("userId", dUserId)
                         prefs.setString("nickname", dNickname)
 
                         onBackPressed()

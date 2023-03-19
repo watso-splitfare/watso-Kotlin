@@ -1,10 +1,14 @@
 package com.saengsaengtalk.app.APIS
 
+import com.google.gson.annotations.SerializedName
+
 /** 게시글 API 관련 데이터 모델 */
 
 data class User(
-    val user_id: Long,
-    val nick_name: String
+    @SerializedName("user_id")
+    val userId: Long,
+    @SerializedName("nickname")
+    val nickName: String
 )
 
 data class Comment(

@@ -15,23 +15,15 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
     companion object {
         private const val BASE_URL = "http://52.78.106.235:5000/"
 
-        fun create(forLogOut: Boolean=false): APIS {
+        fun create(): APIS {
             val gson :Gson = GsonBuilder().setLenient().create();
 
-            if (forLogOut) {
-                return Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build()
-                    .create(APIS::class.java)
-            } else {
-                return Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(provideOkHttpClient(AppInterceptor()))
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build()
-                    .create(APIS::class.java)
-            }
+            return Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(provideOkHttpClient(AppInterceptor()))
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+                .create(APIS::class.java)
         }
 
         private fun provideOkHttpClient(interceptor: AppInterceptor):
@@ -44,6 +36,7 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
             override fun intercept(chain: Interceptor.Chain): Response {
                 val accessToken = MainActivity.prefs.getString("accessToken", "")
+                val refreshToken = MainActivity.prefs.getString("refreshToken", "")
                 val tokenAddedRequest = chain.request().newBuilder()
                     .addHeader("Authorization", accessToken)
                     .build()
@@ -52,8 +45,8 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
                 if (response.code() == 401) {
                     response.close()
-                    Log.d("어세스 토큰 갱신 시도", accessToken)
-                    val refreshToken = MainActivity.prefs.getString("refreshToken", "")
+                    Log.d("어세스 토큰 갱신 시도 access", accessToken)
+                    Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
                     val refreshRequest = chain.request().newBuilder()
                         .addHeader("Authorization", refreshToken)
                         .method("GET", null)
@@ -61,7 +54,7 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                         .build()
 
                     val refreshResponse = chain.proceed(refreshRequest)
-                    val token = refreshResponse.headers().get("Authorization").toString()
+                    val token = refreshResponse.headers().get("Authentication").toString()
                     MainActivity.prefs.setString("accessToken", token)
 
                     Log.d("어세스 토큰 갱신 성공", token)

@@ -17,7 +17,7 @@ import retrofit2.Response
 class FragmentAccount :Fragment() {
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create(true)
+    val api= APIS.create()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
@@ -43,7 +43,7 @@ class FragmentAccount :Fragment() {
 
         binding.btnLogout.setOnClickListener {
             val refreshToken = MainActivity.prefs.getString("refreshToken", "")
-            api.logout(refreshToken).enqueue(object: Callback<LogoutResult> {
+            api.logout().enqueue(object: Callback<LogoutResult> {
                 override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
                     if (response.code() == 204) {
                         MainActivity.prefs.removeString("accessToken")

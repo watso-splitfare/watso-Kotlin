@@ -56,9 +56,18 @@ interface BaedalAPIS {
         @Path("post_id") postId: String
     ): Call<UserOrder>
 
-    @DELETE("api/delivery/post/{post_id}/order")        // 주문 삭제
+    @PATCH("api/delivery/post/{post_id}/order")                     // 참여자 주문 확정
+        fun baedalOrderConfirm(
+        @Path("post_id") postId: String
+    ): Call<VoidResponse>
 
-    @PATCH("api/delivery/post/{post_id}/order")         // 배달 주문 수정
+    @DELETE("api/delivery/post/{post_id}/order/{order_id}")        // 주문 삭제
+        fun baedalOrderDelete(
+        @Path("post_id") postId: String,
+        @Path("order_id") orderId: String
+    ): Call<VoidResponse>
+
+    @PATCH("api/delivery/post/{post_id}/order/{order_id}")         // 배달 주문 수정
     fun baedalOrderUpdate(
         @Path("post_id") postId: String,
         @Body jsonparams: Ordering
@@ -69,9 +78,15 @@ interface BaedalAPIS {
         @Path("post_id") postId: String
     ): Call<VoidResponse>
 
-    @PATCH("api/delivery/post/{post_id}/status")    // 주문 가능 여부 변경
+    @PATCH("api/delivery/post/{post_id}/status/open")    // 주문 가능 여부 변경
     fun baedalSwitchStatus(
         @Path("post_id") postId: String,
         @Body jsonparams: SwitchStatus
+    ): Call<VoidResponse>
+
+    @PATCH("api/delivery/post/{post_id}/status/orderCompleted") // 대표자 주문 완료
+    fun baedalOrderCompleted(
+        @Path("post_id") postId: String,
+        @Body() order_completed: Boolean
     ): Call<VoidResponse>
 }

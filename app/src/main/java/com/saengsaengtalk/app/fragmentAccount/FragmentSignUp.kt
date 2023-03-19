@@ -25,7 +25,7 @@ class FragmentSignUp :Fragment() {
     private var mBinding: FragSignUpBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
-    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "studentnum" to false)
+    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "studentnum" to true)
     var checkedUsername: String? = null
     var checkedNickname: String? = null
     var checkedStudentnum: String? = null
@@ -181,7 +181,9 @@ class FragmentSignUp :Fragment() {
         }*/
 
         /** 학번 */
-        binding.etStudentnum.addTextChangedListener(object: TextWatcher {
+        binding.lytStudentNum.visibility = View.GONE
+        binding.etStudentnum.visibility = View.GONE
+        /*binding.etStudentnum.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkedStudentnum != null && binding.tvStudentnumConfirm.text == checkedStudentnum) {
                     binding.tvStudentnumConfirm.text = "사용 가능한 학번입니다."
@@ -225,7 +227,7 @@ class FragmentSignUp :Fragment() {
                     looping(false, loopingDialog)
                 }
             })
-        }
+        }*/
 
         /** 회원가입 */
         binding.btnSignup.setOnClickListener {
@@ -234,7 +236,7 @@ class FragmentSignUp :Fragment() {
                 binding.etUsername.text.toString(),
                 binding.etPw.text.toString(),
                 binding.etNickname.text.toString(),
-                binding.etStudentnum.text.toString(),
+                //binding.etStudentnum.text.toString(),
                 "123 농협",
                 binding.etMail.text.toString() + "@" + binding.etMailDomain.text.toString()
             )

@@ -81,9 +81,9 @@ class FragmentBaedalOpt :Fragment() {
             val menu = JSONObject()
             /** 데이터 직렬화를 위해 orderPrice와 menuPrice는 키값을 snake case로 작성 */
             order.put("quantity", quantity)
-            order.put("order_price", setOrderPrice())
+            order.put("price", setOrderPrice())
             menu.put("name", menuName)
-            menu.put("menu_price", menuPrice)
+            menu.put("price", menuPrice)
 
             val groups = JSONArray()
             groupOptionChecked.forEach {

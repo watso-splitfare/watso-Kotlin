@@ -39,6 +39,5 @@ interface AuthAPIS {
 
     @GET("auth/logout")                    // 로그아웃
     fun logout(
-        @Header("Authorization") refreshToken: String
     ): Call<LogoutResult>
 }

@@ -74,7 +74,7 @@ data class BaedalPost(
     val title: String,
     @SerializedName("user_id")
     val userId: Long,
-    @SerializedName("nick_name")
+    @SerializedName("nickname")
     val nickName: String,
     val place: String,
     @SerializedName("order_time")
@@ -96,8 +96,10 @@ data class BaedalPost(
 data class UserOrder(
     @SerializedName("user_id")
     val userId: Long?,          // 데이터 조회는 하지만 어댑터 연결시에는 사용 X
-    @SerializedName("nick_name")
+    @SerializedName("nickname")
     val nickName: String,
+    @SerializedName("order_confirmation")
+    val orderConfirmation: Boolean,
     val orders: List<Order>,
     var isMyOrder: Boolean = false     // 데이터 조회 X, 어댑터 연결시에만 사용
 )
@@ -105,16 +107,14 @@ data class UserOrder(
 data class Order(
     val _id: String?,           // 데이터 조회는 하지만 어댑터 연결시에는 사용 X
     var quantity: Int,
-    @SerializedName("price")
     val price: Int,
     val menu: OrderMenu
 )
 
 data class OrderMenu(
     val name: String,
-    @SerializedName("price")
     val price: Int,
-    val groups: List<OrderGroup>
+    val groups: List<OrderGroup>?
 )
 
 data class OrderGroup(
@@ -137,24 +137,18 @@ data class IsClosedResponse(
 )
 
 /** 배달 주문 등록 모델 */
-/*data class Ordering(
-    val store_id: String,
-    val orders: List<OrderingOrder>
-)*/
-
 data class Ordering(
-    val store_id: String,
-    val order: OrderingOrder
+    val orders: List<OrderingOrder>
 )
 
 data class OrderingOrder(
     val quantity: Int,
-    val menu: List<OrderingMenu>
+    val menu: OrderingMenu
 )
 
 data class OrderingMenu(
     val name: String,
-    val groups: List<OrderingGroup>
+    val groups: List<OrderingGroup>?
 )
 
 data class OrderingGroup(
@@ -178,7 +172,9 @@ data class BaedalPostPreview(
     val store: Store,
     //val open: Boolean,
     //val order_completed,
-    val users: Int
+    val users: List<User>
 )
 
-data class SwitchStatus(val open: Boolean)
+data class SwitchStatus(
+    val open: Boolean
+)

@@ -225,37 +225,31 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun getOrdering(): Ordering {
-        //return Ordering(storeId, getOrderingOrders())
-        return Ordering(storeId, getOrderingOrder())
+        return Ordering(getOrderingOrders())
     }
 
-    /*private fun getOrderingOrders(): List<OrderingOrder> {
+    private fun getOrderingOrders(): List<OrderingOrder> {
         val orderingOrders = mutableListOf<OrderingOrder>()
         for (order in orders) {
             orderingOrders.add(OrderingOrder(order.quantity, getOrderingMenu(order)))
         }
         return orderingOrders
-    }*/
-
-    private fun getOrderingOrder(): OrderingOrder {
-        return OrderingOrder(orders[0].quantity, getOrderingMenu(orders[0]))
     }
 
-    private fun getOrderingMenu(order: Order): List<OrderingMenu> {
-        val orderingMenu = mutableListOf<OrderingMenu>()
-        for (group in order.menu.groups) {
-            orderingMenu.add(OrderingMenu(order.menu.name, getOrderingGroups(group)))
-        }
-        return orderingMenu
+    private fun getOrderingMenu(order: Order): OrderingMenu {
+        return if (order.menu.groups == null)
+            OrderingMenu(order.menu.name, null)
+        else
+            OrderingMenu(order.menu.name, getOrderingGroups(order.menu.groups))
     }
 
-    private fun getOrderingGroups(group: OrderGroup): List<OrderingGroup> {
+    private fun getOrderingGroups(groups: List<OrderGroup>): List<OrderingGroup> {
         val orderingGroups = mutableListOf<OrderingGroup>()
-        val options = mutableListOf<String>()
-        for (option in group.options) {
-            options.add(option._id)
+        for (group in groups) {
+            val options = mutableListOf<String>()
+            group.options.forEach { options.add(it._id) }
+            orderingGroups.add(OrderingGroup(group._id, options))
         }
-        orderingGroups.add(OrderingGroup(group._id, options))
         return orderingGroups
     }
 
