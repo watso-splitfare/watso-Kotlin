@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.saengsaengtalk.app.APIS.DuplicationResult
 import com.saengsaengtalk.app.APIS.SignUpModel
-import com.saengsaengtalk.app.APIS.SignUpResult
+import com.saengsaengtalk.app.APIS.VoidResponse
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
@@ -240,8 +240,8 @@ class FragmentSignUp :Fragment() {
                 "123 농협",
                 binding.etMail.text.toString() + "@" + binding.etMailDomain.text.toString()
             )
-            api.signup(data).enqueue(object : Callback<SignUpResult> {
-                override fun onResponse(call: Call<SignUpResult>, response: Response<SignUpResult>) {
+            api.signup(data).enqueue(object : Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     if (response.code() == 204) {
                         makeToast("회원가입에 성공하였습니다.")
                         onBackPressed()
@@ -252,7 +252,7 @@ class FragmentSignUp :Fragment() {
                     looping(false, loopingDialog)
                 }
 
-                override fun onFailure(call: Call<SignUpResult>, t: Throwable) {
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     Log.e("signUp Fragment - nicknameDuplicationCheck", t.message.toString())
                     makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)

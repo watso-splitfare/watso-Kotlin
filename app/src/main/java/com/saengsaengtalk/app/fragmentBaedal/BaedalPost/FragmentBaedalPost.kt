@@ -43,6 +43,7 @@ class FragmentBaedalPost :Fragment() {
     val api= APIS.create()
     lateinit var baedalPost: BaedalPost
     val userOrders = mutableMapOf<Long, List<Order>>()
+    val orderConfirm = mutableMapOf<Long, Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +92,10 @@ class FragmentBaedalPost :Fragment() {
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
 
-                    for (user in baedalPost.userOrders) userOrders[user.userId!!] = user.orders
+                    for (user in baedalPost.userOrders) {
+                        userOrders[user.userId!!] = user.orders
+                        orderConfirm[user.userId] = user.orderConfirmation
+                    }
                     val joinUsers = userOrders.keys
                     isMember = joinUsers.contains(userId)
                     isOpen = baedalPost.isOpen
@@ -153,10 +157,6 @@ class FragmentBaedalPost :Fragment() {
 
                     //if (baedalPost.content != null) binding.tvContent.text = baedalPost.content
 
-                    binding.ivLike.visibility = View.GONE
-                    binding.tvLike.visibility = View.GONE
-
-
                     /** 주문하기 및 주문가능 여부 변경 */
 
                     if (userId == baedalPost.userId) {  // 사용자가 대표자라면
@@ -179,6 +179,7 @@ class FragmentBaedalPost :Fragment() {
                                 builder.show()
                             }
                         }
+                        binding.tvComplete.text = "주문 확정하기"
                     }
                     setBottomBtn()
 
@@ -251,45 +252,92 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun setBottomBtn() {
-        if (userId == baedalPost.userId) {       // 사용자가 대표자라면
-            if (isOpen) {
-                binding.tvStatus.text = "참여 마감하기"
-                binding.tvStatus.setTextColor(Color.WHITE)
-                binding.lytStatus.setBackgroundResource(R.drawable.btn_baedal_close)
-            } else {
-                binding.tvStatus.text = "마감 취소하기"
-                binding.tvStatus.setTextColor(Color.BLACK)
-                binding.lytStatus.setBackgroundResource(R.drawable.btn_baedal_order_closed)
-            }
-        } else {
+        /** order 버튼 */
+        if (!baedalPost.orderCompleted) {
             if (isMember) {
-                binding.tvGroup.text = "그룹 탈퇴하기"
-                binding.tvGroup.setTextColor(Color.WHITE)
-                binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_close)
-            } else {
+                if (orderConfirm.keys.contains(userId) && !orderConfirm[userId]!!) { // 유저가 확정 안했다면
+                    Log.d("FragBaedalPost", "1")
+                    binding.lytOrder.visibility = View.VISIBLE
+                    if (userOrders.keys.contains(userId) && userOrders[userId]!!.isNotEmpty()) {    // 현재 유저의 주문이 있다면
+                        binding.tvOrder.text = "메뉴 수정하기"
+                        binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
+                    } else {
+                        binding.tvOrder.text = "메뉴 담기"
+                        binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
+                    }
+                } else binding.lytOrder.visibility = View.GONE
+            } else binding.lytOrder.visibility = View.GONE
+        } else binding.lytOrder.visibility = View.GONE
+
+        /** 그룹 참가(마감) 버튼 */
+        if (!baedalPost.orderCompleted) {
+            if (userId == baedalPost.userId) {       // 사용자가 대표자라면
                 if (isOpen) {
-                    binding.tvGroup.text = "그룹 참가하기"
-                    binding.tvGroup.setTextColor(Color.WHITE)
-                    binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order)
+                    binding.tvStatus.text = "참여 마감하기"
+                    binding.tvStatus.setTextColor(Color.WHITE)
+                    binding.lytStatus.setBackgroundResource(R.drawable.btn_baedal_close)
                 } else {
-                    binding.tvGroup.text = "마감되었습니다."
-                    binding.tvGroup.setTextColor(Color.BLACK)
-                    binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                    binding.tvStatus.text = "마감 취소하기"
+                    binding.tvStatus.setTextColor(Color.BLACK)
+                    binding.lytStatus.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                }
+            } else {                                // 사용자가 일반 멤버라면
+                if (isMember) {
+                    binding.tvGroup.text = "그룹 탈퇴하기"
+                    binding.tvGroup.setTextColor(Color.WHITE)
+                    binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_close)
+                } else {
+                    if (isOpen) {
+                        binding.tvGroup.text = "그룹 참가하기"
+                        binding.tvGroup.setTextColor(Color.WHITE)
+                        binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order)
+                    } else {
+                        binding.tvGroup.text = "마감되었습니다."
+                        binding.tvGroup.setTextColor(Color.BLACK)
+                        binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                    }
                 }
             }
+        } else {
+            binding.lytGroup.visibility = View.GONE
+            binding.lytStatus.visibility = View.GONE
         }
 
-        if (isMember) {
-            binding.lytOrder.visibility = View.VISIBLE
-            if (userOrders.keys.contains(userId) && userOrders[userId]!!.isNotEmpty()) {
-                binding.tvOrder.text = "메뉴 수정하기"
-                binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
-                binding.lytGroup.visibility = View.VISIBLE
-            } else {
-                binding.tvOrder.text = "메뉴 담기"
-                binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
-            }
-        } else binding.lytOrder.visibility = View.GONE
+        /** 주문 확정 버튼 */
+        if (!baedalPost.orderCompleted) {
+            if (isMember) {
+                if (userId == baedalPost.userId) {  // 대표자라면
+                    binding.tvComplete.text = "주문 완료하기"
+                    var confirmCount = 1
+                    orderConfirm.forEach {if (it.value) confirmCount += 1 }
+                    if (confirmCount >= orderConfirm.size) {        // 모든 유저가 확정 했다면
+                        binding.lytComplete.setOnClickListener { completeOrder() }
+                        binding.tvComplete.setTextColor(Color.WHITE)
+                        binding.lytComplete.setBackgroundResource(R.drawable.btn_baedal_complete)
+                    } else {
+                        binding.lytComplete.isEnabled = false
+                        binding.tvComplete.setTextColor(Color.BLACK)
+                        binding.lytComplete.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                    }
+                } else {                            // 대표자가 아니라면
+                    if (orderConfirm.keys.contains(userId) && orderConfirm[userId]!!) {     // 유저가 주문을 확정했다면
+                        binding.tvComplete.text = "주문 확정완료"
+                        binding.lytComplete.isEnabled = false
+                        binding.tvComplete.setTextColor(Color.BLACK)
+                        binding.lytComplete.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                    } else {
+                        binding.tvComplete.text = "주문 확정하기"
+                        binding.lytComplete.setOnClickListener { confirmOrder() }
+                        binding.tvComplete.setTextColor(Color.WHITE)
+                        binding.lytComplete.setBackgroundResource(R.drawable.btn_baedal_complete)
+                    }
+                }
+            } else binding.lytComplete.visibility = View.GONE
+        }
+        else {
+            binding.tvComplete.text = "주문 완료된 게시글입니다."
+            binding.lytComplete.isEnabled = false
+        }
     }
 
     fun switchStatus(){
@@ -356,6 +404,64 @@ class FragmentBaedalPost :Fragment() {
                                 isMember = false
                                 getPostInfo()
                             } else makeToast("다시 시도해주세요.")
+                            looping(false, loopingDialog)
+                        }
+                        override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                            Log.d("log",t.message.toString())
+                            Log.d("log","fail")
+                            makeToast("다시 시도해주세요.")
+                            looping(false, loopingDialog)
+                        }
+                    })
+                })
+            .setNegativeButton("취소",
+                DialogInterface.OnClickListener { dialog, id ->
+                    println("취소")
+                })
+        builder.show()
+    }
+
+    fun confirmOrder() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("주문 확정하기")
+            .setMessage("주문을 확정하시겠습니까? \n주문 확정 이후에는 수정할 수 없습니다.")
+            .setPositiveButton("확인",
+                DialogInterface.OnClickListener { dialog, id ->
+                    val loopingDialog = looping()
+                    api.baedalOrderConfirm(postId!!).enqueue(object: Callback<VoidResponse> {
+                        @RequiresApi(Build.VERSION_CODES.O)
+                        override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                            if (response.code() == 204) getPostInfo()
+                            else makeToast("다시 시도해주세요.")
+                            looping(false, loopingDialog)
+                        }
+                        override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                            Log.d("log",t.message.toString())
+                            Log.d("log","fail")
+                            makeToast("다시 시도해주세요.")
+                            looping(false, loopingDialog)
+                        }
+                    })
+                })
+            .setNegativeButton("취소",
+                DialogInterface.OnClickListener { dialog, id ->
+                    println("취소")
+                })
+        builder.show()
+    }
+
+    fun completeOrder() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("주문 완료하기")
+            .setMessage("주문을 완료하시겠습니까? \n참여자들은 더 이상 메뉴를 수정할 수 없습니다.")
+            .setPositiveButton("확인",
+                DialogInterface.OnClickListener { dialog, id ->
+                    val loopingDialog = looping()
+                    api.baedalOrderCompleted(postId!!, true).enqueue(object: Callback<VoidResponse> {
+                        @RequiresApi(Build.VERSION_CODES.O)
+                        override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                            if (response.code() == 204) getPostInfo()
+                            else makeToast("다시 시도해주세요.")
                             looping(false, loopingDialog)
                         }
                         override fun onFailure(call: Call<VoidResponse>, t: Throwable) {

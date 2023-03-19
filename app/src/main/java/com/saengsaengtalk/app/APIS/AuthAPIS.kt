@@ -30,7 +30,7 @@ interface AuthAPIS {
     @POST("auth/signup")                    // 회원가입
     fun signup(
         @Body jsonparams: SignUpModel
-    ): Call<SignUpResult>
+    ): Call<VoidResponse>
 
     @POST("auth/signin")                     // 로그인
     fun login(
@@ -39,5 +39,5 @@ interface AuthAPIS {
 
     @GET("auth/logout")                    // 로그아웃
     fun logout(
-    ): Call<LogoutResult>
+    ): Call<VoidResponse>
 }

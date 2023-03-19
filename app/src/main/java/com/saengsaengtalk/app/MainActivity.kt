@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceUtil(applicationContext)
+        Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
+        Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
 
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)

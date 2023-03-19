@@ -105,7 +105,7 @@ class FragmentBaedalAdd :Fragment() {
         binding.spnPlace.adapter = placeSpinerAdapter
 
         if (!isUpdating) {
-            orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")).toString()
+            orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
             setStoreSpinner()
             binding.lytChoice.setOnClickListener {
@@ -179,9 +179,11 @@ class FragmentBaedalAdd :Fragment() {
                 val timeSetListener =
                     TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                         run {
-                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:00"
+                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:01"
+                            Log.d("FragBaedalAdd-timeString", timeString)
+                            Log.d("FragBaedalAdd-orderTime.toString", orderTime.toString())
                             orderTime = LocalDateTime.parse(dateString+timeString).toString()
-                            //println(orderTime)
+                            Log.d("FragBaedalAdd-orderTime", orderTime!!)
                             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
                         }
                     }
@@ -199,7 +201,7 @@ class FragmentBaedalAdd :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getDateTimeFormating(dateTimeStr: String): String {
-        val dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+        val dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
         val formatter = DateTimeFormatter.ofPattern("MM/dd(E) HH:mm").withLocale(Locale.forLanguageTag("ko"))
         return dateTime.format(formatter)
     }
@@ -307,6 +309,7 @@ class FragmentBaedalAdd :Fragment() {
             if (orders.isEmpty()) makeToast("메뉴를 선택해 주세요")
             else {
                 makeToast("주문을 등록합니다.")
+                Log.d("FragBaedalAdd-storeId", storeIds[selectedIdx])
                 var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
                 val baedalPosting = BaedalPosting(
                     storeIds[selectedIdx],
@@ -319,11 +322,11 @@ class FragmentBaedalAdd :Fragment() {
                 )
 
                 val loopingDialog = looping()
+                Log.d("FragBaedalAdd-postingInfo", baedalPosting.toString())
                 api.baedalPosting(baedalPosting)
                     .enqueue(object : Callback<BaedalPostingResponse> {
                         override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
-                            val postingResult = response.body()!!
-                            if (response.code() == 200) baedalOrdering(postingResult.postId)
+                            if (response.code() == 200) baedalOrdering(response.body()!!.postId)
                             else {
                                 Log.e("baedalAdd Fragment - baedalPosting", response.toString())
                                 makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")

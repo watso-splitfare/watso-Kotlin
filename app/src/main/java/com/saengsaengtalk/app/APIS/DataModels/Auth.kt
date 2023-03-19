@@ -21,10 +21,6 @@ data class SignUpModel(
     val email: String
 )
 
-data class SignUpResult(
-    val message: String?
-)
-
 data class LoginModel(
     @SerializedName("username")
     val userName: String,
@@ -37,11 +33,4 @@ data class LoginResult(
     val id: String,
     @SerializedName("nickname")
     val nickName: String
-)
-
-data class LogoutResult(
-    val message: String?
-)
-data class RefreshResult(
-    val message: String?
 )

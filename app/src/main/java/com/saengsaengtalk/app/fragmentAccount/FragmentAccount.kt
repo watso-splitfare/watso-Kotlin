@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.LogoutResult
+import com.saengsaengtalk.app.APIS.VoidResponse
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragAccountBinding
 import com.saengsaengtalk.app.fragmentAccount.admin.FragmentAdmin
@@ -43,8 +43,8 @@ class FragmentAccount :Fragment() {
 
         binding.btnLogout.setOnClickListener {
             val refreshToken = MainActivity.prefs.getString("refreshToken", "")
-            api.logout().enqueue(object: Callback<LogoutResult> {
-                override fun onResponse(call: Call<LogoutResult>, response: Response<LogoutResult>) {
+            api.logout().enqueue(object: Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     if (response.code() == 204) {
                         MainActivity.prefs.removeString("accessToken")
                         MainActivity.prefs.removeString("refreshToken")
@@ -61,7 +61,7 @@ class FragmentAccount :Fragment() {
                     Log.d("로그아웃", response.headers().toString())
                 }
 
-                override fun onFailure(call: Call<LogoutResult>, t: Throwable) {
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     Log.d("로그아웃",t.message.toString())
                     Log.d("로그아웃","fail")
                 }
