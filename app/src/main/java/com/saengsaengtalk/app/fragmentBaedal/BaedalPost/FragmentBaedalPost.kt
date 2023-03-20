@@ -384,7 +384,7 @@ class FragmentBaedalPost :Fragment() {
         Log.d("switchStatus-!isOpen", (isOpen).toString())
 
         val loopingDialog = looping()
-        api.baedalSwitchStatus(postId!!, SwitchStatus(isOpen)).enqueue(object : Callback<VoidResponse> {
+        api.baedalSwitchStatus(postId!!, SwitchStatus(!isOpen)).enqueue(object : Callback<VoidResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) {
@@ -515,7 +515,7 @@ class FragmentBaedalPost :Fragment() {
             .setPositiveButton("확인",
                 DialogInterface.OnClickListener { dialog, id ->
                     val loopingDialog = looping()
-                    api.baedalOrderCompleted(postId!!, true).enqueue(object: Callback<VoidResponse> {
+                    api.baedalOrderCompleted(postId!!, OrderCompleted(true)).enqueue(object: Callback<VoidResponse> {
                         @RequiresApi(Build.VERSION_CODES.O)
                         override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                             if (response.code() == 204) getPostInfo()

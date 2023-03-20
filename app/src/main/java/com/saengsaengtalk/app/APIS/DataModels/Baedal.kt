@@ -178,3 +178,8 @@ data class BaedalPostPreview(
 data class SwitchStatus(
     val open: Boolean
 )
+
+data class OrderCompleted(
+    @SerializedName("order_completed")
+    val orderCompleted: Boolean
+)

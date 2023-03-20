@@ -278,9 +278,9 @@ class FragmentBaedalAdd :Fragment() {
                 orderTime!!, // 수정하기
                 binding.spnPlace.selectedItem.toString(),
                 if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-                    binding.etMinMember.text.toString().toInt() else -1,
+                    binding.etMinMember.text.toString().toInt() else 0,
                 if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-                    binding.etMaxMember.text.toString().toInt() else -1
+                    binding.etMaxMember.text.toString().toInt() else 999
             )
 
             val loopingDialog = looping()
@@ -316,9 +316,9 @@ class FragmentBaedalAdd :Fragment() {
                     orderTimeString,
                     binding.spnPlace.selectedItem.toString(),
                     if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-                        binding.etMinMember.text.toString().toInt() else -1,
+                        binding.etMinMember.text.toString().toInt() else 0,
                     if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-                        binding.etMaxMember.text.toString().toInt() else -1
+                        binding.etMaxMember.text.toString().toInt() else 999
                 )
 
                 val loopingDialog = looping()

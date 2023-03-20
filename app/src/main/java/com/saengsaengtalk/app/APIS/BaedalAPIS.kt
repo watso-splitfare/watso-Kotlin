@@ -87,6 +87,6 @@ interface BaedalAPIS {
     @PATCH("api/delivery/post/{post_id}/status/orderCompleted") // 대표자 주문 완료
     fun baedalOrderCompleted(
         @Path("post_id") postId: String,
-        @Body() order_completed: Boolean
+        @Body() jsonparams: OrderCompleted
     ): Call<VoidResponse>
 }
