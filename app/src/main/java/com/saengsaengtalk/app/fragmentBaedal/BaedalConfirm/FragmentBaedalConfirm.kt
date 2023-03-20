@@ -202,12 +202,15 @@ class FragmentBaedalConfirm :Fragment() {
         val loopingDialog = looping()
         api.baedalOrdering(postId, ordering).enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                if (response.code() == 204) goToPosting(true)
+                if (response.code() == 204) {
+                    looping(false, loopingDialog)
+                    goToPosting(true)
+                }
                 else {
                     Log.e("baedal Confirm Fragment - ordering", response.toString())
                     makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
+                    looping(false, loopingDialog)
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
