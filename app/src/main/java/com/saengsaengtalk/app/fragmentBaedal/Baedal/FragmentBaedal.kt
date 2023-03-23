@@ -45,6 +45,11 @@ class FragmentBaedal :Fragment() {
         binding.etBaedalSearch.visibility = View.GONE
         binding.btnBaedalSearch.visibility = View.GONE
 
+        getActivity()?.getSupportFragmentManager()
+            ?.setFragmentResultListener("deletPost", this) { requestKey, bundle ->
+                val success = bundle.getBoolean("success")
+                if (success) getPostPreview()
+            }
         getPostPreview()
     }
 

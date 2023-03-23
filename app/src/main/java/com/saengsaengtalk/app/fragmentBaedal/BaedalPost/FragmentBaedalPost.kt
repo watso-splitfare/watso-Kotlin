@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.saengsaengtalk.app.APIS.*
@@ -60,7 +61,7 @@ class FragmentBaedalPost :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView(inflater: LayoutInflater) {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        binding.tvDelete.visibility = View.GONE     // 삭제 비활성화
+        //binding.tvDelete.visibility = View.GONE     // 삭제 비활성화
         binding.lytComment.visibility = View.GONE   // 댓글 비활성화
 
         Log.d("access", MainActivity.prefs.getString("accessToken", ""))
@@ -109,6 +110,26 @@ class FragmentBaedalPost :Fragment() {
                     if (userId != baedalPost.userId) {
                         binding.tvDelete.visibility = View.GONE
                         binding.tvUpdate.visibility = View.GONE
+                    }
+                    if (baedalPost.orderCompleted) {
+                        binding.tvDelete.visibility = View.GONE
+                        binding.tvUpdate.visibility = View.GONE
+                    }
+
+                    /** 게시글 삭제 버튼 */
+                    binding.tvDelete.setOnClickListener {
+                        val builder = AlertDialog.Builder(requireContext())
+                        builder.setTitle("게시글 삭제하기")
+                            .setMessage("게시글을 삭제하시겠습니까?")
+                            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                                deletePost()
+                            })
+                            .setNegativeButton("취소",
+                                DialogInterface.OnClickListener { dialog, id ->
+                                    println("취소")
+                                }
+                            )
+                        builder.show()
                     }
 
                     /** 게시글 수정 버튼 */
@@ -379,6 +400,27 @@ class FragmentBaedalPost :Fragment() {
         }
     }
 
+    fun deletePost() {
+        val loopingDialog = looping()
+        api.deleteBaedalPost(postId!!).enqueue(object : Callback<VoidResponse> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                if (response.code() == 204) {
+                    val bundle = bundleOf("success" to true)
+                    getActivity()?.getSupportFragmentManager()?.setFragmentResult("deletePost", bundle)
+                    onBackPressed()
+                }
+                else makeToast("다시 시도해주세요.")
+                looping(false, loopingDialog)
+            }
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                Log.d("log",t.message.toString())
+                Log.d("log","fail")
+                makeToast("다시 시도해주세요.")
+                looping(false, loopingDialog)
+            }
+        })
+    }
     fun switchStatus(){
         Log.d("switchStatus-postId", postId!!)
         Log.d("switchStatus-!isOpen", (isOpen).toString())

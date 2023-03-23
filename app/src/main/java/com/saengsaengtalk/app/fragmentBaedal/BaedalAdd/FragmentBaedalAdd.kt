@@ -306,41 +306,45 @@ class FragmentBaedalAdd :Fragment() {
                 })
         } else {
             /** 게시글 신규 등록 */
-            if (orders.isEmpty()) makeToast("메뉴를 선택해 주세요")
-            else {
-                makeToast("주문을 등록합니다.")
-                Log.d("FragBaedalAdd-storeId", storeIds[selectedIdx])
-                var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
-                val baedalPosting = BaedalPosting(
-                    storeIds[selectedIdx],
-                    orderTimeString,
-                    binding.spnPlace.selectedItem.toString(),
-                    if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-                        binding.etMinMember.text.toString().toInt() else 0,
-                    if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-                        binding.etMaxMember.text.toString().toInt() else 999
-                )
+             makeToast("메뉴를 선택해 주세요")
 
-                val loopingDialog = looping()
-                Log.d("FragBaedalAdd-postingInfo", baedalPosting.toString())
-                api.baedalPosting(baedalPosting)
-                    .enqueue(object : Callback<BaedalPostingResponse> {
-                        override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
-                            if (response.code() == 200) baedalOrdering(response.body()!!.postId)
-                            else {
-                                Log.e("baedalAdd Fragment - baedalPosting", response.toString())
-                                makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                            }
-                            looping(false, loopingDialog)
+            makeToast("주문을 등록합니다.")
+            Log.d("FragBaedalAdd-storeId", storeIds[selectedIdx])
+            var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
+            val baedalPosting = BaedalPosting(
+                storeIds[selectedIdx],
+                orderTimeString,
+                binding.spnPlace.selectedItem.toString(),
+                if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
+                    binding.etMinMember.text.toString().toInt() else 0,
+                if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
+                    binding.etMaxMember.text.toString().toInt() else 999
+            )
+
+            val loopingDialog = looping()
+            Log.d("FragBaedalAdd-postingInfo", baedalPosting.toString())
+            api.baedalPosting(baedalPosting)
+                .enqueue(object : Callback<BaedalPostingResponse> {
+                    override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
+                        if (response.code() == 200) {
+                            if (orders.isEmpty())
+                                setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.postId), 1)
+                            else baedalOrdering(response.body()!!.postId)
                         }
-
-                        override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                            Log.e("baedalAdd Fragment - baedalPosting", t.message.toString())
+                        else {
+                            Log.e("baedalAdd Fragment - baedalPosting", response.toString())
                             makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                            looping(false, loopingDialog)
                         }
-                    })
-            }
+                        looping(false, loopingDialog)
+                    }
+
+                    override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
+                        Log.e("baedalAdd Fragment - baedalPosting", t.message.toString())
+                        makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                        looping(false, loopingDialog)
+                    }
+                })
+
         }
     }
 
