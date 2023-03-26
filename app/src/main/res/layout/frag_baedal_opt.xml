@@ -175,7 +175,7 @@
         app:layout_constraintStart_toStartOf="@+id/nestedScrollView">
 
         <TextView
-            android:id="@+id/textView_mail"
+            android:id="@+id/tv_btn_cart_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="메뉴 담기"

@@ -57,17 +57,17 @@ interface BaedalAPIS {
     ): Call<VoidResponse>
 
     @GET("api/delivery/post/{post_id}/order")          // 배달 주문 수정용 데이터 요청
-    fun getOrders(
+    fun getOrder(
         @Path("post_id") postId: String
     ): Call<UserOrder>
 
     @PATCH("api/delivery/post/{post_id}/order")                     // 참여자 주문 확정
-        fun baedalOrderConfirm(
+    fun baedalOrderConfirm(
         @Path("post_id") postId: String
     ): Call<VoidResponse>
 
     @DELETE("api/delivery/post/{post_id}/order/{order_id}")        // 주문 삭제
-        fun baedalOrderDelete(
+    fun deleteBaedalOrder(
         @Path("post_id") postId: String,
         @Path("order_id") orderId: String
     ): Call<VoidResponse>
@@ -75,7 +75,8 @@ interface BaedalAPIS {
     @PATCH("api/delivery/post/{post_id}/order/{order_id}")         // 배달 주문 수정
     fun baedalOrderUpdate(
         @Path("post_id") postId: String,
-        @Body jsonparams: Ordering
+        @Path("order_id") orderId: String,
+        @Body jsonparams: UpdateOrder
     ): Call<VoidResponse>
 
     @PATCH("api/delivery/post/{post_id}/quit")    // 그룹 탈퇴

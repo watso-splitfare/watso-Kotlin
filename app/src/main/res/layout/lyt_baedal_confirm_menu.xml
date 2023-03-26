@@ -90,7 +90,7 @@
         </androidx.recyclerview.widget.RecyclerView>
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/lyt_rectify"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -117,6 +117,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lyt_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_menu">
+
+            <Button
+                android:id="@+id/btn_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="옵션 변경" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

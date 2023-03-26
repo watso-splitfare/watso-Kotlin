@@ -326,10 +326,18 @@ class FragmentBaedalAdd :Fragment() {
             api.baedalPosting(baedalPosting)
                 .enqueue(object : Callback<BaedalPostingResponse> {
                     override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
-                        if (response.code() == 200) {
-                            if (orders.isEmpty())
-                                setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.postId), 1)
-                            else baedalOrdering(response.body()!!.postId)
+                        if (response.code() == 201) {
+                            if (orders.isEmpty()) {
+                                Log.d("FragBaedalAdd-orders.isEmpty", "성공")
+                                val bundle = bundleOf("success" to true, "postId" to response.body()!!.postId)
+                                getActivity()?.getSupportFragmentManager()?.setFragmentResult("addPost", bundle)
+                                onBackPressed()
+                                //setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.postId), 1)
+                            }
+
+                            else {
+                                Log.d("FragBaedalAdd-orders.isEmpty", "성공, 주문 작성 호출")
+                                baedalOrdering(response.body()!!.postId)}
                         }
                         else {
                             Log.e("baedalAdd Fragment - baedalPosting", response.toString())
@@ -355,7 +363,11 @@ class FragmentBaedalAdd :Fragment() {
         api.baedalOrdering(postId, ordering).enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) {
-                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 1)
+
+                    val bundle = bundleOf("success" to true, "postId" to postId)
+                    getActivity()?.getSupportFragmentManager()?.setFragmentResult("addPost", bundle)
+                    onBackPressed()
+                    //setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 1)
                 } else {
                     Log.e("baedalAdd Fragment - baedalOrdering", response.toString())
                     makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")

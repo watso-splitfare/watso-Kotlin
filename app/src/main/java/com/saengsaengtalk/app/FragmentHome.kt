@@ -17,6 +17,7 @@ import com.saengsaengtalk.app.fragmentAccount.FragmentAccount
 import com.saengsaengtalk.app.fragmentAccount.FragmentLogin
 import com.saengsaengtalk.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.saengsaengtalk.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
+import com.saengsaengtalk.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.saengsaengtalk.app.fragmentTaxi.FragmentTaxi
 import com.saengsaengtalk.app.fragmentTaxi.FragmentTaxiAdd
 import com.saengsaengtalk.app.fragmentTaxi.FragmentTaxiPost
@@ -61,6 +62,12 @@ class FragmentHome :Fragment() {
         binding.lytApiTest.visibility = View.GONE
 
         /** 배달 */
+        getActivity()?.getSupportFragmentManager()
+            ?.setFragmentResultListener("addPost", this) { requestKey, bundle ->
+                val success = bundle.getBoolean("success")
+                val postId = bundle.getString("postId")
+                if (success) setFrag(FragmentBaedalPost(), mapOf("postId" to postId!!), 1)
+            }
         binding.btnBaedalAdd.setOnClickListener { setFrag(FragmentBaedalAdd(), fragIndex=1) }
         getBaedalPostPreview()
 

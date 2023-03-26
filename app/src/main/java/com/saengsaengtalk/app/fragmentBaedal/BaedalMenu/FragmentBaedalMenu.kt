@@ -64,7 +64,7 @@ class FragmentBaedalMenu :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         getMenuData()
-        if (isUpdating) getOrders()
+        if (isUpdating) {} //getOrders()
 
         /** Option frag에서 메뉴 선택 후 담기 시 작동 */
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
@@ -190,7 +190,7 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun getOrders(){
-        val loopingDialog = looping()
+        /*val loopingDialog = looping()
         api.getOrders(postId).enqueue(object : Callback<UserOrder> {
             override fun onResponse(call: Call<UserOrder>, response: Response<UserOrder>) {
                 if (response.code() == 200) {
@@ -213,7 +213,7 @@ class FragmentBaedalMenu :Fragment() {
                 looping(false, loopingDialog)
                 onBackPressed()
             }
-        })
+        })*/
     }
 
     /** api로 받은 데이터를 가공하기 편리하게 JSON 형식으로 변환 */

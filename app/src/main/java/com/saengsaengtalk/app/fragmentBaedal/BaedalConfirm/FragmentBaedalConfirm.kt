@@ -136,7 +136,7 @@ class FragmentBaedalConfirm :Fragment() {
             /** 기존 게시글에 주문 작성 또는 수정 : 클릭시 게시글 화면으로 이동 */
             binding.btnConfirm.setOnClickListener {
                 rectifyOrders()
-                if (isUpdating) baedalOrderUpdating()   /** 주문수정 */
+                if (isUpdating) //baedalOrderUpdating()   /** 주문수정 */
                 else ordering()                   /** 주문작성 */            }
         }
     }
@@ -154,7 +154,7 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun baedalOrderUpdating(){
-        val ordering = getOrdering()
+        /*val ordering = getOrdering()
 
         val loopingDialog = looping()
         api.baedalOrderUpdate(postId, ordering).enqueue(object : Callback<VoidResponse> {
@@ -174,7 +174,7 @@ class FragmentBaedalConfirm :Fragment() {
                 looping(false, loopingDialog)
                 goToPosting(false)
             }
-        })
+        })*/
     }
 
     /*fun baedalJoin(){

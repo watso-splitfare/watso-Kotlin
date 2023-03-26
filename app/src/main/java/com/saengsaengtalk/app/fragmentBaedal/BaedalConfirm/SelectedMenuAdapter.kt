@@ -13,7 +13,7 @@ import com.saengsaengtalk.app.databinding.LytBaedalConfirmMenuBinding
 import java.text.DecimalFormat
 
 
-class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isRectifiable: Boolean=true):
+class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isRectifiable: Boolean=true, val isMyOrder: Boolean = false):
     RecyclerView.Adapter<SelectedMenuAdapter.CustomViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -29,12 +29,26 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
     interface OnItemClickListener {
         fun onChange(position: Int, change: String)
     }
+    interface OnUpdateBtnListener {
+        fun onUpdateOrder(order: Order)
+    }
+    interface OnDeleteBtnListener {
+        fun onDeleteOrder(orderId: String)
+    }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
         this.itemClickListener = onItemClickListener
     }
+    fun setUpdateBtnListener(onUpdateBtnListener: OnUpdateBtnListener) {
+        this.updateBtnListener = onUpdateBtnListener
+    }
+    fun setDeleteBtnListener(deleteBtnListener: OnDeleteBtnListener) {
+        this.deleteBtnListener = deleteBtnListener
+    }
 
     private lateinit var itemClickListener : OnItemClickListener
+    private lateinit var updateBtnListener : OnUpdateBtnListener
+    private lateinit var deleteBtnListener : OnDeleteBtnListener
 
     override fun getItemCount(): Int {
         return orders.size
@@ -50,13 +64,14 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
 
             if (isRectifiable) {
                 binding.tvQuantityString.visibility = View.GONE
+                binding.lytUpdate.visibility = View.GONE
             } else {
-                binding.divider.visibility = View.GONE
-                binding.btnSub.visibility = View.GONE
-                binding.btnAdd.visibility = View.GONE
+                //binding.divider.visibility = View.GONE
+                binding.lytRectify.visibility = View.GONE
                 binding.btnRemove.visibility = View.GONE
-                binding.tvQuantity.visibility = View.GONE
                 binding.tvPrice.visibility = View.GONE
+                if (!isMyOrder)
+                    binding.lytUpdate.visibility = View.GONE
             }
 
             binding.tvMenuName.text = order.menu.name + menuPrice
@@ -88,6 +103,13 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
                     setBindText(priceString, quantity)
                     itemClickListener.onChange(adapterPosition, "add")
                 }
+            }
+
+            binding.btnUpdate.setOnClickListener {
+                updateBtnListener.onUpdateOrder(order)
+            }
+            binding.btnDelete.setOnClickListener {
+                deleteBtnListener.onDeleteOrder(order._id!!)
             }
         }
 

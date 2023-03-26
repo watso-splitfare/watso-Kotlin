@@ -141,6 +141,10 @@ data class Ordering(
     val orders: List<OrderingOrder>
 )
 
+data class UpdateOrder(
+    val order: OrderingOrder
+)
+
 data class OrderingOrder(
     val quantity: Int,
     val menu: OrderingMenu

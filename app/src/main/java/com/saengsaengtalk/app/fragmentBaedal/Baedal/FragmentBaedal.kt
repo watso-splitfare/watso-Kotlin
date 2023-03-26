@@ -46,10 +46,21 @@ class FragmentBaedal :Fragment() {
         binding.btnBaedalSearch.visibility = View.GONE
 
         getActivity()?.getSupportFragmentManager()
-            ?.setFragmentResultListener("deletPost", this) { requestKey, bundle ->
+            ?.setFragmentResultListener("deletePost", this) { requestKey, bundle ->
                 val success = bundle.getBoolean("success")
                 if (success) getPostPreview()
             }
+        getActivity()?.getSupportFragmentManager()
+            ?.setFragmentResultListener("addPost", this) { requestKey, bundle ->
+                val success = bundle.getBoolean("success")
+                val postId = bundle.getString("postId")
+                Log.d("FragBaedal-bundle 수신", success.toString() + postId)
+                if (success) {
+                    Log.d("FragBaedal-bundle 수신 success", success.toString())
+                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId!!))
+                }
+            }
+
         getPostPreview()
     }
 
@@ -117,6 +128,6 @@ class FragmentBaedal :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
+        mActivity.setFrag(fragment, arguments)
     }
 }

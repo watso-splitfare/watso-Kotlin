@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.Group
-import com.saengsaengtalk.app.APIS.MenuInfo
+import com.google.gson.Gson
+import com.saengsaengtalk.app.APIS.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragBaedalOptBinding
@@ -18,9 +18,16 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
+    var isUpdating = false
+    var postId = ""                 // 수정시에만 사용
+    lateinit var orderInfo: Order   // 수정시에만 사용
+    var orderId = ""            // 수정시에만 사용
+    val orderGroups = mutableMapOf<String, MutableList<String>>()
+
     var menuName = ""
     var menuPrice = 0
     var storeId = ""
@@ -35,15 +42,41 @@ class FragmentBaedalOpt :Fragment() {
     private var mBinding: FragBaedalOptBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
+    val gson = Gson()
     val dec = DecimalFormat("#,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            menuName = it.getString("menuName")!!
-            menuPrice = it.getString("menuPrice")!!.toInt()
-            storeId = it.getString("storeId")!!
+            try {
+                isUpdating = it.getString("isUpdating").toBoolean()
+                if (isUpdating) {
+                    Log.d("FragBaedalOpt-order", it.getString("order")!!)
+                    postId = it.getString("postId")!!
+                    orderInfo = gson.fromJson(it.getString("order"), Order::class.java)
+                    orderId = orderInfo._id!!
+                    orderInfo.menu.groups!!.forEach {
+                        val group = it
+                        orderGroups[group._id] = mutableListOf<String>()
+                        group.options.forEach { orderGroups[group._id]!!.add(it._id) }
+                    }
+                    quantity = orderInfo.quantity
+                }
+            }
+            catch (e:Exception) {}
+            finally {
+                menuName = it.getString("menuName")!!
+                menuPrice = it.getString("menuPrice")!!.toInt()
+                storeId = it.getString("storeId")!!
+            }
         }
+        Log.d("FragBaedalOpt-Oncreate",
+            isUpdating.toString() + ", " +
+                    orderId + ", " +
+                    menuName + ", " +
+                    menuPrice.toString() + ", " +
+                    storeId
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,6 +91,9 @@ class FragmentBaedalOpt :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         binding.tvMenuName.text = menuName
+        binding.tvQuantity.text = quantity.toString()
+        binding.tvBtnCartConfirm.text = if (isUpdating) "옵션 변경"
+        else "메뉴 담기"
 
         setRecyclerView()
         setOrderPrice()
@@ -76,10 +112,57 @@ class FragmentBaedalOpt :Fragment() {
         }
 
         /** 메뉴 담기 버튼*/
-        binding.btnCartConfirm.setOnClickListener {
+        binding.btnCartConfirm.setOnClickListener { confirmBtnListener() }
+    }
+
+    fun setRecyclerView() {
+        val loopingDialog = looping()
+        api.getMenuInfo(storeId, menuName).enqueue(object : Callback<MenuInfo> {
+            override fun onResponse(call: Call<MenuInfo>, response: Response<MenuInfo>) {
+                if (response.code() == 200) {
+                    groups = response.body()!!.groups
+                    mappingAdapter()
+                    setGroupOptionData()
+                    setOrderPrice()
+                } else {
+                    Log.e("baedalOpt Fragment - getGroupOption", response.toString())
+                    makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                }
+                looping(false, loopingDialog)
+            }
+
+            override fun onFailure(call: Call<MenuInfo>, t: Throwable) {
+                Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
+                makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
+            }
+        })
+    }
+
+    fun mappingAdapter() {
+        binding.rvOptionGroup.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvOptionGroup.setHasFixedSize(true)
+
+        val adapter = if (isUpdating) {
+            BaedalOptGroupAdapter(requireContext(), groups, orderInfo.menu.groups!!)
+        } else BaedalOptGroupAdapter(requireContext(), groups, null)
+
+        adapter.addListener(object: BaedalOptGroupAdapter.OnItemClickListener {
+            override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
+                setChecked(groupId, isRadio, optionId, isChecked)
+                setOrderPrice()
+            }
+        })
+        binding.rvOptionGroup.adapter = adapter
+    }
+
+    fun confirmBtnListener() {
+        if (isUpdating) updateOrder()
+
+        else {
             val order = JSONObject()
             val menu = JSONObject()
-            /** 데이터 직렬화를 위해 orderPrice와 menuPrice는 키값을 snake case로 작성 */
             order.put("quantity", quantity)
             order.put("price", setOrderPrice())
             menu.put("name", menuName)
@@ -117,46 +200,6 @@ class FragmentBaedalOpt :Fragment() {
         }
     }
 
-    fun setRecyclerView() {
-        val loopingDialog = looping()
-        api.getMenuInfo(storeId, menuName).enqueue(object : Callback<MenuInfo> {
-            override fun onResponse(call: Call<MenuInfo>, response: Response<MenuInfo>) {
-                if (response.code() == 200) {
-                    groups = response.body()!!.groups
-                    mappingAdapter()
-                    setGroupOptionData()
-                    setOrderPrice()
-                } else {
-                    Log.e("baedalOpt Fragment - getGroupOption", response.toString())
-                    makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
-                }
-                looping(false, loopingDialog)
-            }
-
-            override fun onFailure(call: Call<MenuInfo>, t: Throwable) {
-                Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
-                makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
-                looping(false, loopingDialog)
-            }
-        })
-    }
-
-    fun mappingAdapter() {
-        binding.rvOptionGroup.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvOptionGroup.setHasFixedSize(true)
-
-        val adapter = BaedalOptGroupAdapter(requireContext(), groups)
-
-        adapter.addListener(object: BaedalOptGroupAdapter.OnItemClickListener {
-            override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
-                setChecked(groupId, isRadio, optionId, isChecked)
-                setOrderPrice()
-            }
-        })
-        binding.rvOptionGroup.adapter = adapter
-    }
-
     fun setGroupOptionData() {
         groups.forEach {
             val groupId = it._id
@@ -169,14 +212,31 @@ class FragmentBaedalOpt :Fragment() {
             groupOptionChecked[groupId] = mutableMapOf<String, Boolean>()
             groupOptionPrice[groupId] = mutableMapOf<String, Int>()
 
+            /**
+             *
+             * 주문 수정일 때 과정 추가하기
+             *
+             */
+
+
             it.options.forEach{
                 val optionId = it._id
 
-                if (radioFirst && (minQ == 1 && maxQ == 1)) {
-                    groupOptionChecked[groupId]!![optionId] = true
-                    radioFirst = false
-                } else {
-                    groupOptionChecked[groupId]!![optionId] = false
+                if (orderGroups.keys.contains(groupId)) {
+                    if (orderGroups[groupId]!!.contains(optionId)) {
+                        groupOptionChecked[groupId]!![optionId] = true
+                    } else {
+                        groupOptionChecked[groupId]!![optionId] = false
+                    }
+                }
+
+                else {
+                    if (radioFirst && (minQ == 1 && maxQ == 1)) {
+                        groupOptionChecked[groupId]!![optionId] = true
+                        radioFirst = false
+                    } else {
+                        groupOptionChecked[groupId]!![optionId] = false
+                    }
                 }
                 optionNames[optionId] = it.name
                 groupOptionPrice[groupId]!![optionId] = it.price
@@ -196,7 +256,6 @@ class FragmentBaedalOpt :Fragment() {
                 if (it.value) quantity += 1
             }
         }
-
     }
 
     fun setOrderPrice(): Int {
@@ -214,6 +273,51 @@ class FragmentBaedalOpt :Fragment() {
         val orderPriceStr = "${dec.format(orderPrice * quantity)}원"
         binding.tvOrderPrice.text = orderPriceStr
         return orderPrice
+    }
+
+    fun updateOrder() {
+        val updateOrder = UpdateOrder(getOrderingOrder())
+        Log.d("FragBaedalOpt-updateOrder-orderingOrder", updateOrder.toString())
+
+        val loopingDialog = looping()
+        api.baedalOrderUpdate(postId, orderId, updateOrder).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                if (response.code() == 204) {
+
+                    val bundle = bundleOf("success" to true)
+                    getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
+                    onBackPressed()
+                    //setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 1)
+                } else {
+                    Log.e("FragBaedalOpt-updateOrder", response.toString())
+                    makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                }
+                looping(false, loopingDialog)
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                Log.e("FragBaedalOpt-updateOrder", t.message.toString())
+                makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                looping(false, loopingDialog)
+            }
+        })
+    }
+
+    fun getOrderingOrder():OrderingOrder {
+        val orderingGroups = mutableListOf<OrderingGroup>()
+        groupOptionChecked.forEach {
+            val groupId = it.key
+            val orderingOptions = mutableListOf<String>()
+            it.value.forEach {
+                if (it.value) orderingOptions.add(it.key)
+            }
+            if (orderingOptions.isNotEmpty()) {
+                orderingGroups.add(OrderingGroup(groupId, orderingOptions))
+            }
+        }
+
+        val menu = OrderingMenu(menuName, orderingGroups)
+        return OrderingOrder(quantity, menu)
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
