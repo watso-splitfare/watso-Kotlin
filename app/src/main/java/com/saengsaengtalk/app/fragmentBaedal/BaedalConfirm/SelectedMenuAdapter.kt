@@ -2,6 +2,7 @@ package com.saengsaengtalk.app.fragmentBaedal.BaedalConfirm
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -114,6 +115,8 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
         }
 
         fun setBindText(priceString: String, quantity: Int) {
+            Log.d("SelectedMenuAdapter-quantity, priceString",
+                quantity.toString() + ", " + priceString)
             binding.tvQuantityString.text = "${quantity}개 (${priceString})"
             binding.tvPrice.text = priceString
             binding.tvQuantity.text = quantity.toString()

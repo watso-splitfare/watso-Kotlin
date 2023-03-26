@@ -288,11 +288,11 @@ class FragmentBaedalPost :Fragment() {
                 if (orderConfirm.keys.contains(userId) && !orderConfirm[userId]!!) { // 유저가 확정 안했다면
                     binding.lytOrder.visibility = View.VISIBLE
                     if (userOrders.keys.contains(userId) && userOrders[userId]!!.isNotEmpty()) {    // 현재 유저의 주문이 있다면
-                        binding.tvOrder.text = "메뉴 수정하기"
-                        binding.lytOrder.setOnClickListener { goToOrderingFrag(true) }
+                        binding.tvOrder.text = "메뉴 추가하기"
+                        binding.lytOrder.setOnClickListener { goToOrderingFrag() }
                     } else {
                         binding.tvOrder.text = "메뉴 담기"
-                        binding.lytOrder.setOnClickListener { goToOrderingFrag(false) }
+                        binding.lytOrder.setOnClickListener { goToOrderingFrag() }
                     }
                 } else binding.lytOrder.visibility = View.GONE
             } else binding.lytOrder.visibility = View.GONE
@@ -327,10 +327,12 @@ class FragmentBaedalPost :Fragment() {
                         binding.tvGroup.text = "그룹 참가하기"
                         binding.tvGroup.setTextColor(Color.WHITE)
                         binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order)
+                        binding.lytGroup.isEnabled = true
                     } else {
                         binding.tvGroup.text = "마감되었습니다."
                         binding.tvGroup.setTextColor(Color.BLACK)
                         binding.lytGroup.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+                        binding.lytGroup.isEnabled = false
                     }
                 }
             }
@@ -352,7 +354,7 @@ class FragmentBaedalPost :Fragment() {
                         binding.tvComplete.setTextColor(Color.WHITE)
                         binding.lytComplete.setBackgroundResource(R.drawable.btn_baedal_complete)
                     } else {
-                        binding.lytComplete.isEnabled = false
+                        binding.lytComplete.setOnClickListener { makeToast("모든 유저가 주문을 확정해야\n완료 가능합니다.") }
                         binding.tvComplete.setTextColor(Color.BLACK)
                         binding.lytComplete.setBackgroundResource(R.drawable.btn_baedal_order_closed)
                     }
@@ -455,7 +457,7 @@ class FragmentBaedalPost :Fragment() {
                     builder.setTitle("그룹 참여 완료")
                         .setMessage("주문을 작성하시겠습니까?\n")
                         .setPositiveButton("확인", DialogInterface.OnClickListener {
-                            dialog, id -> goToOrderingFrag(false)
+                            dialog, id -> goToOrderingFrag()
                         })
                         .setNegativeButton("조금 있다 할게요!",
                             DialogInterface.OnClickListener { dialog, id -> })
@@ -538,6 +540,7 @@ class FragmentBaedalPost :Fragment() {
 
     /** 대표자 주문 완료 */
     fun completeOrder() {
+
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("주문 완료하기")
             .setMessage("주문을 완료하시겠습니까? \n참여자들은 더 이상 메뉴를 수정할 수 없습니다.")
@@ -566,7 +569,7 @@ class FragmentBaedalPost :Fragment() {
         builder.show()
     }
 
-    fun goToOrderingFrag(isUpdating: Boolean) {
+    fun goToOrderingFrag() {
         val currentMember = userOrders.size
         val store = baedalPost.store
 
@@ -574,7 +577,7 @@ class FragmentBaedalPost :Fragment() {
             "isPosting" to "false",
             "postId" to postId!!,
             "currentMember" to currentMember.toString(),
-            "isUpdating" to isUpdating.toString(),
+            //"isUpdating" to isUpdating.toString(),
             "storeName" to store.name,
             "storeId" to store._id,
             "baedalFee" to store.fee.toString(),

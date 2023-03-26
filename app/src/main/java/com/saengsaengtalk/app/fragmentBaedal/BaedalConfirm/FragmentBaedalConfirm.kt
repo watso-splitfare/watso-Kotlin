@@ -28,7 +28,7 @@ class FragmentBaedalConfirm :Fragment() {
     var isPosting = false
     var postId = ""
     var currentMember = 1
-    var isUpdating = false
+    //var isUpdating = false
     var storeName = ""
     var storeId = "0"
     var baedalFee = 0
@@ -50,7 +50,7 @@ class FragmentBaedalConfirm :Fragment() {
             if (!isPosting) {
                 postId = it.getString("postId")!!
                 currentMember = it.getString("currentMember")!!.toInt()
-                isUpdating = it.getString("isUpdating").toBoolean()
+                //isUpdating = it.getString("isUpdating").toBoolean()
                 storeId = it.getString("storeId")!!
             }
             storeName = it.getString("storeName")!!
@@ -136,8 +136,9 @@ class FragmentBaedalConfirm :Fragment() {
             /** 기존 게시글에 주문 작성 또는 수정 : 클릭시 게시글 화면으로 이동 */
             binding.btnConfirm.setOnClickListener {
                 rectifyOrders()
-                if (isUpdating) //baedalOrderUpdating()   /** 주문수정 */
-                else ordering()                   /** 주문작성 */            }
+                //if (isUpdating) //baedalOrderUpdating()   /** 주문수정 */
+                ordering()                   /** 주문작성 */
+            }
         }
     }
 
