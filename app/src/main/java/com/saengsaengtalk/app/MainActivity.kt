@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
      * popBackStack: 새로운 frag 일시에 -1, 다른탭으로 이동시에 0 (frag stack 초기화),
      * fragIndex: 하단바 번호(홈:0, 배달:1, 택시:2)
      */
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 0) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = bottomBarIndex) {
         // fragIndex와 하단바 인덱스를 비교하여 다른 탭으로 이동하였을 경우 해당 탭 강조
         if (bottomBarIndex != fragIndex) setBottomBarSize(fragIndex)
 

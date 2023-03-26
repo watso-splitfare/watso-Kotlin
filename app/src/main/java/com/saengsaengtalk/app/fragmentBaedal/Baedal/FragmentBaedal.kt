@@ -22,8 +22,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class FragmentBaedal :Fragment() {
-    val fragIndex = 1
-
     private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()

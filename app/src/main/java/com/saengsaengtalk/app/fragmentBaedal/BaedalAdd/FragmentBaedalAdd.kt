@@ -422,9 +422,9 @@ class FragmentBaedalAdd :Fragment() {
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int =-1) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack, 1)
+        mActivity.setFrag(fragment, arguments)
     }
 
     fun onBackPressed() {

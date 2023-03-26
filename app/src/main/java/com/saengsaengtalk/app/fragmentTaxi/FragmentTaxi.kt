@@ -23,8 +23,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class FragmentTaxi :Fragment() {
-    val fragIndex = 2
-
     private var mBinding: FragTaxiBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
@@ -108,8 +106,7 @@ class FragmentTaxi :Fragment() {
     }
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        println("setIndex = ${fragIndex}")
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
+        mActivity.setFrag(fragment, arguments)
     }
 }

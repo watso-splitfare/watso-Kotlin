@@ -16,8 +16,6 @@ import com.saengsaengtalk.app.fragmentFreeBoard.adapterFB.PostInListAdapter
 import java.time.LocalDateTime
 
 class FragmentFreeBoard :Fragment() {
-    val fragIndex = 4
-
     private var mBinding: FragFreeBoardBinding? = null
     private val binding get() = mBinding!!
 
@@ -59,6 +57,6 @@ class FragmentFreeBoard :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
+        mActivity.setFrag(fragment, arguments)
     }
 }

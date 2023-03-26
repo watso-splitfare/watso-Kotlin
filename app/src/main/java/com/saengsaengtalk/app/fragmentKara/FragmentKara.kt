@@ -20,8 +20,6 @@ import com.saengsaengtalk.app.fragmentKara.adapter.KaraRoomAdapter
 import java.time.LocalDateTime
 
 class FragmentKara :Fragment() {
-    val fragIndex = 3
-
     private var mBinding: FragKaraBinding? = null
     private val binding get() = mBinding!!
 
@@ -83,6 +81,6 @@ class FragmentKara :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
+        mActivity.setFrag(fragment, arguments)
     }
 }
