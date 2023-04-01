@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="domains">
+    <string-array name="banks">
         <item>부산 은행</item>
         <item>국민 은행</item>
         <item>농협 은행</item>

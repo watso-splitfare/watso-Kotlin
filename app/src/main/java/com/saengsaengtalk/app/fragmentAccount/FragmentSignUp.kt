@@ -48,6 +48,14 @@ class FragmentSignUp :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnSignup.setEnabled(false)
 
+        binding.textViewUsername.visibility = View.GONE
+        binding.textViewPw.visibility = View.GONE
+        binding.textViewPwConfirm.visibility = View.GONE
+        binding.textViewNickname.visibility = View.GONE
+        binding.textViewRealName.visibility = View.GONE
+        binding.tvAccountNum.visibility = View.GONE
+        binding.textViewMail.visibility = View.GONE
+
         /** 아이디 중복확인*/
         binding.etUsername.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -71,7 +79,7 @@ class FragmentSignUp :Fragment() {
                     Log.d("아이디 중복확인",response.toString())
                     Log.d("아이디 중복확인", response.body().toString())
                     if (response.code() == 200) {
-                        if (response.body()!!.is_duplicated!!) {
+                        if (response.body()!!.is_duplicated) {
                             signUpCheck["username"] = false
                             binding.tvUsernameConfirm.text = "사용 불가능한 아이디입니다."
                         } else {
@@ -136,7 +144,7 @@ class FragmentSignUp :Fragment() {
                     Log.d("닉네임 중복확인",response.toString())
                     Log.d("닉네임 중복확인", response.body().toString())
                     if (response.code() == 200) {
-                        if (response.body()!!.is_duplicated!!) {
+                        if (response.body()!!.is_duplicated) {
                             signUpCheck["nickname"] = false
                             binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
                         } else {
@@ -163,14 +171,13 @@ class FragmentSignUp :Fragment() {
         /** 계좌 */
         binding.btnAccountNumDuplicationCheck.visibility = View.GONE
         binding.tvAccountNumConfirm.visibility = View.GONE
-        val banks = resources.getStringArray(R.array.domains)
+        val banks = resources.getStringArray(R.array.banks)
+        bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.domains, android.R.layout.simple_spinner_item)
+            requireContext(), R.array.banks, android.R.layout.simple_spinner_item)
         binding.spnAccountNum.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
 
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -178,8 +185,7 @@ class FragmentSignUp :Fragment() {
                 position: Int,
                 id: Long
             ) {
-                if (position != 0) bankName = (banks[position])
-                else bankName = ""
+                bankName = (banks[position])
             }
         }
 
