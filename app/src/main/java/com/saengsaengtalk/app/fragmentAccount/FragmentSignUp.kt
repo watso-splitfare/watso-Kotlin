@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.saengsaengtalk.app.APIS.DuplicationResult
 import com.saengsaengtalk.app.APIS.SignUpModel
@@ -25,10 +27,10 @@ class FragmentSignUp :Fragment() {
     private var mBinding: FragSignUpBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
-    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "studentnum" to true)
+    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false)
     var checkedUsername: String? = null
     var checkedNickname: String? = null
-    var checkedStudentnum: String? = null
+    var bankName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragSignUpBinding.inflate(inflater, container, false)
@@ -158,13 +160,14 @@ class FragmentSignUp :Fragment() {
             })
         }
 
-        /** 메일 관련 */
-        //binding.lytMail.visibility = View.GONE
-        /*val domains = resources.getStringArray(R.array.domains)
+        /** 계좌 */
+        binding.btnAccountNumDuplicationCheck.visibility = View.GONE
+        binding.tvAccountNumConfirm.visibility = View.GONE
+        val banks = resources.getStringArray(R.array.domains)
 
-        binding.spnMailDomain.adapter = ArrayAdapter.createFromResource(
+        binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
             requireContext(), R.array.domains, android.R.layout.simple_spinner_item)
-        binding.spnMailDomain.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.spnAccountNum.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
@@ -175,70 +178,22 @@ class FragmentSignUp :Fragment() {
                 position: Int,
                 id: Long
             ) {
-                if (position != 0) binding.etMailDomain.setText(domains[position])
-                else binding.etMailDomain.setText(null)
+                if (position != 0) bankName = (banks[position])
+                else bankName = ""
             }
-        }*/
-
-        /** 학번 */
-        binding.lytStudentNum.visibility = View.GONE
-        binding.etStudentnum.visibility = View.GONE
-        /*binding.etStudentnum.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                if (checkedStudentnum != null && binding.tvStudentnumConfirm.text == checkedStudentnum) {
-                    binding.tvStudentnumConfirm.text = "사용 가능한 학번입니다."
-                    signUpCheck["studentnum"] = true
-                } else {
-                    binding.tvStudentnumConfirm.text = "학번 중복확인이 필요합니다."
-                    signUpCheck["studentnum"] = false
-                }
-                setSignupBtnAble()
-            }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-
-        binding.btnStudentnumDuplicationCheck.setOnClickListener {
-            val loopingDialog = looping()
-            api.duplicateCheck("studentNumber", binding.etStudentnum.text.toString()).enqueue(object : Callback<DuplicationResult> {
-                override fun onResponse(call: Call<DuplicationResult>, response: Response<DuplicationResult>) {
-                    Log.d("학번 중복확인",response.toString())
-                    Log.d("학번 중복확인", response.body().toString())
-                    if (response.code() == 200) {
-                        if (response.body()!!.is_duplicated!!) {
-                            signUpCheck["studentnum"] = false
-                            binding.tvStudentnumConfirm.text = "사용 불가능한 학번입니다."
-                        } else {
-                            binding.tvStudentnumConfirm.text = "사용 가능한 학번입니다."
-                            signUpCheck["studentnum"] = true
-                            checkedStudentnum = binding.etStudentnum.text.toString()
-                        }
-                        setSignupBtnAble()
-                    } else {
-                        Log.e("signUp Fragment - studentnumDuplicationCheck", response.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                    looping(false, loopingDialog)
-                }
-
-                override fun onFailure(call: Call<DuplicationResult>, t: Throwable) {
-                    Log.e("signUp Fragment - studentnumDuplicationCheck", t.message.toString())
-                    makeToast("다시 시도해 주세요.")
-                    looping(false, loopingDialog)
-                }
-            })
-        }*/
+        }
 
         /** 회원가입 */
         binding.btnSignup.setOnClickListener {
             val loopingDialog = looping()
             var data = SignUpModel(
+                binding.etAuthCode.text.toString(),
+                binding.etRealName.text.toString(),
                 binding.etUsername.text.toString(),
                 binding.etPw.text.toString(),
                 binding.etNickname.text.toString(),
-                //binding.etStudentnum.text.toString(),
-                "123 농협",
-                binding.etMail.text.toString() + "@" + binding.etMailDomain.text.toString()
+                binding.etAccountNum.text.toString() + " "+ bankName,
+                binding.etMail.text.toString() + "@pusan.ac.kr"
             )
             api.signup(data).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
