@@ -200,10 +200,12 @@ class MainActivity : AppCompatActivity() {
      */
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         return if (loopStart) {
+            Log.d("루프 시작", "")
             val newLoopingDialog = LoopingDialog(this)
             newLoopingDialog.show()
             newLoopingDialog
         } else {
+            Log.d("루프 종료", "")
             loopingDialog!!.dismiss()
             null
         }

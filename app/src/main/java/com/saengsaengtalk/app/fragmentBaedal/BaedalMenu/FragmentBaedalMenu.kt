@@ -25,7 +25,7 @@ class FragmentBaedalMenu :Fragment() {
     var isPosting = false
     var postId = ""
     var currentMember = "0"
-    //var isUpdating = false
+    var isUpdating = false
     var storeName = ""
     var storeId = "0"
     var baedalFee = ""
@@ -44,7 +44,7 @@ class FragmentBaedalMenu :Fragment() {
             if (!isPosting) {
                 postId = it.getString("postId")!!
                 currentMember = it.getString("currentMember")!!
-                //isUpdating = it.getString("isUpdating")!!.toBoolean()
+                isUpdating = it.getString("isUpdating")!!.toBoolean()
             }
             storeName = it.getString("storeName")!!
             storeId = it.getString("storeId")!!
@@ -179,7 +179,7 @@ class FragmentBaedalMenu :Fragment() {
             "isPosting" to isPosting.toString(),
             "postId" to postId,
             "currentMember" to currentMember,
-            //"isUpdating" to isUpdating.toString(),
+            "isUpdating" to isUpdating.toString(),
             "storeId" to storeId,
             "storeName" to storeName,
             "baedalFee" to baedalFee,

@@ -210,6 +210,7 @@ class FragmentBaedalAdd :Fragment() {
         val loopingDialog = looping()
         api.getStoreList().enqueue(object : Callback<List<Store>> {
             override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {
+                looping(false, loopingDialog)
                 Log.d("log", response.toString())
                 Log.d("log", response.body().toString())
                 if (response.code() == 200) {
@@ -242,15 +243,14 @@ class FragmentBaedalAdd :Fragment() {
                     Log.d("log", response.toString())
                     makeToast("가게 리스트 조회 실패")
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<Store>>, t: Throwable) {
                 // 실패
+                looping(false, loopingDialog)
                 Log.d("log", t.message.toString())
                 Log.d("log", "fail")
                 makeToast("가게 리스트 조회 실패")
-                looping(false, loopingDialog)
                 onBackPressed()
             }
         })
@@ -266,9 +266,9 @@ class FragmentBaedalAdd :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun baedalPosting() {
         val minMember = if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-            binding.etMinMember.text.toString().toInt() else null
+            binding.etMinMember.text.toString().toInt() else 0
         val maxMember = if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-            binding.etMaxMember.text.toString().toInt() else null
+            binding.etMaxMember.text.toString().toInt() else 999
 
 
         if (isUpdating) {
@@ -277,16 +277,16 @@ class FragmentBaedalAdd :Fragment() {
                 null, //binding.tvTitle.text.toString(),
                 orderTime!!, // 수정하기
                 binding.spnPlace.selectedItem.toString(),
-                if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-                    binding.etMinMember.text.toString().toInt() else 0,
-                if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-                    binding.etMaxMember.text.toString().toInt() else 999
+                minMember,
+                maxMember,
+                null
             )
 
             val loopingDialog = looping()
             api.updateBaedalPost(postId!!, baedalPosting)
                 .enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                        looping(false, loopingDialog)
                         if (response.code() == 204) {
                             val bundle = bundleOf("success" to true, "postId" to postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
@@ -295,13 +295,12 @@ class FragmentBaedalAdd :Fragment() {
                             Log.e("baedalAdd Fragment - updateBaedalPost", response.toString())
                             makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
                         }
-                        looping(false, loopingDialog)
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                        looping(false, loopingDialog)
                         Log.e("baedalAdd Fragment - updateBaedalPost", t.message.toString())
                         makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
-                        looping(false, loopingDialog)
                     }
                 })
         } else {
@@ -315,10 +314,9 @@ class FragmentBaedalAdd :Fragment() {
                 storeIds[selectedIdx],
                 orderTimeString,
                 binding.spnPlace.selectedItem.toString(),
-                if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-                    binding.etMinMember.text.toString().toInt() else 0,
-                if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-                    binding.etMaxMember.text.toString().toInt() else 999
+                minMember,
+                maxMember,
+                getOrdering().orders
             )
 
             val loopingDialog = looping()
@@ -326,61 +324,27 @@ class FragmentBaedalAdd :Fragment() {
             api.baedalPosting(baedalPosting)
                 .enqueue(object : Callback<BaedalPostingResponse> {
                     override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
+                        looping(false, loopingDialog)
                         if (response.code() == 201) {
-                            if (orders.isEmpty()) {
-                                Log.d("FragBaedalAdd-orders.isEmpty", "성공")
-                                val bundle = bundleOf("success" to true, "postId" to response.body()!!.postId)
-                                getActivity()?.getSupportFragmentManager()?.setFragmentResult("addPost", bundle)
-                                onBackPressed()
-                                //setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.postId), 1)
-                            }
-
-                            else {
-                                Log.d("FragBaedalAdd-orders.isEmpty", "성공, 주문 작성 호출")
-                                baedalOrdering(response.body()!!.postId)}
+                            val bundle = bundleOf("success" to true, "postId" to response.body()!!.postId)
+                            //getActivity()?.getSupportFragmentManager()?.setFragmentResult("addPost", bundle)
+                            //onBackPressed()
+                            setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.postId), 1)
                         }
                         else {
                             Log.e("baedalAdd Fragment - baedalPosting", response.toString())
                             makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                         }
-                        looping(false, loopingDialog)
                     }
 
                     override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
+                        looping(false, loopingDialog)
                         Log.e("baedalAdd Fragment - baedalPosting", t.message.toString())
                         makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                        looping(false, loopingDialog)
                     }
                 })
 
         }
-    }
-
-    fun baedalOrdering(postId: String){
-        val ordering = getOrdering()
-
-        val loopingDialog = looping()
-        api.baedalOrdering(postId, ordering).enqueue(object : Callback<VoidResponse> {
-            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                if (response.code() == 204) {
-
-                    val bundle = bundleOf("success" to true, "postId" to postId)
-                    getActivity()?.getSupportFragmentManager()?.setFragmentResult("addPost", bundle)
-                    onBackPressed()
-                    //setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 1)
-                } else {
-                    Log.e("baedalAdd Fragment - baedalOrdering", response.toString())
-                    makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                }
-                looping(false, loopingDialog)
-            }
-
-            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                Log.e("baedalAdd Fragment - baedalOrdering", t.message.toString())
-                makeToast("주문을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                looping(false, loopingDialog)
-            }
-        })
     }
 
     fun getOrdering(): Ordering {
@@ -422,9 +386,9 @@ class FragmentBaedalAdd :Fragment() {
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, popBackStack)
     }
 
     fun onBackPressed() {

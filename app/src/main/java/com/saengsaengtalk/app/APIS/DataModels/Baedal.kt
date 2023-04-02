@@ -58,9 +58,10 @@ data class BaedalPosting(
     val orderTime: String,
     val place: String,
     @SerializedName("min_member")
-    val minMember: Int?,
+    val minMember: Int,
     @SerializedName("max_member")
-    val maxMember: Int?
+    val maxMember: Int,
+    val orders: List<OrderingOrder>?
 )
 
 data class BaedalPostingResponse(
@@ -74,8 +75,7 @@ data class BaedalPost(
     val title: String,
     @SerializedName("user_id")
     val userId: Long,
-    @SerializedName("nickname")
-    val nickName: String,
+    val nickname: String,
     val place: String,
     @SerializedName("order_time")
     val orderTime: String,
@@ -88,7 +88,7 @@ data class BaedalPost(
     val minMember: Int,
     @SerializedName("max_member")
     val maxMember: Int,
-    @SerializedName("users")
+    @SerializedName("user_orders")
     val userOrders: List<UserOrder>
 )
 
@@ -96,8 +96,7 @@ data class BaedalPost(
 data class UserOrder(
     @SerializedName("user_id")
     val userId: Long?,          // 데이터 조회는 하지만 어댑터 연결시에는 사용 X
-    @SerializedName("nickname")
-    val nickName: String,
+    val nickname: String,
     @SerializedName("order_confirmation")
     val orderConfirmation: Boolean,
     val orders: List<Order>,
@@ -176,7 +175,8 @@ data class BaedalPostPreview(
     val store: Store,
     //val open: Boolean,
     //val order_completed,
-    val users: List<User>
+    @SerializedName("user_orders")
+    val userOrders: List<User>
 )
 
 data class SwitchStatus(

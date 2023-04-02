@@ -51,6 +51,7 @@ class FragmentLogin :Fragment() {
             val reg = prefs.getString("registration", "")
             api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<LoginResult> {
                 override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
+                    looping(false, loopingDialog)
                     Log.d("FragLogin response.code()", response.code().toString())
                     if (response.code()==200) {
                         val tokens = response.headers().get("Authentication").toString().split("/")
@@ -66,7 +67,6 @@ class FragmentLogin :Fragment() {
                         prefs.setString("nickname", dNickname)
 
                         onBackPressed()
-                        looping(false, loopingDialog)
 
                         Log.d("access", prefs.getString("accessToken", ""))
                         Log.d("refresh", prefs.getString("refreshToken", ""))
@@ -75,13 +75,12 @@ class FragmentLogin :Fragment() {
                         Log.e("login Fragment - login", response.toString())
                         makeToast("다시 시도해 주세요.")
                     }
-                    looping(false, loopingDialog)
                 }
 
                 override fun onFailure(call: Call<LoginResult>, t: Throwable) {
+                    looping(false, loopingDialog)
                     Log.e("login Fragment - login", t.message.toString())
                     makeToast("다시 시도해 주세요.")
-                    looping(false, loopingDialog)
                 }
             })
         }

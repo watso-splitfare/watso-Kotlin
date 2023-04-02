@@ -64,7 +64,7 @@ class FragmentBaedal :Fragment() {
 
     fun getPostPreview() {
         val loopingDialog = looping()
-        api.getBaedalPostList().enqueue(object : Callback<List<BaedalPostPreview>> {
+        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPostPreview>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
                 if (response.code() == 200) {

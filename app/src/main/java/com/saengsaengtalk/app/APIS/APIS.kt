@@ -63,9 +63,8 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                             .addHeader("Authorization", token)
                             .build()
                         return chain.proceed(newRequest)
-                    } catch (e:Exception){
-                        println(e)
-                    } finally {
+                    }
+                    finally {
                         return response
                     }
                 }

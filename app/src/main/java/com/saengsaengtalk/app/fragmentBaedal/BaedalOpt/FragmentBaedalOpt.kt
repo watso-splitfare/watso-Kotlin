@@ -280,7 +280,7 @@ class FragmentBaedalOpt :Fragment() {
         Log.d("FragBaedalOpt-updateOrder-orderingOrder", updateOrder.toString())
 
         val loopingDialog = looping()
-        api.baedalOrderUpdate(postId, orderId, updateOrder).enqueue(object : Callback<VoidResponse> {
+        api.updateBaedalOrder(postId, orderId, updateOrder).enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 if (response.code() == 204) {
 

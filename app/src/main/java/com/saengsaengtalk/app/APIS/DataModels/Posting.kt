@@ -7,8 +7,7 @@ import com.google.gson.annotations.SerializedName
 data class User(
     @SerializedName("user_id")
     val userId: Long,
-    @SerializedName("nickname")
-    val nickName: String
+    val nickname: String
 )
 
 data class Comment(

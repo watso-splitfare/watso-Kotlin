@@ -77,7 +77,7 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrde
             var sumPrice = 0
             userOrder.orders.forEach { sumPrice += it.price }
             if (userOrder.isMyOrder!!) binding.tvOrderUser.text = "주문금액: ${dec.format(sumPrice)}원"
-            else binding.tvOrderUser.text = "주문자: ${userOrder.nickName}  주문금액: ${dec.format(sumPrice)}원"
+            else binding.tvOrderUser.text = "주문자: ${userOrder.nickname}  주문금액: ${dec.format(sumPrice)}원"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
             val adapter = SelectedMenuAdapter(context, userOrder.orders, false, isMyOrder)

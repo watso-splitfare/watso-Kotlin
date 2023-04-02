@@ -46,7 +46,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Ada
     class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(post: BaedalPostPreview) {
-            val currentMember = post.users.size
+            val currentMember = post.userOrders.size
 
             binding.lytBaedalListLikeview.visibility = View.GONE
 
