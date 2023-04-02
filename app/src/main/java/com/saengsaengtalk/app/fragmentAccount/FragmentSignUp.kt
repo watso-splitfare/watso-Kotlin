@@ -201,9 +201,9 @@ class FragmentSignUp :Fragment() {
                 binding.etAccountNum.text.toString() + " "+ bankName,
                 binding.etMail.text.toString() + "@pusan.ac.kr"
             )
-            api.signup(data).enqueue(object : Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    if (response.code() == 204) {
+            api.signup(data).enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.code() == 201) {
                         makeToast("회원가입에 성공하였습니다.")
                         onBackPressed()
                     } else {
@@ -213,8 +213,8 @@ class FragmentSignUp :Fragment() {
                     looping(false, loopingDialog)
                 }
 
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    Log.e("signUp Fragment - nicknameDuplicationCheck", t.message.toString())
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.e("signUp Fragment - signup", t.message.toString())
                     makeToast("다시 시도해 주세요.")
                     looping(false, loopingDialog)
                 }

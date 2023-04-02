@@ -44,24 +44,30 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                 val response = chain.proceed(tokenAddedRequest)
 
                 if (response.code() == 401) {
-                    response.close()
-                    Log.d("어세스 토큰 갱신 시도 access", accessToken)
-                    Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
-                    val refreshRequest = chain.request().newBuilder()
-                        .addHeader("Authorization", refreshToken)
-                        .method("GET", null)
-                        .url(BASE_URL + "auth/signin/refresh")
-                        .build()
+                    try {
+                        response.close()
+                        Log.d("어세스 토큰 갱신 시도 access", accessToken)
+                        Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
+                        val refreshRequest = chain.request().newBuilder()
+                            .addHeader("Authorization", refreshToken)
+                            .method("GET", null)
+                            .url(BASE_URL + "auth/signin/refresh")
+                            .build()
 
-                    val refreshResponse = chain.proceed(refreshRequest)
-                    val token = refreshResponse.headers().get("Authentication").toString()
-                    MainActivity.prefs.setString("accessToken", token)
+                        val refreshResponse = chain.proceed(refreshRequest)
+                        val token = refreshResponse.headers().get("Authentication").toString()
+                        MainActivity.prefs.setString("accessToken", token)
 
-                    Log.d("어세스 토큰 갱신 성공", token)
-                    val newRequest = chain.request().newBuilder()
-                        .addHeader("Authorization", token)
-                        .build()
-                    return chain.proceed(newRequest)
+                        Log.d("어세스 토큰 갱신 성공", token)
+                        val newRequest = chain.request().newBuilder()
+                            .addHeader("Authorization", token)
+                            .build()
+                        return chain.proceed(newRequest)
+                    } catch (e:Exception){
+                        println(e)
+                    } finally {
+                        return response
+                    }
                 }
                 return response
             }

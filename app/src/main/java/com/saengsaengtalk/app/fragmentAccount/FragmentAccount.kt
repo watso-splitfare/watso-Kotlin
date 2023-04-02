@@ -43,8 +43,8 @@ class FragmentAccount :Fragment() {
 
         binding.btnLogout.setOnClickListener {
             val refreshToken = MainActivity.prefs.getString("refreshToken", "")
-            api.logout().enqueue(object: Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+            api.logout().enqueue(object: Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.code() == 204) {
                         MainActivity.prefs.removeString("accessToken")
                         MainActivity.prefs.removeString("refreshToken")
@@ -61,7 +61,7 @@ class FragmentAccount :Fragment() {
                     Log.d("로그아웃", response.headers().toString())
                 }
 
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                override fun onFailure(call: Call<String>, t: Throwable) {
                     Log.d("로그아웃",t.message.toString())
                     Log.d("로그아웃","fail")
                 }

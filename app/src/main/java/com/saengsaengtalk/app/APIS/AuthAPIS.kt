@@ -9,7 +9,7 @@ interface AuthAPIS {
     @POST("auth/signup")                    // 회원가입
     fun signup(
         @Body jsonparams: SignUpModel
-    ): Call<VoidResponse>
+    ): Call<String>//Call<VoidResponse>
 
     @GET("auth/signup/duplicate-check")     // 정보 중복조회
     fun duplicateCheck(
@@ -24,7 +24,7 @@ interface AuthAPIS {
 
     @GET("auth/logout")                    // 로그아웃
     fun logout(
-    ): Call<VoidResponse>
+    ): Call<String>//Call<VoidResponse>
 
     @GET("auth/user")                       // 유저 정보
     fun userInfo(): Call<UserInfo>
