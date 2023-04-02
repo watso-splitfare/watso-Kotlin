@@ -13,6 +13,7 @@ import com.saengsaengtalk.app.APIS.LoginResult
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragLoginBinding
+import com.saengsaengtalk.app.fragmentBaedal.Baedal.FragmentBaedal
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,10 +41,6 @@ class FragmentLogin :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener {
-            onBackPressed()
-        }
-
         /** 로그인 */
         binding.btnLogin.setOnClickListener {
             val loopingDialog = looping()
@@ -66,7 +63,7 @@ class FragmentLogin :Fragment() {
                         prefs.setString("userId", dUserId)
                         prefs.setString("nickname", dNickname)
 
-                        onBackPressed()
+                        setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
 
                         Log.d("access", prefs.getString("accessToken", ""))
                         Log.d("refresh", prefs.getString("refreshToken", ""))
@@ -106,9 +103,9 @@ class FragmentLogin :Fragment() {
         return mActivity.decodeToken(jwt)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int=-1, fragIndex:Int=0) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, popBackStack, fragIndex)
     }
 
     fun onBackPressed() {

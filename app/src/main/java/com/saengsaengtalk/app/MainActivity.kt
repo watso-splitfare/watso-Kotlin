@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.saengsaengtalk.app.databinding.ActivityMainBinding
+import com.saengsaengtalk.app.fragmentAccount.FragmentLogin
 import com.saengsaengtalk.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.saengsaengtalk.app.fragmentTaxi.FragmentTaxi
 import java.util.*
@@ -46,11 +47,14 @@ class MainActivity : AppCompatActivity() {
         /** DynamicLink 수신확인 */
         initDynamicLink()
 
-        setFrag(FragmentHome())
+        if (prefs.getString("refrshToken", "") == "") {
+            setFrag(FragmentLogin(), popBackStack=0, fragIndex=0)
+        }
+        else setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
 
-        binding.btnHome.setOnClickListener { setFrag(FragmentHome(), popBackStack = 0, fragIndex=0) }
+        binding.btnHome.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentHome(), popBackStack = 0, fragIndex=0)*/ }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, fragIndex=1) }
-        binding.btnTaxi.setOnClickListener { setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2) }
+        binding.btnTaxi.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2)*/ }
         binding.btnKara.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentKara(), popBackStack = 0, fragIndex=3)*/ }
         binding.btnFreeBoard.setOnClickListener { makeToast("게시판 준비중입니다.") /*setFrag(FragmentFreeBoard(), popBackStack = 0, fragIndex=4)*/ }
     }

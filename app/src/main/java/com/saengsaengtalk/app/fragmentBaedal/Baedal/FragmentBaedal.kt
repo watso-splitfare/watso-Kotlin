@@ -13,6 +13,7 @@ import com.saengsaengtalk.app.APIS.BaedalPostPreview
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragBaedalBinding
+import com.saengsaengtalk.app.fragmentAccount.FragmentAccount
 import com.saengsaengtalk.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.saengsaengtalk.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
@@ -37,6 +38,7 @@ class FragmentBaedal :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
+        binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
         binding.btnBaedalPostAdd.setOnClickListener {
             setFrag(FragmentBaedalAdd())
         }
@@ -124,8 +126,8 @@ class FragmentBaedal :Fragment() {
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex:Int = 1) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
     }
 }
