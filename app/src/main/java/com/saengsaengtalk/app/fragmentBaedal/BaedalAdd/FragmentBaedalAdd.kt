@@ -97,9 +97,6 @@ class FragmentBaedalAdd :Fragment() {
 
         binding.lytTime.setOnClickListener { showCalendar() }
 
-        binding.etTitle.visibility = View.GONE
-        binding.etContent.visibility = View.GONE
-
         val places = listOf("생자대", "기숙사")
         val placeSpinerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, places)
         binding.spnPlace.adapter = placeSpinerAdapter
@@ -148,8 +145,6 @@ class FragmentBaedalAdd :Fragment() {
             binding.lytChoice.visibility = View.GONE
             binding.lytTable.visibility = View.GONE
 
-            binding.etTitle.setText(title)
-            binding.etContent.setText(content)
             binding.tvOrderTime.text = getDateTimeFormating(orderTime!!)
             binding.tvStoreName.text = storeName
             if (place == "기숙사") binding.spnPlace.setSelection(1)
