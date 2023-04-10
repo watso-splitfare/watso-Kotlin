@@ -42,8 +42,6 @@ class FragmentBaedal :Fragment() {
         binding.btnBaedalPostAdd.setOnClickListener {
             setFrag(FragmentBaedalAdd())
         }
-        binding.etBaedalSearch.visibility = View.GONE
-        binding.btnBaedalSearch.visibility = View.GONE
 
         getActivity()?.getSupportFragmentManager()
             ?.setFragmentResultListener("deletePost", this) { requestKey, bundle ->
@@ -66,21 +64,41 @@ class FragmentBaedal :Fragment() {
 
     fun getPostPreview() {
         val loopingDialog = looping()
-        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPostPreview>> {
+        api.getBaedalPostList("joined").enqueue(object : Callback<List<BaedalPostPreview>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.orderTime }
-                    mappingAdapter(baedalPosts)
+                    mappingAdapter(baedalPosts, "joined")
                 } else {
-                    Log.e("baedal Fragment - getBaedalPostList", response.toString())
+                    Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
                 looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPostPreview>>, t: Throwable) {
-                Log.e("home Fragment - getBaedalOrderListPreview", t.message.toString())
+                Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
+                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                looping(false, loopingDialog)
+            }
+        })
+
+        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPostPreview>> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
+                if (response.code() == 200) {
+                    val baedalPosts = response.body()!!.sortedBy { it.orderTime }
+                    mappingAdapter(baedalPosts, "joinable")
+                } else {
+                    Log.e("baedal Fragment - getBaedalPostListJoinable", response.toString())
+                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                }
+                looping(false, loopingDialog)
+            }
+
+            override fun onFailure(call: Call<List<BaedalPostPreview>>, t: Throwable) {
+                Log.e("baedal Fragment - getBaedalPostListJoinable", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
@@ -88,9 +106,7 @@ class FragmentBaedal :Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun mappingAdapter(baedalPosts: List<BaedalPostPreview>) {
-        binding.rvBaedalList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvBaedalList.setHasFixedSize(true)
+    fun mappingAdapter(baedalPosts: List<BaedalPostPreview>, table: String) {
 
         val tables = mutableListOf<Table>()
         val dates = mutableListOf<LocalDate>()
@@ -106,7 +122,17 @@ class FragmentBaedal :Fragment() {
 
         if (tables.size > 0) {
             val adapter = TableAdapter(requireContext(), tables)
-            binding.rvBaedalList.adapter = adapter
+            if (table == "joined") {
+                binding.rvBaedalListJoined.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvBaedalListJoined.setHasFixedSize(true)
+                binding.rvBaedalListJoined.adapter = adapter
+            } else {
+                binding.rvBaedalListJoinable.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvBaedalListJoinable.setHasFixedSize(true)
+                binding.rvBaedalListJoinable.adapter = adapter
+            }
             adapter.addListener(object : TableAdapter.OnItemClickListener {
                 override fun onClick(postId: String) {
                     Log.d("배달프래그먼트 온클릭", "${postId}")

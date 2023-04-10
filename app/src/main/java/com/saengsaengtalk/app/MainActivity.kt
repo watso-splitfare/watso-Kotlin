@@ -47,10 +47,9 @@ class MainActivity : AppCompatActivity() {
         /** DynamicLink 수신확인 */
         initDynamicLink()
 
-        if (prefs.getString("refrshToken", "") == "") {
+        if (prefs.getString("refreshToken", "") == "") {
             setFrag(FragmentLogin(), popBackStack=0, fragIndex=0)
-        }
-        else setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+        } else setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
 
         binding.btnHome.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentHome(), popBackStack = 0, fragIndex=0)*/ }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, fragIndex=1) }

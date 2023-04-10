@@ -3,6 +3,7 @@ package com.saengsaengtalk.app.fragmentBaedal.Baedal
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,6 +48,7 @@ class TableAdapter(val context: Context, val tables: MutableList<Table>) : Recyc
     inner class CustomViewHolder(var binding: LytBaedalTableBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(table: Table) {
+            if (layoutPosition == 0) { binding.divider.visibility = View.GONE }
             binding.tvDate.text = table.date.format(
                 DateTimeFormatter.ofPattern("MM월 dd일(E)").withLocale(Locale.forLanguageTag("ko")))
             binding.rvDateTable.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
