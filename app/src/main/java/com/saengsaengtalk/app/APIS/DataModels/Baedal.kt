@@ -168,8 +168,7 @@ data class BaedalPostPreview(
     val _id: String,
     val title: String,
     //val user_id: Long,
-    @SerializedName("nick_name")
-    val nickName: String,
+    val nickname: String,
     val place: String,
     @SerializedName("min_member")
     val minMember: Int,

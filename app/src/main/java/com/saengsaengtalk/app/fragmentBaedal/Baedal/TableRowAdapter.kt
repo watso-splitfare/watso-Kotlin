@@ -52,7 +52,7 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Ada
             binding.tvTitle.text = post.title
             binding.tvPlace.text = post.place
             binding.tvMember.text = currentMember + " / " + maxMember + "명"
-            binding.tvNickname.text = post.nickName
+            binding.tvNickname.text = post.nickname
 
         }
 
