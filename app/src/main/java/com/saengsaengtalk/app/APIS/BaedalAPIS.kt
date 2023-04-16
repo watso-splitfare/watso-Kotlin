@@ -15,101 +15,72 @@ interface BaedalAPIS {
         @Path("store_id") storeId: String
     ): Call<StoreInfo>
 
-    @GET("api/delivery/store/{store_id}/{menu_name}")   // 메뉴 상세정보(옵션) 조회
+    @GET("api/delivery/store/{store_id}/{menu_id}")   // 메뉴 상세정보(옵션) 조회
     fun getMenuInfo(
         @Path("store_id") storeId: String,
-        @Path("menu_name") menuName: String
-    ): Call<MenuInfo>
+        @Path("menu_id") menuId: String
+    ): Call<Menu>
 
 
-    /** 배달 게시글  */
+    /** 게시글  */
 
-    @GET("api/delivery/post")                 // 배달 게시글 목록 조회
+    @GET("api/delivery/post")                   // 배달 게시글 목록 조회
     fun getBaedalPostList(
-        @Query("filter") filter: String
-    ): Call<List<BaedalPostPreview>>
+        @Query("option") option: String
+    ): Call<List<BaedalPost>>
 
-    @POST("api/delivery/post")             // 배달 게시글 등록
+    @POST("api/delivery/post")                  // 배달 게시글 등록
     fun baedalPosting(
         @Body jsonparams: BaedalPosting
     ): Call<BaedalPostingResponse>
 
-    @GET("api/delivery/post/{post_id}")     // 배달 게시글 조회
+    @GET("api/delivery/post/{post_id}")         // 배달 게시글 조회
     fun getBaedalPost(
         @Path("post_id") postId: String
     ): Call<BaedalPost>
-
-    @PATCH("api/delivery/post/{post_id}")             // 배달 게시글 수정
-    fun updateBaedalPost(
-        @Path("post_id") postId: String,
-        @Body jsonparams: BaedalPosting
-    ): Call<VoidResponse>
 
     @DELETE("api/delivery/post/{post_id}")     // 배달 게시글 삭제
     fun deleteBaedalPost(
         @Path("post_id") postId: String
     ): Call<VoidResponse>
 
+    @PATCH("api/delivery/post/{post_id}")      // 배달 게시글 수정
+    fun updateBaedalPost(
+        @Path("post_id") postId: String,
+        @Body jsonparams: BaedalPostUpdate
+    ): Call<VoidResponse>
 
-    /** 주문 상태  */
-
-    @PATCH("api/delivery/post/{post_id}/status/deliveryCompleted")
-    fun completeBaedal(                                                // 배달 완료
+    @PATCH("api/delivery/post/{post_id}/delivered") // 배달 완료 명시
+    fun baedalComplete(
         @Path("post_id") postId: String
     ): Call<VoidResponse>
 
-    @PATCH("api/delivery/post/{post_id}/status/open")               // 참가 가능 여부 변경
-    fun switchStatusBaedal(
+    @PATCH("api/delivery/post/{post_id}/status")    // 배달 상태 관련 메서드
+    fun setBaedalStatus(
         @Path("post_id") postId: String,
-        @Body jsonparams: SwitchStatus
+        @Body jsonparams: BaedalStatus
     ): Call<VoidResponse>
 
-    @PATCH("api/delivery/post/{post_id}/status/orderCompleted")     // 대표자 주문 완료
-    fun completeBaedalOrder(
-        @Path("post_id") postId: String,
-        @Body() jsonparams: OrderCompleted
-    ): Call<VoidResponse>
+    /** 주문  */
 
-    @PATCH("api/delivery/post/{post_id}/status/orderConfirm")       // 참여자 주문 확정
-    fun confirmBaedalOrder(
+    @GET("api/delivery/order/{post_id}")        // 주문 조회
+    fun getOrders(
         @Path("post_id") postId: String
-    ): Call<VoidResponse>
+    ): Call<OrderInfo>
 
-
-    /** 주문 */
-
-    @DELETE("api/delivery/post/{post_id}/userOrder")        // 게시글 참가 취소 및 전체 주문 삭제
-    fun leaveBaedalGroup(
+    @POST("api/delivery/order/{post_id}")       // 주문 작성
+    fun postOrders(
         @Path("post_id") postId: String,
+        @Body jsonparams: PostOrder
     ): Call<VoidResponse>
 
-    @POST("api/delivery/post/{post_id}/userOrder")          // 게시글 참가 및 주문 등록
-    fun joinBaedalGroup(
-        @Path("post_id") postId: String,
-        @Body jsonparams: Ordering
-    ): Call<VoidResponse>
-
-    @GET("api/delivery/post/{post_id}/userOrder/order")     // 주문 목록 반환
-    fun getBaedalOrder(
+    @GET("api/delivery/order/{post_id}/me")     // 내 주문 조회
+    fun getMyOrders(
         @Path("post_id") postId: String
-    ): Call<List<Order>>
+    ): Call<OrderInfo>
 
-    @POST("api/delivery/post/{post_id}/userOrder/order")    // 주문 추가
-    fun addBaedalOrder(
-        @Path("post_id") postId: String,
-        @Body jsonparams: Ordering
-    ): Call<VoidResponse>
-
-    @PATCH("api/delivery/post/{post_id}/userOrder/order/{order_id}")  // 개별 주문 수정
-    fun updateBaedalOrder(
-        @Path("post_id") postId: String,
-        @Path("order_id") orderId: String,
-        @Body jsonparams: UpdateOrder
-    ): Call<VoidResponse>
-
-    @DELETE("api/delivery/post/{post_id}/userOrder/order/{order_id}") // 개별 주문 삭제
-    fun deleteBaedalOrder(
-        @Path("post_id") postId: String,
-        @Path("order_id") orderId: String
+    @DELETE("api/delivery/order/{post_id}/me")  // 내 주문 삭제
+    fun deleteOrders(
+        @Path("post_id") postId: String
     ): Call<VoidResponse>
 }

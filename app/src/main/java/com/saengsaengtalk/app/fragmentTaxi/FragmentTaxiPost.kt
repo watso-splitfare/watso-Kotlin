@@ -197,7 +197,7 @@ class FragmentTaxiPost :Fragment() {
     }
 
     fun switchCondition() {
-        val loopingDialog = looping()
+        /*val loopingDialog = looping()
         api.switchTaxiIsClosed(mapOf("post_id" to postId)).enqueue(object : Callback<IsClosedResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<IsClosedResponse>, response: Response<IsClosedResponse>) {
@@ -217,7 +217,7 @@ class FragmentTaxiPost :Fragment() {
                 makeToast("다시 시도해주세요.")
                 looping(false, loopingDialog)
             }
-        })
+        })*/
     }
 
     fun taxiJoin() {

@@ -20,10 +20,10 @@ interface TaxiAPIS {
         @Query("post_id") postId: String
     ): Call<PostingResponse>
 
-    @PATCH("/taxi/post/isClosed/condition-switch")                     // 305 동승 가능 여부 변경
+    /*@PATCH("/taxi/post/isClosed/condition-switch")                     // 305 동승 가능 여부 변경
     fun switchTaxiIsClosed(
         @Body jsonparams: Map<String, String>
-    ): Call<IsClosedResponse>
+    ): Call<IsClosedResponse>*/
 
     @PATCH("/taxi/post/join/condition-switch")                  // 306 동승 신청/취소
     fun switchTaxiJoin(

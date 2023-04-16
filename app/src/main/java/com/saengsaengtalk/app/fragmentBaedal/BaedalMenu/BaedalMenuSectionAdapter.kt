@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.saengsaengtalk.app.APIS.Section
 import com.saengsaengtalk.app.databinding.LytBaedalMenuSectionBinding
+import com.saengsaengtalk.app.fragmentBaedal.BaedalMenu.BaedalMenuAdapter
 import java.lang.ref.WeakReference
 
 
@@ -26,13 +28,13 @@ class BaedalMenuSectionAdapter(val context: Context, val sections: List<Section>
     }
 
     interface OnItemClickListener {
-        fun onClick(sectionName: String, menuName: String)
+        fun onClick(sectionName: String, menuId: String)
     }
 
     private var listener = WeakReference<OnItemClickListener>(null)
 
-    fun itemClick(sectionName: String, menuName: String) {
-        listener.get()?.onClick(sectionName, menuName)
+    fun itemClick(sectionName: String, menuId: String) {
+        listener.get()?.onClick(sectionName, menuId)
     }
 
     fun addListener(listener: OnItemClickListener) {
@@ -64,8 +66,8 @@ class BaedalMenuSectionAdapter(val context: Context, val sections: List<Section>
             binding.rvMenuSection.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener {
-                override fun onClick(menuName: String) {
-                    itemClick(section.name, menuName)
+                override fun onClick(menuId: String) {
+                    itemClick(section.name, menuId)
                 }
             })
         }

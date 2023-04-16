@@ -13,7 +13,7 @@ import java.io.IOException
 interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
     companion object {
-        private const val BASE_URL = "http://52.78.106.235:5000/"
+        private const val BASE_URL = "http://52.78.106.235/"
 
         fun create(): APIS {
             val gson :Gson = GsonBuilder().setLenient().create();
@@ -43,6 +43,9 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
                 val response = chain.proceed(tokenAddedRequest)
 
+                Log.d("API intercept response", response.toString())
+                Log.d("API intercept response.code", response.code().toString())
+
                 if (response.code() == 401) {
                     try {
                         response.close()
@@ -62,11 +65,14 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                         val newRequest = chain.request().newBuilder()
                             .addHeader("Authorization", token)
                             .build()
-                        return chain.proceed(newRequest)
+
+                        val newRes = chain.proceed(newRequest)
+                        Log.d("API intercept newRes", newRes.toString())
+                        Log.d("API intercept newRes.code", newRes.code().toString())
+                        return newRes
                     }
-                    finally {
-                        return response
-                    }
+                    catch(e:Exception) { return response }
+                    finally { }
                 }
                 return response
             }

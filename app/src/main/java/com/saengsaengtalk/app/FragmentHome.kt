@@ -3,6 +3,7 @@ package com.saengsaengtalk.app
 import APIS
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,7 @@ class FragmentHome :Fragment() {
     fun refreshView() {
         binding.btnOption.setOnClickListener {
             val userId = MainActivity.prefs.getString("userId", "")
+            Log.d("FragHome userId", userId)
             if (userId == "")
                 setFrag(FragmentLogin(), fragIndex=-1)
             else
@@ -138,7 +140,7 @@ class FragmentHome :Fragment() {
         })*/
     }
 
-    fun mappingBaedalAdapter(baedalPosts: List<BaedalPostPreview>) {
+    fun mappingBaedalAdapter(baedalPosts: List<BaedalPost>) {
         /*binding.rvBaedal.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBaedal.setHasFixedSize(true)
         var baedalAdapter: BaedalPreAdapter

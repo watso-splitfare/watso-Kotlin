@@ -13,19 +13,13 @@ import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.saengsaengtalk.app.APIS.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
 import com.saengsaengtalk.app.databinding.FragBaedalAddBinding
-import com.saengsaengtalk.app.fragmentBaedal.BaedalConfirm.SelectedMenuAdapter
 import com.saengsaengtalk.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
-//import com.saengsaengtalk.app.fragmentBaedal.BaedalOrder
-//import com.saengsaengtalk.app.fragmentBaedal.Group
-import com.saengsaengtalk.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,8 +41,6 @@ class FragmentBaedalAdd :Fragment() {
     var fee: Int? = null
 
     var baedalfee = 0
-    var sumPrice = 0
-    var orders = listOf<Order>()
 
     var stores = listOf<Store>()
     var storeIds = mutableListOf<String>()
@@ -61,7 +53,6 @@ class FragmentBaedalAdd :Fragment() {
     val gson = Gson()
     val api = APIS.create()
     var decDt = DecimalFormat("00")
-    val decPrice = DecimalFormat("#,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,8 +60,6 @@ class FragmentBaedalAdd :Fragment() {
             isUpdating = it.getString("isUpdating").toBoolean()
             if (isUpdating) {
                 postId = it.getString("postId")
-                //title = it.getString("title")
-                //content = it.getString("content")
                 orderTime = it.getString("orderTime")
                 storeName = it.getString("storeName")
                 place = it.getString("place")
@@ -101,52 +90,11 @@ class FragmentBaedalAdd :Fragment() {
         val placeSpinerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, places)
         binding.spnPlace.adapter = placeSpinerAdapter
 
-        if (!isUpdating) {
-            orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
-            binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
-            setStoreSpinner()
-            binding.lytChoice.setOnClickListener {
-                setFrag(
-                    FragmentBaedalMenu(), mapOf(
-                        "member" to "0",
-                        "isPosting" to "true",
-                        "storeName" to storeNames[selectedIdx],
-                        "storeId" to storeIds[selectedIdx],
-                        "baedalFee" to storeFees[selectedIdx].toString(),
-                        "orders" to orders.toString()
-                    )
-                )
-            }
-
-            getActivity()?.getSupportFragmentManager()
-                ?.setFragmentResultListener("ConfirmToPosting", this) { requestKey, bundle ->
-                    orders = gson.fromJson(bundle.getString("ordersString"), object: TypeToken<List<Order>>() {}.type) //JSONArray(bundle.getString("ordersString"))
-                    Log.d("FragBaedalAdd 메뉴확정", orders.toString())
-                    binding.rvMenuList.layoutManager =
-                        LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-                    val adapter = SelectedMenuAdapter(requireContext(), orders, false)
-                    binding.rvMenuList.adapter = adapter
-
-                    sumPrice = 0
-                    for (order in orders/*i in 0 until orders.length()*/) {
-                        //val order = orders.getJSONObject(i)
-                        sumPrice += order.price * order.quantity
-                    }
-                    setBindText()
-
-                    if (sumPrice > 0) {
-                        binding.btnPostAdd.isEnabled = true
-                        binding.btnPostAdd.setBackgroundResource(R.drawable.btn_baedal_confirm)
-                    }
-                }
-        } else {
-            binding.lytStore.visibility = View.GONE
-            binding.lytChoice.visibility = View.GONE
-            binding.lytTable.visibility = View.GONE
-
+        if (isUpdating) {
             binding.tvOrderTime.text = getDateTimeFormating(orderTime!!)
+            binding.lytStore.visibility = View.GONE
             binding.tvStoreName.text = storeName
+
             if (place == "기숙사") binding.spnPlace.setSelection(1)
             if (minMember != 0) {
                 binding.cbMinMember.setChecked(true)
@@ -156,12 +104,14 @@ class FragmentBaedalAdd :Fragment() {
                 binding.cbMaxMember.setChecked(true)
                 binding.etMaxMember.setText(maxMember.toString())
             }
-            binding.tvBaedalStoreFee.text = "${decPrice.format(fee)}원"
-
-            binding.btnPostAdd.isEnabled = true
-            binding.btnPostAdd.setBackgroundResource(R.drawable.btn_baedal_confirm)
+            binding.tvCompletePostinfo.text = "수정 완료"
+        } else {
+            orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
+            binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
+            setStoreSpinner()
         }
-        binding.btnPostAdd.setOnClickListener { baedalPosting() }
+        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.btn_baedal_confirm)
+        binding.btnCompletePostinfo.setOnClickListener { btnCompletePostInfo() }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -215,7 +165,7 @@ class FragmentBaedalAdd :Fragment() {
                         storeNames.add(it.name)
                         storeFees.add(it.fee)
                     }
-
+                    storeName = storeNames[0]
                     val searchmethod = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, storeNames)
 
                     searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -224,7 +174,6 @@ class FragmentBaedalAdd :Fragment() {
                         object : AdapterView.OnItemSelectedListener {
                             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                                 baedalfee = storeFees[position]
-                                setBindText()
                                 selectedIdx = position
                             }
 
@@ -251,34 +200,24 @@ class FragmentBaedalAdd :Fragment() {
         })
     }
 
-    fun setBindText() {
-        binding.tvBaedalStoreFee.text = "${decPrice.format(baedalfee)}원"
-        binding.tvBaedalFee.text = "${decPrice.format(baedalfee)}원"
-        binding.tvSumPrice.text = "${decPrice.format(sumPrice)}원"
-        binding.tvTotalPrice.text = "${decPrice.format(baedalfee+sumPrice)}원"//"${decPrice.format(totalPrice)}원"
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
-    fun baedalPosting() {
+    fun btnCompletePostInfo() {
         val minMember = if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-            binding.etMinMember.text.toString().toInt() else 0
+            binding.etMinMember.text.toString().toInt() else 1
         val maxMember = if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
             binding.etMaxMember.text.toString().toInt() else 999
 
-
         if (isUpdating) {
             /** 게시글 수정 */
-            val baedalPosting = BaedalPosting(
-                null, //binding.tvTitle.text.toString(),
-                orderTime!!, // 수정하기
+            val baedalPostUpdate = BaedalPostUpdate(
+                orderTime!!,
                 binding.spnPlace.selectedItem.toString(),
                 minMember,
-                maxMember,
-                null
+                maxMember
             )
 
             val loopingDialog = looping()
-            api.updateBaedalPost(postId!!, baedalPosting)
+            api.updateBaedalPost(postId!!, baedalPostUpdate)
                 .enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         looping(false, loopingDialog)
@@ -300,75 +239,25 @@ class FragmentBaedalAdd :Fragment() {
                 })
         } else {
             /** 게시글 신규 등록 */
-             makeToast("메뉴를 선택해 주세요")
-
-            makeToast("주문을 등록합니다.")
             Log.d("FragBaedalAdd-storeId", storeIds[selectedIdx])
             var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
+
             val baedalPosting = BaedalPosting(
                 storeIds[selectedIdx],
                 orderTimeString,
                 binding.spnPlace.selectedItem.toString(),
                 minMember,
                 maxMember,
-                getOrdering().orders
+                null
             )
-
-            val loopingDialog = looping()
-            Log.d("FragBaedalAdd-postingInfo", baedalPosting.toString())
-            api.baedalPosting(baedalPosting)
-                .enqueue(object : Callback<BaedalPostingResponse> {
-                    override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 201) {
-                            val bundle = bundleOf("success" to true, "postId" to response.body()!!.postId)
-                            //getActivity()?.getSupportFragmentManager()?.setFragmentResult("addPost", bundle)
-                            //onBackPressed()
-                            setFrag(FragmentBaedalPost(), mapOf("postId" to response.body()!!.postId), 1)
-                        }
-                        else {
-                            Log.e("baedalAdd Fragment - baedalPosting", response.toString())
-                            makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("baedalAdd Fragment - baedalPosting", t.message.toString())
-                        makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                    }
-                })
-
+            val prefs = MainActivity.prefs
+            prefs.setString("postOrder", "")
+            prefs.setString("baedalPosting", gson.toJson(baedalPosting))
+            setFrag( FragmentBaedalMenu(), mapOf(
+                "isPosting" to "true",
+                "storeId" to storeIds[selectedIdx])
+            )
         }
-    }
-
-    fun getOrdering(): Ordering {
-        return Ordering(getOrderingOrders())
-    }
-
-    private fun getOrderingOrders(): List<OrderingOrder> {
-        val orderingOrders = mutableListOf<OrderingOrder>()
-        for (order in orders) {
-            orderingOrders.add(OrderingOrder(order.quantity, getOrderingMenu(order)))
-        }
-        return orderingOrders
-    }
-
-    private fun getOrderingMenu(order: Order): OrderingMenu {
-        return if (order.menu.groups == null)
-            OrderingMenu(order.menu.name, null)
-        else
-            OrderingMenu(order.menu.name, getOrderingGroups(order.menu.groups))
-    }
-
-    private fun getOrderingGroups(groups: List<OrderGroup>): List<OrderingGroup> {
-        val orderingGroups = mutableListOf<OrderingGroup>()
-        for (group in groups) {
-            val options = mutableListOf<String>()
-            group.options.forEach { options.add(it._id) }
-            orderingGroups.add(OrderingGroup(group._id, options))
-        }
-        return orderingGroups
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {

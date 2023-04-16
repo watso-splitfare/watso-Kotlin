@@ -43,29 +43,6 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrde
         this.listener = WeakReference(listener)
     }
 
-    interface OnUpdateBtnListener {
-        fun onUpdateOrder(order: Order)
-    }
-    interface OnDeleteBtnListener {
-        fun onDeleteOrder(orderId: String)
-    }
-
-    private var updateListener = WeakReference<OnUpdateBtnListener>(null)
-    private var deleteListener = WeakReference<OnDeleteBtnListener>(null)
-
-    fun updateOrder(order: Order) {
-        updateListener.get()?.onUpdateOrder(order)
-    }
-    fun deleteOrder(orderId: String) {
-        deleteListener.get()?.onDeleteOrder(orderId)
-    }
-
-    fun addListener(updateListener: OnUpdateBtnListener) {
-        this.updateListener = WeakReference(updateListener)
-    }
-    fun addListener(deleteListener: OnDeleteBtnListener) {
-        this.deleteListener = WeakReference(deleteListener)
-    }
 
     override fun getItemCount(): Int {
         return userOrders.size
@@ -75,22 +52,12 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrde
         fun bind(userOrder: UserOrder) {
             val dec = DecimalFormat("#,###")
             var sumPrice = 0
-            userOrder.orders.forEach { sumPrice += it.price }
+            userOrder.orders.forEach { sumPrice += it.price!! }
             if (userOrder.isMyOrder!!) binding.tvOrderUser.text = "주문금액: ${dec.format(sumPrice)}원"
             else binding.tvOrderUser.text = "주문자: ${userOrder.nickname}  주문금액: ${dec.format(sumPrice)}원"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
             val adapter = SelectedMenuAdapter(context, userOrder.orders, false, isMyOrder)
-            adapter.setUpdateBtnListener(object: SelectedMenuAdapter.OnUpdateBtnListener {
-                override fun onUpdateOrder(order: Order) {
-                    updateOrder(order)
-                }
-            })
-            adapter.setDeleteBtnListener(object: SelectedMenuAdapter.OnDeleteBtnListener {
-                override fun onDeleteOrder(orderId: String) {
-                    deleteOrder(orderId)
-                }
-            })
             binding.rvOrderMenu.adapter = adapter
         }
     }

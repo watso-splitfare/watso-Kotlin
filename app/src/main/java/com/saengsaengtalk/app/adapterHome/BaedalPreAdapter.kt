@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.BaedalPostPreview
+import com.saengsaengtalk.app.APIS.BaedalPost
 import com.saengsaengtalk.app.databinding.LytBaedalPreBinding
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class BaedalPreAdapter(val baedalPosts: List<BaedalPostPreview>) : RecyclerView.Adapter<BaedalPreAdapter.CustomViewHolder>() {
+class BaedalPreAdapter(val baedalPosts: List<BaedalPost>) : RecyclerView.Adapter<BaedalPreAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaedalPreAdapter.CustomViewHolder {
         val binding = LytBaedalPreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -47,11 +47,11 @@ class BaedalPreAdapter(val baedalPosts: List<BaedalPostPreview>) : RecyclerView.
     inner class CustomViewHolder(var binding: LytBaedalPreBinding) : RecyclerView.ViewHolder(binding.root) {
         lateinit var text:String
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(post: BaedalPostPreview) {
+        fun bind(post: BaedalPost) {
             if (post._id == "-1") { text = "등록된 게시물이 없어요.\n새로운 게시물을 작성해보세요!" }
             else {
                 binding.tvStoreName.text = post.store.name
-                binding.tvCurrentMember.text = "현인원 ${post.userOrders.size}팀"
+                binding.tvCurrentMember.text = "현인원 ${post.users.size}팀"
                 binding.tvOrderTime.text = getDateTimeFormating(post.orderTime)
             }
         }

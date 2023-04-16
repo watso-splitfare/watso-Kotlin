@@ -3,10 +3,10 @@ package com.saengsaengtalk.app.fragmentBaedal.Baedal
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.BaedalPostPreview
+import com.saengsaengtalk.app.APIS.BaedalPost
 import com.saengsaengtalk.app.databinding.LytBaedalTableRowBinding
 
-class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalTableRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -37,8 +37,8 @@ class TableRowAdapter(val tableRows: List<BaedalPostPreview>) : RecyclerView.Ada
     }
 
     class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(post: BaedalPostPreview) {
-            val currentMember = post.userOrders.size.toString()
+        fun bind(post: BaedalPost) {
+            val currentMember = post.users.size.toString()
             val maxMember = post.maxMember
 
             binding.tvTitle.text = post.title

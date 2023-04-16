@@ -8,14 +8,11 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.saengsaengtalk.app.APIS.Option
-import com.saengsaengtalk.app.APIS.OrderOption
 import com.saengsaengtalk.app.databinding.LytBaedalOptBinding
 import java.text.DecimalFormat
 
-class BaedalOptAdapter(val context: Context, val options: List<Option>, val minOrderableQuantity: Int, val maxOrderableQuantity: Int, val selected: List<OrderOption>?):
+class BaedalOptAdapter(val context: Context, val options: List<Option>, val minOrderableQuantity: Int, val maxOrderableQuantity: Int):
     RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
-    val selectedId = mutableListOf<String>()    // 수정 요청일 시 선택된 옵션 목록
-    val optionIds = mutableListOf<String>()     // 전체 옵션 목록
 
     var isRadio = false
     var checkedPosition = -1
@@ -27,13 +24,6 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
         if (minOrderableQuantity == 1 && maxOrderableQuantity == 1){
             isRadio = true
         }
-        try{
-            selected?.forEach {selectedId.add(it._id) }
-            options.forEach { optionIds.add(it._id) }
-            if (isRadio) checkedPosition = optionIds.indexOf(selectedId[0])
-        } catch (e: Exception) {}
-        finally { }
-
         return CustomViewHolder(binding)
     }
 
@@ -88,10 +78,6 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
                 binding.cbOption.text = option.name
                 binding.rbOption.setVisibility(View.INVISIBLE)
                 checkBtn = binding.cbOption
-
-                try {
-                    if (selectedId.contains(option._id)) checkBtn.isChecked = true
-                } finally {}
 
 
                 checkBtn.setOnClickListener { callItemClickListener(option._id) }

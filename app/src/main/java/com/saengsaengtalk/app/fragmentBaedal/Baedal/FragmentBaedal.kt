@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.BaedalPostPreview
+import com.saengsaengtalk.app.APIS.BaedalPost
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragBaedalBinding
@@ -64,9 +64,9 @@ class FragmentBaedal :Fragment() {
 
     fun getPostPreview() {
         val loopingDialog = looping()
-        api.getBaedalPostList("joined").enqueue(object : Callback<List<BaedalPostPreview>> {
+        api.getBaedalPostList("joined").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
+            override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingAdapter(baedalPosts, "joined")
@@ -77,16 +77,16 @@ class FragmentBaedal :Fragment() {
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<List<BaedalPostPreview>>, t: Throwable) {
+            override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
             }
         })
 
-        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPostPreview>> {
+        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<List<BaedalPostPreview>>, response: Response<List<BaedalPostPreview>>) {
+            override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingAdapter(baedalPosts, "joinable")
@@ -97,7 +97,7 @@ class FragmentBaedal :Fragment() {
                 looping(false, loopingDialog)
             }
 
-            override fun onFailure(call: Call<List<BaedalPostPreview>>, t: Throwable) {
+            override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
                 Log.e("baedal Fragment - getBaedalPostListJoinable", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 looping(false, loopingDialog)
@@ -106,7 +106,7 @@ class FragmentBaedal :Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun mappingAdapter(baedalPosts: List<BaedalPostPreview>, table: String) {
+    fun mappingAdapter(baedalPosts: List<BaedalPost>, table: String) {
 
         val tables = mutableListOf<Table>()
         val dates = mutableListOf<LocalDate>()

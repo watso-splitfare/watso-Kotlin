@@ -8,21 +8,14 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.saengsaengtalk.app.APIS.Group
-import com.saengsaengtalk.app.APIS.OrderGroup
 import com.saengsaengtalk.app.databinding.LytBaedalOptGroupBinding
 import java.lang.ref.WeakReference
 
-class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>, val selected: List<OrderGroup>?) :
-    RecyclerView.Adapter<BaedalOptGroupAdapter.CustomViewHolder>() {
-    val selectedId = mutableListOf<String>()
+
+class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>) : RecyclerView.Adapter<BaedalOptGroupAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOptGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
-        try{ selected?.forEach {selectedId.add(it._id)} }
-        catch (e: Exception) {}
-        finally { }
-
         return CustomViewHolder(binding)
     }
 
@@ -60,23 +53,7 @@ class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>, val s
             binding.rvMenuGroup.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            lateinit var adapter: BaedalOptAdapter
-            if (selectedId.contains(group._id)) {
-                adapter = BaedalOptAdapter(
-                    context,
-                    group.options,
-                    group.minOrderQuantity,
-                    group.maxOrderQuantity,
-                    selected?.get(selectedId.indexOf(group._id))?.options
-                )
-            }
-            else adapter = BaedalOptAdapter(
-                context,
-                group.options,
-                group.minOrderQuantity,
-                group.maxOrderQuantity,
-                null
-            )
+            val adapter = BaedalOptAdapter(context, group.options!!, group.minOrderQuantity, group.maxOrderQuantity)
             binding.rvMenuGroup.adapter = adapter
 
             adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener {

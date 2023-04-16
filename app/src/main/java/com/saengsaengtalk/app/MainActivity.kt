@@ -134,7 +134,8 @@ class MainActivity : AppCompatActivity() {
             }
             else -> {
                 for (i in 0 until popBackStack) { fm.popBackStack() }
-                transaction.replace(R.id.main_frame, fragment)
+                //transaction.replace(R.id.main_frame, fragment)
+                transaction.add(R.id.main_frame, fragment).addToBackStack(null)
             }
         }
 
