@@ -226,7 +226,7 @@ class FragmentBaedalOpt :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, 1)
+        mActivity.setFrag(fragment, arguments)
     }
 
     fun onBackPressed() {
