@@ -39,11 +39,6 @@ class FragmentBaedalMenu :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             isPosting = it.getString("isPosting").toBoolean()
-            /*if (!isPosting) {
-                postId = it.getString("postId")!!
-                currentMember = it.getString("currentMember")!!
-                isUpdating = it.getString("isUpdating")!!.toBoolean()
-            }*/
             storeId = it.getString("storeId")!!
         }
     }

@@ -91,6 +91,8 @@ data class BaedalPosting(
     val minMember: Int,
     @SerializedName("max_member")
     val maxMember: Int,
+    @SerializedName("request_comment")
+    val requestComment: String,
     @SerializedName("order_lines")
     var orders: List<Order>?
 )
@@ -117,7 +119,7 @@ data class BaedalStatus(
     val isOpen: Boolean?,
     @SerializedName("order_completed")
     val orderCompleted: Boolean?,
-    @SerializedName("order_confirm")
+    @SerializedName("order_confirmed")
     val orderConfirmed: Boolean?
 )
 

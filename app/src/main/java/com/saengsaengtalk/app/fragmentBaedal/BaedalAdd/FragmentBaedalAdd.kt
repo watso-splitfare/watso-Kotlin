@@ -248,6 +248,7 @@ class FragmentBaedalAdd :Fragment() {
                 binding.spnPlace.selectedItem.toString(),
                 minMember,
                 maxMember,
+                "",
                 null
             )
             val prefs = MainActivity.prefs
