@@ -5,7 +5,8 @@
     android:id="@+id/lyt_looping"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00FFFFFF">
+    android:background="#00FFFFFF"
+    android:clickable="false">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie"
