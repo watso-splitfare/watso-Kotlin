@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.saengsaengtalk.app.databinding.ActivityMainBinding
 import com.saengsaengtalk.app.fragmentAccount.FragmentLogin
 import com.saengsaengtalk.app.fragmentBaedal.Baedal.FragmentBaedal
@@ -124,7 +125,8 @@ class MainActivity : AppCompatActivity() {
         // -1: 새로운 frag 추가, 0: 탭이동 (스택 초기화), else: 횟수만큼 뒤로 가기
         when (popBackStack) {
             -1 -> {
-                transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
+                //transaction.setCustomAnimations(R.anim.enter_from_right, 0, 0, R.anim.exit_to_right)
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 transaction.add(R.id.main_frame, fragment).addToBackStack(null)
             }
             0 -> {

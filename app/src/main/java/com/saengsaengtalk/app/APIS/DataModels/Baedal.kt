@@ -17,7 +17,7 @@ data class StoreInfo(
     @SerializedName("min_order")
     val minOrder: Int,
     val fee: Int,
-    val sections: List<Section>
+    val sections: MutableList<Section>
 )
 
 data class Section(

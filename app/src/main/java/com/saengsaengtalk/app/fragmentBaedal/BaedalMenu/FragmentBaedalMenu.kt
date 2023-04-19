@@ -1,6 +1,8 @@
 package com.saengsaengtalk.app.fragmentBaedal.BaedalMenu
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,9 +27,11 @@ class FragmentBaedalMenu :Fragment() {
     var postId = ""
     var storeId = "0"
     lateinit var storeInfo: StoreInfo
+    lateinit var adapter: BaedalMenuSectionAdapter
 
     //lateinit var postOrder: PostOrder                            // 주문 리스트
     var orderCnt = 0
+    var viewClickAble = true
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
@@ -41,6 +45,9 @@ class FragmentBaedalMenu :Fragment() {
             isPosting = it.getString("isPosting").toBoolean()
             storeId = it.getString("storeId")!!
         }
+
+        storeInfo = StoreInfo("-1", "storeName", 0, 0, mutableListOf<Section>())
+        adapter = BaedalMenuSectionAdapter(requireContext(), storeInfo.sections)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -53,28 +60,13 @@ class FragmentBaedalMenu :Fragment() {
 
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
+        mappingAdapter()
         getMenuData()
-        //if (isUpdating) getOrders()
 
-        /** Option frag에서 메뉴 선택 후 담기 시 작동 */ // deprecated
-        /*getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("order", this) { requestKey, bundle ->
-            val orderString = bundle.getString("orderString")
-            orders.put(JSONObject(orderString))
-            Log.d("FragBaedalMenu 옵션->메뉴 담기", orders.toString())
-            setCartBtn()
-        }*/
-
-        /** Confirm frag에서 뒤로가기(메뉴 더담기) 시 작동 */
-        /*getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("changeOrder", this) { requestKey, bundle ->
-            postOrder = gson.fromJson(bundle.getString("postOrder"), PostOrder::class.java)
-            Log.d("FragBaedalMenu confirm->뒤로가기", postOrder.toString())
-
-            setCartBtn()
-        }*/
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) { requestKey, bundle ->
+            viewClickAble = true
             orderCnt = bundle.getInt("orderCnt")
             Log.d("FragBaedalMenu 메뉴 갯수 :", orderCnt.toString())
-
             setCartBtn()
         }
 
@@ -89,9 +81,12 @@ class FragmentBaedalMenu :Fragment() {
             override fun onResponse(call: Call<StoreInfo>, response: Response<StoreInfo>) {
                 if (response.code() == 200) {
                     storeInfo = response.body()!!
+                    Log.d("FragBaedalMenu storeInfo", storeInfo.toString())
+
+                    binding.tvStoreName.text = storeInfo.name
                     binding.tvBaedalFee.text = "예상 배달비 : %s원".format(dec.format(storeInfo.fee))
                     binding.tvMinOrder.text = "최소 배달 금액 : %s원".format(dec.format(storeInfo.minOrder))
-                    mappingAdapter()
+                    adapter.setData(storeInfo.sections)
                 } else {
                     Log.e("baedalMenu Fragment - getSectionMenu", response.toString())
                     makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
@@ -108,36 +103,21 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun mappingAdapter() {
-
-        binding.tvStoreName.text = storeInfo.name
-
         binding.rvMenuSection.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSection.setHasFixedSize(true)
-
-        val adapter = BaedalMenuSectionAdapter(requireContext(), storeInfo.sections)
         binding.rvMenuSection.adapter = adapter
 
         /** 이중 어댑터안의 메뉴 이름을 선택할 경우 해당 메뉴의 옵션을 보여주는 프래그먼트로 이동 */
         adapter.addListener(object : BaedalMenuSectionAdapter.OnItemClickListener {
             override fun onClick(sectionName: String, menuId: String) {
-                loop@ for (section in storeInfo.sections) {
-                    if (sectionName == section.name) {
-                        for (menu in section.menus) {
-                            if (menuId == menu._id) {
-                                setFrag(FragmentBaedalOpt(), mapOf(
-                                    /*"menuId" to menu._id,
-                                    "menuName" to menu.name,
-                                    "menuPrice" to menu.price.toString(),*/
-                                    "isPosting" to isPosting.toString(),
-                                    "menu" to gson.toJson(menu),
-                                    //"storeId" to storeId
-                                    "storeInfo" to gson.toJson(storeInfo)
-                                ))
-                                break@loop
-                            }
-                        }
-                    }
+                if (viewClickAble) {
+                    viewClickAble = false
+                    setFrag(FragmentBaedalOpt(), mapOf(
+                            "isPosting" to isPosting.toString(),
+                            "menuId" to menuId,
+                            "storeInfo" to gson.toJson(storeInfo)
+                    ))
                 }
             }
         })

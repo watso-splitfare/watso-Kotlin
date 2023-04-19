@@ -2,6 +2,7 @@ package com.saengsaengtalk.app.fragmentBaedal.BaedalMenu
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,20 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.saengsaengtalk.app.APIS.Section
+import com.saengsaengtalk.app.LoopingDialog
+import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.LytBaedalMenuSectionBinding
 import com.saengsaengtalk.app.fragmentBaedal.BaedalMenu.BaedalMenuAdapter
 import java.lang.ref.WeakReference
 
 
-class BaedalMenuSectionAdapter(val context: Context, val sections: List<Section>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
+class BaedalMenuSectionAdapter(val context: Context, val sections: MutableList<Section>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
+
+    fun setData(sectionData: List<Section>) {
+        sections.clear()
+        sections.addAll(sectionData)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalMenuSectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -38,6 +47,7 @@ class BaedalMenuSectionAdapter(val context: Context, val sections: List<Section>
     }
 
     fun addListener(listener: OnItemClickListener) {
+        Log.d("섹션 메뉴 어댑터", "리스너 추가")
         this.listener = WeakReference(listener)
     }
 

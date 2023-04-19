@@ -22,7 +22,8 @@ import java.text.DecimalFormat
 class FragmentBaedalOpt :Fragment() {
     var isPosting = false
     var postId = ""
-    lateinit var menu: SectionMenu
+    //lateinit var menu: SectionMenu
+    var menuId = ""
     lateinit var storeInfo: StoreInfo
 
     val groupNames = mutableMapOf<String, String>()
@@ -32,6 +33,8 @@ class FragmentBaedalOpt :Fragment() {
     val optionChecked = mutableMapOf<String, MutableMap<String, Boolean>>()
     var quantity = 1
     var price = 0
+
+    var viewClickAble = true
 
     lateinit var menuInfo: Menu                   // 메뉴 정보. 현재화면 구성에 사용
     private var mBinding: FragBaedalOptBinding? = null
@@ -50,7 +53,8 @@ class FragmentBaedalOpt :Fragment() {
             finally {
 
             }
-            menu = gson.fromJson(it.getString("menu"), SectionMenu::class.java)
+            //menu = gson.fromJson(it.getString("menu"), SectionMenu::class.java)
+            menuId = it.getString("menuId")!!
             //storeId = it.getString("storeId")!!
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
@@ -66,8 +70,6 @@ class FragmentBaedalOpt :Fragment() {
 
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-
-        binding.tvMenuName.text = menu.name
 
         setRecyclerView()
 
@@ -86,47 +88,51 @@ class FragmentBaedalOpt :Fragment() {
 
         /** 메뉴 담기 버튼*/
         binding.btnCartConfirm.setOnClickListener {
-            val groups = mutableListOf<Group>()
-            Log.d("optionChecked", optionChecked.toString())
-            optionChecked.forEach {
-                val groupId = it.key
-                val options = mutableListOf<Option>()
-                it.value.forEach {
-                    if (it.value) {
-                        val optionId = it.key
-                        val selectedPrice = optionPrice[groupId]!![optionId]!!
-                        val option = Option(optionId, optionNames[optionId]!!, selectedPrice)
-                        options.add(option)
+            if (viewClickAble) {
+                viewClickAble = false
+                val groups = mutableListOf<Group>()
+                Log.d("optionChecked", optionChecked.toString())
+                optionChecked.forEach {
+                    val groupId = it.key
+                    val options = mutableListOf<Option>()
+                    it.value.forEach {
+                        if (it.value) {
+                            val optionId = it.key
+                            val selectedPrice = optionPrice[groupId]!![optionId]!!
+                            val option = Option(optionId, optionNames[optionId]!!, selectedPrice)
+                            options.add(option)
+                        }
                     }
-                }
-                if (options.isNotEmpty()) {
-                    groups.add(Group(
+                    if (options.isNotEmpty()) { groups.add(Group(
                         groupId,
                         groupNames[groupId]!!,
                         quantities[groupId]!![0],
                         quantities[groupId]!![1],
                         options
-                    ))
+                    ))}
                 }
+                val menu = Menu(menuInfo._id, menuInfo.name, menuInfo.price, groups)
+                val order = Order(quantity, price, menu)
+                Log.d("FragBaedalOpt - order", order.toString())
+                setFrag(
+                    FragmentBaedalConfirm(), mapOf(
+                        "isPosting" to isPosting.toString(),
+                        "postId" to postId,
+                        "order" to gson.toJson(order),
+                        "storeInfo" to gson.toJson(storeInfo)
+                    )
+                )
             }
-            val menu = Menu(menuInfo._id, menuInfo.name, menuInfo.price, groups)
-            val order = Order(quantity, price, menu)
-            Log.d("FragBaedalOpt - order", order.toString())
-            setFrag( FragmentBaedalConfirm(), mapOf(
-                "isPosting" to isPosting.toString(),
-                "postId" to postId,
-                "order" to gson.toJson(order),
-                "storeInfo" to gson.toJson(storeInfo)
-            ))
         }
     }
 
     fun setRecyclerView() {
         val loopingDialog = looping()
-        api.getMenuInfo(storeInfo._id, menu._id).enqueue(object : Callback<Menu> {
+        api.getMenuInfo(storeInfo._id, menuId).enqueue(object : Callback<Menu> {
             override fun onResponse(call: Call<Menu>, response: Response<Menu>) {
                 if (response.code() == 200) {
                     menuInfo = response.body()!!
+                    binding.tvMenuName.text = menuInfo.name
                     mappingAdapter()
                     setGroupOptionData()
                     setOrderPrice()
