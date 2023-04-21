@@ -136,7 +136,7 @@ data class UserOrder(
     @SerializedName("request_comment")
     val requestComment: String,
     @SerializedName("order_lines")
-    val orders: List<Order>,
+    val orders: MutableList<Order>,
     var isMyOrder: Boolean?
 )
 

@@ -36,8 +36,6 @@ class FragmentBaedalPost :Fragment() {
     var isOpen = false
 
     lateinit var baedalPost: BaedalPost
-    var userOrders = mutableMapOf<Long, List<Order>>()
-    var orderConfirm = mutableMapOf<Long, Boolean>()
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
@@ -54,33 +52,20 @@ class FragmentBaedalPost :Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
-        refreshView(inflater)
+        refreshView()
 
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun refreshView(inflater: LayoutInflater) {
+    fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         //binding.tvDelete.visibility = View.GONE     // 삭제 비활성화
-        binding.lytComment.visibility = View.GONE   // 댓글 비활성화
 
         Log.d("access", MainActivity.prefs.getString("accessToken", ""))
         Log.d("postId", postId.toString())
         getPostInfo()
 
-        /** 게시글 수정 또는 주문추가를 하였을 경우, 리스너를 통해 확인하고 게시글을 다시 조회한다 */
-        getActivity()?.getSupportFragmentManager()
-            ?.setFragmentResultListener("updatePost", this) { requestKey, bundle ->
-                val success = bundle.getBoolean("success")
-                if (success) getPostInfo()
-            }
-
-        getActivity()?.getSupportFragmentManager()
-            ?.setFragmentResultListener("ordering", this) { requestKey, bundle ->
-                val success = bundle.getBoolean("success")
-                if (success) getPostInfo()
-            }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -88,6 +73,7 @@ class FragmentBaedalPost :Fragment() {
         val loopingDialog = looping()
         api.getBaedalPost(postId!!).enqueue(object : Callback<BaedalPost> {
             override fun onResponse(call: Call<BaedalPost>, response: Response<BaedalPost>) {
+                looping(false, loopingDialog)
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
                     setData()
@@ -96,36 +82,24 @@ class FragmentBaedalPost :Fragment() {
                     makeToast("게시글 조회 실패")
                     onBackPressed()
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<BaedalPost>, t: Throwable) {
+                looping(false, loopingDialog)
                 Log.e("baedal Post Fragment - getBaedalPost", t.message.toString())
                 makeToast("게시글 조회 실패")
                 onBackPressed()
-                looping(false, loopingDialog)
             }
         })
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun setData() {
-
-        /*userOrders = mutableMapOf<Long, List<Order>>()
-        orderConfirm = mutableMapOf<Long, Boolean>()
-        for (userorder in baedalPost.userOrders) {
-            userOrders[userorder.userId!!] = userorder.orders
-            orderConfirm[userorder.userId] = userorder.orderConfirmation
-        }
-        val joinUsers = userOrders.keys
-        Log.d("FragBaedalPost-joinUsers", joinUsers.toString())
-        Log.d("FragBaedalPost-userId", userId.toString())
-        isMember = joinUsers.contains(userId)*/
+        val joinUsers = baedalPost.users
+        isMember = joinUsers.contains(userId)
         isOpen = baedalPost.isOpen
         val store = baedalPost.store
         //val comments = baedalPost.comments
-        val currentMember = baedalPost.users.size
-        val fee = store.fee
 
         val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
 
@@ -237,8 +211,6 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
-
-
     /** 대표자 주문 완료 */
     fun completeOrder() {
 
@@ -270,8 +242,8 @@ class FragmentBaedalPost :Fragment() {
         builder.show()*/
     }
 
-    fun goToOrderingFrag() {
-        val currentMember = userOrders.size
+    /*fun goToOrderingFrag() {
+        val currentMember = users.size
         val store = baedalPost.store
 
         setFrag(FragmentBaedalMenu(), mapOf(
@@ -284,7 +256,7 @@ class FragmentBaedalPost :Fragment() {
             "baedalFee" to store.fee.toString(),
             "orders" to ""
         ))
-    }
+    }*/
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity

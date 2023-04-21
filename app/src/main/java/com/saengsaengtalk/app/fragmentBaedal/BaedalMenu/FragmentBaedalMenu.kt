@@ -23,8 +23,8 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
-    var isPosting = false
-    var postId = ""
+    //var isPosting = false
+    var postId = "-1"
     var storeId = "0"
     lateinit var storeInfo: StoreInfo
     lateinit var adapter: BaedalMenuSectionAdapter
@@ -42,7 +42,6 @@ class FragmentBaedalMenu :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            isPosting = it.getString("isPosting").toBoolean()
             storeId = it.getString("storeId")!!
         }
 
@@ -66,7 +65,6 @@ class FragmentBaedalMenu :Fragment() {
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) { requestKey, bundle ->
             viewClickAble = true
             orderCnt = bundle.getInt("orderCnt")
-            Log.d("FragBaedalMenu 메뉴 갯수 :", orderCnt.toString())
             setCartBtn()
         }
 
@@ -79,9 +77,9 @@ class FragmentBaedalMenu :Fragment() {
         val loopingDialog = looping()
         api.getStoreInfo(storeId).enqueue(object : Callback<StoreInfo> {
             override fun onResponse(call: Call<StoreInfo>, response: Response<StoreInfo>) {
+                looping(false, loopingDialog)
                 if (response.code() == 200) {
                     storeInfo = response.body()!!
-                    Log.d("FragBaedalMenu storeInfo", storeInfo.toString())
 
                     binding.tvStoreName.text = storeInfo.name
                     binding.tvBaedalFee.text = "예상 배달비 : %s원".format(dec.format(storeInfo.fee))
@@ -91,13 +89,12 @@ class FragmentBaedalMenu :Fragment() {
                     Log.e("baedalMenu Fragment - getSectionMenu", response.toString())
                     makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<StoreInfo>, t: Throwable) {
+                looping(false, loopingDialog)
                 Log.e("baedalMenu Fragment - getSectionMenu", t.message.toString())
                 makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
-                looping(false, loopingDialog)
             }
         })
     }
@@ -114,7 +111,7 @@ class FragmentBaedalMenu :Fragment() {
                 if (viewClickAble) {
                     viewClickAble = false
                     setFrag(FragmentBaedalOpt(), mapOf(
-                            "isPosting" to isPosting.toString(),
+                            "postId" to postId,
                             "menuId" to menuId,
                             "storeInfo" to gson.toJson(storeInfo)
                     ))
@@ -141,11 +138,8 @@ class FragmentBaedalMenu :Fragment() {
 
     fun cartOnClick(){
         val map = mutableMapOf(
-            "isPosting" to isPosting.toString(),
             "postId" to postId,
-            /*"storeId" to storeId,
-            "storeName" to storeInfo.name,
-            "fee" to storeInfo.fee.toString()*/
+            "order" to "",
             "storeInfo" to gson.toJson(storeInfo)
         )
 

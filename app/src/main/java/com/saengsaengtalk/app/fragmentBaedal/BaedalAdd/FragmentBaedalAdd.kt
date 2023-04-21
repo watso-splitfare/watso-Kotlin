@@ -125,10 +125,7 @@ class FragmentBaedalAdd :Fragment() {
                     TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                         run {
                             var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:01"
-                            Log.d("FragBaedalAdd-timeString", timeString)
-                            Log.d("FragBaedalAdd-orderTime.toString", orderTime.toString())
                             orderTime = LocalDateTime.parse(dateString+timeString).toString()
-                            Log.d("FragBaedalAdd-orderTime", orderTime!!)
                             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
                         }
                     }
@@ -156,8 +153,6 @@ class FragmentBaedalAdd :Fragment() {
         api.getStoreList().enqueue(object : Callback<List<Store>> {
             override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {
                 looping(false, loopingDialog)
-                Log.d("log", response.toString())
-                Log.d("log", response.body().toString())
                 if (response.code() == 200) {
                     stores = response.body()!!
                     stores.forEach {
@@ -180,11 +175,7 @@ class FragmentBaedalAdd :Fragment() {
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
                         }
                 } else {
-                    Log.d("가게조회", response.toString())
-                    Log.d("가게조회", response.body().toString())
-                    Log.d("가게조회", response.headers().toString())
-
-                    Log.d("log", response.toString())
+                    Log.e("FragBaedalAdd setStoreSpinner", response.toString())
                     makeToast("가게 리스트 조회 실패")
                 }
             }
@@ -192,8 +183,7 @@ class FragmentBaedalAdd :Fragment() {
             override fun onFailure(call: Call<List<Store>>, t: Throwable) {
                 // 실패
                 looping(false, loopingDialog)
-                Log.d("log", t.message.toString())
-                Log.d("log", "fail")
+                Log.e("FragBaedalAdd setStoreSpinner", t.message.toString())
                 makeToast("가게 리스트 조회 실패")
                 onBackPressed()
             }
@@ -239,7 +229,6 @@ class FragmentBaedalAdd :Fragment() {
                 })
         } else {
             /** 게시글 신규 등록 */
-            Log.d("FragBaedalAdd-storeId", storeIds[selectedIdx])
             var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
 
             val baedalPosting = BaedalPosting(

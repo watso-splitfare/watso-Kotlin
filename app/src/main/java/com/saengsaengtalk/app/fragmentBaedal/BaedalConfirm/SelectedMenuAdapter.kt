@@ -13,12 +13,11 @@ import com.saengsaengtalk.app.APIS.Order
 import com.saengsaengtalk.app.databinding.LytBaedalConfirmMenuBinding
 import java.text.DecimalFormat
 
-
-class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isRectifiable: Boolean=true, val isMyOrder: Boolean = false):
+class SelectedMenuAdapter(val context: Context, val orders: MutableList<Order>, val isRectifiable: Boolean=true, val isMyOrder: Boolean = false):
     RecyclerView.Adapter<SelectedMenuAdapter.CustomViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalConfirmMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        Log.d("SelectedMenuAdapter - orders", orders.toString())
         return CustomViewHolder(binding)
     }
 
@@ -44,7 +43,6 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
 
     inner class CustomViewHolder(var binding: LytBaedalConfirmMenuBinding) : RecyclerView.ViewHolder(binding.root) {
         val dec = DecimalFormat("#,###")
-        //var menuPrice = "원"
         var quantity = 1
         var orderPrice = 0
         var priceString = "원"
@@ -72,7 +70,7 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
 
             binding.btnRemove.setOnClickListener {
                 itemClickListener.onChange(adapterPosition, "remove")
-                binding.lytBaedalConfirm.visibility = View.GONE
+                setBindText()
             }
             binding.btnSub.setOnClickListener {
                 if (quantity > 1) {
@@ -92,8 +90,6 @@ class SelectedMenuAdapter(val context: Context, val orders: List<Order>, val isR
 
         fun setBindText() {
             priceString = "${dec.format(orderPrice * quantity)}원"
-            Log.d("SelectedMenuAdapter-quantity, priceString",
-                quantity.toString() + ", " + priceString)
             binding.tvQuantityString.text = "${quantity}개 (${priceString})"
             binding.tvPrice.text = priceString
             binding.tvQuantity.text = quantity.toString()

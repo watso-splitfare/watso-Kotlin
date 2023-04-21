@@ -16,13 +16,10 @@ import com.saengsaengtalk.app.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
-    var isPosting = false
     var postId = ""
-    //lateinit var menu: SectionMenu
     var menuId = ""
     lateinit var storeInfo: StoreInfo
 
@@ -46,16 +43,8 @@ class FragmentBaedalOpt :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            try {
-                isPosting = it.getString("isPosting").toBoolean()
-                if (isPosting!!) { postId = it.getString("postId")!! }
-            } catch (e:Exception) {}
-            finally {
-
-            }
-            //menu = gson.fromJson(it.getString("menu"), SectionMenu::class.java)
+            postId = it.getString("postId")!!
             menuId = it.getString("menuId")!!
-            //storeId = it.getString("storeId")!!
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
     }
@@ -91,7 +80,6 @@ class FragmentBaedalOpt :Fragment() {
             if (viewClickAble) {
                 viewClickAble = false
                 val groups = mutableListOf<Group>()
-                Log.d("optionChecked", optionChecked.toString())
                 optionChecked.forEach {
                     val groupId = it.key
                     val options = mutableListOf<Option>()
@@ -113,10 +101,8 @@ class FragmentBaedalOpt :Fragment() {
                 }
                 val menu = Menu(menuInfo._id, menuInfo.name, menuInfo.price, groups)
                 val order = Order(quantity, price, menu)
-                Log.d("FragBaedalOpt - order", order.toString())
                 setFrag(
                     FragmentBaedalConfirm(), mapOf(
-                        "isPosting" to isPosting.toString(),
                         "postId" to postId,
                         "order" to gson.toJson(order),
                         "storeInfo" to gson.toJson(storeInfo)
@@ -130,6 +116,7 @@ class FragmentBaedalOpt :Fragment() {
         val loopingDialog = looping()
         api.getMenuInfo(storeInfo._id, menuId).enqueue(object : Callback<Menu> {
             override fun onResponse(call: Call<Menu>, response: Response<Menu>) {
+                looping(false, loopingDialog)
                 if (response.code() == 200) {
                     menuInfo = response.body()!!
                     binding.tvMenuName.text = menuInfo.name
@@ -140,13 +127,12 @@ class FragmentBaedalOpt :Fragment() {
                     Log.e("baedalOpt Fragment - getGroupOption", response.toString())
                     makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<Menu>, t: Throwable) {
+                looping(false, loopingDialog)
                 Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
                 makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
-                looping(false, loopingDialog)
             }
         })
     }
@@ -232,7 +218,7 @@ class FragmentBaedalOpt :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, 1)
     }
 
     fun onBackPressed() {
