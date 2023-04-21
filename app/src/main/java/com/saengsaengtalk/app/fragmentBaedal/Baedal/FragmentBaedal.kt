@@ -1,9 +1,11 @@
 package com.saengsaengtalk.app.fragmentBaedal.Baedal
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -23,43 +25,34 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class FragmentBaedal :Fragment() {
+    var isTouched = false
+
     private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalBinding.inflate(inflater, container, false)
 
-        refreshView()
-
-        return binding.root
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun refreshView() {
         binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
-        binding.btnBaedalPostAdd.setOnClickListener {
-            setFrag(FragmentBaedalAdd())
+        binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
+        binding.scrollView.setOnTouchListener { _, event -> isTouched = when (event.action)
+            {
+                MotionEvent.ACTION_UP ->
+                {
+                    if (isTouched && binding.scrollView.scrollY == 0) getPostPreview()
+                    false
+                }
+                else -> true
+            }
+            return@setOnTouchListener false
         }
 
-        getActivity()?.getSupportFragmentManager()
-            ?.setFragmentResultListener("deletePost", this) { requestKey, bundle ->
-                val success = bundle.getBoolean("success")
-                if (success) getPostPreview()
-            }
-        getActivity()?.getSupportFragmentManager()
-            ?.setFragmentResultListener("addPost", this) { requestKey, bundle ->
-                val success = bundle.getBoolean("success")
-                val postId = bundle.getString("postId")
-                Log.d("FragBaedal-bundle 수신", success.toString() + postId)
-                if (success) {
-                    Log.d("FragBaedal-bundle 수신 success", success.toString())
-                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId!!))
-                }
-            }
-
         getPostPreview()
+
+        return binding.root
     }
 
     fun getPostPreview() {
@@ -67,6 +60,7 @@ class FragmentBaedal :Fragment() {
         api.getBaedalPostList("joined").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
+                looping(false, loopingDialog)
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingAdapter(baedalPosts, "joined")
@@ -74,19 +68,19 @@ class FragmentBaedal :Fragment() {
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
+                looping(false, loopingDialog)
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
-                looping(false, loopingDialog)
             }
         })
 
         api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
+                looping(false, loopingDialog)
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingAdapter(baedalPosts, "joinable")
@@ -94,13 +88,12 @@ class FragmentBaedal :Fragment() {
                     Log.e("baedal Fragment - getBaedalPostListJoinable", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
+                looping(false, loopingDialog)
                 Log.e("baedal Fragment - getBaedalPostListJoinable", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
-                looping(false, loopingDialog)
             }
         })
     }
