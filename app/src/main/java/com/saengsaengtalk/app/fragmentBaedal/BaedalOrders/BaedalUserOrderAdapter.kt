@@ -1,22 +1,31 @@
-package com.saengsaengtalk.app.fragmentBaedal.BaedalPost
+package com.saengsaengtalk.app.fragmentBaedal.BaedalOrders
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.Order
 import com.saengsaengtalk.app.APIS.UserOrder
 import com.saengsaengtalk.app.databinding.LytBaedalOrderUserBinding
 import com.saengsaengtalk.app.fragmentBaedal.BaedalConfirm.SelectedMenuAdapter
-import java.lang.ref.WeakReference
 import java.text.DecimalFormat
 
 
-class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrder>, val isMyOrder: Boolean=false) :
+class BaedalUserOrderAdapter(val context: Context, val userOrders: MutableList<UserOrder>, val isMyOrder: Boolean=false) :
     RecyclerView.Adapter<BaedalUserOrderAdapter.CustomViewHolder>() {
+
+    /*fun setData(ordersData: List<UserOrder>) {
+        Log.d("유저오더 어댑터 ordersData", ordersData.toString())
+        Log.d("유저오더 어댑터 userOrders", userOrders.toString())
+        Log.d("userOrders.size", userOrders.size.toString())
+        //userOrders.clear()
+        //userOrders.addAll(ordersData)
+        notifyDataSetChanged()
+        Log.d("userOrders.size", userOrders.size.toString())
+    }*/
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOrderUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,23 +35,9 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrde
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val userOrder = userOrders[position]
+        Log.d("UserOrderAdapter onBindViewHolder${position}", userOrder.toString())
         holder.bind(userOrder)
     }
-
-    interface OnItemClickListener {
-        fun onClick(orderId: String, menuName: String, menuPrice: Int, storeId: String)
-    }
-
-    private var listener = WeakReference<OnItemClickListener>(null)
-
-    fun itemClick(orderId: String, menuName: String, menuPrice: Int, storeId: String) {
-        listener.get()?.onClick(orderId, menuName, menuPrice, storeId)
-    }
-
-    fun addListener(listener: OnItemClickListener) {
-        this.listener = WeakReference(listener)
-    }
-
 
     override fun getItemCount(): Int {
         return userOrders.size
@@ -50,6 +45,7 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: List<UserOrde
 
     inner class CustomViewHolder(var binding: LytBaedalOrderUserBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(userOrder: UserOrder) {
+            Log.d("userOrder 어댑터", userOrder.toString())
             val dec = DecimalFormat("#,###")
             var sumPrice = 0
             userOrder.orders.forEach { sumPrice += it.price!! }

@@ -126,16 +126,18 @@ data class BaedalStatus(
 /** 주문 조회 */
 data class OrderInfo(
     @SerializedName("orders")
-    val userOrders: List<UserOrder>
+    val userOrders: MutableList<UserOrder>
 )
 
 data class UserOrder(
     @SerializedName("user_id")
     val userId: Long?,
     val nickname: String,
+    @SerializedName("request_comment")
+    val requestComment: String,
     @SerializedName("order_lines")
     val orders: List<Order>,
-    val isMyOrder: Boolean?
+    var isMyOrder: Boolean?
 )
 
 /** 주문 등록 */
@@ -146,7 +148,7 @@ data class PostOrder(
 
 data class Order(
     var quantity: Int,
-    val price: Int?,
+    var price: Int?,
     val menu: Menu
 )
 
