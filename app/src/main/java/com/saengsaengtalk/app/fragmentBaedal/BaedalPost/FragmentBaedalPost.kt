@@ -104,8 +104,8 @@ class FragmentBaedalPost :Fragment() {
         val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
 
         if (userId != baedalPost.userId) {
-            binding.tvDelete.visibility = View.GONE
-            binding.tvUpdate.visibility = View.GONE
+            binding.tvDelete.text = "삭제"
+            binding.tvUpdate.text = "수정"
         }
         if (baedalPost.orderCompleted) {
             binding.tvDelete.visibility = View.GONE
@@ -156,8 +156,7 @@ class FragmentBaedalPost :Fragment() {
         }
 
         /** 포스트 내용 바인딩 */
-        binding.tvPostWriter.text = baedalPost.nickname
-        binding.tvPostCreated.visibility = View.GONE
+        binding.tvPostTitle.text = baedalPost.title
 
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
@@ -180,10 +179,18 @@ class FragmentBaedalPost :Fragment() {
 
     fun setBottomBtn() {
         binding.btnViewMyOrders.setOnClickListener {
-            setFrag(FragmentBaedalOrders(), mapOf("postId" to postId!!, "isMyOrder" to "true"))
+            setFrag(FragmentBaedalOrders(), mapOf(
+                "postId" to postId!!,
+                "postTitle" to baedalPost.title,
+                "isMyOrder" to "true"
+            ))
         }
         binding.btnViewAllOrders.setOnClickListener {
-            setFrag(FragmentBaedalOrders(), mapOf("postId" to postId!!, "isMyOrder" to "false"))
+            setFrag(FragmentBaedalOrders(), mapOf(
+                "postId" to postId!!,
+                "postTitle" to baedalPost.title,
+                "isMyOrder" to "false"
+            ))
         }
     }
 
