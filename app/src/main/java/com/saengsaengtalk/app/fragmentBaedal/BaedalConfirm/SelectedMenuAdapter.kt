@@ -58,6 +58,7 @@ class SelectedMenuAdapter(val context: Context, val orders: MutableList<Order>, 
                 binding.tvPrice.visibility = View.GONE
             }
 
+            if (adapterPosition == 0) binding.divider.visibility = View.GONE
             binding.tvMenuName.text = order.menu.name
 
             if (order.menu.groups != null) {

@@ -15,7 +15,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lyt_head"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,30 +24,26 @@
             android:id="@+id/btn_previous"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/previous" />
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/tv_post_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/fontstyle_title"
-            android:shadowColor="#939393"
-            android:shadowDx="4.0"
-            android:shadowDy="4.0"
-            android:shadowRadius="4.0"
-            android:text="@string/baedal"
-            android:textSize="28sp"
-
+            android:layout_marginStart="16dp"
+            android:text=""
+            android:textSize="20sp"
+            android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/btn_previous"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -70,48 +66,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/tv_post_writer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
-                    android:text="TextView"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_post_created"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="TextView"
-                    app:layout_constraintStart_toStartOf="@+id/tv_post_writer"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_post_writer" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_height="1.5dp"
+                android:layout_marginVertical="8dp"
                 android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/tv_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="내가 고른 메뉴"
+                android:layout_marginVertical="8dp"
+                android:text=""
                 android:textAlignment="center"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_orders"

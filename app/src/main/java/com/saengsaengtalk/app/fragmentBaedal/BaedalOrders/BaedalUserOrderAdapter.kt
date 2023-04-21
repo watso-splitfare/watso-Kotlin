@@ -17,16 +17,6 @@ import java.text.DecimalFormat
 class BaedalUserOrderAdapter(val context: Context, val userOrders: MutableList<UserOrder>, val isMyOrder: Boolean=false) :
     RecyclerView.Adapter<BaedalUserOrderAdapter.CustomViewHolder>() {
 
-    /*fun setData(ordersData: List<UserOrder>) {
-        Log.d("유저오더 어댑터 ordersData", ordersData.toString())
-        Log.d("유저오더 어댑터 userOrders", userOrders.toString())
-        Log.d("userOrders.size", userOrders.size.toString())
-        //userOrders.clear()
-        //userOrders.addAll(ordersData)
-        notifyDataSetChanged()
-        Log.d("userOrders.size", userOrders.size.toString())
-    }*/
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOrderUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)

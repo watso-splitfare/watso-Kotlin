@@ -22,23 +22,24 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalOrders :Fragment() {
-    lateinit var postId: String
+    var postId = "-1"
+    var postTitle = ""
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
     var isMyorder = true
 
     lateinit var userOrders: MutableList<UserOrder>
     lateinit var adapter: BaedalUserOrderAdapter
 
+    val api= APIS.create()
     val dec = DecimalFormat("#,###")
-
     private var mBinding: FragBaedalOrdersBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postId = it.getString("postId")!!
+            postTitle = it.getString("postTitle")!!
             isMyorder = it.getString("isMyOrder")!!.toBoolean()
         }
 
@@ -48,7 +49,8 @@ class FragmentBaedalOrders :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalOrdersBinding.inflate(inflater, container, false)
-
+        binding.tvPostTitle.text = postTitle
+        binding.tvOrder.text = if (isMyorder) "내가 고른 메뉴" else "주문할 메뉴"
         refreshView()
 
         return binding.root
@@ -114,8 +116,12 @@ class FragmentBaedalOrders :Fragment() {
     }
 
     fun setUserOrder(userOrderData: List<UserOrder>) {
+        Log.d("FragBaedalOrders userOrderData", userOrderData.toString())
+        Log.d("FragBaedalOrders userOrders", userOrders.toString())
         userOrders.clear()
+        Log.d("FragBaedalOrders userOrders clear", userOrders.toString())
         userOrders.addAll(userOrderData)
+        Log.d("FragBaedalOrders userOrders addAll", userOrders.toString())
         userOrders.forEach {
             it.isMyOrder = it.userId == userId
             it.orders.forEach {
@@ -126,6 +132,7 @@ class FragmentBaedalOrders :Fragment() {
                 it.price = price
             }
         }
+        binding.rvOrders.adapter!!.notifyDataSetChanged()
     }
 
 
