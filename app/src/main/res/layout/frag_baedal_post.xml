@@ -414,17 +414,17 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:background="@color/light_gray">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/box_comment_head">
 
                     <TextView
                         android:id="@+id/tv_comment_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginVertical="8dp"
                         android:text="댓글 0"
+                        android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -437,9 +437,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="해당 배달관련 문의사항은 댓글로 남겨주세요."
-                        app:layout_constraintBottom_toBottomOf="@+id/tv_comment_count"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/tv_comment_count"
-                        app:layout_constraintTop_toTopOf="@+id/tv_comment_count" />
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -457,32 +458,39 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp">
 
-                    <EditText
-                        android:id="@+id/et_comment"
-                        android:layout_width="340dp"
-                        android:layout_height="30dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:background="@drawable/box_add_comment"
-                        android:ems="10"
-                        android:hint="댓글입력"
-                        android:inputType="textPersonName"
-                        android:textSize="14sp"
+                        android:layout_margin="8dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/imageButton"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <EditText
+                            android:id="@+id/et_comment"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:background="@null"
+                            android:ems="10"
+                            android:hint="댓글입력"
+                            android:inputType="textPersonName"
+                            android:textSize="14sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <ImageButton
                         android:id="@+id/imageButton"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginVertical="8dp"
                         android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="#ffffff"
+                        android:background="#00ffffff"
                         android:scaleType="fitXY"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
