@@ -13,8 +13,8 @@ import java.io.IOException
 interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
     companion object {
-        private const val BASE_URL = "https://24489c78-e8fa-4f59-9466-05c9d568ce74.mock.pstmn.io/"
-        //private const val BASE_URL = "http://52.78.106.235/"
+        //private const val BASE_URL = "https://24489c78-e8fa-4f59-9466-05c9d568ce74.mock.pstmn.io/"
+        private const val BASE_URL = "http://52.78.106.235/"
 
         fun create(): APIS {
             val gson :Gson = GsonBuilder().setLenient().create();

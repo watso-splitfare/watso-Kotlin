@@ -71,12 +71,7 @@ data class BaedalPost(
     @SerializedName("order_time")
     val orderTime: String,
     val store: Store,
-    @SerializedName("recruitment")
-    val isOpen: Boolean,
-    @SerializedName("order_completed")
-    val orderCompleted: Boolean,
-    @SerializedName("order_confirmed")
-    val orderConfirmed: Boolean,
+    val status: String,
     val users: List<Long>
 )
 

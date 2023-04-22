@@ -244,7 +244,7 @@ class FragmentBaedalAdd :Fragment() {
             prefs.setString("postOrder", "")
             prefs.setString("baedalPosting", gson.toJson(baedalPosting))
             setFrag( FragmentBaedalMenu(), mapOf(
-                "isPosting" to "true",
+                "postId" to "-1",
                 "storeId" to storeIds[selectedIdx])
             )
         }

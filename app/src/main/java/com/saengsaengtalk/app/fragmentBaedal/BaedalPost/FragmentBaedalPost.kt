@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.saengsaengtalk.app.APIS.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
+import com.saengsaengtalk.app.R
 import com.saengsaengtalk.app.databinding.FragBaedalPostBinding
 import com.saengsaengtalk.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.saengsaengtalk.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
@@ -33,7 +34,6 @@ class FragmentBaedalPost :Fragment() {
     val dec = DecimalFormat("#,###")
 
     var isMember = false
-    var isOpen = false
 
     lateinit var baedalPost: BaedalPost
 
@@ -60,7 +60,6 @@ class FragmentBaedalPost :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        //binding.tvDelete.visibility = View.GONE     // 삭제 비활성화
 
         Log.d("access", MainActivity.prefs.getString("accessToken", ""))
         Log.d("postId", postId.toString())
@@ -97,17 +96,17 @@ class FragmentBaedalPost :Fragment() {
     fun setData() {
         val joinUsers = baedalPost.users
         isMember = joinUsers.contains(userId)
-        isOpen = baedalPost.isOpen
         val store = baedalPost.store
         //val comments = baedalPost.comments
-
+        Log.d("FragBaedalPost isOwner", (userId==baedalPost.userId).toString())
+        Log.d("FragBaedalPost ismember", isMember.toString())
+        Log.d("FragBaedalPost status", baedalPost.status)
         val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
 
-        if (userId != baedalPost.userId) {
+        if (userId == baedalPost.userId) {
             binding.tvDelete.text = "삭제"
             binding.tvUpdate.text = "수정"
-        }
-        if (baedalPost.orderCompleted) {
+        } else {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
         }
@@ -118,13 +117,8 @@ class FragmentBaedalPost :Fragment() {
             builder.setTitle("게시글 삭제하기")
                 .setMessage("게시글을 삭제하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                    deletePost()
-                })
-                .setNegativeButton("취소",
-                    DialogInterface.OnClickListener { dialog, id ->
-                        println("취소")
-                    }
-                )
+                    deletePost() })
+                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
             builder.show()
         }
 
@@ -166,6 +160,7 @@ class FragmentBaedalPost :Fragment() {
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
         /** 하단 버튼 바인딩 */
+        bindBottomBtn()
         setBottomBtn()
 
 
@@ -175,23 +170,6 @@ class FragmentBaedalPost :Fragment() {
         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
         binding.rvComment.adapter = CommentAdapter(comments, userId)*/
-    }
-
-    fun setBottomBtn() {
-        binding.btnViewMyOrders.setOnClickListener {
-            setFrag(FragmentBaedalOrders(), mapOf(
-                "postId" to postId!!,
-                "postTitle" to baedalPost.title,
-                "isMyOrder" to "true"
-            ))
-        }
-        binding.btnViewAllOrders.setOnClickListener {
-            setFrag(FragmentBaedalOrders(), mapOf(
-                "postId" to postId!!,
-                "postTitle" to baedalPost.title,
-                "isMyOrder" to "false"
-            ))
-        }
     }
 
     fun deletePost() {
@@ -218,52 +196,131 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
-    /** 대표자 주문 완료 */
-    fun completeOrder() {
+    fun bindBottomBtn() {
+        if (userId == baedalPost.userId) {
+            when (baedalPost.status) {
+                "recruiting" -> {
+                    binding.tvOrder.visibility = View.VISIBLE
+                    binding.tvOrder.text = "주문 마감"
+                    binding.tvComplete.visibility = View.GONE
+                }
+                "closed" -> {
+                    binding.tvOrder.visibility = View.VISIBLE
+                    binding.tvOrder.text = "주문 받기"
+                    binding.tvComplete.visibility = View.VISIBLE
+                    binding.tvComplete.text = "주문 완료"
+                }
+                "ordered" -> {
+                    binding.tvOrder.visibility = View.GONE
+                    binding.tvComplete.visibility = View.VISIBLE
+                    binding.tvComplete.text = "배달 완료"
+                }
+                else -> {
+                    binding.tvOrder.visibility = View.GONE
+                    binding.tvComplete.visibility = View.VISIBLE
+                    binding.tvComplete.text = "배달 완료"
+                    binding.btnComplete.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                }
+            }
+        } else {
+            binding.btnComplete.visibility = View.GONE
+            if (isMember) {
+                binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm)
+                binding.btnViewMyOrders.isEnabled = true
 
-        /*val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("주문 완료하기")
-            .setMessage("주문을 완료하시겠습니까? \n참여자들은 더 이상 메뉴를 수정할 수 없습니다.")
-            .setPositiveButton("확인",
-                DialogInterface.OnClickListener { dialog, id ->
-                    val loopingDialog = looping()
-                    api.completeBaedalOrder(postId!!, OrderCompleted(true)).enqueue(object: Callback<VoidResponse> {
-                        @RequiresApi(Build.VERSION_CODES.O)
-                        override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                            looping(false, loopingDialog)
-                            if (response.code() == 204) getPostInfo()
-                            else makeToast("다시 시도해주세요.")
-                        }
-                        override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                            looping(false, loopingDialog)
-                            Log.d("log",t.message.toString())
-                            Log.d("log","fail")
-                            makeToast("다시 시도해주세요.")
-                        }
-                    })
-                })
-            .setNegativeButton("취소",
-                DialogInterface.OnClickListener { dialog, id ->
-                    println("취소")
-                })
-        builder.show()*/
+                binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                binding.btnOrder.isEnabled = true
+                binding.tvOrder.text = "주문 취소"
+            } else {
+                binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                binding.btnViewMyOrders.isEnabled = false
+
+                if (baedalPost.status == "recruiting") {
+                    binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
+                    binding.btnOrder.isEnabled = true
+                    binding.tvOrder.text = "주문 하기"
+                } else {
+                    binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                    binding.btnOrder.isEnabled = false
+                    binding.tvOrder.text = "마감 되었습니다."
+                }
+            }
+        }
     }
 
-    /*fun goToOrderingFrag() {
-        val currentMember = users.size
-        val store = baedalPost.store
+    fun setBottomBtn() {
+        binding.btnViewMyOrders.setOnClickListener {
+            setFrag(FragmentBaedalOrders(), mapOf(
+                "postId" to postId!!,
+                "postTitle" to baedalPost.title,
+                "isMyOrder" to "true"
+            ))
+        }
+        binding.btnViewAllOrders.setOnClickListener {
+            setFrag(FragmentBaedalOrders(), mapOf(
+                "postId" to postId!!,
+                "postTitle" to baedalPost.title,
+                "isMyOrder" to "false"
+            ))
+        }
+        binding.btnOrder.setOnClickListener { btnOrder() }
+        binding.btnComplete.setOnClickListener { btnComplete() }
+    }
 
-        setFrag(FragmentBaedalMenu(), mapOf(
-            "isPosting" to "false",
-            "postId" to postId!!,
-            "currentMember" to currentMember.toString(),
-            "isUpdating" to isMember.toString(),
-            "storeName" to store.name,
-            "storeId" to store._id,
-            "baedalFee" to store.fee.toString(),
-            "orders" to ""
-        ))
-    }*/
+    fun btnOrder() {
+        if (userId == baedalPost.userId) {
+            when (baedalPost.status) {
+                "recruiting" -> { } // 주문 마감
+                "closed" -> {} // 주문 받기
+                "ordered" -> {} // 주문 완료
+                else -> {} // 배달 완료
+            }
+        } else {
+            if (isMember) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("주문 취소하기")
+                    .setMessage("주문을 취소하시겠습니까?\n 다시 참가하기 위해선\n주문을 다시 작성해야합니다.")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        deleteOrders()
+                    })
+                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
+            }
+            else {
+                setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
+            }
+        }
+    }
+
+    fun deleteOrders() {
+        val loopingDialog = looping()
+        api.deleteOrders(postId!!).enqueue(object : Callback<VoidResponse> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                looping(false, loopingDialog)
+                if (response.code() == 204) {
+                    makeToast("주문이 취소되었습니다.")
+                    getPostInfo()
+                } else {
+                    Log.e("FragBaedalPost deleteOrders", response.toString())
+                    makeToast("주문 취소 실패")
+                    onBackPressed()
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                looping(false, loopingDialog)
+                Log.e("FragBaedalPost deleteOrders", t.message.toString())
+                makeToast("주문 취소 실패")
+                onBackPressed()
+            }
+        })
+    }
+
+    fun btnComplete() {
+        if (baedalPost.status == "closed") {} // 주문 완료
+        else {} // 배달 완료
+    }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity

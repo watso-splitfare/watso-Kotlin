@@ -23,8 +23,7 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
-    //var isPosting = false
-    var postId = "-1"
+    var postId = ""
     var storeId = "0"
     lateinit var storeInfo: StoreInfo
     lateinit var adapter: BaedalMenuSectionAdapter
@@ -42,6 +41,7 @@ class FragmentBaedalMenu :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            postId = it.getString("postId")!!
             storeId = it.getString("storeId")!!
         }
 
