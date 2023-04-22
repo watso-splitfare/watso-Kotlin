@@ -48,14 +48,6 @@ class FragmentSignUp :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnSignup.setEnabled(false)
 
-        binding.textViewUsername.visibility = View.GONE
-        binding.textViewPw.visibility = View.GONE
-        binding.textViewPwConfirm.visibility = View.GONE
-        binding.textViewNickname.visibility = View.GONE
-        binding.textViewRealName.visibility = View.GONE
-        binding.tvAccountNum.visibility = View.GONE
-        binding.textViewMail.visibility = View.GONE
-
         /** 아이디 중복확인*/
         binding.etUsername.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
