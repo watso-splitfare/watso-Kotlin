@@ -6,15 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.saengsaengtalk.app.APIS.LoginModel
+import com.saengsaengtalk.app.APIS.LoginResult
+import com.saengsaengtalk.app.APIS.UserInfo
 import com.saengsaengtalk.app.APIS.VoidResponse
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragAccountBinding
 import com.saengsaengtalk.app.fragmentAccount.admin.FragmentAdmin
+import com.saengsaengtalk.app.fragmentBaedal.Baedal.FragmentBaedal
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class FragmentAccount :Fragment() {
+    lateinit var userInfo: UserInfo
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
@@ -22,6 +28,7 @@ class FragmentAccount :Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
 
+        getUserInfo()
         refreshView()
 
         return binding.root
@@ -37,49 +44,55 @@ class FragmentAccount :Fragment() {
             onBackPressed()
         }
 
-        binding.tvAuth.text = MainActivity.prefs.getString("accessToken", "")
-        binding.tvUsername.text = MainActivity.prefs.getString("userId", "")
-        binding.tvNickname.text = MainActivity.prefs.getString("nickname", "")
-
-        binding.btnLogout.setOnClickListener {
-            val refreshToken = MainActivity.prefs.getString("refreshToken", "")
-            api.logout().enqueue(object: Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.code() == 204) {
-                        MainActivity.prefs.removeString("accessToken")
-                        MainActivity.prefs.removeString("refreshToken")
-                        MainActivity.prefs.removeString("userId")
-                        MainActivity.prefs.removeString("nickname")
-                        makeToast("로그아웃 되었습니다.")
-                        onBackPressed()
-                    } else {
-                        Log.e("로그아웃 에러", response.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                    Log.d("로그아웃", response.toString())
-                    Log.d("로그아웃", response.body().toString())
-                    Log.d("로그아웃", response.headers().toString())
+        binding.tvLogOut.setOnClickListener {
+            api.logout().enqueue(object: Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    if (response.code() == 204) {}
+                    else Log.e("로그아웃 에러", response.toString())
+                    logOut()
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     Log.d("로그아웃",t.message.toString())
-                    Log.d("로그아웃","fail")
+                    logOut()
                 }
             })
         }
+    }
 
-        binding.btnRemoveCache.setOnClickListener {
-            MainActivity.prefs.removeString("accessToken")
-            MainActivity.prefs.removeString("refreshToken")
-            MainActivity.prefs.removeString("userId")
-            MainActivity.prefs.removeString("nickname")
+    fun getUserInfo() {
+        api.getUserInfo().enqueue(object: Callback<UserInfo> {
+            override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                if (response.code()==200) {
+                    userInfo = response.body()!!
+                    binding.tvUsername.text = userInfo.username
+                    binding.tvNickname.text = userInfo.nickname
+                } else {
+                    Log.e("FragAccount getUserInfo", response.toString())
+                    binding.tvUsername.text = "ID"
+                    binding.tvNickname.text = "닉네임"
+                    makeToast("다시 시도해 주세요.")
+                    //onBackPressed()
+                }
+            }
 
-        }
-        // 빈칸에 a를 입력 후 버튼을 누르면 어드민 화면에 진입합니다.
-        // 어드민 계정 인증 관련해서 논의 필요
-        binding.btnAdmin.setOnClickListener {
-            if (binding.etAdmin.text.toString() == "a") setFrag(FragmentAdmin())
-        }
+            override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                Log.e("FragAccount getUserInfo", t.message.toString())
+                binding.tvUsername.text = "ID"
+                binding.tvNickname.text = "닉네임"
+                makeToast("다시 시도해 주세요.")
+                //onBackPressed()
+            }
+        })
+    }
+
+    fun logOut() {
+        MainActivity.prefs.removeString("accessToken")
+        MainActivity.prefs.removeString("refreshToken")
+        MainActivity.prefs.removeString("userId")
+        MainActivity.prefs.removeString("nickname")
+        makeToast("로그아웃 되었습니다.")
+        setFrag(FragmentLogin())
     }
 
     fun makeToast(message: String){
@@ -89,7 +102,7 @@ class FragmentAccount :Fragment() {
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
+        mActivity.setFrag(fragment, arguments, 0)
     }
 
     fun onBackPressed() {

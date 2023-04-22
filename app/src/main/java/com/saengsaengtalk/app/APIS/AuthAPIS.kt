@@ -24,8 +24,8 @@ interface AuthAPIS {
 
     @GET("auth/logout")                    // 로그아웃
     fun logout(
-    ): Call<String>//Call<VoidResponse>
+    ): Call<VoidResponse>
 
     @GET("auth/user")                       // 유저 정보
-    fun userInfo(): Call<UserInfo>
+    fun getUserInfo(): Call<UserInfo>
 }
