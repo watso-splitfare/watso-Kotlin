@@ -86,10 +86,7 @@ data class BaedalPosting(
     val minMember: Int,
     @SerializedName("max_member")
     val maxMember: Int,
-    @SerializedName("request_comment")
-    val requestComment: String,
-    @SerializedName("order_lines")
-    var orders: List<Order>?
+    var order: UserOrder?
 )
 
 data class BaedalPostingResponse(
@@ -129,7 +126,7 @@ data class UserOrder(
     val userId: Long?,
     val nickname: String,
     @SerializedName("request_comment")
-    val requestComment: String,
+    var requestComment: String,
     @SerializedName("order_lines")
     val orders: MutableList<Order>,
     var isMyOrder: Boolean?

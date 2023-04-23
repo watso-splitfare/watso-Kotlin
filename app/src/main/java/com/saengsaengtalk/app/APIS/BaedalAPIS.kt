@@ -71,7 +71,7 @@ interface BaedalAPIS {
     @POST("api/delivery/order/{post_id}")       // 주문 작성
     fun postOrders(
         @Path("post_id") postId: String,
-        @Body jsonparams: PostOrder
+        @Body jsonparams: UserOrder
     ): Call<VoidResponse>
 
     @GET("api/delivery/order/{post_id}/me")     // 내 주문 조회

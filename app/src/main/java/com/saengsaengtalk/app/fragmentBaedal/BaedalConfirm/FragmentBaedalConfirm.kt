@@ -24,7 +24,7 @@ import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
     var postId = ""
-    lateinit var postOrder: PostOrder
+    lateinit var userOrder: UserOrder
     lateinit var storeInfo: StoreInfo
     lateinit var baedalPosting: BaedalPosting
     var orderPrice = 0
@@ -42,25 +42,29 @@ class FragmentBaedalConfirm :Fragment() {
         arguments?.let {
             postId = it.getString("postId")!!
             val orderString = it.getString("order")
-            val postOrderString = prefs.getString("postOrder", "")
+            val userOrderString = prefs.getString("userOrder", "")
 
-            postOrder = if (postOrderString != "") gson.fromJson(postOrderString, PostOrder::class.java)
-            else PostOrder(mutableListOf<Order>())
+            userOrder = if (userOrderString != "") gson.fromJson(userOrderString, UserOrder::class.java)
+            else {
+                val userId = prefs.getString("userId", "").toLong()
+                val nickname = prefs.getString("nickname", "")
+                UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
+            }
 
-            if (orderString != "") postOrder.orders.add(gson.fromJson(orderString, Order::class.java))
+            if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
 
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
-        prefs.setString("postOrder", gson.toJson(postOrder.orders))
+        prefs.setString("userOrder", gson.toJson(userOrder))
 
-        var temp = prefs.getString("baedalPosting", "")
-        if (temp != "") { baedalPosting = gson.fromJson(temp, BaedalPosting::class.java) }
+        var postString = prefs.getString("baedalPosting", "")
+        if (postString != "") { baedalPosting = gson.fromJson(postString, BaedalPosting::class.java) }
         fee = storeInfo.fee / baedalPosting.minMember
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
-        Log.d("FragBaedalConfirm onCreate View orders", postOrder.toString())
+        Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
 
         refreshView()
 
@@ -76,15 +80,15 @@ class FragmentBaedalConfirm :Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
-        val adapter = SelectedMenuAdapter(requireContext(), postOrder.orders)
+        val adapter = SelectedMenuAdapter(requireContext(), userOrder.orders)
         binding.rvOrderList.adapter = adapter
 
         adapter.setItemClickListener(object: SelectedMenuAdapter.OnItemClickListener {
             override fun onChange(position: Int, change: String) {
-                val order = postOrder.orders[position]
+                val order = userOrder.orders[position]
 
                 when (change) {
-                    "remove" -> postOrder.orders.removeAt(position)//order.quantity = 0
+                    "remove" -> userOrder.orders.removeAt(position)//order.quantity = 0
                     "sub" -> order.quantity -= 1
                     else -> order.quantity += 1
                 }
@@ -92,7 +96,7 @@ class FragmentBaedalConfirm :Fragment() {
                 bindSetText()
 
                 var confirmAble = false
-                postOrder.orders.forEach {
+                userOrder.orders.forEach {
                     if (it.quantity > 0) confirmAble = true
                 }
                 if (!confirmAble) {
@@ -114,9 +118,9 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun ordering(){
         val loopingDialog = looping()
-        Log.d("FragBaedalConfirm orders", postOrder.orders.toString())
+        Log.d("FragBaedalConfirm orders", userOrder.orders.toString())
         if (postId == "-1") {
-            baedalPosting.orders = postOrder.orders
+            baedalPosting.order = userOrder
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     looping(false, loopingDialog)
@@ -137,7 +141,7 @@ class FragmentBaedalConfirm :Fragment() {
                 }
             })
         } else {
-            api.postOrders(postId, postOrder).enqueue(object : Callback<VoidResponse> {
+            api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     looping(false, loopingDialog)
                     if (response.code() == 204) goToPosting()
@@ -165,7 +169,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun bindSetText() {
         orderPrice = 0
-        postOrder.orders.forEach {
+        userOrder.orders.forEach {
             orderPrice += it.price!! * it.quantity
         }
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
@@ -190,9 +194,9 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun onBackPressed() {
         val mActivity =activity as MainActivity
-        prefs.setString("postOrder", gson.toJson(postOrder))
+        prefs.setString("postOrder", gson.toJson(userOrder))
 
-        val bundle = bundleOf("orderCnt" to postOrder.orders.size)
+        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
         getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
 
         mActivity.onBackPressed()
