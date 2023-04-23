@@ -45,6 +45,7 @@ class FragmentBaedalMenu :Fragment() {
             storeId = it.getString("storeId")!!
         }
 
+        MainActivity.prefs.removeString("userOrder")
         storeInfo = StoreInfo("-1", "storeName", 0, 0, mutableListOf<Section>())
         adapter = BaedalMenuSectionAdapter(requireContext(), storeInfo.sections)
     }
