@@ -50,11 +50,6 @@ interface BaedalAPIS {
         @Body jsonparams: BaedalPostUpdate
     ): Call<VoidResponse>
 
-    @PATCH("api/delivery/post/{post_id}/delivered") // 배달 완료 명시
-    fun baedalComplete(
-        @Path("post_id") postId: String
-    ): Call<VoidResponse>
-
     @PATCH("api/delivery/post/{post_id}/status")    // 배달 상태 관련 메서드
     fun setBaedalStatus(
         @Path("post_id") postId: String,
@@ -83,4 +78,12 @@ interface BaedalAPIS {
     fun deleteOrders(
         @Path("post_id") postId: String
     ): Call<VoidResponse>
+
+    /** 이전 주문 */
+
+    @GET("api/delivery/history")            // 참여했던 게시글 목록
+    fun getBaedalHistory(): Call<List<BaedalPost>>
+
+    @GET("api/delivery/history/{post_id}")  // 참여 게시글 상세조회
+    fun getBaedalHistoryPost(): Call<UserOrder>
 }

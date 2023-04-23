@@ -107,12 +107,7 @@ data class BaedalPostUpdate(
 
 /** 게시글 상태 설정 */
 data class BaedalStatus(
-    @SerializedName("recruitment")
-    val isOpen: Boolean?,
-    @SerializedName("order_completed")
-    val orderCompleted: Boolean?,
-    @SerializedName("order_confirmed")
-    val orderConfirmed: Boolean?
+    val status: String
 )
 
 /** 주문 조회 */
