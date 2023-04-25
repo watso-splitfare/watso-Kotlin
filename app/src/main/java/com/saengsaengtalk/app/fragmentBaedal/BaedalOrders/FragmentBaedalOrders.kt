@@ -66,42 +66,45 @@ class FragmentBaedalOrders :Fragment() {
     fun getOrders() {
         val loopingDialog = looping()
         if (isMyorder) {
-            api.getMyOrders(postId).enqueue(object: Callback<OrderInfo> {
-                override fun onResponse(call: Call<OrderInfo>, response: Response<OrderInfo>) {
-                    if (response.code() == 200) setUserOrder(response.body()!!.userOrders)
+            api.getMyOrders(postId).enqueue(object: Callback<MyOrderInfo> {
+                override fun onResponse(call: Call<MyOrderInfo>, response: Response<MyOrderInfo>) {
+                    looping(false, loopingDialog)
+                    if (response.code() == 200) {
+                        val userOrder = mutableListOf(response.body()!!.userOrder)
+                        setUserOrder(userOrder)
+                    }
 
                     else {
                         Log.d("FragBaedalOrders getMyOrders", response.toString())
                         makeToast("주문정보를 불러오지 못했습니다.")
                         onBackPressed()
                     }
-                    looping(false, loopingDialog)
                 }
 
-                override fun onFailure(call: Call<OrderInfo>, t: Throwable) {
+                override fun onFailure(call: Call<MyOrderInfo>, t: Throwable) {
+                    looping(false, loopingDialog)
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
                     makeToast("주문정보를 불러오지 못했습니다.")
                     onBackPressed()
-                    looping(false, loopingDialog)
                 }
             })
         } else {
-            api.getOrders(postId).enqueue(object: Callback<OrderInfo> {
-                override fun onResponse(call: Call<OrderInfo>, response: Response<OrderInfo>) {
+            api.getAllOrders(postId).enqueue(object: Callback<AllOrderInfo> {
+                override fun onResponse(call: Call<AllOrderInfo>, response: Response<AllOrderInfo>) {
+                    looping(false, loopingDialog)
                     if (response.code() == 200) setUserOrder(response.body()!!.userOrders)
                     else {
                         Log.d("FragBaedalOrders getMyOrders", response.toString())
                         makeToast("주문정보를 불러오지 못했습니다.")
                         onBackPressed()
                     }
-                    looping(false, loopingDialog)
                 }
 
-                override fun onFailure(call: Call<OrderInfo>, t: Throwable) {
+                override fun onFailure(call: Call<AllOrderInfo>, t: Throwable) {
+                    looping(false, loopingDialog)
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
                     makeToast("주문정보를 불러오지 못했습니다.")
                     onBackPressed()
-                    looping(false, loopingDialog)
                 }
             })
         }

@@ -111,9 +111,14 @@ data class BaedalStatus(
 )
 
 /** 주문 조회 */
-data class OrderInfo(
+data class AllOrderInfo(
     @SerializedName("orders")
     val userOrders: MutableList<UserOrder>
+)
+
+data class MyOrderInfo(
+    @SerializedName("order")
+    val userOrder: UserOrder
 )
 
 data class UserOrder(

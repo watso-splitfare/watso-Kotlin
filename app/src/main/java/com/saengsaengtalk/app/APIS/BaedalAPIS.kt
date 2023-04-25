@@ -59,9 +59,9 @@ interface BaedalAPIS {
     /** 주문  */
 
     @GET("api/delivery/order/{post_id}")        // 주문 조회
-    fun getOrders(
+    fun getAllOrders(
         @Path("post_id") postId: String
-    ): Call<OrderInfo>
+    ): Call<AllOrderInfo>
 
     @POST("api/delivery/order/{post_id}")       // 주문 작성
     fun postOrders(
@@ -72,18 +72,10 @@ interface BaedalAPIS {
     @GET("api/delivery/order/{post_id}/me")     // 내 주문 조회
     fun getMyOrders(
         @Path("post_id") postId: String
-    ): Call<OrderInfo>
+    ): Call<MyOrderInfo>
 
     @DELETE("api/delivery/order/{post_id}/me")  // 내 주문 삭제
     fun deleteOrders(
         @Path("post_id") postId: String
     ): Call<VoidResponse>
-
-    /** 이전 주문 */
-
-    @GET("api/delivery/history")            // 참여했던 게시글 목록
-    fun getBaedalHistory(): Call<List<BaedalPost>>
-
-    @GET("api/delivery/history/{post_id}")  // 참여 게시글 상세조회
-    fun getBaedalHistoryPost(): Call<UserOrder>
 }
