@@ -230,23 +230,21 @@ class FragmentBaedalPost :Fragment() {
             if (isMember) {
                 binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm)
                 binding.btnViewMyOrders.isEnabled = true
-
-                binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-                binding.btnOrder.isEnabled = true
-                binding.tvOrder.text = "주문 취소"
             } else {
                 binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
                 binding.btnViewMyOrders.isEnabled = false
+            }
 
-                if (baedalPost.status == "recruiting") {
-                    binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
-                    binding.btnOrder.isEnabled = true
-                    binding.tvOrder.text = "주문하기"
-                } else {
-                    binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-                    binding.btnOrder.isEnabled = false
-                    binding.tvOrder.text = "마감되었습니다."
+            when (baedalPost.status) {
+                "recruiting" -> {
+                    if (isMember) setBtnOrder(false, true, "주문 취소")
+                    else setBtnOrder(true, true, "주문하기")
                 }
+                "closed" -> {
+                    if (isMember) setBtnOrder(false, true, "주문 취소")
+                    else setBtnOrder(false, false, "마감되었습니다.")
+                }
+                else -> setBtnOrder(false, false, "마감되었습니다.")
             }
             binding.btnOrder.visibility = View.VISIBLE
         }
@@ -271,6 +269,13 @@ class FragmentBaedalPost :Fragment() {
         }
         binding.btnOrder.setOnClickListener { btnOrder() }
         binding.btnComplete.setOnClickListener { btnComplete() }
+    }
+
+    fun setBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
+        else binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+        binding.btnOrder.isEnabled = isEnabled
+        binding.tvOrder.text = text
     }
 
     fun btnOrder() {
