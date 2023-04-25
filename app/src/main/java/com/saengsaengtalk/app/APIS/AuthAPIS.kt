@@ -20,7 +20,7 @@ interface AuthAPIS {
     @POST("auth/signin")                     // 로그인
     fun login(
         @Body jsonparams: LoginModel
-    ): Call<LoginResult>
+    ): Call<VoidResponse>
 
     @GET("auth/logout")                    // 로그아웃
     fun logout(

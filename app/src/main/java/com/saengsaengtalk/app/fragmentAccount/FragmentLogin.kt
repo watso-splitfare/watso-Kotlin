@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.saengsaengtalk.app.APIS.LoginModel
 import com.saengsaengtalk.app.APIS.LoginResult
+import com.saengsaengtalk.app.APIS.VoidResponse
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragLoginBinding
@@ -46,15 +47,12 @@ class FragmentLogin :Fragment() {
             val loopingDialog = looping()
             val prefs = MainActivity.prefs
             val reg = prefs.getString("registration", "")
-            api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<LoginResult> {
-                override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
+            api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     looping(false, loopingDialog)
-                    Log.d("FragLogin response.code()", response.code().toString())
                     if (response.code()==200) {
                         val tokens = response.headers().get("Authentication").toString().split("/")
                         val payload = decodeToken(tokens[0])
-                        Log.d("FragLogin token[0]", tokens[0])
-                        Log.d("FragLogin payload", payload)
                         val dUserId = JSONObject(payload).getString("user_id")
                         val dNickname = JSONObject(payload).getString("nickname")
 
@@ -64,17 +62,13 @@ class FragmentLogin :Fragment() {
                         prefs.setString("nickname", dNickname)
 
                         setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
-
-                        Log.d("access", prefs.getString("accessToken", ""))
-                        Log.d("refresh", prefs.getString("refreshToken", ""))
-
                     } else {
                         Log.e("login Fragment - login", response.toString())
                         makeToast("다시 시도해 주세요.")
                     }
                 }
 
-                override fun onFailure(call: Call<LoginResult>, t: Throwable) {
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     looping(false, loopingDialog)
                     Log.e("login Fragment - login", t.message.toString())
                     makeToast("다시 시도해 주세요.")

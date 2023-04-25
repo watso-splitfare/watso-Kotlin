@@ -27,12 +27,6 @@ data class LoginModel(
     val registrationToken: String
 )
 
-data class LoginResult(
-    val id: String,
-    @SerializedName("nickname")
-    val nickname: String
-)
-
 data class UserInfo(
     val id: Long,
     val name: String,
