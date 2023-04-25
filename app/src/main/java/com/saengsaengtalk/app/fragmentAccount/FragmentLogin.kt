@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.saengsaengtalk.app.APIS.LoginModel
-import com.saengsaengtalk.app.APIS.LoginResult
 import com.saengsaengtalk.app.APIS.VoidResponse
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity

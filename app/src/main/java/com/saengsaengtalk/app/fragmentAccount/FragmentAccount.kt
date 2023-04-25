@@ -6,15 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.LoginModel
-import com.saengsaengtalk.app.APIS.LoginResult
 import com.saengsaengtalk.app.APIS.UserInfo
 import com.saengsaengtalk.app.APIS.VoidResponse
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragAccountBinding
-import com.saengsaengtalk.app.fragmentAccount.admin.FragmentAdmin
-import com.saengsaengtalk.app.fragmentBaedal.Baedal.FragmentBaedal
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
