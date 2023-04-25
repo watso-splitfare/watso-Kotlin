@@ -163,7 +163,7 @@ class FragmentBaedalConfirm :Fragment() {
     fun goToPosting() {
         prefs.removeString("baedalPosting")
         prefs.removeString("storeInfo")
-        prefs.removeString("postOrder")
+        prefs.removeString("userOrder")
         setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
     }
 
@@ -194,7 +194,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun onBackPressed() {
         val mActivity =activity as MainActivity
-        prefs.setString("postOrder", gson.toJson(userOrder))
+        prefs.setString("userOrder", gson.toJson(userOrder))
 
         val bundle = bundleOf("orderCnt" to userOrder.orders.size)
         getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
