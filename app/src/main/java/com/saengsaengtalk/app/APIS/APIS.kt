@@ -6,9 +6,12 @@ import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.ResponseBody
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.lang.reflect.Type
 
 interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
@@ -22,6 +25,7 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(provideOkHttpClient(AppInterceptor()))
+                .addConverterFactory(nullOnEmptyConverterFactory)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
                 .create(APIS::class.java)
@@ -76,6 +80,26 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                     finally { }
                 }
                 return response
+            }
+        }
+
+        private val nullOnEmptyConverterFactory = object : Converter.Factory() {
+            fun converterFactory() = this
+            override fun responseBodyConverter(
+                type: Type, annotations: Array<out Annotation>, retrofit: Retrofit
+            ) = object : Converter<ResponseBody, Any?> {
+                val nextResponseBodyConverter = retrofit.nextResponseBodyConverter<Any?>(
+                    converterFactory(), type, annotations
+                )
+                override fun convert(value: ResponseBody) = if (value.contentLength() != 0L) {
+                    try{ nextResponseBodyConverter.convert(value) }
+                    catch (e:Exception){
+                        e.printStackTrace()
+                        null
+                    }
+                } else{
+                    null
+                }
             }
         }
     }
