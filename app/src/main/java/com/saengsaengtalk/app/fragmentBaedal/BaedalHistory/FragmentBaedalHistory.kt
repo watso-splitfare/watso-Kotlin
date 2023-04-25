@@ -1,4 +1,4 @@
-package com.saengsaengtalk.app.fragmentBaedal.Baedal
+package com.saengsaengtalk.app.fragmentBaedal.BaedalHistory
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -14,10 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.saengsaengtalk.app.APIS.BaedalPost
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
-import com.saengsaengtalk.app.databinding.FragBaedalBinding
+import com.saengsaengtalk.app.databinding.FragBaedalHistoryBinding
 import com.saengsaengtalk.app.fragmentAccount.FragmentAccount
+import com.saengsaengtalk.app.fragmentBaedal.Baedal.Table
+import com.saengsaengtalk.app.fragmentBaedal.Baedal.TableAdapter
 import com.saengsaengtalk.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
-import com.saengsaengtalk.app.fragmentBaedal.BaedalHistory.FragmentBaedalHistory
 import com.saengsaengtalk.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,21 +26,18 @@ import retrofit2.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class FragmentBaedal :Fragment() {
+class FragmentBaedalHistory :Fragment() {
     var isTouched = false
 
-    private var mBinding: FragBaedalBinding? = null
+    private var mBinding: FragBaedalHistoryBinding? = null
     private val binding get() = mBinding!!
     val api= APIS.create()
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = FragBaedalBinding.inflate(inflater, container, false)
+        mBinding = FragBaedalHistoryBinding.inflate(inflater, container, false)
 
-        binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
-        binding.tvBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
-        binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
         binding.scrollView.setOnTouchListener { _, event -> isTouched = when (event.action)
             {
                 MotionEvent.ACTION_UP ->
@@ -52,6 +50,7 @@ class FragmentBaedal :Fragment() {
             return@setOnTouchListener false
         }
 
+        binding.btnPrevious.setOnClickListener { onBackPressed() }
         getPostPreview()
 
         return binding.root
@@ -59,13 +58,13 @@ class FragmentBaedal :Fragment() {
 
     fun getPostPreview() {
         val loopingDialog = looping()
-        api.getBaedalPostList("joined").enqueue(object : Callback<List<BaedalPost>> {
+        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 looping(false, loopingDialog)
                 if (response.code() == 200) {
                     val baedalPosts = response.body()!!.sortedBy { it.orderTime }
-                    mappingAdapter(baedalPosts, "joined")
+                    mappingAdapter(baedalPosts)
                 } else {
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
@@ -78,30 +77,10 @@ class FragmentBaedal :Fragment() {
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
         })
-
-        api.getBaedalPostList("joinable").enqueue(object : Callback<List<BaedalPost>> {
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
-                looping(false, loopingDialog)
-                if (response.code() == 200) {
-                    val baedalPosts = response.body()!!.sortedBy { it.orderTime }
-                    mappingAdapter(baedalPosts, "joinable")
-                } else {
-                    Log.e("baedal Fragment - getBaedalPostListJoinable", response.toString())
-                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
-                }
-            }
-
-            override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
-                looping(false, loopingDialog)
-                Log.e("baedal Fragment - getBaedalPostListJoinable", t.message.toString())
-                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
-            }
-        })
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun mappingAdapter(baedalPosts: List<BaedalPost>, table: String) {
+    fun mappingAdapter(baedalPosts: List<BaedalPost>) {
 
         val tables = mutableListOf<Table>()
         val dates = mutableListOf<LocalDate>()
@@ -117,17 +96,12 @@ class FragmentBaedal :Fragment() {
 
         if (tables.size > 0) {
             val adapter = TableAdapter(requireContext(), tables)
-            if (table == "joined") {
-                binding.rvBaedalListJoined.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.rvBaedalListJoined.setHasFixedSize(true)
-                binding.rvBaedalListJoined.adapter = adapter
-            } else {
-                binding.rvBaedalListJoinable.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.rvBaedalListJoinable.setHasFixedSize(true)
-                binding.rvBaedalListJoinable.adapter = adapter
-            }
+
+            binding.rvBaedalListJoined.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rvBaedalListJoined.setHasFixedSize(true)
+            binding.rvBaedalListJoined.adapter = adapter
+
             adapter.addListener(object : TableAdapter.OnItemClickListener {
                 override fun onClick(postId: String) {
                     Log.d("배달프래그먼트 온클릭", "${postId}")
@@ -150,5 +124,10 @@ class FragmentBaedal :Fragment() {
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex:Int = 1) {
         val mActivity = activity as MainActivity
         mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
+    }
+
+    fun onBackPressed() {
+        val mActivity =activity as MainActivity
+        mActivity.onBackPressed()
     }
 }
