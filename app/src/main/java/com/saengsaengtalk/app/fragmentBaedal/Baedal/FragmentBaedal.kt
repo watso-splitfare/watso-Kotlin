@@ -77,7 +77,7 @@ class FragmentBaedal :Fragment() {
             }
         })
 
-        api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPost>> {
+        api.getBaedalPostList("joinable").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 looping(false, loopingDialog)
