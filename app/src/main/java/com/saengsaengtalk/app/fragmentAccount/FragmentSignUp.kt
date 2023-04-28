@@ -277,7 +277,7 @@ class FragmentSignUp :Fragment() {
     }
 
     fun onChangedPW() {
-        if (binding.etPw.text.toString() != "") {
+        if (binding.etPw.text.toString() != "" && binding.etPwConfirm.text.toString() != "") {
             if (binding.etPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
                 binding.tvPwConfirm.text = "비밀번호가 일치합니다."
                 //binding.tvPwConfirm.setTextColor()
