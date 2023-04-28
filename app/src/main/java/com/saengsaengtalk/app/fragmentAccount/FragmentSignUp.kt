@@ -277,12 +277,17 @@ class FragmentSignUp :Fragment() {
     }
 
     fun onChangedPW() {
-        if(binding.etPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
-            binding.tvPwConfirm.text = "비밀번호가 일치합니다."
-            //binding.tvPwConfirm.setTextColor()
-            signUpCheck["password"] = true
+        if (binding.etPw.text.toString() != "") {
+            if (binding.etPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
+                binding.tvPwConfirm.text = "비밀번호가 일치합니다."
+                //binding.tvPwConfirm.setTextColor()
+                signUpCheck["password"] = true
+            } else {
+                binding.tvPwConfirm.text = "비밀번호가 일치하지 않습니다."
+                signUpCheck["password"] = false
+            }
         } else {
-            binding.tvPwConfirm.text = "비밀번호가 일치하지 않습니다."
+            binding.tvPwConfirm.text = ""
             signUpCheck["password"] = false
         }
         setSignupBtnAble()
