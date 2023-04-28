@@ -53,6 +53,10 @@ class FragmentAccount :Fragment() {
                 }
             })
         }
+
+        binding.tvUpdatePassword.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "pw")) }
+        binding.tvUpdateNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
+        binding.tvUpdateAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
     }
 
     fun getUserInfo() {
@@ -87,7 +91,7 @@ class FragmentAccount :Fragment() {
         MainActivity.prefs.removeString("userId")
         MainActivity.prefs.removeString("nickname")
         makeToast("로그아웃 되었습니다.")
-        setFrag(FragmentLogin())
+        setFrag(FragmentLogin(), null, 0)
     }
 
     fun makeToast(message: String){
@@ -95,9 +99,9 @@ class FragmentAccount :Fragment() {
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, 0)
+        mActivity.setFrag(fragment, arguments, popBackStack)
     }
 
     fun onBackPressed() {

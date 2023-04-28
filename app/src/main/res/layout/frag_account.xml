@@ -123,7 +123,7 @@
                 android:elevation="5dp">
 
                 <TextView
-                    android:id="@+id/tv_set_password"
+                    android:id="@+id/tv_update_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -134,14 +134,24 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tv_set_nickname"
+                    android:id="@+id/tv_update_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="닉네임 변경"
                     android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="@+id/tv_set_password"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_set_password" />
+                    app:layout_constraintStart_toStartOf="@+id/tv_update_password"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_update_password" />
+
+                <TextView
+                    android:id="@+id/tv_update_account_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="계좌번호 변경"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tv_update_nickname"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_update_nickname" />
 
                 <TextView
                     android:id="@+id/tv_notice"
@@ -150,8 +160,9 @@
                     android:layout_marginTop="12dp"
                     android:text="공지사항"
                     android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="@+id/tv_set_password"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_set_nickname" />
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="@+id/tv_update_password"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_update_account_num" />
 
                 <TextView
                     android:id="@+id/tv_secession"
@@ -162,7 +173,7 @@
                     android:text="회원탈퇴"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/tv_set_password"
+                    app:layout_constraintStart_toStartOf="@+id/tv_update_password"
                     app:layout_constraintTop_toBottomOf="@+id/tv_notice" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
