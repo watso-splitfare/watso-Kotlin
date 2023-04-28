@@ -369,7 +369,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_mail"
+                android:id="@+id/lyt_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -377,56 +377,65 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lyt_account_num">
 
-                <TextView
-                    android:id="@+id/textView_mail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="이메일"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/lyt_input_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/tv_mail_confirm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView_mail"
-                    app:layout_constraintStart_toEndOf="@+id/textView_mail" />
+                    <TextView
+                        android:id="@+id/textView_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="이메일"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/et_mail"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/box_style_sign_up_input"
-                    android:ems="10"
-                    android:hint="부산대학교 웹메일"
-                    android:inputType="textPersonName"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toEndOf="@+id/textView_mail"
-                    app:layout_constraintStart_toStartOf="@+id/textView_mail"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_mail" />
+                    <EditText
+                        android:id="@+id/et_email"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/box_style_sign_up_input"
+                        android:ems="10"
+                        android:hint="부산대학교 웹메일"
+                        android:inputType="textPersonName"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@+id/textView_email"
+                        app:layout_constraintTop_toBottomOf="@+id/textView_email" />
 
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="\u0040pusan.ac.kr"
-                    app:layout_constraintBottom_toBottomOf="@+id/et_mail"
-                    app:layout_constraintStart_toEndOf="@+id/et_mail"
-                    app:layout_constraintTop_toTopOf="@+id/et_mail" />
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="\u0040pusan.ac.kr"
+                        app:layout_constraintBottom_toBottomOf="@+id/et_email"
+                        app:layout_constraintStart_toEndOf="@+id/et_email"
+                        app:layout_constraintTop_toTopOf="@+id/et_email" />
+
+                    <Button
+                        android:id="@+id/btn_send_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="인증번호 보내기"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/textView3" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_mail_permit"
+                    android:id="@+id/lyt_permit_email"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/et_mail">
+                    app:layout_constraintTop_toBottomOf="@+id/lyt_input_email">
 
                     <TextView
                         android:id="@+id/textView4"
@@ -437,7 +446,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <CheckBox
-                        android:id="@+id/check_mail_permit"
+                        android:id="@+id/check_email_permit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
@@ -450,90 +459,53 @@
                         android:layout_marginStart="8dp"
                         android:text="입력하신 이메일은 인증을 위하여 사용되며, 한 메일당 한 계정만 가입 가능합니다."
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/check_mail_permit"
-                        app:layout_constraintTop_toTopOf="@+id/check_mail_permit" />
+                        app:layout_constraintStart_toEndOf="@+id/check_email_permit"
+                        app:layout_constraintTop_toTopOf="@+id/check_email_permit" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_mail_verify"
+                    android:id="@+id/lyt_verify_email"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lyt_mail_permit">
+                    app:layout_constraintTop_toBottomOf="@+id/lyt_permit_email">
 
                     <EditText
-                        android:id="@+id/editTextTextPersonName11"
+                        android:id="@+id/et_verify_code"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/box_style_sign_up_input"
                         android:ems="10"
                         android:inputType="textPersonName"
                         android:textSize="14sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/btn_send_mail"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/btn_send_mail" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/btn_send_mail"
+                        android:id="@+id/btn_verify_email"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="인증번호 확인"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/et_verify_code"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_verify_countdown"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="인증번호 보내기"
-                        app:layout_constraintBottom_toBottomOf="@+id/btn_mail_verify"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_mail_verify"
-                        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName11"
-                        app:layout_constraintTop_toTopOf="@+id/btn_mail_verify" />
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_verify_email"
+                        app:layout_constraintStart_toEndOf="@+id/btn_verify_email"
+                        app:layout_constraintTop_toTopOf="@+id/btn_verify_email" />
 
-                    <Button
-                        android:id="@+id/btn_mail_verify"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="확인"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_auth_code"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lyt_mail">
-
-                <TextView
-                    android:id="@+id/textView_auth_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="가입 인증 코드 입력"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    app:layout_constraintBottom_toBottomOf="@+id/et_auth_code"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/et_auth_code" />
-
-                <EditText
-                    android:id="@+id/et_auth_code"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:ems="10"
-                    android:text="MiryangCampus2023"
-                    android:hint="가입 인증용 코드를 입력해주세요"
-                    android:inputType="textPersonName"
-                    android:textSize="14sp"
-                    android:background="@drawable/box_style_sign_up_input"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView_auth_code"
-                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
@@ -541,10 +513,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="8dp"
+                android:layout_marginTop="8dp"
                 android:background="?android:attr/listDivider"
-                app:layout_constraintTop_toBottomOf="@+id/lyt_auth_code"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lyt_email" />
 
             <Button
                 android:id="@+id/btn_signup"

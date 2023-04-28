@@ -13,11 +13,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.lang.reflect.Type
 
-interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
+interface APIS:AuthAPIS, UserAPI, BaedalAPIS, TaxiAPIS, AdminAPIS {
 
     companion object {
         //private const val BASE_URL = "https://24489c78-e8fa-4f59-9466-05c9d568ce74.mock.pstmn.io/"
-        private const val BASE_URL = "http://52.78.106.235/"
+        private const val BASE_URL = "http://52.78.106.235/api/"
 
         fun create(): APIS {
             val gson :Gson = GsonBuilder().setLenient().create();
@@ -59,7 +59,7 @@ interface APIS:AuthAPIS, BaedalAPIS, TaxiAPIS, AdminAPIS {
                         val refreshRequest = chain.request().newBuilder()
                             .addHeader("Authorization", refreshToken)
                             .method("GET", null)
-                            .url(BASE_URL + "auth/signin/refresh")
+                            .url(BASE_URL + "auth/refresh")
                             .build()
 
                         val refreshResponse = chain.proceed(refreshRequest)
