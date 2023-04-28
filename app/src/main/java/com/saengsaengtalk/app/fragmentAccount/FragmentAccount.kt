@@ -1,5 +1,7 @@
 package com.saengsaengtalk.app.fragmentAccount
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -57,6 +59,15 @@ class FragmentAccount :Fragment() {
         binding.tvUpdatePassword.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "pw")) }
         binding.tvUpdateNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
         binding.tvUpdateAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
+        binding.tvDeleteAccount.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("회원 탈퇴하기")
+                .setMessage("탈퇴 하시겠습니까?")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                    deleteAccount() })
+                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+        }
     }
 
     fun getUserInfo() {
@@ -85,13 +96,33 @@ class FragmentAccount :Fragment() {
         })
     }
 
-    fun logOut() {
+    fun logOut(makeToast: Boolean = true) {
+        if (makeToast)
+            makeToast("로그아웃 되었습니다.")
         MainActivity.prefs.removeString("accessToken")
         MainActivity.prefs.removeString("refreshToken")
         MainActivity.prefs.removeString("userId")
         MainActivity.prefs.removeString("nickname")
-        makeToast("로그아웃 되었습니다.")
         setFrag(FragmentLogin(), null, 0)
+    }
+
+    fun deleteAccount() {
+        api.deleteAccount().enqueue(object: Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                if (response.code()==204) {
+                    makeToast("탈퇴되었습니다.")
+                    logOut(false)
+                } else {
+                    Log.e("FragAccount deleteAccount", response.toString())
+                    makeToast("다시 시도해 주세요.")
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                Log.e("FragAccount deleteAccount", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun makeToast(message: String){
