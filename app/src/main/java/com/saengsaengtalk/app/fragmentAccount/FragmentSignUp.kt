@@ -100,17 +100,12 @@ class FragmentSignUp :Fragment() {
 
         /** 비밀번호 확인 */
         binding.etPwConfirm.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                if(binding.etPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
-                    binding.tvPwConfirm.text = "비밀번호가 일치합니다."
-                    //binding.tvPwConfirm.setTextColor()
-                    signUpCheck["password"] = true
-                } else {
-                    binding.tvPwConfirm.text = "비밀번호가 일치하지 않습니다."
-                    signUpCheck["password"] = false
-                }
-                setSignupBtnAble()
-            }
+            override fun afterTextChanged(p0: Editable?) { onChangedPW() }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+        binding.etPw.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onChangedPW() }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
@@ -279,6 +274,18 @@ class FragmentSignUp :Fragment() {
                 }
             })
         }
+    }
+
+    fun onChangedPW() {
+        if(binding.etPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
+            binding.tvPwConfirm.text = "비밀번호가 일치합니다."
+            //binding.tvPwConfirm.setTextColor()
+            signUpCheck["password"] = true
+        } else {
+            binding.tvPwConfirm.text = "비밀번호가 일치하지 않습니다."
+            signUpCheck["password"] = false
+        }
+        setSignupBtnAble()
     }
 
     fun setSignupBtnAble() {
