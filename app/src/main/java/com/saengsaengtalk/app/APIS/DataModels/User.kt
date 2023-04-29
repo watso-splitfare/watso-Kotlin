@@ -42,8 +42,8 @@ data class UpdateNickname(
     val nickname: String
 )
 data class UpdatePassword(
-    @SerializedName("current_password")
-    val currentPassword: String,
+//    @SerializedName("current_password")
+//    val currentPassword: String,
     @SerializedName("new_password")
     val newPassword: String
 )

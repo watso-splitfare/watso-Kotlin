@@ -57,6 +57,7 @@ class FragmentUpdateAccount :Fragment() {
         binding.tvTitle.text = "비밀번호 변경"
         binding.lytAccountNum.visibility = View.GONE
         binding.lytNickname.visibility = View.GONE
+        binding.lytCurrentPw.visibility= View.GONE
 
         binding.etPwConfirm.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) { onChangedPW() }
@@ -71,7 +72,7 @@ class FragmentUpdateAccount :Fragment() {
 
         binding.btnUpdatePw.setOnClickListener {
             if (checkedPW != "") {
-                val updatePassword = UpdatePassword(binding.etCurrentPw.text.toString(), checkedPW)
+                val updatePassword = UpdatePassword(checkedPW)
                 val loopingDialog = looping()
                 api.updatePassword(updatePassword).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
