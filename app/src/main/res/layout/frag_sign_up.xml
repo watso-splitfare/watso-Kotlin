@@ -414,12 +414,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:text="\u0040pusan.ac.kr"
+                        android:textColor="@color/black"
                         app:layout_constraintBottom_toBottomOf="@+id/et_email"
                         app:layout_constraintStart_toEndOf="@+id/et_email"
                         app:layout_constraintTop_toTopOf="@+id/et_email" />
 
                     <Button
-                        android:id="@+id/btn_send_email"
+                        android:id="@+id/btn_send_code"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="인증번호 보내기"

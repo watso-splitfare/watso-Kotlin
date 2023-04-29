@@ -191,7 +191,7 @@ class FragmentSignUp :Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
 
-        binding.btnSendEmail.setOnClickListener {
+        binding.btnSendCode.setOnClickListener {
             verifingEmail = binding.etEmail.text.toString()
             if (verifingEmail != null) {
 
