@@ -50,7 +50,7 @@ data class UpdatePassword(
 
 /** 찾기 */
 
-data class IssueTempToken(
+data class TempAuthCode(
     @SerializedName("auth_code")
     val authCode:String,
     val email: String
