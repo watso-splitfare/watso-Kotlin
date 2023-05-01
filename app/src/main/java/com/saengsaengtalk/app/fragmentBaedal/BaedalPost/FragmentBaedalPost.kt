@@ -163,10 +163,24 @@ class FragmentBaedalPost :Fragment() {
         binding.tvCurrentMember.text = baedalPost.users.size.toString()
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
-        binding.lytStatus.setOnClickListener { bindStatusBtn() }
         /** 하단 버튼 바인딩 */
-        if (baedalPost.userId == userId) binding.btnOrder.visibility = View.GONE
-        else binding.btnComplete.visibility = View.GONE
+        binding.lytStatus.setOnClickListener { bindStatusBtn() }
+        if (baedalPost.userId == userId) {
+            binding.btnOrder.visibility = View.GONE
+            if (baedalPost.status == "recruiting" || baedalPost.status == "closed") {
+                binding.tvStatus.visibility = View.GONE
+            } else {
+                binding.tvStatus.text = "모집 마감"
+                binding.tvStatus.visibility = View.VISIBLE
+                binding.lytStatus.visibility = View.GONE
+            }
+        }
+        else {
+            if (baedalPost.status == "recruiting") binding.tvStatus.text = "모집중"
+            else binding.tvStatus.text = "모집 마감"
+            binding.lytStatus.visibility = View.GONE
+            binding.btnComplete.visibility = View.GONE
+        }
         bindBottomBtn()
         setBottomBtn()
 
