@@ -210,7 +210,7 @@ class FragmentBaedalPost :Fragment() {
                 baedalPost.status = "closed"
                 binding.ivStatus.setImageResource(R.drawable.baseline_person_off_black_24)
                 binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_released)
-                binding.tvStatusOpen.setTextColor(Color.parseColor("#68BF6D"))
+                binding.tvStatusOpen.setTextColor(Color.GRAY)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
                 binding.tvStatusClosed.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
             }
@@ -220,7 +220,7 @@ class FragmentBaedalPost :Fragment() {
                 binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_pressed)
                 binding.tvStatusOpen.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_released)
-                binding.tvStatusClosed.setTextColor(Color.parseColor("#68BF6D"))
+                binding.tvStatusClosed.setTextColor(Color.GRAY)
             }
         }
     }

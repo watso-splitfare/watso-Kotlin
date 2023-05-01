@@ -402,8 +402,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:layout_marginBottom="8dp"
-                                        android:text="모집완료"
-                                        android:textColor="@color/baedal_status_released_text"
+                                        android:text="모집 마감"
+
                                         android:textStyle="bold"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintEnd_toEndOf="parent"
