@@ -119,7 +119,7 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/lyt_store"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -167,7 +167,7 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/lyt_order_time"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -215,7 +215,7 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/lyt_current_member"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -263,9 +263,8 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/lyt_fee"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/lyt_current_member">
 
@@ -308,6 +307,113 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/lyt_fee">
+
+                        <ImageView
+                            android:id="@+id/iv_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/baseline_person_black_24" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/iv_status"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                android:id="@+id/textView55"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="모집 여부"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tv_is_closed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/textView55" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/lyt_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="4dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/textView55">
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:id="@+id/lyt_status_open"
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/btn_baedal_open_pressed"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <TextView
+                                        android:id="@+id/tv_status_open"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:text="모집중"
+                                        android:textColor="@color/white"
+                                        android:textStyle="bold"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:id="@+id/lyt_status_closed"
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/btn_baedal_close_released"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@+id/lyt_status_open"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <TextView
+                                        android:id="@+id/tv_status_closed"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:text="모집완료"
+                                        android:textColor="@color/baedal_status_released_text"
+                                        android:textStyle="bold"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
@@ -330,7 +436,7 @@
                             android:id="@+id/btn_view_my_orders"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_marginEnd="8dp"
+                            android:layout_marginEnd="4dp"
                             android:background="@drawable/btn_baedal_confirm"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/btn_view_all_orders"
@@ -355,7 +461,7 @@
                             android:id="@+id/btn_view_all_orders"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginStart="4dp"
                             android:background="@drawable/btn_baedal_confirm"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

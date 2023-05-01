@@ -1,7 +1,9 @@
 package com.saengsaengtalk.app.fragmentBaedal.BaedalPost
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -163,6 +165,7 @@ class FragmentBaedalPost :Fragment() {
         binding.tvCurrentMember.text = baedalPost.users.size.toString()
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
+        binding.lytStatus.setOnClickListener { bindStatusBtn() }
         /** 하단 버튼 바인딩 */
         bindBottomBtn()
         setBottomBtn()
@@ -200,6 +203,27 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
+    @SuppressLint("ResourceAsColor")
+    fun bindStatusBtn() {
+        when (baedalPost.status) {
+            "recruiting" -> {
+                baedalPost.status = "closed"
+                binding.ivStatus.setImageResource(R.drawable.baseline_person_off_black_24)
+                binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_released)
+                binding.tvStatusOpen.setTextColor(Color.parseColor("#68BF6D"))
+                binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
+                binding.tvStatusClosed.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
+            }
+            "closed" -> {
+                baedalPost.status = "recruiting"
+                binding.ivStatus.setImageResource(R.drawable.baseline_person_black_24)
+                binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_pressed)
+                binding.tvStatusOpen.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
+                binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_released)
+                binding.tvStatusClosed.setTextColor(Color.parseColor("#68BF6D"))
+            }
+        }
+    }
     fun bindBottomBtn() {
         if (userId == baedalPost.userId) {
             when (baedalPost.status) {

@@ -71,7 +71,7 @@ data class BaedalPost(
     @SerializedName("order_time")
     val orderTime: String,
     val store: Store,
-    val status: String,
+    var status: String,
     val users: List<Long>
 )
 
