@@ -65,8 +65,6 @@ class FragmentBaedalPost :Fragment() {
 
         Log.d("access", MainActivity.prefs.getString("accessToken", ""))
         Log.d("postId", postId.toString())
-        binding.btnViewMyOrders.visibility = View.GONE
-        binding.btnViewAllOrders.visibility = View.GONE
         binding.btnOrder.visibility = View.GONE
         binding.btnComplete.visibility = View.GONE
         getPostInfo()
@@ -167,6 +165,8 @@ class FragmentBaedalPost :Fragment() {
 
         binding.lytStatus.setOnClickListener { bindStatusBtn() }
         /** 하단 버튼 바인딩 */
+        if (baedalPost.userId == userId) binding.btnOrder.visibility = View.GONE
+        else binding.btnComplete.visibility = View.GONE
         bindBottomBtn()
         setBottomBtn()
 
@@ -203,7 +203,6 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
-    @SuppressLint("ResourceAsColor")
     fun bindStatusBtn() {
         when (baedalPost.status) {
             "recruiting" -> {
@@ -213,6 +212,7 @@ class FragmentBaedalPost :Fragment() {
                 binding.tvStatusOpen.setTextColor(Color.GRAY)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
                 binding.tvStatusClosed.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
+                setStatus("closed")
             }
             "closed" -> {
                 baedalPost.status = "recruiting"
@@ -221,32 +221,26 @@ class FragmentBaedalPost :Fragment() {
                 binding.tvStatusOpen.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_released)
                 binding.tvStatusClosed.setTextColor(Color.GRAY)
+                setStatus("recruiting")
             }
         }
     }
+
     fun bindBottomBtn() {
         if (userId == baedalPost.userId) {
             when (baedalPost.status) {
-                "recruiting" -> {
-                    binding.tvOrder.text = "주문 마감"
-                    binding.btnOrder.visibility = View.VISIBLE
-                    binding.btnComplete.visibility = View.GONE
-                }
+                "recruiting" -> binding.btnComplete.visibility = View.GONE
                 "closed" -> {
-                    binding.tvOrder.text = "주문 더 받기"
                     binding.tvComplete.text = "주문 완료"
-                    binding.btnOrder.visibility = View.VISIBLE
                     binding.btnComplete.visibility = View.VISIBLE
                 }
                 "ordered" -> {
                     binding.tvComplete.text = "배달 완료"
-                    binding.btnOrder.visibility = View.GONE
                     binding.btnComplete.visibility = View.VISIBLE
                 }
                 else -> {
                     binding.tvComplete.text = "배달 완료"
                     binding.btnComplete.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-                    binding.btnOrder.visibility = View.GONE
                     binding.btnComplete.visibility = View.VISIBLE
                 }
             }
@@ -261,19 +255,24 @@ class FragmentBaedalPost :Fragment() {
 
             when (baedalPost.status) {
                 "recruiting" -> {
-                    if (isMember) setBtnOrder(false, true, "주문 취소")
-                    else setBtnOrder(true, true, "주문하기")
+                    if (isMember) bindBtnOrder(false, true, "주문 취소")
+                    else bindBtnOrder(true, true, "주문하기")
                 }
                 "closed" -> {
-                    if (isMember) setBtnOrder(false, true, "주문 취소")
-                    else setBtnOrder(false, false, "마감되었습니다.")
+                    if (isMember) bindBtnOrder(false, true, "주문 취소")
+                    else bindBtnOrder(false, false, "마감되었습니다.")
                 }
-                else -> setBtnOrder(false, false, "마감되었습니다.")
+                else -> bindBtnOrder(false, false, "마감되었습니다.")
             }
             binding.btnOrder.visibility = View.VISIBLE
         }
-        binding.btnViewMyOrders.visibility = View.VISIBLE
-        binding.btnViewAllOrders.visibility = View.VISIBLE
+    }
+
+    fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
+        else binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+        binding.btnOrder.isEnabled = isEnabled
+        binding.tvOrder.text = text
     }
 
     fun setBottomBtn() {
@@ -295,53 +294,18 @@ class FragmentBaedalPost :Fragment() {
         binding.btnComplete.setOnClickListener { btnComplete() }
     }
 
-    fun setBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
-        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
-        else binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-        binding.btnOrder.isEnabled = isEnabled
-        binding.tvOrder.text = text
-    }
-
     fun btnOrder() {
-        val builder = AlertDialog.Builder(requireContext())
-        if (userId == baedalPost.userId) {
-            when (baedalPost.status) {
-                "recruiting" ->     // 주문 마감하기
-                {
-                    builder.setTitle("주문 마감하기")
-                        .setMessage("주문을 마감하시겠습니까?")
-                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                            setStatus("closed")
-                        })
-                        .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
-                    builder.show()
-                }
-                "closed" ->         // 주문 다시 받기
-                {
-                    builder.setTitle("주문 허용하기")
-                        .setMessage("마감된 주문입니다. \n주문을 허용하시겠습니까?")
-                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                            setStatus("recruiting")
-                        })
-                        .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
-                    builder.show()
-                }
-                else -> {}          // 미처리
-            }
-        } else {
-            if (isMember) {
-                builder.setTitle("주문 취소하기")
-                    .setMessage("주문을 취소하시겠습니까?\n 다시 참가하기 위해선\n주문을 다시 작성해야합니다.")
-                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                        deleteOrders()
-                    })
-                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
-                builder.show()
-            }
-            else {
-                setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
-            }
+        if (isMember) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("주문 취소하기")
+                .setMessage("주문을 취소하시겠습니까?\n 다시 참가하기 위해선\n주문을 다시 작성해야합니다.")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                    deleteOrders()
+                })
+                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
         }
+        else setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
     }
 
     fun btnComplete() {
