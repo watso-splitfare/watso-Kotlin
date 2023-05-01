@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragBaedalOptBinding
@@ -37,7 +37,7 @@ class FragmentBaedalOpt :Fragment() {
     private var mBinding: FragBaedalOptBinding? = null
     private val binding get() = mBinding!!
     val gson = Gson()
-    val api= APIS.create()
+    val api= API.create()
     val dec = DecimalFormat("#,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {

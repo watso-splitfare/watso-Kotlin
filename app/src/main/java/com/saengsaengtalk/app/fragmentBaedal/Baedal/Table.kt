@@ -1,6 +1,6 @@
 package com.saengsaengtalk.app.fragmentBaedal.Baedal
 
-import com.saengsaengtalk.app.APIS.BaedalPost
+import com.saengsaengtalk.app.API.BaedalPost
 import java.time.LocalDate
 
 class Table(

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragBaedalOrdersBinding
@@ -17,9 +17,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.DecimalFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class FragmentBaedalOrders :Fragment() {
     var postId = "-1"
@@ -30,7 +27,7 @@ class FragmentBaedalOrders :Fragment() {
     lateinit var userOrders: MutableList<UserOrder>
     lateinit var adapter: BaedalUserOrderAdapter
 
-    val api= APIS.create()
+    val api= API.create()
     val dec = DecimalFormat("#,###")
     private var mBinding: FragBaedalOrdersBinding? = null
     private val binding get() = mBinding!!

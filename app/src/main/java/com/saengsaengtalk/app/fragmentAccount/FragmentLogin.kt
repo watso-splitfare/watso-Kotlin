@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.LoginModel
-import com.saengsaengtalk.app.APIS.VoidResponse
+import com.saengsaengtalk.app.API.LoginModel
+import com.saengsaengtalk.app.API.VoidResponse
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragLoginBinding
@@ -23,7 +23,7 @@ class FragmentLogin :Fragment() {
 
     private var mBinding: FragLoginBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

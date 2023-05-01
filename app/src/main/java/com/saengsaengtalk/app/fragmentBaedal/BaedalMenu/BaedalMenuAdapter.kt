@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.SectionMenu
+import com.saengsaengtalk.app.API.SectionMenu
 import com.saengsaengtalk.app.databinding.LytBaedalMenuBinding
 import java.text.DecimalFormat
 

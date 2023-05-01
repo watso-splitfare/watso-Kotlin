@@ -1,9 +1,9 @@
-package com.saengsaengtalk.app.APIS
+package com.saengsaengtalk.app.API
 
 import retrofit2.Call
 import retrofit2.http.*
 
-interface AuthAPIS {
+interface AuthAPI {
     /** 인증 관련 API */
 
     @POST("auth/login")        // 로그인

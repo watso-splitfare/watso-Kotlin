@@ -10,11 +10,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
-import com.saengsaengtalk.app.databinding.FragAccountBinding
 import com.saengsaengtalk.app.databinding.FragUpdateAccountBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,7 +25,7 @@ class FragmentUpdateAccount :Fragment() {
 
     private var mBinding: FragUpdateAccountBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

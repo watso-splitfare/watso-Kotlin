@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
@@ -39,7 +39,7 @@ class FragmentBaedalPost :Fragment() {
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
     val gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {

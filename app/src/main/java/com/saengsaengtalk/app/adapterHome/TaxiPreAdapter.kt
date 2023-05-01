@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.databinding.LytTaxiPreBinding
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

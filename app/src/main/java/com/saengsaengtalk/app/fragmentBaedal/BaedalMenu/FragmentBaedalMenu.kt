@@ -1,8 +1,6 @@
 package com.saengsaengtalk.app.fragmentBaedal.BaedalMenu
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
@@ -34,7 +32,7 @@ class FragmentBaedalMenu :Fragment() {
 
     private var mBinding: FragBaedalMenuBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
     val gson = Gson()
     val dec = DecimalFormat("#,###")
 

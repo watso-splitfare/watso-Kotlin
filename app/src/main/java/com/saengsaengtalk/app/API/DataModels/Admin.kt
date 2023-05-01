@@ -1,4 +1,4 @@
-package com.saengsaengtalk.app.APIS
+package com.saengsaengtalk.app.API
 
 /** 게시글 API 관련 데이터 모델 */
 

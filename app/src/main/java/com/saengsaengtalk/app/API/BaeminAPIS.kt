@@ -1,4 +1,4 @@
-package com.saengsaengtalk.app.APIS
+package com.saengsaengtalk.app.API
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

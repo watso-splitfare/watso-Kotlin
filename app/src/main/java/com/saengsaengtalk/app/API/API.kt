@@ -1,5 +1,5 @@
 import android.util.Log
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.MainActivity
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -13,13 +13,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.lang.reflect.Type
 
-interface APIS:AuthAPIS, UserAPI, BaedalAPIS, TaxiAPIS, AdminAPIS {
+interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
 
     companion object {
         //private const val BASE_URL = "https://24489c78-e8fa-4f59-9466-05c9d568ce74.mock.pstmn.io/"
         private const val BASE_URL = "http://52.78.106.235/api/"
 
-        fun create(): APIS {
+        fun create(): API {
             val gson :Gson = GsonBuilder().setLenient().create();
 
             return Retrofit.Builder()
@@ -28,7 +28,7 @@ interface APIS:AuthAPIS, UserAPI, BaedalAPIS, TaxiAPIS, AdminAPIS {
                 .addConverterFactory(nullOnEmptyConverterFactory)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
-                .create(APIS::class.java)
+                .create(API::class.java)
         }
 
         private fun provideOkHttpClient(interceptor: AppInterceptor):

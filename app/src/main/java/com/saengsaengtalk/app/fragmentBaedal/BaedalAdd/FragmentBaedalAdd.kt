@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
@@ -51,7 +51,7 @@ class FragmentBaedalAdd :Fragment() {
     private var mBinding: FragBaedalAddBinding? = null
     private val binding get() = mBinding!!
     val gson = Gson()
-    val api = APIS.create()
+    val api = API.create()
     var decDt = DecimalFormat("00")
 
     override fun onCreate(savedInstanceState: Bundle?) {

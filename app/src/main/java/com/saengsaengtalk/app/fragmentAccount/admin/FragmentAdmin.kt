@@ -11,7 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragAdminBinding
 import com.google.gson.JsonObject
@@ -33,7 +33,7 @@ class FragmentAdmin :Fragment() {
     private var mBinding: FragAdminBinding? = null
     private val binding get() = mBinding!!
 
-    val appApi = APIS.create()
+    val appApi = API.create()
     val BaeminApi = BaeminAPIS.create()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

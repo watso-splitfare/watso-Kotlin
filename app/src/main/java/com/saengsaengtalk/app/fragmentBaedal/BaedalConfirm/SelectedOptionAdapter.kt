@@ -3,7 +3,7 @@ package com.saengsaengtalk.app.fragmentBaedal.BaedalConfirm
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.Group
+import com.saengsaengtalk.app.API.Group
 import com.saengsaengtalk.app.databinding.LytBaedalConfirmBinding
 import java.text.DecimalFormat
 

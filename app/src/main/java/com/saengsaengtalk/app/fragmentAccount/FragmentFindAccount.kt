@@ -7,9 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.TempAuthCode
-import com.saengsaengtalk.app.APIS.UserInfo
-import com.saengsaengtalk.app.APIS.VoidResponse
+import com.saengsaengtalk.app.API.TempAuthCode
+import com.saengsaengtalk.app.API.VoidResponse
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
@@ -25,7 +24,7 @@ class FragmentFindAccount :Fragment() {
 
     private var mBinding: FragFindAccountBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragFindAccountBinding.inflate(inflater, container, false)

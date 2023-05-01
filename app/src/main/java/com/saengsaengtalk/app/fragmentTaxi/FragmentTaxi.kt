@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragTaxiBinding
@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 class FragmentTaxi :Fragment() {
     private var mBinding: FragTaxiBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

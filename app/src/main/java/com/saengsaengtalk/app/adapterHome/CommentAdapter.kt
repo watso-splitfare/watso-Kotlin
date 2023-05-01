@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.Comment
+import com.saengsaengtalk.app.API.Comment
 import com.saengsaengtalk.app.R
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

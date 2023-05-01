@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import kotlinx.coroutines.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
@@ -26,7 +26,7 @@ class FragmentSignUp :Fragment() {
 
     private var mBinding: FragSignUpBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
     val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "email" to false)
     var checkedUsername: String? = null
     var checkedNickname: String? = null

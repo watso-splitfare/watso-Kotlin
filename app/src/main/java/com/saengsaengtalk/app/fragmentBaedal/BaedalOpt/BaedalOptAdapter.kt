@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.Option
+import com.saengsaengtalk.app.API.Option
 import com.saengsaengtalk.app.databinding.LytBaedalOptBinding
 import java.text.DecimalFormat
 

@@ -11,14 +11,12 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.BaedalPost
+import com.saengsaengtalk.app.API.BaedalPost
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragBaedalHistoryBinding
-import com.saengsaengtalk.app.fragmentAccount.FragmentAccount
 import com.saengsaengtalk.app.fragmentBaedal.Baedal.Table
 import com.saengsaengtalk.app.fragmentBaedal.Baedal.TableAdapter
-import com.saengsaengtalk.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.saengsaengtalk.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,7 +29,7 @@ class FragmentBaedalHistory :Fragment() {
 
     private var mBinding: FragBaedalHistoryBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)

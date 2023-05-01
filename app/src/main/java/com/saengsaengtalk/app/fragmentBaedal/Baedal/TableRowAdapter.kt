@@ -3,7 +3,7 @@ package com.saengsaengtalk.app.fragmentBaedal.Baedal
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.BaedalPost
+import com.saengsaengtalk.app.API.BaedalPost
 import com.saengsaengtalk.app.databinding.LytBaedalTableRowBinding
 
 class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {

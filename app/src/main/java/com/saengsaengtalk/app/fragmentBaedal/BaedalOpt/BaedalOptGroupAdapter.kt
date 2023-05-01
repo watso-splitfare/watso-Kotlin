@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.Group
+import com.saengsaengtalk.app.API.Group
 import com.saengsaengtalk.app.databinding.LytBaedalOptGroupBinding
 import java.lang.ref.WeakReference
 

@@ -9,11 +9,8 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.saengsaengtalk.app.APIS.Section
-import com.saengsaengtalk.app.LoopingDialog
-import com.saengsaengtalk.app.MainActivity
+import com.saengsaengtalk.app.API.Section
 import com.saengsaengtalk.app.databinding.LytBaedalMenuSectionBinding
-import com.saengsaengtalk.app.fragmentBaedal.BaedalMenu.BaedalMenuAdapter
 import java.lang.ref.WeakReference
 
 

@@ -1,4 +1,4 @@
-package com.saengsaengtalk.app.APIS
+package com.saengsaengtalk.app.API
 import com.google.gson.annotations.SerializedName
 
 /** 가게 목록 조회 */

@@ -1,13 +1,17 @@
-package com.saengsaengtalk.app.APIS
+package com.saengsaengtalk.app.API
 
 import retrofit2.Call
 import retrofit2.http.*
 
-const val SIGNUP = "user/signup"
-const val PROFILE = "user/profile"
-const val FORGOT = "user/forgot"
-
 interface UserAPI {
+
+    companion object
+    {
+        const val SIGNUP = "user/signup"
+        const val PROFILE = "user/profile"
+        const val FORGOT = "user/forgot"
+    }
+
     /** 회원 가입 */
 
     @POST(SIGNUP)                    // 회원가입

@@ -1,6 +1,6 @@
 package com.saengsaengtalk.app
 
-import APIS
+import API
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.adapterHome.*
 import com.saengsaengtalk.app.databinding.FragHomeBinding
 import com.saengsaengtalk.app.fragmentAccount.FragmentAccount
@@ -29,7 +29,7 @@ class FragmentHome :Fragment() {
 
     private var mBinding: FragHomeBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
     //val baeminApi = BaeminAPIS.create()
 
     @RequiresApi(Build.VERSION_CODES.O)

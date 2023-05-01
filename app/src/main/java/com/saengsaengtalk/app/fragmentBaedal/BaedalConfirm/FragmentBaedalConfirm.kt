@@ -10,7 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saengsaengtalk.app.APIS.*
+import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.LoopingDialog
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.R
@@ -32,7 +32,7 @@ class FragmentBaedalConfirm :Fragment() {
 
     private var mBinding: FragBaedalConfirmBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
     val gson = Gson()
     val prefs = MainActivity.prefs
     val dec = DecimalFormat("#,###")

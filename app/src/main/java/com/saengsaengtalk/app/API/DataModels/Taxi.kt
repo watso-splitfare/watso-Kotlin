@@ -1,4 +1,4 @@
-package com.saengsaengtalk.app.APIS
+package com.saengsaengtalk.app.API
 
 /** 302 택시 게시글 등록 모델 */
 data class TaxiPostingModel(

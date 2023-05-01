@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.saengsaengtalk.app.APIS.UserInfo
-import com.saengsaengtalk.app.APIS.VoidResponse
+import com.saengsaengtalk.app.API.UserInfo
+import com.saengsaengtalk.app.API.VoidResponse
 import com.saengsaengtalk.app.MainActivity
 import com.saengsaengtalk.app.databinding.FragAccountBinding
 import retrofit2.Call
@@ -20,7 +20,7 @@ class FragmentAccount :Fragment() {
     lateinit var userInfo: UserInfo
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
-    val api= APIS.create()
+    val api= API.create()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
