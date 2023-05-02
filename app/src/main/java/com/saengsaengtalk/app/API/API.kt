@@ -3,6 +3,7 @@ import com.saengsaengtalk.app.API.*
 import com.saengsaengtalk.app.MainActivity
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.saengsaengtalk.app.API.DataModels.ErrorResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -40,8 +41,9 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
         class AppInterceptor : Interceptor { @Throws(IOException::class)
 
             override fun intercept(chain: Interceptor.Chain): Response {
-                val accessToken = MainActivity.prefs.getString("accessToken", "")
-                val refreshToken = MainActivity.prefs.getString("refreshToken", "")
+            val prefs = MainActivity.prefs
+                val accessToken = prefs.getString("accessToken", "")
+                val refreshToken = prefs.getString("refreshToken", "")
                 val tokenAddedRequest = chain.request().newBuilder()
                     .addHeader("Authorization", accessToken)
                     .build()
@@ -52,29 +54,41 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                 Log.d("API intercept response.code", response.code().toString())
 
                 if (response.code() == 401) {
+                    val body = response.body()?.string()!!
+                    val gson = Gson()
+                    val errorResponse = gson.fromJson(body, ErrorResponse::class.java)
+                    Log.e("API errorResponse.msg", errorResponse.msg)
+                    Log.e("API errorResponse.code", errorResponse.code.toString())
                     try {
-                        response.close()
-                        Log.d("어세스 토큰 갱신 시도 access", accessToken)
-                        Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
-                        val refreshRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", refreshToken)
-                            .method("GET", null)
-                            .url(BASE_URL + "auth/refresh")
-                            .build()
+                        if (errorResponse.code == 202) {
+                            response.close()
+                            Log.d("어세스 토큰 갱신 시도 access", accessToken)
+                            Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
+                            val refreshRequest = chain.request().newBuilder()
+                                .addHeader("Authorization", refreshToken)
+                                .method("GET", null)
+                                .url(BASE_URL + "auth/refresh")
+                                .build()
 
-                        val refreshResponse = chain.proceed(refreshRequest)
-                        val token = refreshResponse.headers().get("Authentication").toString()
-                        MainActivity.prefs.setString("accessToken", token)
+                            val refreshResponse = chain.proceed(refreshRequest)
+                            val token = refreshResponse.headers().get("Authentication").toString()
+                            prefs.setString("accessToken", token)
 
-                        Log.d("어세스 토큰 갱신 성공", token)
-                        val newRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", token)
-                            .build()
+                            Log.d("어세스 토큰 갱신 성공", token)
+                            val newRequest = chain.request().newBuilder()
+                                .addHeader("Authorization", token)
+                                .build()
 
-                        val newRes = chain.proceed(newRequest)
-                        Log.d("API intercept newRes", newRes.toString())
-                        Log.d("API intercept newRes.code", newRes.code().toString())
-                        return newRes
+                            val newRes = chain.proceed(newRequest)
+                            Log.d("API intercept newRes", newRes.toString())
+                            Log.d("API intercept newRes.code", newRes.code().toString())
+                            return newRes
+                        } else {
+                            prefs.removeString("accessToken")
+                            prefs.removeString("refreshToken")
+                            prefs.removeString("userId")
+                            prefs.removeString("nickname")
+                        }
                     }
                     catch(e:Exception) { }
                     finally { }
