@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">생생톡</string>
-    <string name="app_title">생자대 생활 정보톡</string>
-    <string name="baedal">배달톡</string>
-    <string name="taxi">생택구</string>
+    <string name="app_name">왔소</string>
+    <string name="app_title">왔소</string>
+    <string name="baedal">배달왔소</string>
+    <string name="taxi">택시왔소</string>
     <string name="kara">학관 노래방</string>
     <string name="free_board">자유게시판</string>
     <string name="club_board">구인게시판</string>
