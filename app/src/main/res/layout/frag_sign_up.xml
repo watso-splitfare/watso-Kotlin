@@ -414,6 +414,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:text="\u0040pusan.ac.kr"
+                        android:visibility="gone"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toBottomOf="@+id/et_email"
                         app:layout_constraintStart_toEndOf="@+id/et_email"
