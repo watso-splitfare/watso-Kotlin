@@ -1,5 +1,7 @@
 package com.saengsaengtalk.app.fragmentAccount
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
+import com.saengsaengtalk.app.API.DataModels.ErrorResponse
 import com.saengsaengtalk.app.API.LoginModel
 import com.saengsaengtalk.app.API.VoidResponse
 import com.saengsaengtalk.app.LoopingDialog
@@ -61,9 +65,10 @@ class FragmentLogin :Fragment() {
                         prefs.setString("nickname", dNickname)
 
                         setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
-                    } else {
-                        Log.e("login Fragment - login", response.toString())
-                        makeToast("다시 시도해 주세요.")
+                    } else if (response.code() == 401) {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        showAlert(errorResponse.msg)
                     }
                 }
 
@@ -79,6 +84,13 @@ class FragmentLogin :Fragment() {
             setFrag(FragmentFindAccount())
         }
         binding.tvSignUp.setOnClickListener { setFrag(FragmentSignUp()) }
+    }
+
+    fun showAlert(msg: String) {
+        AlertDialog.Builder(requireContext()).setTitle("로그인 실패")
+        .setMessage(msg)
+        .setPositiveButton("확인", DialogInterface.OnClickListener { _, _ -> })
+        .show()
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
