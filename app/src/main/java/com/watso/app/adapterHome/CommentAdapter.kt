@@ -1,6 +1,8 @@
 package com.watso.app.adapterHome
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -50,17 +52,17 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
         fun bind(comment: Comment) {
             if (comment.userId == userId) {
                 binding.btnDelete.setOnClickListener {
-                    deleteComment(comment)
+                    val builder = AlertDialog.Builder(context)
+                    builder.setTitle("댓글 삭제하기")
+                        .setMessage("댓글을 삭제하시겠습니까?")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                            deleteComment(comment)  })
+                        .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
                 }
             }
-            if (comment.subComments != null) {
-                binding.ivReply.visibility = View.GONE
 
-                binding.rvSubComment.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvSubComment.setHasFixedSize(true)
-                binding.rvSubComment.adapter = CommentAdapter(context, comment.subComments, userId)
-            }
+            if (comment.supperCommentId == null) binding.ivReply.visibility = View.GONE
             else binding.btnReply.visibility = View.GONE
 
             if (comment.status == "created") {
@@ -82,6 +84,7 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     if (response.code() == 204) {
                         itemDeleteListener.deleteComment()
+
                     } else {
                         Log.e("Adapter Comment - deleteComment", response.toString())
                     }

@@ -23,8 +23,8 @@ data class Comment(
     val nickname: String,
     val status: String,
     val content: String,
-    @SerializedName("sub_comments")
-    val subComments: MutableList<Comment>?
+    @SerializedName("supper_comment_id")
+    val supperCommentId: String?
 )
 
 data class PostingResponse(

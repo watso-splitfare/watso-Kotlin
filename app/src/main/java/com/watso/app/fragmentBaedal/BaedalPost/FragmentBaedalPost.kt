@@ -228,6 +228,7 @@ class FragmentBaedalPost :Fragment() {
         binding.btnPostComment.setOnClickListener {
             val content = binding.etComment.text.toString()
             if (content.trim() != "") {
+                binding.etComment.setText("")
                 val loopingDialog = looping()
                 api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
