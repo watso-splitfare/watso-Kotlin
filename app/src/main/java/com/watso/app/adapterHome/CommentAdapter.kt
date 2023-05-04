@@ -50,6 +50,7 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
     inner class CustomViewHolder(var binding: LytCommentBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(comment: Comment) {
+            if (adapterPosition == 0) binding.divider.visibility = View.GONE
             if (comment.userId == userId) {
                 binding.btnDelete.setOnClickListener {
                     val builder = AlertDialog.Builder(context)
