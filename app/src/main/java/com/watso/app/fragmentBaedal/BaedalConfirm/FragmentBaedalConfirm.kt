@@ -63,6 +63,8 @@ class FragmentBaedalConfirm :Fragment() {
             fee = storeInfo.fee / baedalPosting.minMember
         }
         else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
+        Log.d("FragBaedalConfirm storeInfo.fee", storeInfo.fee.toString())
+        Log.d("FragBaedalConfirm minMember", prefs.getString("minMember", ""))
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -144,6 +146,7 @@ class FragmentBaedalConfirm :Fragment() {
                 }
             })
         } else {
+            userOrder.requestComment = binding.etRequest.text.toString()
             api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     looping(false, loopingDialog)
