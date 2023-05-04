@@ -39,7 +39,7 @@ class FragmentBaedalPost :Fragment() {
     var isMember = false
 
     lateinit var baedalPost: BaedalPost
-    lateinit var comments: MutableList<Comment>
+    var comments = mutableListOf<Comment>()
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
@@ -106,6 +106,7 @@ class FragmentBaedalPost :Fragment() {
                 if (response.code() == 200) {
                     Log.d("FragBaedalPost getComments", response.toString())
                     Log.d("FragBaedalPost getComments body", response.body()!!.toString())
+                    comments.clear()
                     comments = response.body()!!.comments
                     setComments()
                 } else {
@@ -215,7 +216,14 @@ class FragmentBaedalPost :Fragment() {
         binding.rvComment.layoutManager =
         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
-        binding.rvComment.adapter = CommentAdapter(requireContext(), comments, userId)
+        val adapter = CommentAdapter(requireContext(), comments, userId)
+        binding.rvComment.adapter = adapter
+
+        adapter.setItemDeleteListener(object: CommentAdapter.OnDeleteListener {
+            override fun deleteComment() {
+                getComments()
+            }
+        })
 
         binding.btnPostComment.setOnClickListener {
             val content = binding.etComment.text.toString()
