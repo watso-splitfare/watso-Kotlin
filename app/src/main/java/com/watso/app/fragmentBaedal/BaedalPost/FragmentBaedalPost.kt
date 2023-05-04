@@ -440,7 +440,7 @@ class FragmentBaedalPost :Fragment() {
         }
         else {
 
-            prefs.setString("minMember", baedalPost.maxMember.toString())
+            prefs.setString("minMember", baedalPost.minMember.toString())
             setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
         }
     }
