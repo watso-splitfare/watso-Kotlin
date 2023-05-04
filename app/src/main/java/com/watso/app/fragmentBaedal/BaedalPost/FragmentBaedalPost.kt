@@ -230,7 +230,7 @@ class FragmentBaedalPost :Fragment() {
         val adapter = CommentAdapter(requireContext(), comments, userId)
         binding.rvComment.adapter = adapter
 
-        adapter.setItemDeleteListener(object: CommentAdapter.OnDeleteListener {
+        adapter.setDeleteListener(object: CommentAdapter.OnDeleteListener {
             override fun deleteComment() {
                 getComments()
             }

@@ -39,9 +39,9 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
 
     interface OnDeleteListener { fun deleteComment() }
 
-    fun setItemDeleteListener(onItemDeleteListener: OnDeleteListener) { this.itemDeleteListener = onItemDeleteListener }
+    fun setDeleteListener(onDeleteListener: OnDeleteListener) { this.deleteListener = onDeleteListener }
 
-    private lateinit var itemDeleteListener : OnDeleteListener
+    private lateinit var deleteListener : OnDeleteListener
 
     override fun getItemCount(): Int {
         return comments.size
@@ -84,7 +84,7 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
             api.deleteComment(comment.postId, comment._id).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     if (response.code() == 204) {
-                        itemDeleteListener.deleteComment()
+                        deleteListener.deleteComment()
 
                     } else {
                         Log.e("Adapter Comment - deleteComment", response.toString())
