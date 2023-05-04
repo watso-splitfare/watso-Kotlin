@@ -198,7 +198,12 @@ class FragmentBaedalPost :Fragment() {
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
         /** 하단 버튼 바인딩 */
-        binding.lytStatus.setOnClickListener { bindStatusBtn() }
+        binding.lytStatus.setOnClickListener {
+            //bindStatusBtn()
+            if (baedalPost.status == "recruiting") setStatus("closed")
+            else setStatus("recruiting")
+        }
+
         if (baedalPost.userId == userId) {
             binding.btnOrder.visibility = View.GONE
             if (baedalPost.status == "recruiting" || baedalPost.status == "closed") {
@@ -215,6 +220,7 @@ class FragmentBaedalPost :Fragment() {
             binding.lytStatus.visibility = View.GONE
             binding.btnComplete.visibility = View.GONE
         }
+        bindStatusBtn()
         bindBottomBtn()
         setBottomBtn()
     }
@@ -334,22 +340,20 @@ class FragmentBaedalPost :Fragment() {
     fun bindStatusBtn() {
         when (baedalPost.status) {
             "recruiting" -> {
-                baedalPost.status = "closed"
-                binding.ivStatus.setImageResource(R.drawable.baseline_person_off_black_24)
-                binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_released)
-                binding.tvStatusOpen.setTextColor(Color.GRAY)
-                binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
-                binding.tvStatusClosed.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
-                setStatus("closed")
-            }
-            "closed" -> {
-                baedalPost.status = "recruiting"
+                //baedalPost.status = "closed"
                 binding.ivStatus.setImageResource(R.drawable.baseline_person_black_24)
                 binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_pressed)
                 binding.tvStatusOpen.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_released)
                 binding.tvStatusClosed.setTextColor(Color.GRAY)
-                setStatus("recruiting")
+            }
+            "closed" -> {
+                //baedalPost.status = "recruiting"
+                binding.ivStatus.setImageResource(R.drawable.baseline_person_off_black_24)
+                binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_released)
+                binding.tvStatusOpen.setTextColor(Color.GRAY)
+                binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
+                binding.tvStatusClosed.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
             }
         }
     }
