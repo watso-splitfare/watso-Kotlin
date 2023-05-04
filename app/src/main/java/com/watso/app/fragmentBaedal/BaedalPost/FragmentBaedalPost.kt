@@ -136,7 +136,14 @@ class FragmentBaedalPost :Fragment() {
         if (userId == baedalPost.userId) {
             binding.tvDelete.text = "삭제"
             binding.tvUpdate.text = "수정"
+            binding.tvDelete.visibility = View.VISIBLE
+            binding.tvUpdate.visibility = View.VISIBLE
         } else {
+            binding.tvDelete.visibility = View.GONE
+            binding.tvUpdate.visibility = View.GONE
+        }
+
+        if (baedalPost.status != "recruiting") {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
         }
