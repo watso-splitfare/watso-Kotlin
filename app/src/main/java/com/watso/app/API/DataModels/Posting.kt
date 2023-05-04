@@ -4,20 +4,27 @@ import com.google.gson.annotations.SerializedName
 
 /** 게시글 API 관련 데이터 모델 */
 
-data class User(
-    @SerializedName("user_id")
-    val userId: Long,
-    val nickname: String
+data class PostComment(
+    val content: String
+)
+
+data class GetComments(
+    val comments: List<Comment>
 )
 
 data class Comment(
-    val comment_id: Long,
-    val user_id: Long,
-    val nick_name: String,
+    val _id: Long,
+    @SerializedName("post_id")
+    val postId: String,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("user_id")
+    val userId: Long,
+    val nickname: String,
+    val status: String,
     val content: String,
-    val depth: Int,
-    val group: Int,
-    val update_date: String
+    @SerializedName("sub_comments")
+    val subComments: List<Comment>?
 )
 
 data class PostingResponse(
