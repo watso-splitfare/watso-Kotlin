@@ -100,6 +100,11 @@ class MainActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
+    fun showSoftInput(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, 0)
+    }
+
     /**
      * fragment: 이동할 프래그먼트,
      * arguments: 이동한 프래그먼트에 전달할 인자,

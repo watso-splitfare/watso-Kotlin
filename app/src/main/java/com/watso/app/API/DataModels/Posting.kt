@@ -24,7 +24,7 @@ data class Comment(
     val status: String,
     val content: String,
     @SerializedName("supper_comment_id")
-    val supperCommentId: String?
+    val parentId: String?
 )
 
 data class PostingResponse(

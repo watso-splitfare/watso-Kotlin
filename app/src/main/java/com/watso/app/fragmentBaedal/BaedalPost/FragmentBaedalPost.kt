@@ -40,6 +40,7 @@ class FragmentBaedalPost :Fragment() {
 
     lateinit var baedalPost: BaedalPost
     var comments = mutableListOf<Comment>()
+    var replyTo: Comment? = null
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
@@ -235,33 +236,77 @@ class FragmentBaedalPost :Fragment() {
                 getComments()
             }
         })
+        adapter.setReplyListener(object : CommentAdapter.OnReplyListener {
+            override fun makeReply(parentComment: Comment) {
+                replyTo = parentComment
+                binding.tvReplyTo.text = "${replyTo!!.nickname}님에게 대댓글"
+                binding.lytReplyTo.visibility = View.VISIBLE
+                showSoftInput(binding.etComment)
+            }
+        })
+
+        binding.lytReplyTo.visibility = View.GONE
+        binding.btnCancelReply.setOnClickListener { cancelReply() }
 
         binding.btnPostComment.setOnClickListener {
             val content = binding.etComment.text.toString()
             if (content.trim() != "") {
+                postComment(content, replyTo?._id)
                 binding.etComment.setText("")
-                val loopingDialog = looping()
-                api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
+            }
+        }
+    }
+
+    fun cancelReply() {
+        replyTo = null
+        binding.lytReplyTo.visibility = View.GONE
+    }
+
+    fun postComment(content: String, parentId: String? = null) {
+        val loopingDialog = looping()
+        if (parentId == null) {
+            api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
                             Log.d("FragBaedalPost postComment", "성공")
                             getComments()
                         } else {
-                            Log.d("FragBaedalPost-deletePost", "실패")
+                            Log.e("[ERR][POST][postComment]", "${response.raw().body()?.string()}")
                             makeToast("다시 시도해주세요.")
                         }
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                         looping(false, loopingDialog)
-                        Log.d("FragBaedalPost-deletePost", t.message.toString())
+                        Log.e("[FAIL][POST][postComment]", t.message.toString())
                         makeToast("다시 시도해주세요.")
                     }
-                })
+                }
+            )
+        } else {
+            api.postSubComment(postId!!, parentId, PostComment(content)).enqueue(object : Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    looping(false, loopingDialog)
+                    if (response.code() == 204) {
+                        Log.d("FragBaedalPost postComment", "성공")
+                        getComments()
+                    } else {
+                        Log.e("[ERR][POST][postSubComment]", "${response.raw().body()?.string()}")
+                        makeToast("다시 시도해주세요.")
+                    }
+                }
+
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                    looping(false, loopingDialog)
+                    Log.e("[FAIL][POST][postSubComment]", t.message.toString())
+                    makeToast("다시 시도해주세요.")
+                }
             }
+            )
         }
     }
+
     fun deletePost() {
         val loopingDialog = looping()
         api.deleteBaedalPost(postId!!).enqueue(object : Callback<VoidResponse> {
@@ -460,6 +505,12 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
+    fun showSoftInput(view: View) {
+        view.requestFocus()
+        val mActivity = activity as MainActivity
+        mActivity.showSoftInput(view)
+    }
+
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity
         return mActivity.looping(loopStart, loopingDialog)
@@ -476,7 +527,8 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun onBackPressed() {
+        cancelReply()
         val mActivity =activity as MainActivity
         mActivity.onBackPressed()
-        }
+    }
 }

@@ -38,10 +38,13 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
     }
 
     interface OnDeleteListener { fun deleteComment() }
+    interface OnReplyListener { fun makeReply(parentComment: Comment) }
 
     fun setDeleteListener(onDeleteListener: OnDeleteListener) { this.deleteListener = onDeleteListener }
+    fun setReplyListener(onReplyListener: OnReplyListener) { this.replyListener = onReplyListener }
 
     private lateinit var deleteListener : OnDeleteListener
+    private lateinit var replyListener : OnReplyListener
 
     override fun getItemCount(): Int {
         return comments.size
@@ -62,8 +65,11 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
                     builder.show()
                 }
             }
+            binding.btnReply.setOnClickListener {
+                replyListener.makeReply(comment)
+            }
 
-            if (comment.supperCommentId == null) binding.ivReply.visibility = View.GONE
+            if (comment.parentId == null) binding.ivReply.visibility = View.GONE
             else binding.btnReply.visibility = View.GONE
 
             if (comment.status == "created") {
