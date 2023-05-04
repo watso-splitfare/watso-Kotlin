@@ -12,11 +12,13 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
+import com.watso.app.adapterHome.CommentAdapter
 import com.watso.app.databinding.FragBaedalPostBinding
 import com.watso.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
@@ -37,6 +39,7 @@ class FragmentBaedalPost :Fragment() {
     var isMember = false
 
     lateinit var baedalPost: BaedalPost
+    lateinit var comments: MutableList<Comment>
 
     private var mBinding: FragBaedalPostBinding? = null
     private val binding get() = mBinding!!
@@ -67,7 +70,7 @@ class FragmentBaedalPost :Fragment() {
         binding.btnOrder.visibility = View.GONE
         binding.btnComplete.visibility = View.GONE
         getPostInfo()
-
+        getComments()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -78,7 +81,7 @@ class FragmentBaedalPost :Fragment() {
                 looping(false, loopingDialog)
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
-                    setData()
+                    setPost()
                 } else {
                     Log.e("baedal Post Fragment - getBaedalPost", response.toString())
                     makeToast("게시글 조회 실패")
@@ -95,12 +98,35 @@ class FragmentBaedalPost :Fragment() {
         })
     }
 
+    fun getComments() {
+        val loopingDialog = looping()
+        api.getComments(postId!!).enqueue(object : Callback<GetComments> {
+            override fun onResponse(call: Call<GetComments>, response: Response<GetComments>) {
+                looping(false, loopingDialog)
+                if (response.code() == 200) {
+                    Log.d("FragBaedalPost getComments", response.toString())
+                    Log.d("FragBaedalPost getComments body", response.body()!!.toString())
+                    comments = response.body()!!.comments
+                    setComments()
+                } else {
+                    Log.e("baedal Post Fragment - getComments", response.toString())
+                    makeToast("댓글 조회 실패")
+                }
+            }
+
+            override fun onFailure(call: Call<GetComments>, t: Throwable) {
+                looping(false, loopingDialog)
+                Log.e("baedal Post Fragment - getComments", t.message.toString())
+                makeToast("댓글 조회 실패")
+            }
+        })
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    fun setData() {
+    fun setPost() {
         val joinUsers = baedalPost.users
         isMember = joinUsers.contains(userId)
         val store = baedalPost.store
-        //val comments = baedalPost.comments
         Log.d("FragBaedalPost isOwner", (userId==baedalPost.userId).toString())
         Log.d("FragBaedalPost ismember", isMember.toString())
         Log.d("FragBaedalPost status", baedalPost.status)
@@ -182,20 +208,45 @@ class FragmentBaedalPost :Fragment() {
         }
         bindBottomBtn()
         setBottomBtn()
+    }
 
-
-        /** 댓글 */
-        /*binding.tvCommentCount.text = "댓글 ${comments.size}"
+    fun setComments() {
+        binding.tvCommentCount.text = "댓글 ${comments.size}"
         binding.rvComment.layoutManager =
         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
-        binding.rvComment.adapter = CommentAdapter(comments, userId)*/
-    }
+        binding.rvComment.adapter = CommentAdapter(requireContext(), comments, userId)
 
+        binding.btnPostComment.setOnClickListener {
+            val content = binding.etComment.text.toString()
+            if (content.trim() != "") {
+                val loopingDialog = looping()
+                api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
+                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                        looping(false, loopingDialog)
+                        if (response.code() == 204) {
+                            Log.d("FragBaedalPost postComment", "성공")
+                            getComments()
+                        } else {
+                            Log.d("FragBaedalPost-deletePost", "실패")
+                            makeToast("다시 시도해주세요.")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                        looping(false, loopingDialog)
+                        Log.d("FragBaedalPost-deletePost", t.message.toString())
+                        makeToast("다시 시도해주세요.")
+                    }
+                })
+            }
+        }
+    }
     fun deletePost() {
         val loopingDialog = looping()
         api.deleteBaedalPost(postId!!).enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                looping(false, loopingDialog)
                 if (response.code() == 204) {
                     Log.d("FragBaedalPost-deletePost", "성공")
                     val bundle = bundleOf("success" to true)
@@ -205,13 +256,12 @@ class FragmentBaedalPost :Fragment() {
                 else {
                     Log.d("FragBaedalPost-deletePost", "실패")
                     makeToast("다시 시도해주세요.")}
-                looping(false, loopingDialog)
             }
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                looping(false, loopingDialog)
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
                 makeToast("다시 시도해주세요.")
-                looping(false, loopingDialog)
             }
         })
     }

@@ -9,14 +9,14 @@ data class PostComment(
 )
 
 data class GetComments(
-    val comments: List<Comment>
+    val comments: MutableList<Comment>
 )
 
 data class Comment(
-    val _id: Long,
+    val _id: String,
     @SerializedName("post_id")
     val postId: String,
-    @SerializedName("created_at")
+    @SerializedName("create_at")
     val createdAt: String,
     @SerializedName("user_id")
     val userId: Long,
@@ -24,7 +24,7 @@ data class Comment(
     val status: String,
     val content: String,
     @SerializedName("sub_comments")
-    val subComments: List<Comment>?
+    val subComments: MutableList<Comment>?
 )
 
 data class PostingResponse(

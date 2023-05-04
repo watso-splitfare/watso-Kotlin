@@ -591,7 +591,7 @@
                         android:background="@drawable/box_add_comment"
                         android:layout_margin="8dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_post_comment"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
@@ -612,7 +612,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <ImageButton
-                        android:id="@+id/imageButton"
+                        android:id="@+id/btn_post_comment"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_marginVertical="8dp"
