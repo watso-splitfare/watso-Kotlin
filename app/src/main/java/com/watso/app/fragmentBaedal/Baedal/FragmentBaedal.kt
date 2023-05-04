@@ -134,6 +134,10 @@ class FragmentBaedal :Fragment() {
                     setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
                 }
             })
+        } else {
+            if (table == "joined") {
+                binding.rvBaedalListJoined.visibility = View.GONE
+            }
         }
     }
 
