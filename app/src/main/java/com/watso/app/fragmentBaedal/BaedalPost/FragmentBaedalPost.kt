@@ -212,7 +212,11 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun setComments() {
-        binding.tvCommentCount.text = "댓글 ${comments.size}"
+        var count = 0
+        for (comment in comments) {
+            if (comment.status == "created") count++
+        }
+        binding.tvCommentCount.text = "댓글 $count"
         binding.rvComment.layoutManager =
         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
