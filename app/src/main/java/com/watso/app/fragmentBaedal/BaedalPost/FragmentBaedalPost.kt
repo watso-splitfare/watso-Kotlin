@@ -32,8 +32,9 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalPost :Fragment() {
+    val prefs = MainActivity.prefs
     var postId: String? = null
-    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
+    var userId = prefs.getString("userId", "-1").toLong()
     val dec = DecimalFormat("#,###")
 
     var isMember = false
@@ -66,7 +67,7 @@ class FragmentBaedalPost :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
-        Log.d("access", MainActivity.prefs.getString("accessToken", ""))
+        Log.d("access", prefs.getString("accessToken", ""))
         Log.d("postId", postId.toString())
         binding.btnOrder.visibility = View.GONE
         binding.btnComplete.visibility = View.GONE
@@ -437,7 +438,11 @@ class FragmentBaedalPost :Fragment() {
                 .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
             builder.show()
         }
-        else setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
+        else {
+
+            prefs.setString("minMember", baedalPost.maxMember.toString())
+            setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
+        }
     }
 
     fun btnComplete() {

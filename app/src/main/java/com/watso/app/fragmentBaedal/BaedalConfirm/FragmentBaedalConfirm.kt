@@ -58,8 +58,11 @@ class FragmentBaedalConfirm :Fragment() {
         prefs.setString("userOrder", gson.toJson(userOrder))
 
         var postString = prefs.getString("baedalPosting", "")
-        if (postString != "") { baedalPosting = gson.fromJson(postString, BaedalPosting::class.java) }
-        fee = storeInfo.fee / baedalPosting.minMember
+        if (postString != "") {
+            baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
+            fee = storeInfo.fee / baedalPosting.minMember
+        }
+        else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -164,6 +167,7 @@ class FragmentBaedalConfirm :Fragment() {
         prefs.removeString("baedalPosting")
         prefs.removeString("storeInfo")
         prefs.removeString("userOrder")
+        prefs.removeString("minMember")
         setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
     }
 
