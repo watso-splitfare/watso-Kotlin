@@ -38,7 +38,7 @@ class FragmentBaedal :Fragment() {
         mBinding = FragBaedalBinding.inflate(inflater, container, false)
 
         binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
-        binding.tvBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
+        binding.btnBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
         binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
         binding.scrollView.setOnTouchListener { _, event -> isTouched = when (event.action)
             {
