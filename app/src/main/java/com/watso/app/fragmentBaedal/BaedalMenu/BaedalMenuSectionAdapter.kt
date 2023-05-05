@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.watso.app.API.Section
 import com.watso.app.databinding.LytBaedalMenuSectionBinding
-import java.lang.ref.WeakReference
 
+class BaedalMenuSectionAdapter(val context: Context) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
 
-class BaedalMenuSectionAdapter(val context: Context, val sections: MutableList<Section>) : RecyclerView.Adapter<BaedalMenuSectionAdapter.CustomViewHolder>() {
+    private var sections = mutableListOf<Section>()
 
     fun setData(sectionData: List<Section>) {
         sections.clear()
@@ -33,20 +33,11 @@ class BaedalMenuSectionAdapter(val context: Context, val sections: MutableList<S
         holder.bind(section)
     }
 
-    interface OnItemClickListener {
-        fun onClick(sectionName: String, menuId: String)
-    }
+    interface OnSecMenuClickListener { fun onClick(sectionName: String, menuId: String) }
 
-    private var listener = WeakReference<OnItemClickListener>(null)
+    fun setSecMenuClickListener(onSecMenuClickListener: OnSecMenuClickListener) { this.secMenuClickListener = onSecMenuClickListener }
 
-    fun itemClick(sectionName: String, menuId: String) {
-        listener.get()?.onClick(sectionName, menuId)
-    }
-
-    fun addListener(listener: OnItemClickListener) {
-        Log.d("섹션 메뉴 어댑터", "리스너 추가")
-        this.listener = WeakReference(listener)
-    }
+    private lateinit var secMenuClickListener: OnSecMenuClickListener
 
     override fun getItemCount(): Int {
         return sections.size
@@ -69,12 +60,14 @@ class BaedalMenuSectionAdapter(val context: Context, val sections: MutableList<S
             binding.rvMenuSection.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalMenuAdapter(section.menus)
+            val adapter = BaedalMenuAdapter()
             binding.rvMenuSection.adapter = adapter
+            adapter.setData(section.menus)
 
-            adapter.setItemClickListener(object: BaedalMenuAdapter.OnItemClickListener {
-                override fun onClick(menuId: String) {
-                    itemClick(section.name, menuId)
+            adapter.setMenuClickListener(object: BaedalMenuAdapter.OnMenuClickListener {
+                override fun onMenuClick(menuId: String) {
+                    Log.d("섹션 어댑터", "메뉴 클릭 리스너")
+                    secMenuClickListener.onClick(section.name, menuId)
                 }
             })
         }

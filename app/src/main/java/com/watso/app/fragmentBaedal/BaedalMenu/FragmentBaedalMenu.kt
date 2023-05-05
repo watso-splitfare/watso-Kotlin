@@ -26,7 +26,6 @@ class FragmentBaedalMenu :Fragment() {
     lateinit var storeInfo: StoreInfo
     lateinit var adapter: BaedalMenuSectionAdapter
 
-    //lateinit var postOrder: PostOrder                            // 주문 리스트
     var orderCnt = 0
     var viewClickAble = true
 
@@ -44,45 +43,65 @@ class FragmentBaedalMenu :Fragment() {
         }
 
         MainActivity.prefs.removeString("userOrder")
-        storeInfo = StoreInfo("-1", "storeName", 0, 0, mutableListOf<Section>())
-        adapter = BaedalMenuSectionAdapter(requireContext(), storeInfo.sections)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalMenuBinding.inflate(inflater, container, false)
 
-        refreshView()
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) {
+            requestKey, bundle ->
+                viewClickAble = true
+                orderCnt = bundle.getInt("orderCnt")
+                setCartBtn()
+            }
 
-        return binding.root
-    }
-
-    fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-        mappingAdapter()
-        getMenuData()
 
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) { requestKey, bundle ->
-            viewClickAble = true
-            orderCnt = bundle.getInt("orderCnt")
-            setCartBtn()
-        }
+        setAdapter()
+        getStoreInfo()
 
         binding.lytCart.setOnClickListener { cartOnClick() }
         binding.btnCart.setOnClickListener { cartOnClick() }
         setCartBtn()
+
+        return binding.root
     }
 
-    fun getMenuData() {
+    fun setAdapter() {
+        adapter = BaedalMenuSectionAdapter(requireContext())
+
+        /** 이중 어댑터안의 메뉴 이름을 선택할 경우 해당 메뉴의 옵션을 보여주는 프래그먼트로 이동 */
+        adapter.setSecMenuClickListener(object : BaedalMenuSectionAdapter.OnSecMenuClickListener {
+            override fun onClick(sectionName: String, menuId: String) {
+                Log.d("메뉴 프래그먼트", "리스너")
+                if (viewClickAble) {
+                    viewClickAble = false
+                    setFrag(FragmentBaedalOpt(), mapOf(
+                        "postId" to postId,
+                        "menuId" to menuId,
+                        "storeInfo" to gson.toJson(storeInfo)
+                    ))
+                }
+            }
+        })
+        binding.rvMenuSection.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvMenuSection.setHasFixedSize(true)
+        binding.rvMenuSection.adapter = adapter
+    }
+
+    fun getStoreInfo() {
         val loopingDialog = looping()
         api.getStoreInfo(storeId).enqueue(object : Callback<StoreInfo> {
             override fun onResponse(call: Call<StoreInfo>, response: Response<StoreInfo>) {
                 looping(false, loopingDialog)
                 if (response.code() == 200) {
                     storeInfo = response.body()!!
-
                     binding.tvStoreName.text = storeInfo.name
-                    binding.tvBaedalFee.text = "예상 배달비 : %s원".format(dec.format(storeInfo.fee))
-                    binding.tvMinOrder.text = "최소 배달 금액 : %s원".format(dec.format(storeInfo.minOrder))
+                    binding.tvBaedalFee.text =
+                        "예상 배달비 : %s원".format(dec.format(storeInfo.fee))
+                    binding.tvMinOrder.text =
+                        "최소 배달 금액 : %s원".format(dec.format(storeInfo.minOrder))
                     adapter.setData(storeInfo.sections)
                 } else {
                     Log.e("baedalMenu Fragment - getSectionMenu", response.toString())
@@ -94,27 +113,6 @@ class FragmentBaedalMenu :Fragment() {
                 looping(false, loopingDialog)
                 Log.e("baedalMenu Fragment - getSectionMenu", t.message.toString())
                 makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
-            }
-        })
-    }
-
-    fun mappingAdapter() {
-        binding.rvMenuSection.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvMenuSection.setHasFixedSize(true)
-        binding.rvMenuSection.adapter = adapter
-
-        /** 이중 어댑터안의 메뉴 이름을 선택할 경우 해당 메뉴의 옵션을 보여주는 프래그먼트로 이동 */
-        adapter.addListener(object : BaedalMenuSectionAdapter.OnItemClickListener {
-            override fun onClick(sectionName: String, menuId: String) {
-                if (viewClickAble) {
-                    viewClickAble = false
-                    setFrag(FragmentBaedalOpt(), mapOf(
-                            "postId" to postId,
-                            "menuId" to menuId,
-                            "storeInfo" to gson.toJson(storeInfo)
-                    ))
-                }
             }
         })
     }
