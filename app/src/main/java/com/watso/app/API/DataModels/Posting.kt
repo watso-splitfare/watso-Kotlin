@@ -23,7 +23,7 @@ data class Comment(
     val nickname: String,
     val status: String,
     val content: String,
-    @SerializedName("supper_comment_id")
+    @SerializedName("parent_id")
     val parentId: String?
 )
 

@@ -1,6 +1,7 @@
 package com.watso.app.fragmentBaedal.BaedalMenu
 
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -9,8 +10,15 @@ import com.watso.app.API.SectionMenu
 import com.watso.app.databinding.LytBaedalMenuBinding
 import java.text.DecimalFormat
 
-class BaedalMenuAdapter(val menus: List<SectionMenu>) : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
+class BaedalMenuAdapter() : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHolder>() {
 
+    private var menus = mutableListOf<SectionMenu>()
+
+    fun setData(menuData: List<SectionMenu>) {
+        menus.clear()
+        menus.addAll(menuData)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,20 +30,17 @@ class BaedalMenuAdapter(val menus: List<SectionMenu>) : RecyclerView.Adapter<Bae
         val menu = menus.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(menu._id)
+            Log.d("메뉴 어댑터", "클릭")
+            menuClickListener.onMenuClick(menu._id)
         }
         holder.bind(menu)
     }
 
-    interface OnItemClickListener {
-        fun onClick(menuId: String)
-    }
+    interface OnMenuClickListener { fun onMenuClick(menuId: String) }
 
-    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
-        this.itemClickListener = onItemClickListener
-    }
+    fun setMenuClickListener(onMenuClickListener: OnMenuClickListener) { this.menuClickListener = onMenuClickListener}
 
-    private lateinit var itemClickListener : OnItemClickListener
+    private lateinit var menuClickListener : OnMenuClickListener
 
     override fun getItemCount(): Int {
         return menus.size

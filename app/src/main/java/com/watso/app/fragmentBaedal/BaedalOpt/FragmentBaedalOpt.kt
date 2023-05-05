@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -22,6 +23,7 @@ class FragmentBaedalOpt :Fragment() {
     var postId = ""
     var menuId = ""
     lateinit var storeInfo: StoreInfo
+    var orderCnt = ""
 
     val groupNames = mutableMapOf<String, String>()
     val optionNames = mutableMapOf<String, String>()
@@ -46,6 +48,7 @@ class FragmentBaedalOpt :Fragment() {
             postId = it.getString("postId")!!
             menuId = it.getString("menuId")!!
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
+            orderCnt = it.getString("orderCnt")!!
         }
     }
 
@@ -222,6 +225,9 @@ class FragmentBaedalOpt :Fragment() {
     }
 
     fun onBackPressed() {
+        val bundle = bundleOf("orderCnt" to orderCnt.toInt())
+        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
+
         val mActivity = activity as MainActivity
         mActivity.onBackPressed()
     }

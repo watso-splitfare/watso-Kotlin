@@ -189,7 +189,7 @@ class FragmentBaedalPost :Fragment() {
         }
 
         /** 포스트 내용 바인딩 */
-        binding.tvPostTitle.text = baedalPost.title
+        //binding.tvPostTitle.text = baedalPost.title
 
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
@@ -199,11 +199,13 @@ class FragmentBaedalPost :Fragment() {
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
         /** 하단 버튼 바인딩 */
-        binding.lytStatus.setOnClickListener {
+        /*binding.lytStatus.setOnClickListener {
             //bindStatusBtn()
             if (baedalPost.status == "recruiting") setStatus("closed")
             else setStatus("recruiting")
-        }
+        }*/
+        binding.lytStatusOpen.setOnClickListener { if (baedalPost.status == "closed") setStatus("recruiting")}
+        binding.lytStatusClosed.setOnClickListener { if (baedalPost.status == "recruiting") setStatus("closed") }
 
         if (baedalPost.userId == userId) {
             binding.btnOrder.visibility = View.GONE
