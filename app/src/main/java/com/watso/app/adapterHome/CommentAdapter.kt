@@ -64,7 +64,7 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
                         .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
                     builder.show()
                 }
-            }
+            } else binding.btnDelete.visibility = View.GONE
             binding.btnReply.setOnClickListener {
                 replyListener.makeReply(comment)
             }
