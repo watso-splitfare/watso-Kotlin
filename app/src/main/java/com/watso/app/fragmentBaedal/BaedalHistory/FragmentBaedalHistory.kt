@@ -17,6 +17,7 @@ import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalHistoryBinding
 import com.watso.app.fragmentBaedal.Baedal.Table
 import com.watso.app.fragmentBaedal.Baedal.TableAdapter
+import com.watso.app.fragmentBaedal.BaedalOrders.FragmentBaedalOrders
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
@@ -61,7 +62,8 @@ class FragmentBaedalHistory :Fragment() {
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 looping(false, loopingDialog)
                 if (response.code() == 200) {
-                    val baedalPosts = response.body()!!.sortedBy { it.orderTime }
+                    val baedalPosts = mutableListOf<BaedalPost>()
+                    baedalPosts.addAll(response.body()!!)
                     mappingAdapter(baedalPosts)
                 } else {
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
@@ -78,35 +80,25 @@ class FragmentBaedalHistory :Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun mappingAdapter(baedalPosts: List<BaedalPost>) {
+    fun mappingAdapter(baedalPosts: MutableList<BaedalPost>) {
 
-        val tables = mutableListOf<Table>()
-        val dates = mutableListOf<LocalDate>()
-        var tableIdx = -1
-            for (post in baedalPosts) {
-            val date = LocalDate.parse(post.orderTime.substring(0 until 16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
-            if (date !in dates) {
-                dates.add(date)
-                tables.add(Table(date, mutableListOf(post)))
-                tableIdx += 1
-            } else tables[tableIdx].rows.add(post)
-        }
+        val adapter = HistoryAdapter(baedalPosts)
 
-        if (tables.size > 0) {
-            val adapter = TableAdapter(requireContext(), tables)
+        binding.rvBaedalListJoined.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvBaedalListJoined.setHasFixedSize(true)
+        binding.rvBaedalListJoined.adapter = adapter
 
-            binding.rvBaedalListJoined.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvBaedalListJoined.setHasFixedSize(true)
-            binding.rvBaedalListJoined.adapter = adapter
-
-            adapter.addListener(object : TableAdapter.OnItemClickListener {
-                override fun onClick(postId: String) {
-                    Log.d("배달프래그먼트 온클릭", "${postId}")
-                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
-                }
-            })
-        }
+        adapter.setShowOrderListener(object : HistoryAdapter.OnOrderBtnListener {
+            override fun showOrder(postId: String) {
+                setFrag(FragmentBaedalOrders(), mapOf("postId" to postId, "isMyOrder" to "true"))
+            }
+        })
+        adapter.setShowPostListener(object : HistoryAdapter.OnPostBtnListener {
+            override fun showPost(postId: String) {
+                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+            }
+        })
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
