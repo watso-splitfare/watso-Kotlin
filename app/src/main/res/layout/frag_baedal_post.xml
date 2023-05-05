@@ -33,19 +33,23 @@
             app:srcCompat="@drawable/previous" />
 
         <TextView
-            android:id="@+id/tv_post_title"
-            android:layout_width="0dp"
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text=""
-            android:textColor="@color/black"
-            android:textSize="20sp"
+
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/fontstyle_title"
+            android:shadowColor="#939393"
+            android:shadowDx="4.0"
+            android:shadowDy="4.0"
+            android:shadowRadius="4.0"
+            android:text="@string/baedal"
+            android:textSize="28sp"
+
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tv_delete"
-            app:layout_constraintStart_toEndOf="@+id/btn_previous"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/tv_delete"
