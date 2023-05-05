@@ -58,8 +58,13 @@ class FragmentBaedalConfirm :Fragment() {
         prefs.setString("userOrder", gson.toJson(userOrder))
 
         var postString = prefs.getString("baedalPosting", "")
-        if (postString != "") { baedalPosting = gson.fromJson(postString, BaedalPosting::class.java) }
-        fee = storeInfo.fee / baedalPosting.minMember
+        if (postString != "") {
+            baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
+            fee = storeInfo.fee / baedalPosting.minMember
+        }
+        else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
+        Log.d("FragBaedalConfirm storeInfo.fee", storeInfo.fee.toString())
+        Log.d("FragBaedalConfirm minMember", prefs.getString("minMember", ""))
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -141,6 +146,7 @@ class FragmentBaedalConfirm :Fragment() {
                 }
             })
         } else {
+            userOrder.requestComment = binding.etRequest.text.toString()
             api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     looping(false, loopingDialog)
@@ -164,6 +170,7 @@ class FragmentBaedalConfirm :Fragment() {
         prefs.removeString("baedalPosting")
         prefs.removeString("storeInfo")
         prefs.removeString("userOrder")
+        prefs.removeString("minMember")
         setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
     }
 

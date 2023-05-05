@@ -94,10 +94,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-        return true
+        return super.dispatchTouchEvent(ev)
+    }
+
+    fun showSoftInput(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, 0)
     }
 
     /**
