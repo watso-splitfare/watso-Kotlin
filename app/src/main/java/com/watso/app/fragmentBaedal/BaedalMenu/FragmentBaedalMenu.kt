@@ -79,7 +79,8 @@ class FragmentBaedalMenu :Fragment() {
                     setFrag(FragmentBaedalOpt(), mapOf(
                         "postId" to postId,
                         "menuId" to menuId,
-                        "storeInfo" to gson.toJson(storeInfo)
+                        "storeInfo" to gson.toJson(storeInfo),
+                        "orderCnt" to orderCnt.toString()
                     ))
                 }
             }
