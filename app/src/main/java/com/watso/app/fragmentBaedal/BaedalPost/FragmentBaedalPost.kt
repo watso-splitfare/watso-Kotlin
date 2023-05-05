@@ -189,7 +189,7 @@ class FragmentBaedalPost :Fragment() {
         }
 
         /** 포스트 내용 바인딩 */
-        binding.tvPostTitle.text = baedalPost.title
+        //binding.tvPostTitle.text = baedalPost.title
 
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
