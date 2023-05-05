@@ -199,11 +199,13 @@ class FragmentBaedalPost :Fragment() {
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
         /** 하단 버튼 바인딩 */
-        binding.lytStatus.setOnClickListener {
+        /*binding.lytStatus.setOnClickListener {
             //bindStatusBtn()
             if (baedalPost.status == "recruiting") setStatus("closed")
             else setStatus("recruiting")
-        }
+        }*/
+        binding.lytStatusOpen.setOnClickListener { if (baedalPost.status == "closed") setStatus("recruiting")}
+        binding.lytStatusClosed.setOnClickListener { if (baedalPost.status == "recruiting") setStatus("closed") }
 
         if (baedalPost.userId == userId) {
             binding.btnOrder.visibility = View.GONE
