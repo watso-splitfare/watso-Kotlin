@@ -17,6 +17,9 @@ data class StoreInfo(
     @SerializedName("min_order")
     val minOrder: Int,
     val fee: Int,
+    @SerializedName("phone_number")
+    val telNum: String,
+    val note: List<String>,
     val sections: MutableList<Section>
 )
 

@@ -103,6 +103,13 @@ class FragmentBaedalMenu :Fragment() {
                         "예상 배달비 : %s원".format(dec.format(storeInfo.fee))
                     binding.tvMinOrder.text =
                         "최소 배달 금액 : %s원".format(dec.format(storeInfo.minOrder))
+                    binding.tvTelNum.text = storeInfo.telNum
+                    var noteStr = ""
+                    for ((idx, note)in storeInfo.note.withIndex()) {
+                        noteStr += note
+                        if (idx != storeInfo.note.size-1) noteStr += "\n"
+                    }
+                    binding.tvNote.text = noteStr
                     adapter.setData(storeInfo.sections)
                 } else {
                     Log.e("baedalMenu Fragment - getSectionMenu", response.toString())
