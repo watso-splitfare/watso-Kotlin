@@ -13,6 +13,8 @@
     <color name="taxi">#FAF2B0</color>
     <color name="kara">#FFD4A0</color>
     <color name="light_gray">#E9E9E9</color>
+    <color name="primary">#FF7700</color>
+    <color name="gray">#636363</color>
     <color name="baedal_status_open_pressed_stroke">#428046</color>
     <color name="baedal_status_closed_pressed_stroke">#F3A579</color>
     <color name="baedal_status_released_stroke">#98A399</color>

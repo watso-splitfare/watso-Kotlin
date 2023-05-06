@@ -50,7 +50,7 @@ class FragmentLogin :Fragment() {
             val loopingDialog = looping()
             val prefs = MainActivity.prefs
             val reg = prefs.getString("registration", "")
-            api.login(LoginModel(binding.etId.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
+            api.login(LoginModel(binding.etUsername.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     looping(false, loopingDialog)
                     if (response.code()==200) {
@@ -83,7 +83,7 @@ class FragmentLogin :Fragment() {
         binding.tvFindAccount.setOnClickListener {
             setFrag(FragmentFindAccount())
         }
-        binding.tvSignUp.setOnClickListener { setFrag(FragmentSignUp()) }
+        binding.btnSignup.setOnClickListener { setFrag(FragmentSignUp()) }
     }
 
     fun showAlert(msg: String) {
