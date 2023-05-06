@@ -101,6 +101,8 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun getComments() {
+        cancelReply()
+        binding.etComment.setText("")
         val loopingDialog = looping()
         api.getComments(postId!!).enqueue(object : Callback<GetComments> {
             override fun onResponse(call: Call<GetComments>, response: Response<GetComments>) {
@@ -259,10 +261,7 @@ class FragmentBaedalPost :Fragment() {
 
         binding.btnPostComment.setOnClickListener {
             val content = binding.etComment.text.toString()
-            if (content.trim() != "") {
-                postComment(content, replyTo?._id)
-                binding.etComment.setText("")
-            }
+            if (content.trim() != "") postComment(content, replyTo?._id)
         }
     }
 
