@@ -6,7 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.watso.app.API.BaedalPost
 import com.watso.app.databinding.LytBaedalTableRowBinding
 
-class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+class TableRowAdapter() : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+
+    private val tableRows = mutableListOf<BaedalPost>()
+
+    fun setData(tableData: List<BaedalPost>) {
+        tableRows.clear()
+        tableRows.addAll(tableData)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalTableRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -17,20 +25,16 @@ class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<Ta
         val row = tableRows.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(row._id)
+            postClickListener.onClick(row._id)
         }
         holder.bind(row)
     }
 
-    interface OnItemClickListener {
-        fun onClick(postId: String)
-    }
+    interface OnPostClickListener { fun onClick(postId: String) }
 
-    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
-        this.itemClickListener = onItemClickListener
-    }
+    fun setPostClickListener(onPostClickListener: OnPostClickListener) { this.postClickListener = onPostClickListener }
 
-    private lateinit var itemClickListener : OnItemClickListener
+    private lateinit var postClickListener : OnPostClickListener
 
     override fun getItemCount(): Int {
         return tableRows.size
