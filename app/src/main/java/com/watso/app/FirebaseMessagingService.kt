@@ -87,7 +87,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // 오레오 버전 이후에는 채널이 필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Notice", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(channelId, "게시글 알림", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
 

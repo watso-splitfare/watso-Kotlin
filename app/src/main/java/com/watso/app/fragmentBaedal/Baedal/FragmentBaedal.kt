@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.watso.app.API.BaedalPost
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
+import com.watso.app.RequestPermission
 import com.watso.app.databinding.FragBaedalBinding
 import com.watso.app.fragmentAccount.FragmentAccount
 import com.watso.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
@@ -31,6 +32,14 @@ class FragmentBaedal :Fragment() {
     private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val mActivity = activity as MainActivity
+        val requestPermission = RequestPermission(mActivity)
+        requestPermission.checkNotificationPermission()
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
