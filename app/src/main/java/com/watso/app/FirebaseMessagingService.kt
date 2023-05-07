@@ -92,7 +92,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         // 알림 생성
-        notificationManager.notify(uniId, notificationBuilder.build())
+        Log.d("fcm", "요청")
+        if (MainActivity.prefs.getString("notificationPermission", "") == "true") {
+            notificationManager.notify(uniId, notificationBuilder.build())
+            Log.d("fcm", "성공")
+        }
     }
 
     /** Token 가져오기 */
