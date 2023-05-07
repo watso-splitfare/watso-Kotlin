@@ -20,7 +20,6 @@ import java.text.DecimalFormat
 
 class FragmentBaedalOrders :Fragment() {
     var postId = "-1"
-    var postTitle = ""
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
     var isMyorder = true
 
@@ -36,7 +35,6 @@ class FragmentBaedalOrders :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postId = it.getString("postId")!!
-            //postTitle = it.getString("postTitle")!!
             isMyorder = it.getString("isMyOrder")!!.toBoolean()
         }
 
@@ -46,7 +44,6 @@ class FragmentBaedalOrders :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalOrdersBinding.inflate(inflater, container, false)
-        //binding.tvPostTitle.text = postTitle
         binding.tvOrder.text = if (isMyorder) "내가 고른 메뉴" else "주문할 메뉴"
         refreshView()
 

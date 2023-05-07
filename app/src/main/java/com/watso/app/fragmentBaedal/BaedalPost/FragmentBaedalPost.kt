@@ -172,8 +172,6 @@ class FragmentBaedalPost :Fragment() {
                     setFrag(FragmentBaedalAdd(), mapOf(
                         "isUpdating" to "true",
                         "postId" to postId!!,
-                        // "title" to baedalPost.title,
-                        // "content" to if (baedalPost.content != null) baedalPost.content!! else "",
                         "orderTime" to orderTime.toString(),
                         "storeName" to store.name,
                         "place" to baedalPost.place,
@@ -191,7 +189,6 @@ class FragmentBaedalPost :Fragment() {
         }
 
         /** 포스트 내용 바인딩 */
-        //binding.tvPostTitle.text = baedalPost.title
 
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
@@ -414,14 +411,12 @@ class FragmentBaedalPost :Fragment() {
         binding.btnViewMyOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
                 "postId" to postId!!,
-                "postTitle" to baedalPost.title,
                 "isMyOrder" to "true"
             ))
         }
         binding.btnViewAllOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
                 "postId" to postId!!,
-                "postTitle" to baedalPost.title,
                 "isMyOrder" to "false"
             ))
         }
