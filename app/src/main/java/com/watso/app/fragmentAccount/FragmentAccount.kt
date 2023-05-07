@@ -17,10 +17,12 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class FragmentAccount :Fragment() {
+    private val TAG = "FragAccount"
     lateinit var userInfo: UserInfo
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+    val prefs = MainActivity.prefs
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
@@ -34,34 +36,6 @@ class FragmentAccount :Fragment() {
     override fun onDestroyView() {
         mBinding = null
         super.onDestroyView()
-    }
-
-    fun refreshView() {
-        binding.btnPrevious.setOnClickListener {
-            onBackPressed()
-        }
-
-        binding.lytLogout.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("로그아웃하기")
-                .setMessage("로그아웃 하시겠습니까?")
-                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> logout() })
-                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
-            builder.show()
-        }
-
-        binding.lytPw.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "pw")) }
-        binding.lytNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
-        binding.lytAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
-        binding.lytDeleteAccount.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("회원 탈퇴하기")
-                .setMessage("탈퇴 하시겠습니까?")
-                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                    deleteAccount() })
-                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
-            builder.show()
-        }
     }
 
     fun getUserInfo() {
@@ -93,6 +67,59 @@ class FragmentAccount :Fragment() {
         })
     }
 
+    fun refreshView() {
+        binding.btnPrevious.setOnClickListener {
+            onBackPressed()
+        }
+
+        binding.lytPw.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "pw")) }
+        binding.lytNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
+        binding.lytAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
+
+        bindSWNotificationPermission()
+
+        binding.lytLogout.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("로그아웃하기")
+                .setMessage("로그아웃 하시겠습니까?")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> logout() })
+                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+        }
+        binding.lytDeleteAccount.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("회원 탈퇴하기")
+                .setMessage("탈퇴 하시겠습니까?")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                    deleteAccount() })
+                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+        }
+    }
+
+    fun bindSWNotificationPermission() {
+        when (prefs.getString("notificationPermission", "")) {
+            "true" -> binding.swNotification.isChecked = true
+            else -> binding.swNotification.isChecked = false
+        }
+        binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
+        //binding.swNotification.setOnClickListener { setNotificationPermission() }
+    }
+
+    fun setNotificationPermission() {
+        Log.d(TAG, binding.swNotification.isChecked.toString())
+        when (prefs.getString("notificationPermission", "")) {
+            "" ->
+            {
+                val mActivity = activity as MainActivity
+                mActivity.requestNotiPermission()
+            }
+            "true" -> { prefs.setString("notificationPermission", "false") }
+            else -> prefs.setString("notificationPermission", "true")
+        }
+
+    }
+
     fun logout() {
         api.logout().enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
@@ -111,10 +138,10 @@ class FragmentAccount :Fragment() {
     fun removePrefs(makeToast: Boolean = true) {
         if (makeToast)
             makeToast("로그아웃 되었습니다.")
-        MainActivity.prefs.removeString("accessToken")
-        MainActivity.prefs.removeString("refreshToken")
-        MainActivity.prefs.removeString("userId")
-        MainActivity.prefs.removeString("nickname")
+        prefs.removeString("accessToken")
+        prefs.removeString("refreshToken")
+        prefs.removeString("userId")
+        prefs.removeString("nickname")
         setFrag(FragmentLogin(), null, 0)
     }
 

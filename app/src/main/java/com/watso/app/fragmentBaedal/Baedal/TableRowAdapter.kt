@@ -5,8 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.watso.app.API.BaedalPost
 import com.watso.app.databinding.LytBaedalTableRowBinding
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
-class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+class TableRowAdapter() : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+
+    private val tableRows = mutableListOf<BaedalPost>()
+
+    fun setData(tableData: List<BaedalPost>) {
+        tableRows.clear()
+        tableRows.addAll(tableData)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalTableRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -17,20 +28,16 @@ class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<Ta
         val row = tableRows.get(position)
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onClick(row._id)
+            postClickListener.onClick(row._id)
         }
         holder.bind(row)
     }
 
-    interface OnItemClickListener {
-        fun onClick(postId: String)
-    }
+    interface OnPostClickListener { fun onClick(postId: String) }
 
-    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
-        this.itemClickListener = onItemClickListener
-    }
+    fun setPostClickListener(onPostClickListener: OnPostClickListener) { this.postClickListener = onPostClickListener }
 
-    private lateinit var itemClickListener : OnItemClickListener
+    private lateinit var postClickListener : OnPostClickListener
 
     override fun getItemCount(): Int {
         return tableRows.size
@@ -40,8 +47,19 @@ class TableRowAdapter(val tableRows: List<BaedalPost>) : RecyclerView.Adapter<Ta
         fun bind(post: BaedalPost) {
             val currentMember = post.users.size.toString()
             val maxMember = post.maxMember
-
-            binding.tvTitle.text = post.title
+            val orderTime = LocalDateTime.parse(post.orderTime, DateTimeFormatter.ISO_DATE_TIME)
+            val status = when (post.status) {
+                "recruiting" -> "모집중"
+                "closed" -> "모집 마감"
+                "ordered" -> "주문 완료"
+                "delivered" -> "배달 완료"
+                else -> "마감"
+            }
+            binding.tvTime.text = orderTime.format(
+                    DateTimeFormatter.ofPattern("HH시 mm분", Locale.KOREAN)
+                    )
+            binding.tvStoreName.text = post.store.name
+            binding.tvStatus.text = status
             binding.tvPlace.text = post.place
             binding.tvMember.text = currentMember + " / " + maxMember + "명"
             binding.tvNickname.text = post.nickname

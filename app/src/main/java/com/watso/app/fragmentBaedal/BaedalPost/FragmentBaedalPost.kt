@@ -101,6 +101,8 @@ class FragmentBaedalPost :Fragment() {
     }
 
     fun getComments() {
+        cancelReply()
+        binding.etComment.setText("")
         val loopingDialog = looping()
         api.getComments(postId!!).enqueue(object : Callback<GetComments> {
             override fun onResponse(call: Call<GetComments>, response: Response<GetComments>) {
@@ -170,8 +172,6 @@ class FragmentBaedalPost :Fragment() {
                     setFrag(FragmentBaedalAdd(), mapOf(
                         "isUpdating" to "true",
                         "postId" to postId!!,
-                        // "title" to baedalPost.title,
-                        // "content" to if (baedalPost.content != null) baedalPost.content!! else "",
                         "orderTime" to orderTime.toString(),
                         "storeName" to store.name,
                         "place" to baedalPost.place,
@@ -189,7 +189,6 @@ class FragmentBaedalPost :Fragment() {
         }
 
         /** 포스트 내용 바인딩 */
-        //binding.tvPostTitle.text = baedalPost.title
 
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
@@ -259,10 +258,7 @@ class FragmentBaedalPost :Fragment() {
 
         binding.btnPostComment.setOnClickListener {
             val content = binding.etComment.text.toString()
-            if (content.trim() != "") {
-                postComment(content, replyTo?._id)
-                binding.etComment.setText("")
-            }
+            if (content.trim() != "") postComment(content, replyTo?._id)
         }
     }
 
@@ -279,6 +275,7 @@ class FragmentBaedalPost :Fragment() {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
                             Log.d("FragBaedalPost postComment", "성공")
+                            requestNotiPermission()
                             getComments()
                         } else {
                             Log.e("[ERR][POST][postComment]", "${response.raw().body()?.string()}")
@@ -414,14 +411,12 @@ class FragmentBaedalPost :Fragment() {
         binding.btnViewMyOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
                 "postId" to postId!!,
-                "postTitle" to baedalPost.title,
                 "isMyOrder" to "true"
             ))
         }
         binding.btnViewAllOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
                 "postId" to postId!!,
-                "postTitle" to baedalPost.title,
                 "isMyOrder" to "false"
             ))
         }
@@ -514,6 +509,11 @@ class FragmentBaedalPost :Fragment() {
                 onBackPressed()
             }
         })
+    }
+
+    fun requestNotiPermission() {
+        val mActivity = activity as MainActivity
+        mActivity.requestNotiPermission()
     }
 
     fun showSoftInput(view: View) {

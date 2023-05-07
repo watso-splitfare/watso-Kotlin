@@ -1,6 +1,7 @@
 package com.watso.app
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -22,6 +24,7 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+    private val TAG = "MainActivity"
 
     companion object {
         lateinit var prefs: PreferenceUtil
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         prefs = PreferenceUtil(applicationContext)
         Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
         Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
@@ -71,6 +75,30 @@ class MainActivity : AppCompatActivity() {
 
             Log.d("FCM 수신", dataStr)
             //binding.tvToken.text = dataStr
+        }
+    }
+
+    fun requestNotiPermission() {
+        if (prefs.getString("notificationPermission", "") == "") {
+            //val mActivity = activity as MainActivity
+            val requestPermission = RequestPermission(this)
+            requestPermission.requestNotificationPermission()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode != -1) {
+            val requestPermission = RequestPermission(this)
+            when (requestCode) {
+                requestPermission.PERMISSIONS_REQUEST_NOTIFICATION -> {
+                    if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        prefs.setString("notificationPermission", true.toString())
+                    } else {
+                        prefs.setString("notificationPermission", false.toString())
+                    }
+                }
+                else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
         }
     }
 

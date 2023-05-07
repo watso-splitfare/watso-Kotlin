@@ -2,6 +2,14 @@
 <font-family xmlns:android="http://schemas.android.com/apk/res/android">
     <font
         android:fontStyle="normal"
-        android:fontWeight="400"
-        android:font="@font/nanum_masitnun" />
+        android:fontWeight="300"
+        android:font="@font/ddangs_light" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="500"
+        android:font="@font/ddangs_medium" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="700"
+        android:font="@font/ddangs_bold" />
 </font-family>

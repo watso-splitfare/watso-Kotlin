@@ -5,22 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lyt_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#EFEFEF"
+        android:background="@color/secondery"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider">
+        tools:layout_editor_absoluteY="1dp">
 
         <TextView
             android:id="@+id/tv_section"
@@ -30,6 +21,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:text="TextView"
+            android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -53,7 +45,6 @@
         android:id="@+id/rv_menu_section"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

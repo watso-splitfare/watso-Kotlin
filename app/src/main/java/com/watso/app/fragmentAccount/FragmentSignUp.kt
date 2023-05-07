@@ -23,6 +23,10 @@ import retrofit2.Response
 
 class FragmentSignUp :Fragment() {
     var remainingSeconds = 0
+    var valifyTime = 300
+    var sendCoolTime = 10
+    var isSendAble = true
+    lateinit var job: Job
 
     private var mBinding: FragSignUpBinding? = null
     private val binding get() = mBinding!!
@@ -44,6 +48,7 @@ class FragmentSignUp :Fragment() {
     override fun onDestroyView() {
         mBinding = null
         super.onDestroyView()
+        job.cancel()
     }
 
     fun refreshView() {
@@ -208,16 +213,17 @@ class FragmentSignUp :Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
 
+        binding.tvCoolTime.visibility = View.GONE
         binding.btnSendCode.setOnClickListener {
             verifingEmail = binding.etEmail.text.toString()
-            if (verifingEmail != null) {
+            if (verifingEmail != null && isSendAble) {
 
                 val loopingDialog = looping()
                 api.sendVerificationCode(verifingEmail!!).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
-                            GlobalScope.launch { countDown(300) }
+                            job = GlobalScope.launch { countDown(valifyTime) }
                         } else {
                             Log.e("signUp Fragment - sendMail", response.toString())
                             makeToast("다시 시도해 주세요.")
@@ -231,6 +237,8 @@ class FragmentSignUp :Fragment() {
                     }
                 })
             }
+            else if (verifingEmail != null && !isSendAble ) binding.tvCoolTime.visibility = View.VISIBLE
+
         }
 
         binding.btnVerifyEmail.setOnClickListener {
@@ -322,10 +330,19 @@ class FragmentSignUp :Fragment() {
 
     suspend fun countDown(seconds: Int) {
         remainingSeconds = seconds
+        isSendAble = false
+        var remaingCoolTime = sendCoolTime
 
-        while (remainingSeconds >= 0) {
+        while (remainingSeconds > 0) {
             withContext(Dispatchers.Main) {
                 binding.tvVerifyCountdown.text = countDownStr(remainingSeconds)
+                if (remaingCoolTime > 0) {
+                    binding.tvCoolTime.text = "${remaingCoolTime}초 후에 재전송 가능합니다."
+                    remaingCoolTime--
+                } else {
+                    binding.tvCoolTime.visibility = View.GONE
+                    isSendAble = true
+                }
             }
             delay(1000)
 

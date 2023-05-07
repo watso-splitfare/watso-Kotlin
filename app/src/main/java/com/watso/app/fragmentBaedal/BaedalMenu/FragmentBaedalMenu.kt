@@ -1,6 +1,8 @@
 package com.watso.app.fragmentBaedal.BaedalMenu
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,7 +52,6 @@ class FragmentBaedalMenu :Fragment() {
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) {
             requestKey, bundle ->
-                viewClickAble = true
                 orderCnt = bundle.getInt("orderCnt")
                 setCartBtn()
             }
@@ -82,6 +83,7 @@ class FragmentBaedalMenu :Fragment() {
                         "storeInfo" to gson.toJson(storeInfo),
                         "orderCnt" to orderCnt.toString()
                     ))
+                    Handler(Looper.getMainLooper()).postDelayed({ viewClickAble = true}, 500)
                 }
             }
         })
@@ -99,10 +101,6 @@ class FragmentBaedalMenu :Fragment() {
                 if (response.code() == 200) {
                     storeInfo = response.body()!!
                     binding.tvStoreName.text = storeInfo.name
-                    binding.tvBaedalFee.text =
-                        "예상 배달비 : %s원".format(dec.format(storeInfo.fee))
-                    binding.tvMinOrder.text =
-                        "최소 배달 금액 : %s원".format(dec.format(storeInfo.minOrder))
                     adapter.setData(storeInfo.sections)
                 } else {
                     Log.e("baedalMenu Fragment - getSectionMenu", response.toString())

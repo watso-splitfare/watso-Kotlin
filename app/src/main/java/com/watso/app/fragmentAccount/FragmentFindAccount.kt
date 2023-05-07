@@ -21,6 +21,10 @@ import retrofit2.Response
 class FragmentFindAccount :Fragment() {
     var forgot = "id"
     var remainingSeconds = 0
+    var valifyTime = 300
+    var sendCoolTime = 10
+    var isSendAble = true
+    lateinit var job: Job
 
     private var mBinding: FragFindAccountBinding? = null
     private val binding get() = mBinding!!
@@ -37,6 +41,7 @@ class FragmentFindAccount :Fragment() {
     override fun onDestroyView() {
         mBinding = null
         super.onDestroyView()
+        job.cancel()
     }
 
     fun refreshView() {
@@ -62,6 +67,7 @@ class FragmentFindAccount :Fragment() {
             binding.etVerifyCode.setText("")
         }
         binding.btnFindUsername.setOnClickListener { findUsername() }
+        binding.tvCoolTime.visibility = View.GONE
         binding.btnSendCode.setOnClickListener { findPw() }
         binding.btnVerifyCode.setOnClickListener { verifyCode() }
     }
@@ -88,25 +94,27 @@ class FragmentFindAccount :Fragment() {
     }
 
     fun findPw() {
-        val loopingDialog = looping()
-        api.sendForgotPasswordToken(binding.etInputMailPw.text.toString()).enqueue(object: Callback<VoidResponse> {
-            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                looping(false, loopingDialog)
-                if (response.code()==204) {
-                    binding.tvResult.text = "입력하신 메일로 인증코드가 전송되었습니다."
-                    GlobalScope.launch { countDown(300) }
-                } else {
-                    Log.e("FragFindAccount pw", response.toString())
+        if ( isSendAble ) {
+            val loopingDialog = looping()
+            api.sendForgotPasswordToken(binding.etInputMailPw.text.toString()).enqueue(object : Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    looping(false, loopingDialog)
+                    if (response.code() == 204) {
+                        binding.tvResult.text = "입력하신 메일로 인증코드가 전송되었습니다."
+                        job = GlobalScope.launch { countDown(valifyTime) }
+                    } else {
+                        Log.e("FragFindAccount pw", response.toString())
+                        binding.tvResult.text = ""
+                    }
+                }
+
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                    looping(false, loopingDialog)
+                    Log.e("FragFindAccount pw", t.message.toString())
                     binding.tvResult.text = ""
                 }
-            }
-
-            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                looping(false, loopingDialog)
-                Log.e("FragFindAccount pw", t.message.toString())
-                binding.tvResult.text = ""
-            }
-        })
+            })
+        } else binding.tvCoolTime.visibility = View.VISIBLE
     }
 
     fun verifyCode() {
@@ -146,14 +154,23 @@ class FragmentFindAccount :Fragment() {
 
     suspend fun countDown(seconds: Int) {
         remainingSeconds = seconds
+        isSendAble = false
+        var remaingCoolTime = sendCoolTime
 
-        while (remainingSeconds >= 0) {
+        while (remainingSeconds > 0) {
             withContext(Dispatchers.Main) {
                 binding.tvVerifyCountdown.text = countDownStr(remainingSeconds)
+                if (remaingCoolTime > 0)
+                    binding.tvCoolTime.text = "${remaingCoolTime}초 후에 재전송 가능합니다."
+                else {
+                    binding.tvCoolTime.visibility = View.GONE
+                    isSendAble = true
+                }
             }
             delay(1000)
 
             remainingSeconds--
+            remaingCoolTime--
         }
 
         withContext(Dispatchers.Main) {

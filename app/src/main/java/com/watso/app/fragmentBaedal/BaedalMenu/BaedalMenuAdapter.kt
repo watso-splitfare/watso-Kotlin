@@ -3,6 +3,7 @@ package com.watso.app.fragmentBaedal.BaedalMenu
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +29,6 @@ class BaedalMenuAdapter() : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHol
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val menu = menus.get(position)
-
         holder.itemView.setOnClickListener {
             Log.d("메뉴 어댑터", "클릭")
             menuClickListener.onMenuClick(menu._id)
@@ -50,6 +50,7 @@ class BaedalMenuAdapter() : RecyclerView.Adapter<BaedalMenuAdapter.CustomViewHol
         val dec = DecimalFormat("#,###")
 
         fun bind(menu: SectionMenu) {
+            if (adapterPosition == 0) binding.divider.visibility = View.GONE
             binding.tvName.text = menu.name
             binding.tvPrice.text = "%s원".format(dec.format(menu.price))
         }

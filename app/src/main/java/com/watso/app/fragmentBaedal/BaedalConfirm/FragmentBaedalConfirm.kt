@@ -167,6 +167,7 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun goToPosting() {
+        requestNotiPermission()
         prefs.removeString("baedalPosting")
         prefs.removeString("storeInfo")
         prefs.removeString("userOrder")
@@ -182,6 +183,11 @@ class FragmentBaedalConfirm :Fragment() {
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvTotalPrice.text = "${dec.format(orderPrice + fee)}원"
         binding.btnConfirm.text = "메뉴 확정"
+    }
+
+    fun requestNotiPermission() {
+        val mActivity = activity as MainActivity
+        mActivity.requestNotiPermission()
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
