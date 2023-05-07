@@ -21,34 +21,21 @@ class RequestPermission(val activity: MainActivity) {
     val PERMISSIONS_REQUEST_NOTIFICATION = 123
 
     fun requestNotificationPermission() {
-        Log.d(TAG, "1")
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            Log.d(TAG, "2")
-//            checkAndroid13()
-//        } else callNotiPermissionDialog()
-        Log.d(TAG, isNotificationEnabled().toString())
-        if (!isNotificationEnabled()) {
-            callNotiPermissionDialog()//requestNotificationPermission()
-        }
+        if (isNotificationEnabled()) setPrefs(true)
+        else callNotiPermissionDialog()
     }
 
     private fun isNotificationEnabled(): Boolean {
         val notificationManager = activity.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            Log.d(TAG, "2")
-//            NotificationManagerCompat.from(activity).areNotificationsEnabled()
-//        } else {
-            Log.d(TAG, "3")
-            return notificationManager.areNotificationsEnabled()
-//        }
+        return notificationManager.areNotificationsEnabled()
     }
 
     private fun callNotiPermissionDialog() {
         Log.d(TAG, "4")
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("알림 권한 요청")
-            .setMessage("게시글 관련 안내사항이나 댓글을 알림으로 받아 보세요!")
-            .setPositiveButton("알림 받기", DialogInterface.OnClickListener { dialog, id ->
+            .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 받아 보세요!")
+            .setPositiveButton("알림 설정", DialogInterface.OnClickListener { dialog, id ->
                 getNotiPermission()
             })
             .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id ->
