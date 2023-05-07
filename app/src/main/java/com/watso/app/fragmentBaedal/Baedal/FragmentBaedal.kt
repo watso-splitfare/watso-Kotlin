@@ -40,15 +40,6 @@ class FragmentBaedal :Fragment() {
     private val binding get() = mBinding!!
     val api= API.create()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        /** 알림 권한 요청 */
-        val mActivity = activity as MainActivity
-        val requestPermission = RequestPermission(mActivity)
-        requestPermission.checkNotificationPermission()
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

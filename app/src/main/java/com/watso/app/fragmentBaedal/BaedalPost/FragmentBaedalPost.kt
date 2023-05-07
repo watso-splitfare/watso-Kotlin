@@ -278,6 +278,7 @@ class FragmentBaedalPost :Fragment() {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
                             Log.d("FragBaedalPost postComment", "성공")
+                            requestNotiPermission()
                             getComments()
                         } else {
                             Log.e("[ERR][POST][postComment]", "${response.raw().body()?.string()}")
@@ -513,6 +514,11 @@ class FragmentBaedalPost :Fragment() {
                 onBackPressed()
             }
         })
+    }
+
+    fun requestNotiPermission() {
+        val mActivity = activity as MainActivity
+        mActivity.requestNotiPermission()
     }
 
     fun showSoftInput(view: View) {
