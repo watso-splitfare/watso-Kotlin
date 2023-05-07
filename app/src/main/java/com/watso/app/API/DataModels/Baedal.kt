@@ -10,6 +10,8 @@ data class Store(
     val minOrder: Int,
     @SerializedName("phone_number")
     val telNum: String,
+    @SerializedName("logo_img_url")
+    val logiImgUrl: String,
     val note: List<String>
 )
 
@@ -22,6 +24,8 @@ data class StoreInfo(
     val fee: Int,
     @SerializedName("phone_number")
     val telNum: String,
+    @SerializedName("logo_img_url")
+    val logiImgUrl: String,
     val note: List<String>,
     val sections: MutableList<Section>
 )
@@ -65,7 +69,6 @@ data class Option(
 /** 게시글 조회  */
 data class BaedalPost(
     val _id: String,
-    val title: String,
     @SerializedName("user_id")
     val userId: Long,
     val nickname: String,
@@ -76,6 +79,7 @@ data class BaedalPost(
     val maxMember: Int,
     @SerializedName("order_time")
     val orderTime: String,
+    val fee: Int,
     val store: Store,
     var status: String,
     val users: List<Long>
