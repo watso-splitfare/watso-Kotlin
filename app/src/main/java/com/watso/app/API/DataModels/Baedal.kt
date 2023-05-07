@@ -7,7 +7,10 @@ data class Store(
     val name: String,
     val fee: Int,
     @SerializedName("min_order")
-    val minOrder: Int
+    val minOrder: Int,
+    @SerializedName("phone_number")
+    val telNum: String,
+    val note: List<String>
 )
 
 /** 가게 상세 정보(메뉴) 조회  */

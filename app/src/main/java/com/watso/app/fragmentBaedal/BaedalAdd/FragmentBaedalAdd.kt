@@ -47,6 +47,7 @@ class FragmentBaedalAdd :Fragment() {
     var storeNames = mutableListOf<String>()
     var storeFees = mutableListOf<Int>()
     var selectedIdx = 0
+    var selectedStore: Store? = null
 
     private var mBinding: FragBaedalAddBinding? = null
     private val binding get() = mBinding!!
@@ -170,6 +171,8 @@ class FragmentBaedalAdd :Fragment() {
                             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                                 baedalfee = storeFees[position]
                                 selectedIdx = position
+                                selectedStore = stores[position]
+                                bindStoreInfo()
                             }
 
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
@@ -188,6 +191,23 @@ class FragmentBaedalAdd :Fragment() {
                 onBackPressed()
             }
         })
+    }
+
+    fun bindStoreInfo() {
+        binding.tvMinOrder.text = "최소 주문 금액 : ${selectedStore!!.minOrder}원"
+        binding.tvFee.text = "배달비 : ${selectedStore!!.fee}원"
+        binding.tvTelNum.text = "가게번호 : ${selectedStore!!.telNum}"
+        var noteStr = ""
+        for ((idx, note)in selectedStore!!.note.withIndex()) {
+            if (note.trim() != "") {
+                noteStr += "·"
+                noteStr += note
+                if (idx < selectedStore!!.note.size - 1)
+                    noteStr += "\n"
+            }
+        }
+        if (noteStr.trim() == "") noteStr = "없음"
+        binding.tvNote.text = noteStr
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

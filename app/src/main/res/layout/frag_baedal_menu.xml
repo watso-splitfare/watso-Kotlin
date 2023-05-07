@@ -49,58 +49,16 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout15"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lyt_head">
-
-        <TextView
-            android:id="@+id/tv_baedal_fee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="예상 배달비 : 원"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_min_order"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="최소 배달 금액 : 원"
-            app:layout_constraintStart_toStartOf="@+id/tv_baedal_fee"
-            app:layout_constraintTop_toBottomOf="@+id/tv_baedal_fee" />
-
-        <TextView
-            android:id="@+id/tv_tel_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@+id/tv_baedal_fee"
-            app:layout_constraintTop_toBottomOf="@+id/tv_min_order" />
-
-        <TextView
-            android:id="@+id/tv_note"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_baedal_fee"
-            app:layout_constraintTop_toBottomOf="@+id/tv_tel_num" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_menu_section"
         android:layout_width="match_parent"
         android:layout_height="0dp"
 
-        android:layout_marginTop="16dp"
         android:nestedScrollingEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout15">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lyt_head">
 
     </androidx.recyclerview.widget.RecyclerView>
 
