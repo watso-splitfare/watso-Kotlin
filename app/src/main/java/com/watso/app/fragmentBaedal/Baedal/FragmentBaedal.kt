@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.Baedal
 
+import android.R
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -10,9 +11,12 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.watso.app.API.BaedalPost
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
@@ -29,6 +33,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class FragmentBaedal :Fragment() {
+    val TAG = "FragBaedal"
     var isTouched = false       // 새로고침 용
     var viewClickAble = true    // 포스트 중복 클릭 방지
 
@@ -127,8 +132,9 @@ class FragmentBaedal :Fragment() {
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 looping(false, loopingDialog)
                 if (response.code() == 200) {
-                    joinablePosts = response.body()!!//.sortedBy { it.orderTime }
+                    joinablePosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinablePosts)
+                    setSpiner()
                 } else {
                     Log.e("baedal Fragment - getBaedalPostListJoinable", response.toString())
                     makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
@@ -163,6 +169,32 @@ class FragmentBaedal :Fragment() {
                 binding.rvBaedalListJoined.visibility = View.VISIBLE
             } else joinableAdapter.setData(tables)
         } else if (isJoinedTable) binding.rvBaedalListJoined.visibility = View.GONE
+    }
+
+    fun setSpiner() {
+        val places = listOf("모두", "생자대", "기숙사")
+        val placeSpinerAdapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, places)
+        binding.spnFilter.adapter = placeSpinerAdapter
+        binding.spnFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                when (position) {
+                    0 -> mappingPostDate(joinablePosts)
+                    1 -> mappingPostDate(getFilteredPosts(places[1]))
+                    2 -> mappingPostDate(getFilteredPosts(places[2]))
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) { }
+        }
+    }
+
+    fun getFilteredPosts(filterBy: String): List<BaedalPost> {
+        val filteredPosts = mutableListOf<BaedalPost>()
+        joinablePosts.forEach {
+            if (it.place == filterBy) filteredPosts.add(it)
+        }
+
+        return filteredPosts
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
