@@ -41,7 +41,8 @@ class FragmentFindAccount :Fragment() {
     override fun onDestroyView() {
         mBinding = null
         super.onDestroyView()
-        job.cancel()
+        if (::job.isInitialized && job.isActive)
+            job.cancel()
     }
 
     fun refreshView() {
