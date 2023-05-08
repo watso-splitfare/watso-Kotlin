@@ -123,6 +123,8 @@ class FragmentBaedalOpt :Fragment() {
                 if (response.code() == 200) {
                     menuInfo = response.body()!!
                     binding.tvMenuName.text = menuInfo.name
+                    val dec = DecimalFormat("#,###")
+                    binding.tvMenuPrice.text = "기본 가격 : ${dec.format(menuInfo.price)}원"
                     mappingAdapter()
                     setGroupOptionData()
                     setOrderPrice()
