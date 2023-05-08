@@ -432,21 +432,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout17">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginVertical="4dp">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/btn_view_my_orders"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/btn_baedal_confirm"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/btn_view_all_orders"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/btn_primary_white_with_stroke_10">
 
                             <TextView
                                 android:id="@+id/tv_view_my_orders"
@@ -455,7 +453,7 @@
                                 android:layout_marginTop="8dp"
                                 android:layout_marginBottom="8dp"
                                 android:text="내 주문 보기"
-                                android:textColor="@color/white"
+                                android:textColor="@color/black"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -465,13 +463,9 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/btn_view_all_orders"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="4dp"
-                            android:background="@drawable/btn_baedal_confirm"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/btn_view_my_orders"
-                            app:layout_constraintTop_toTopOf="parent">
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/btn_primary_white_with_stroke_10">
 
                             <TextView
                                 android:id="@+id/tv_view_all_orders"
@@ -479,22 +473,21 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:layout_marginBottom="8dp"
-                                android:text="전체 주문 보기"
-                                android:textColor="@color/white"
+                                android:text="다른사람 주문내역 보기!"
+                                android:textColor="@color/black"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    </LinearLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/btn_order"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginVertical="4dp"
-                        android:background="@drawable/btn_baedal_confirm">
+                        android:background="@drawable/btn_primary_blue_10">
 
                         <TextView
                             android:id="@+id/tv_order"
@@ -515,7 +508,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="4dp"
-                        android:background="@drawable/btn_baedal_confirm">
+                        android:background="@drawable/btn_primary_blue_10">
 
                         <TextView
                             android:id="@+id/tv_complete"

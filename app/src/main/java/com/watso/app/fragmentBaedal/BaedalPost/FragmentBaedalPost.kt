@@ -395,17 +395,19 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 }
                 else -> {
                     binding.tvComplete.text = "배달 완료"
-                    binding.btnComplete.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                    binding.btnComplete.setBackgroundResource(R.drawable.btn_primary_gray_10)
                     binding.btnComplete.visibility = View.VISIBLE
                 }
             }
         } else {
             if (isMember) {
-                binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm)
-                binding.btnViewMyOrders.isEnabled = true
+                binding.btnViewMyOrders.visibility = View.VISIBLE
+                //binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm)
+                //binding.btnViewMyOrders.isEnabled = true
             } else {
-                binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-                binding.btnViewMyOrders.isEnabled = false
+                binding.btnViewMyOrders.visibility = View.GONE
+                //binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                //binding.btnViewMyOrders.isEnabled = false
             }
 
             when (baedalPost.status) {
@@ -424,8 +426,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
-        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
-        else binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_blue_10)
+        else binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_gray_10)
         binding.btnOrder.isEnabled = isEnabled
         binding.tvOrder.text = text
     }
