@@ -194,7 +194,7 @@ class FragmentBaedalPost :Fragment() {
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
         binding.tvStore.text = store.name
-        binding.tvCurrentMember.text = baedalPost.users.size.toString()
+        binding.tvCurrentMember.text = "${baedalPost.users.size}명 (최소 ${baedalPost.minMember}명 필요)"
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
         /** 하단 버튼 바인딩 */
