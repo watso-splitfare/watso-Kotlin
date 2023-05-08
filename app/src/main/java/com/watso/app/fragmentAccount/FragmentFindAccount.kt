@@ -74,48 +74,52 @@ class FragmentFindAccount :Fragment() {
     }
 
     fun findUsername() {
-        val loopingDialog = looping()
-        api.sendForgotUsername(binding.etInputMailUsername.text.toString()).enqueue(object: Callback<VoidResponse> {
-            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                looping(false, loopingDialog)
-                if (response.code()==204) {
-                    binding.tvResult.text = "입력하신 메일로 아이디가 전송되었습니다."
-                } else {
-                    Log.e("FragFindAccount username", response.toString())
-                    binding.tvResult.text = ""
-                }
-            }
-
-            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                looping(false, loopingDialog)
-                Log.e("FragFindAccount username", t.message.toString())
-                binding.tvResult.text = ""
-            }
-        })
-    }
-
-    fun findPw() {
-        if ( isSendAble ) {
+        if (binding.etInputMailUsername.text.toString() != "") {
             val loopingDialog = looping()
-            api.sendForgotPasswordToken(binding.etInputMailPw.text.toString()).enqueue(object : Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+            api.sendForgotUsername(binding.etInputMailUsername.text.toString()).enqueue(object : Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
                     looping(false, loopingDialog)
                     if (response.code() == 204) {
-                        binding.tvResult.text = "입력하신 메일로 인증코드가 전송되었습니다."
-                        job = GlobalScope.launch { countDown(valifyTime) }
+                        binding.tvResult.text = "입력하신 메일로 아이디가 전송되었습니다."
                     } else {
-                        Log.e("FragFindAccount pw", response.toString())
+                        Log.e("FragFindAccount username", response.toString())
                         binding.tvResult.text = ""
                     }
                 }
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     looping(false, loopingDialog)
-                    Log.e("FragFindAccount pw", t.message.toString())
+                    Log.e("FragFindAccount username", t.message.toString())
                     binding.tvResult.text = ""
                 }
             })
-        } else binding.tvCoolTime.visibility = View.VISIBLE
+        }
+    }
+
+    fun findPw() {
+        if (binding.etInputMailPw.text.toString() != "") {
+            if (isSendAble) {
+                val loopingDialog = looping()
+                api.sendForgotPasswordToken(binding.etInputMailPw.text.toString()).enqueue(object : Callback<VoidResponse> {
+                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                        looping(false, loopingDialog)
+                        if (response.code() == 204) {
+                            binding.tvResult.text = "입력하신 메일로 인증코드가 전송되었습니다."
+                            job = GlobalScope.launch { countDown(valifyTime) }
+                        } else {
+                            Log.e("FragFindAccount pw", response.toString())
+                            binding.tvResult.text = ""
+                        }
+                    }
+
+                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                        looping(false, loopingDialog)
+                        Log.e("FragFindAccount pw", t.message.toString())
+                        binding.tvResult.text = ""
+                    }
+                })
+            } else binding.tvCoolTime.visibility = View.VISIBLE
+        }
     }
 
     fun verifyCode() {
