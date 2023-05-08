@@ -67,13 +67,13 @@ class FragmentBaedalOpt :Fragment() {
 
         binding.btnSub.setOnClickListener {
             if (quantity > 1) {
-                binding.tvQuantity.text = (--quantity).toString()
+                binding.tvQuantity.text = "${(--quantity)}개"
                 setOrderPrice()
             }
         }
         binding.btnAdd.setOnClickListener {
             if (quantity < 10) {
-                binding.tvQuantity.text = (++quantity).toString()
+                binding.tvQuantity.text = "${(++quantity)}개"
                 setOrderPrice()
             }
         }
