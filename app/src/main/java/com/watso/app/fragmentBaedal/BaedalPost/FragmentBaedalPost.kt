@@ -301,7 +301,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             requestNotiPermission()
                             getComments()
                         } else {
-                            Log.e("[ERR][POST][postComment]", "${response.raw().body()?.string()}")
+                            Log.e("[ERR][POST][postComment]", "${response.errorBody()?.string()}")
                             makeToast("다시 시도해주세요.")
                         }
                     }
@@ -321,7 +321,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         Log.d("FragBaedalPost postComment", "성공")
                         getComments()
                     } else {
-                        Log.e("[ERR][POST][postSubComment]", "${response.raw().body()?.string()}")
+                        Log.e("[ERR][POST][postSubComment]", "${response.errorBody()?.string()}")
                         makeToast("다시 시도해주세요.")
                     }
                 }
