@@ -67,13 +67,13 @@ class FragmentBaedalOpt :Fragment() {
 
         binding.btnSub.setOnClickListener {
             if (quantity > 1) {
-                binding.tvQuantity.text = (--quantity).toString()
+                binding.tvQuantity.text = "${(--quantity)}개"
                 setOrderPrice()
             }
         }
         binding.btnAdd.setOnClickListener {
             if (quantity < 10) {
-                binding.tvQuantity.text = (++quantity).toString()
+                binding.tvQuantity.text = "${(++quantity)}개"
                 setOrderPrice()
             }
         }
@@ -123,6 +123,8 @@ class FragmentBaedalOpt :Fragment() {
                 if (response.code() == 200) {
                     menuInfo = response.body()!!
                     binding.tvMenuName.text = menuInfo.name
+                    val dec = DecimalFormat("#,###")
+                    binding.tvMenuPrice.text = "기본 가격 : ${dec.format(menuInfo.price)}원"
                     mappingAdapter()
                     setGroupOptionData()
                     setOrderPrice()

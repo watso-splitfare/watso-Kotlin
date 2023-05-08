@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -31,8 +32,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class FragmentBaedalPost :Fragment() {
+class FragmentBaedalPost :Fragment(), View.OnTouchListener {
+    val TAG = "FragBaedalPost"
     val prefs = MainActivity.prefs
+    var isScrolled = false
+
     var postId: String? = null
     var userId = prefs.getString("userId", "-1").toLong()
     val dec = DecimalFormat("#,###")
@@ -54,13 +58,32 @@ class FragmentBaedalPost :Fragment() {
             postId = it.getString("postId")!!
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        hideSoftInput()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
         refreshView()
-
+        binding.nestedScrollView2.setOnTouchListener(this)
+        binding.lytComment.setOnTouchListener(this)
+        binding.rvComment.setOnTouchListener(this)
         return binding.root
+    }
+
+    override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_MOVE -> isScrolled = true
+            MotionEvent.ACTION_UP -> {
+                if (!isScrolled) hideSoftInput()
+                isScrolled = false
+            }
+        }
+        return false
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -194,7 +217,7 @@ class FragmentBaedalPost :Fragment() {
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
         binding.tvStore.text = store.name
-        binding.tvCurrentMember.text = baedalPost.users.size.toString()
+        binding.tvCurrentMember.text = "${baedalPost.users.size}명 (최소 ${baedalPost.minMember}명 필요)"
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
         /** 하단 버튼 바인딩 */
@@ -278,7 +301,7 @@ class FragmentBaedalPost :Fragment() {
                             requestNotiPermission()
                             getComments()
                         } else {
-                            Log.e("[ERR][POST][postComment]", "${response.raw().body()?.string()}")
+                            Log.e("[ERR][POST][postComment]", "${response.errorBody()?.string()}")
                             makeToast("다시 시도해주세요.")
                         }
                     }
@@ -298,7 +321,7 @@ class FragmentBaedalPost :Fragment() {
                         Log.d("FragBaedalPost postComment", "성공")
                         getComments()
                     } else {
-                        Log.e("[ERR][POST][postSubComment]", "${response.raw().body()?.string()}")
+                        Log.e("[ERR][POST][postSubComment]", "${response.errorBody()?.string()}")
                         makeToast("다시 시도해주세요.")
                     }
                 }
@@ -520,6 +543,13 @@ class FragmentBaedalPost :Fragment() {
         view.requestFocus()
         val mActivity = activity as MainActivity
         mActivity.showSoftInput(view)
+    }
+
+    fun hideSoftInput() {
+        Log.d(TAG, "키보드 숨기기")
+        Log.d(TAG, view.toString())
+        val mActivity = activity as MainActivity
+        return mActivity.hideSoftInput()
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
