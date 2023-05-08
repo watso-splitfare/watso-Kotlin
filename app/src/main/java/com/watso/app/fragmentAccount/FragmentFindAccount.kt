@@ -19,6 +19,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class FragmentFindAccount :Fragment() {
+    val TAG = "FragFindAccount"
     var forgot = "id"
     var remainingSeconds = 0
     var valifyTime = 300
@@ -43,6 +44,7 @@ class FragmentFindAccount :Fragment() {
         super.onDestroyView()
         if (::job.isInitialized && job.isActive)
             job.cancel()
+        hideSoftInput()
     }
 
     fun refreshView() {
@@ -52,20 +54,22 @@ class FragmentFindAccount :Fragment() {
 
         binding.tvFindId.setOnClickListener {
             forgot = "id"
+            hideSoftInput()
+            binding.etInputMailPw.setText("")
+            binding.etVerifyCode.setText("")
             binding.lytFindUsername.visibility = View.VISIBLE
             binding.lytFindPw.visibility = View.GONE
             binding.tvFindId.setTextColor(ContextCompat.getColor(requireContext(), R.color.kara))
             binding.tvFindPw.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.etInputMailUsername.setText("")
         }
         binding.tvFindPw.setOnClickListener {
             forgot = "pw"
+            hideSoftInput()
+            binding.etInputMailUsername.setText("")
             binding.lytFindUsername.visibility = View.GONE
             binding.lytFindPw.visibility = View.VISIBLE
             binding.tvFindId.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             binding.tvFindPw.setTextColor(ContextCompat.getColor(requireContext(), R.color.kara))
-            binding.etInputMailPw.setText("")
-            binding.etVerifyCode.setText("")
         }
         binding.btnFindUsername.setOnClickListener { findUsername() }
         binding.tvCoolTime.visibility = View.GONE
@@ -191,6 +195,13 @@ class FragmentFindAccount :Fragment() {
         val min = seconds / 60
         val sec = seconds % 60
         return String.format("%02d:%02d", min, sec)
+    }
+
+    fun hideSoftInput() {
+        Log.d(TAG, "키보드 숨기기")
+        Log.d(TAG, view.toString())
+        val mActivity = activity as MainActivity
+        return mActivity.hideSoftInput()
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
