@@ -165,7 +165,8 @@ class FragmentBaedalAdd :Fragment() {
                     val searchmethod = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, storeNames)
 
                     searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    binding.spnStore!!.adapter = searchmethod
+                    binding.spnStore.setTitle("")
+                    binding.spnStore.adapter = searchmethod
                     binding.spnStore.onItemSelectedListener =
                         object : AdapterView.OnItemSelectedListener {
                             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
