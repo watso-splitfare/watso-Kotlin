@@ -429,13 +429,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     fun setBottomBtn() {
         binding.btnViewMyOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
-                "postId" to postId!!,
+                "postJson" to gson.toJson(baedalPost),
                 "isMyOrder" to "true"
             ))
         }
         binding.btnViewAllOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
-                "postId" to postId!!,
+                "postJson" to gson.toJson(baedalPost),
                 "isMyOrder" to "false"
             ))
         }

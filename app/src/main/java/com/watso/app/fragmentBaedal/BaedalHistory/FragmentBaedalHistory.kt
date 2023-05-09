@@ -90,8 +90,8 @@ class FragmentBaedalHistory :Fragment() {
         binding.rvBaedalListJoined.adapter = adapter
 
         adapter.setShowOrderListener(object : HistoryAdapter.OnOrderBtnListener {
-            override fun showOrder(postId: String) {
-                setFrag(FragmentBaedalOrders(), mapOf("postId" to postId, "isMyOrder" to "true"))
+            override fun showOrder(postJson: String) {
+                setFrag(FragmentBaedalOrders(), mapOf("postJson" to postJson, "isMyOrder" to "true"))
             }
         })
         adapter.setShowPostListener(object : HistoryAdapter.OnPostBtnListener {
