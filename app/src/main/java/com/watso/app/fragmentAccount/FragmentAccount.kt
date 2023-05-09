@@ -72,7 +72,7 @@ class FragmentAccount :Fragment() {
             onBackPressed()
         }
 
-        binding.lytPw.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "pw")) }
+        binding.lytPassword.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "password")) }
         binding.lytNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
         binding.lytAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
 
