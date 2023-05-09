@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -31,8 +32,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class FragmentBaedalAdd :Fragment() {
+class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalAdd"
+    var isScrolled = false
+
     var isUpdating = false
     var postId:String? = null
     var title: String? = null
@@ -80,15 +83,31 @@ class FragmentBaedalAdd :Fragment() {
         mBinding = FragBaedalAddBinding.inflate(inflater, container, false)
 
         refreshView()
+        binding.scrollView2.setOnTouchListener(this)
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        hideSoftInput()
+    }
+
+    override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_MOVE -> isScrolled = true
+            MotionEvent.ACTION_UP -> {
+                if (!isScrolled) hideSoftInput()
+                isScrolled = false
+            }
+        }
+        return false
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
-
         binding.lytTime.setOnClickListener { showCalendar() }
 
         val places = listOf("생자대", "기숙사")
@@ -297,6 +316,11 @@ class FragmentBaedalAdd :Fragment() {
                 "storeId" to storeIds[selectedIdx])
             )
         }
+    }
+
+    fun hideSoftInput() {
+        val mActivity = activity as MainActivity
+        return mActivity.hideSoftInput()
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
