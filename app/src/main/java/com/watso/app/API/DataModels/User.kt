@@ -42,17 +42,16 @@ data class UpdateNickname(
     val nickname: String
 )
 data class UpdatePassword(
-//    @SerializedName("current_password")
-//    val currentPassword: String,
+    @SerializedName("current_password")
+    val currentPassword: String,
     @SerializedName("new_password")
     val newPassword: String
 )
 
 /** 찾기 */
 
-data class TempAuthCode(
-    @SerializedName("auth_code")
-    val authCode:String,
+data class ForgotPassword(
+    val username: String,
     val email: String
 )
 
