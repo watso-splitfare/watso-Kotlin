@@ -53,7 +53,7 @@ class FragmentBaedalMenu :Fragment() {
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) {
             requestKey, bundle ->
                 orderCnt = bundle.getInt("orderCnt")
-                setCartBtn()
+                setFooter()
             }
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
@@ -61,9 +61,7 @@ class FragmentBaedalMenu :Fragment() {
         setAdapter()
         getStoreInfo()
 
-        binding.lytCart.setOnClickListener { cartOnClick() }
-        binding.btnCart.setOnClickListener { cartOnClick() }
-        setCartBtn()
+        setFooter()
 
         return binding.root
     }
@@ -116,20 +114,12 @@ class FragmentBaedalMenu :Fragment() {
         })
     }
 
-    fun setCartBtn() {
+    fun setFooter() {
+        binding.btnCart.setOnClickListener { cartOnClick() }
         binding.tvCartCount.text = orderCnt.toString()
 
-        if (orderCnt > 0) {
-            binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart)
-            binding.lytCartCount.visibility = View.VISIBLE
-            binding.btnCart.setEnabled(true)
-            binding.lytCart.setEnabled(true)
-        } else {
-            binding.lytCart.setBackgroundResource(R.drawable.btn_baedal_cart_empty)
-            binding.lytCartCount.visibility = View.INVISIBLE
-            binding.btnCart.setEnabled(false)
-            binding.lytCart.setEnabled(false)
-        }
+        if (orderCnt > 0) binding.lytFooter.visibility = View.VISIBLE
+        else binding.lytFooter.visibility = View.GONE
     }
 
     fun cartOnClick(){
