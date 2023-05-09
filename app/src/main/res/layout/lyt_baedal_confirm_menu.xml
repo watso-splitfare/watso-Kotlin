@@ -52,7 +52,6 @@
                     android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -67,8 +66,7 @@
                 android:layout_marginEnd="12dp"
                 android:text="TextView"
                 android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/tv_price"
@@ -78,8 +76,7 @@
                 android:layout_marginEnd="12dp"
                 android:text="TextView"
                 android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btn_remove"
