@@ -23,10 +23,10 @@
             android:id="@+id/btn_previous"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/divider34"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/previous" />
@@ -36,23 +36,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:text="TextView"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/divider34"
             app:layout_constraintStart_toEndOf="@+id/btn_previous"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/divider34"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <View
-        android:id="@+id/divider34"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@+id/lyt_head" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -62,7 +66,7 @@
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider34">
+        app:layout_constraintTop_toBottomOf="@+id/lyt_head">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -192,7 +196,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="주문금액"
-                    android:textSize="12sp"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toTopOf="@+id/tv_sign_up"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView_mail" />
@@ -203,8 +207,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="1인당 예상 배달비"
-                    android:textSize="12sp"
+                    android:text="1인당 예상 배달비 (최소 인원 달성시)"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toTopOf="@+id/textView7"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -214,7 +218,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="예상 본인 부담 금액"
-                    android:textSize="15sp"
+                    android:textSize="16sp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -228,7 +232,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="TextView"
-                    android:textSize="12sp"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toTopOf="@+id/tv_baedal_fee"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView_mail" />
@@ -240,7 +244,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="TextView"
-                    android:textSize="12sp"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toTopOf="@+id/tv_total_price"
                     app:layout_constraintEnd_toEndOf="parent" />
 
@@ -250,7 +254,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:text="TextView"
-                    android:textSize="15sp"
+                    android:textSize="16sp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -273,29 +277,40 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginVertical="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toTopOf="@+id/btn_confirm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_confirm"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/btn_baedal_confirm"
-            android:text="주문하기"
-            android:textColor="#FFFFFF"
-            android:textSize="26sp"
-            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/btn_primary_blue_10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider4" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/tv_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="배달왔소 등록"
+                android:textColor="@color/background"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
