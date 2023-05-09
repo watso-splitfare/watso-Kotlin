@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.watso.app.API.*
 import com.watso.app.LoopingDialog
@@ -29,6 +32,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalAdd :Fragment() {
+    val TAG = "FragBaedalAdd"
     var isUpdating = false
     var postId:String? = null
     var title: String? = null
@@ -90,6 +94,16 @@ class FragmentBaedalAdd :Fragment() {
         val places = listOf("생자대", "기숙사")
         val placeSpinerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, places)
         binding.spnPlace.adapter = placeSpinerAdapter
+        binding.etMinMember.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onMemberChanged() }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+        binding.etMaxMember.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onMemberChanged() }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
 
         if (isUpdating) {
             binding.tvOrderTime.text = getDateTimeFormating(orderTime!!)
@@ -97,14 +111,9 @@ class FragmentBaedalAdd :Fragment() {
             binding.tvStoreName.text = storeName
 
             if (place == "기숙사") binding.spnPlace.setSelection(1)
-            if (minMember != 0) {
-                binding.cbMinMember.setChecked(true)
-                binding.etMinMember.setText(minMember.toString())
-            }
-            if (maxMember != 0) {
-                binding.cbMaxMember.setChecked(true)
-                binding.etMaxMember.setText(maxMember.toString())
-            }
+            binding.etMinMember.setText(minMember.toString())
+            binding.etMaxMember.setText(maxMember.toString())
+
             binding.tvCompletePostinfo.text = "수정 완료"
         } else {
             orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
@@ -211,12 +220,32 @@ class FragmentBaedalAdd :Fragment() {
         binding.tvNote.text = noteStr
     }
 
+    fun onMemberChanged() {
+        val min = binding.etMinMember.text.toString()
+        val max = binding.etMaxMember.text.toString()
+        val memberAlert = binding.tvMemberAlert
+        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.btn_primary_gray_10)
+        binding.btnCompletePostinfo.isEnabled = false
+
+        if (min != "" && max != "") {
+            when {
+                min.toInt() > max.toInt() -> memberAlert.text = "최소주문 인원은 최대주문 인원보다 많을 수 없습니다."
+                min.toInt() < 2 -> memberAlert.text = "최소주문 인원은 2명 이상이어야 합니다."
+                else -> {
+                    memberAlert.text = ""
+                    binding.btnCompletePostinfo.setBackgroundResource(R.drawable.btn_primary_blue_10)
+                    binding.btnCompletePostinfo.isEnabled = true
+                }
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun btnCompletePostInfo() {
-        val minMember = if (binding.cbMinMember.isChecked && binding.etMinMember.text.toString() != "")
-            binding.etMinMember.text.toString().toInt() else 1
-        val maxMember = if (binding.cbMaxMember.isChecked && binding.etMaxMember.text.toString() != "")
-            binding.etMaxMember.text.toString().toInt() else 999
+        val minMember = if (binding.etMinMember.text.toString() != "")
+            binding.etMinMember.text.toString().toInt() else 2
+        val maxMember = if (binding.etMaxMember.text.toString() != "")
+            binding.etMaxMember.text.toString().toInt() else 100
 
         if (isUpdating) {
             /** 게시글 수정 */
