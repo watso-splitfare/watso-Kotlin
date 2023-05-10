@@ -153,8 +153,8 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 val timeSetListener =
                     TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                         run {
-                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:01"
-                            orderTime = LocalDateTime.parse(dateString+timeString).toString()
+                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:00"
+                            orderTime = dateString+timeString
                             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
                         }
                     }

@@ -155,10 +155,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         val joinUsers = baedalPost.users
         isMember = joinUsers.contains(userId)
         val store = baedalPost.store
-        Log.d("FragBaedalPost isOwner", (userId==baedalPost.userId).toString())
-        Log.d("FragBaedalPost ismember", isMember.toString())
-        Log.d("FragBaedalPost status", baedalPost.status)
-        val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
+        val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
 
         if (userId == baedalPost.userId) {
             binding.tvDelete.text = "삭제"
@@ -195,7 +192,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     setFrag(FragmentBaedalAdd(), mapOf(
                         "isUpdating" to "true",
                         "postId" to postId!!,
-                        "orderTime" to orderTime.toString(),
+                        "orderTime" to baedalPost.orderTime,
                         "storeName" to store.name,
                         "place" to baedalPost.place,
                         "minMember" to if (baedalPost.minMember != null) baedalPost.minMember.toString() else "0",
