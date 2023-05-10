@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,9 +39,11 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: MutableList<U
             Log.d("userOrder 어댑터", userOrder.toString())
             val dec = DecimalFormat("#,###")
             var sumPrice = 0
-            userOrder.orders.forEach { sumPrice += it.price!! }
-            if (userOrder.isMyOrder!!) binding.tvOrderUser.text = "주문금액: ${dec.format(sumPrice)}원"
-            else binding.tvOrderUser.text = "주문자: ${userOrder.nickname}  주문금액: ${dec.format(sumPrice)}원"
+            userOrder.orders.forEach { sumPrice += it.price!! * it.quantity }
+            binding.tvOrderUser.text = "주문자: ${userOrder.nickname}  주문금액: ${dec.format(sumPrice)}원"
+            val requestComment = userOrder.requestComment
+            if (requestComment.trim() == "") binding.tvRequest.visibility = View.GONE
+            else binding.tvRequest.text = "요청사항: ${requestComment}"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
             val adapter = SelectedMenuAdapter(context, userOrder.orders, false, isMyOrder)

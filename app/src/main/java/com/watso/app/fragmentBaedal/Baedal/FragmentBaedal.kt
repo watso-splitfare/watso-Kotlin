@@ -72,8 +72,9 @@ class FragmentBaedal :Fragment() {
     }
 
     fun setAdapter() {
-        joinedAdapter = TableAdapter(requireContext())
-        joinableAdapter = TableAdapter(requireContext())
+        val mActivity = activity as MainActivity
+        joinedAdapter = TableAdapter(mActivity)
+        joinableAdapter = TableAdapter(mActivity)
 
         joinedAdapter.setPostClickListener(object: TableAdapter.OnPostClickListener {
             override fun onClick(postId: String) {

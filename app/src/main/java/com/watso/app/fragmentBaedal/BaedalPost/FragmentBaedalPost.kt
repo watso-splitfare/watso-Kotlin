@@ -6,12 +6,11 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.util.TypedValue
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -69,7 +68,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
         refreshView()
-        binding.nestedScrollView2.setOnTouchListener(this)
+        binding.lytContent.setOnTouchListener(this)
         binding.lytComment.setOnTouchListener(this)
         binding.rvComment.setOnTouchListener(this)
         return binding.root
@@ -150,15 +149,16 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         })
     }
 
+    fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, requireContext().resources.displayMetrics).toInt()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun setPost() {
         val joinUsers = baedalPost.users
         isMember = joinUsers.contains(userId)
         val store = baedalPost.store
-        Log.d("FragBaedalPost isOwner", (userId==baedalPost.userId).toString())
-        Log.d("FragBaedalPost ismember", isMember.toString())
-        Log.d("FragBaedalPost status", baedalPost.status)
-        val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ISO_DATE_TIME)
+        val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
 
         if (userId == baedalPost.userId) {
             binding.tvDelete.text = "삭제"
@@ -174,6 +174,64 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
         }
+
+
+        val contentView = binding.lytContent
+        val marginLayoutParams = binding.scrollMargin.layoutParams
+
+        /** 가게 정보의 길이에 맞게 스크롤의 길이를 늘린다 */
+        binding.lytStoreInfo.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val infoHeight = binding.lytStoreInfo.height
+                contentView.scrollTo(0, infoHeight)
+                marginLayoutParams.height = infoHeight
+                binding.scrollMargin.layoutParams = marginLayoutParams
+                binding.scrollMargin.requestLayout()
+                if (contentView.scrollY == infoHeight)
+                    binding.lytStoreInfo.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
+        /** 댓글 길이에 맞게 content하단에 마진을 넣는다 */
+        binding.lytComment.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val windowh = binding.constraintLayout2.height
+                val headh = binding.lytHead.height
+                val posth = binding.lytPostContent.height
+                val commenth = binding.lytComment.height
+                val realContenth = posth + commenth
+                val addComh = binding.lytAddComment.height
+                val needMargin = windowh - headh - realContenth - addComh
+
+                if (needMargin > 0) {
+                    val contentLayoutParams = binding.lytComment.layoutParams as ViewGroup.MarginLayoutParams
+                    val m8 = dpToPx(8.0f)
+                    contentLayoutParams.setMargins(m8, m8, m8, needMargin - m8)
+                    binding.lytComment.layoutParams = contentLayoutParams
+                    if (binding.lytComment.marginBottom == needMargin - m8)
+                        binding.lytComment.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                } else binding.lytComment.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
+        contentView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            Log.d(TAG, "scroolY: $scrollY")
+            val max = contentView.getChildAt(0).height - contentView.height
+            val alpha = 1.0f - ( (max-scrollY).toFloat() / max.toFloat())
+
+            binding.lytBack.alpha = alpha
+        }
+
+        binding.tvMinOrder.text = store.minOrder.toString()
+        binding.tvFee.text = store.fee.toString()
+        binding.tvTelNum.text = store.telNum
+        var noteStr = ""
+        for ((idx, note) in store.note.withIndex()) {
+            noteStr += note
+            if (idx < store.note.size - 1)
+                noteStr += "\n"
+        }
+        binding.tvNote.text = noteStr
 
         /** 게시글 삭제 버튼 */
         binding.tvDelete.setOnClickListener {
@@ -195,7 +253,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     setFrag(FragmentBaedalAdd(), mapOf(
                         "isUpdating" to "true",
                         "postId" to postId!!,
-                        "orderTime" to orderTime.toString(),
+                        "orderTime" to baedalPost.orderTime,
                         "storeName" to store.name,
                         "place" to baedalPost.place,
                         "minMember" to if (baedalPost.minMember != null) baedalPost.minMember.toString() else "0",
@@ -213,10 +271,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
         /** 포스트 내용 바인딩 */
 
+        binding.tvStore.text = store.name
+        binding.lytStore.setOnClickListener { }
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
-        binding.tvStore.text = store.name
         binding.tvCurrentMember.text = "${baedalPost.users.size}명 (최소 ${baedalPost.minMember}명 필요)"
         binding.tvFee.text = "${dec.format(store.fee)}원"
 
@@ -229,22 +288,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         binding.lytStatusOpen.setOnClickListener { if (baedalPost.status == "closed") setStatus("recruiting")}
         binding.lytStatusClosed.setOnClickListener { if (baedalPost.status == "recruiting") setStatus("closed") }
 
-        if (baedalPost.userId == userId) {
-            binding.btnOrder.visibility = View.GONE
-            if (baedalPost.status == "recruiting" || baedalPost.status == "closed") {
-                binding.tvStatus.visibility = View.GONE
-            } else {
-                binding.tvStatus.text = "모집 마감"
-                binding.tvStatus.visibility = View.VISIBLE
-                binding.lytStatus.visibility = View.GONE
-            }
-        }
-        else {
-            if (baedalPost.status == "recruiting") binding.tvStatus.text = "모집중"
-            else binding.tvStatus.text = "모집 마감"
-            binding.lytStatus.visibility = View.GONE
-            binding.btnComplete.visibility = View.GONE
-        }
         bindStatusBtn()
         bindBottomBtn()
         setBottomBtn()
@@ -361,23 +404,41 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun bindStatusBtn() {
+        binding.ivStatus.setImageResource(R.drawable.baseline_person_off_black_24)
+        if (baedalPost.userId == userId) {
+            binding.btnOrder.visibility = View.GONE
+            if (baedalPost.status == "recruiting" || baedalPost.status == "closed") {
+                binding.tvStatus.visibility = View.GONE
+            } else {
+                binding.tvStatus.visibility = View.VISIBLE
+                binding.lytStatus.visibility = View.GONE
+            }
+        }
+        else {
+            binding.lytStatus.visibility = View.GONE
+            binding.btnComplete.visibility = View.GONE
+        }
+
         when (baedalPost.status) {
             "recruiting" -> {
-                //baedalPost.status = "closed"
                 binding.ivStatus.setImageResource(R.drawable.baseline_person_black_24)
                 binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_pressed)
-                binding.tvStatusOpen.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
+                binding.tvStatusOpen.setTextColor(Color.WHITE)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_released)
                 binding.tvStatusClosed.setTextColor(Color.GRAY)
+                binding.tvStatus.text = "모집중"
             }
             "closed" -> {
-                //baedalPost.status = "recruiting"
-                binding.ivStatus.setImageResource(R.drawable.baseline_person_off_black_24)
                 binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_released)
                 binding.tvStatusOpen.setTextColor(Color.GRAY)
                 binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
-                binding.tvStatusClosed.setTextColor(Color.WHITE)//(R.color.baedal_status_released_text)
+                binding.tvStatusClosed.setTextColor(Color.WHITE)
+                binding.tvStatus.text = "모집 마감"
             }
+            "ordered" -> binding.tvStatus.text = "모집 마감 (주문 완료)"
+            "delivered" -> binding.tvStatus.text = "모집 마감 (배달 완료)"
+            "canceld" -> binding.tvStatus.text = "취소"
+            else -> binding.tvStatus.text = "모집 마감"
         }
     }
 
@@ -393,19 +454,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     binding.tvComplete.text = "배달 완료"
                     binding.btnComplete.visibility = View.VISIBLE
                 }
-                else -> {
-                    binding.tvComplete.text = "배달 완료"
-                    binding.btnComplete.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-                    binding.btnComplete.visibility = View.VISIBLE
-                }
+                else -> binding.btnComplete.visibility = View.GONE
             }
         } else {
             if (isMember) {
-                binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm)
-                binding.btnViewMyOrders.isEnabled = true
+                binding.btnViewMyOrders.visibility = View.VISIBLE
             } else {
-                binding.btnViewMyOrders.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
-                binding.btnViewMyOrders.isEnabled = false
+                binding.btnViewMyOrders.visibility = View.GONE
             }
 
             when (baedalPost.status) {
@@ -424,8 +479,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
-        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm)
-        else binding.btnOrder.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_blue_10)
+        else binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_gray_10)
         binding.btnOrder.isEnabled = isEnabled
         binding.tvOrder.text = text
     }
@@ -433,13 +488,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     fun setBottomBtn() {
         binding.btnViewMyOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
-                "postId" to postId!!,
+                "postJson" to gson.toJson(baedalPost),
                 "isMyOrder" to "true"
             ))
         }
         binding.btnViewAllOrders.setOnClickListener {
             setFrag(FragmentBaedalOrders(), mapOf(
-                "postId" to postId!!,
+                "postJson" to gson.toJson(baedalPost),
                 "isMyOrder" to "false"
             ))
         }
@@ -451,7 +506,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         if (isMember) {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("주문 취소하기")
-                .setMessage("주문을 취소하시겠습니까?\n 다시 참가하기 위해선\n주문을 다시 작성해야합니다.")
+                .setMessage("주문을 취소하시겠습니까?\n다시 참가하기 위해선 주문을 다시 작성해야합니다.")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
                     deleteOrders()
                 })

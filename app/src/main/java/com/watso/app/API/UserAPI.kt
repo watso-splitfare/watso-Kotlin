@@ -57,12 +57,7 @@ interface UserAPI {
 
     @POST("$FORGOT/password")           // 비밀번호 찾기
     fun issueTempToken(
-        @Body jsonparams: TempAuthCode
-    ): Call<VoidResponse>
-
-    @GET("$FORGOT/password")            // 비밀번호 찾기용 코드 발송
-    fun sendForgotPasswordToken(
-        @Query("email") email: String
+        @Body jsonparams: ForgotPassword
     ): Call<VoidResponse>
 
     @GET("$FORGOT/username")            // 계정 찾기

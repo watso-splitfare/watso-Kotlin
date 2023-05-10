@@ -9,7 +9,7 @@ data class SignUpModel(
     val authToken: String,
     val name: String,
     val username: String,
-    val pw: String,
+    val password: String,
     val nickname: String,
     @SerializedName("account_number")
     val accountNumber: String,
@@ -42,17 +42,16 @@ data class UpdateNickname(
     val nickname: String
 )
 data class UpdatePassword(
-//    @SerializedName("current_password")
-//    val currentPassword: String,
+    @SerializedName("current_password")
+    val currentPassword: String,
     @SerializedName("new_password")
     val newPassword: String
 )
 
 /** 찾기 */
 
-data class TempAuthCode(
-    @SerializedName("auth_code")
-    val authCode:String,
+data class ForgotPassword(
+    val username: String,
     val email: String
 )
 

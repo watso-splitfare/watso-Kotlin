@@ -34,16 +34,11 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/fontstyle_title"
-            android:shadowColor="#939393"
-            android:shadowDx="4.0"
-            android:shadowDy="4.0"
-            android:shadowRadius="4.0"
             android:text="@string/app_title"
             android:textSize="28sp"
-
+            android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -176,7 +171,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_pw"
+                android:id="@+id/lyt_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -185,7 +180,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/lyt_username">
 
                 <TextView
-                    android:id="@+id/textView_pw"
+                    android:id="@+id/textView_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
@@ -196,7 +191,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/et_pw"
+                    android:id="@+id/et_password"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/box_style_sign_up_input"
@@ -204,12 +199,12 @@
                     android:hint="비밀번호는 6~20자까지 사용가능합니다."
                     android:inputType="textPassword"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/et_pw_confirm"
-                    app:layout_constraintStart_toStartOf="@+id/textView_pw"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_pw" />
+                    app:layout_constraintEnd_toEndOf="@+id/et_password_confirm"
+                    app:layout_constraintStart_toStartOf="@+id/textView_password"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_password" />
 
                 <TextView
-                    android:id="@+id/textView_pw_confirm"
+                    android:id="@+id/textView_password_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -217,19 +212,19 @@
                     android:textSize="16sp"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/et_pw" />
+                    app:layout_constraintTop_toBottomOf="@+id/et_password" />
 
                 <TextView
-                    android:id="@+id/tv_pw_confirm"
+                    android:id="@+id/tv_password_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView_pw_confirm"
-                    app:layout_constraintStart_toEndOf="@+id/textView_pw_confirm" />
+                    app:layout_constraintBottom_toBottomOf="@+id/textView_password_confirm"
+                    app:layout_constraintStart_toEndOf="@+id/textView_password_confirm" />
 
                 <EditText
-                    android:id="@+id/et_pw_confirm"
+                    android:id="@+id/et_password_confirm"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/box_style_sign_up_input"
@@ -238,9 +233,9 @@
                     android:inputType="textPassword"
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView_pw_confirm"
-                    app:layout_constraintStart_toStartOf="@+id/textView_pw_confirm"
-                    app:layout_constraintTop_toBottomOf="@+id/textView_pw_confirm" />
+                    app:layout_constraintStart_toEndOf="@+id/textView_password_confirm"
+                    app:layout_constraintStart_toStartOf="@+id/textView_password_confirm"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_password_confirm" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -250,7 +245,7 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lyt_pw">
+                app:layout_constraintTop_toBottomOf="@+id/lyt_password">
 
                 <TextView
                     android:id="@+id/textView_nickname"

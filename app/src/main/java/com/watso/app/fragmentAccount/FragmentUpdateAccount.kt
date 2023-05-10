@@ -21,7 +21,7 @@ import retrofit2.Response
 
 class FragmentUpdateAccount :Fragment() {
     var taget = ""
-    var checkedPW = ""
+    var checkedPassword = ""
 
     private var mBinding: FragUpdateAccountBinding? = null
     private val binding get() = mBinding!!
@@ -40,7 +40,7 @@ class FragmentUpdateAccount :Fragment() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
         when (taget) {
-            "pw" -> setLytPw()
+            "password" -> setLytPassword()
             "nickname" -> setLytNickname()
             else -> setLytAccountNum()
         }
@@ -52,26 +52,26 @@ class FragmentUpdateAccount :Fragment() {
         super.onDestroyView()
     }
 
-    fun setLytPw() {
+    fun setLytPassword() {
         binding.tvTitle.text = "비밀번호 변경"
         binding.lytAccountNum.visibility = View.GONE
         binding.lytNickname.visibility = View.GONE
-        binding.lytCurrentPw.visibility= View.GONE
 
-        binding.etPwConfirm.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onChangedPW() }
+        binding.etPasswordConfirm.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onChangedPassword() }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
-        binding.etNewPw.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onChangedPW() }
+        binding.etNewPassword.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onChangedPassword() }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
 
-        binding.btnUpdatePw.setOnClickListener {
-            if (checkedPW != "") {
-                val updatePassword = UpdatePassword(checkedPW)
+        binding.btnUpdatePassword.setOnClickListener {
+            val currentPassword = binding.etCurrentPassword.text.toString()
+            if (currentPassword != "" && checkedPassword != "") {
+                val updatePassword = UpdatePassword(currentPassword, checkedPassword)
                 val loopingDialog = looping()
                 api.updatePassword(updatePassword).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
@@ -103,7 +103,7 @@ class FragmentUpdateAccount :Fragment() {
     fun setLytNickname() {
         binding.tvTitle.text = "닉네임 변경"
         binding.lytAccountNum.visibility = View.GONE
-        binding.lytPw.visibility = View.GONE
+        binding.lytPassword.visibility = View.GONE
 
         var checkedNickname:String? = null
         binding.etNickname.addTextChangedListener(object: TextWatcher {
@@ -176,7 +176,7 @@ class FragmentUpdateAccount :Fragment() {
     fun setLytAccountNum() {
         binding.tvTitle.text = "계좌 정보 변경"
         binding.lytNickname.visibility = View.GONE
-        binding.lytPw.visibility = View.GONE
+        binding.lytPassword.visibility = View.GONE
 
         val banks = resources.getStringArray(R.array.banks)
         var bankName = banks[0]
@@ -221,19 +221,19 @@ class FragmentUpdateAccount :Fragment() {
     }
 
 
-    fun onChangedPW() {
-        if (binding.etNewPw.text.toString() != "" && binding.etPwConfirm.text.toString() != "") {
-            if (binding.etNewPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
-                binding.tvPwConfirm.text = "비밀번호가 일치합니다."
-                //binding.tvPwConfirm.setTextColor()
-                checkedPW = binding.etNewPw.text.toString()
+    fun onChangedPassword() {
+        if (binding.etNewPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
+            if (binding.etNewPassword.text.toString().equals(binding.etPasswordConfirm.text.toString())) {
+                binding.tvPasswordConfirm.text = "비밀번호가 일치합니다."
+                //binding.tvPasswordConfirm.setTextColor()
+                checkedPassword = binding.etNewPassword.text.toString()
             } else {
-                binding.tvPwConfirm.text = "비밀번호가 일치하지 않습니다."
-                checkedPW = ""
+                binding.tvPasswordConfirm.text = "비밀번호가 일치하지 않습니다."
+                checkedPassword = ""
             }
         } else {
-            binding.tvPwConfirm.text = ""
-            checkedPW = ""
+            binding.tvPasswordConfirm.text = ""
+            checkedPassword = ""
         }
     }
 

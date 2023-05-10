@@ -113,13 +113,13 @@ class FragmentSignUp :Fragment() {
         }
 
         /** 비밀번호 확인 */
-        binding.etPwConfirm.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onChangedPW() }
+        binding.etPasswordConfirm.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onChangedPassword() }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
-        binding.etPw.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onChangedPW() }
+        binding.etPassword.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { onChangedPassword() }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
@@ -276,7 +276,7 @@ class FragmentSignUp :Fragment() {
                 authToken,
                 binding.etRealName.text.toString(),
                 binding.etUsername.text.toString(),
-                binding.etPw.text.toString(),
+                binding.etPassword.text.toString(),
                 binding.etNickname.text.toString(),
                 binding.etAccountNum.text.toString() + " "+ bankName,
                 binding.etEmail.text.toString()// + "@pusan.ac.kr"
@@ -302,18 +302,18 @@ class FragmentSignUp :Fragment() {
         }
     }
 
-    fun onChangedPW() {
-        if (binding.etPw.text.toString() != "" && binding.etPwConfirm.text.toString() != "") {
-            if (binding.etPw.text.toString().equals(binding.etPwConfirm.text.toString())) {
-                binding.tvPwConfirm.text = "비밀번호가 일치합니다."
-                //binding.tvPwConfirm.setTextColor()
+    fun onChangedPassword() {
+        if (binding.etPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
+            if (binding.etPassword.text.toString().equals(binding.etPasswordConfirm.text.toString())) {
+                binding.tvPasswordConfirm.text = "비밀번호가 일치합니다."
+                //binding.tvPasswordConfirm.setTextColor()
                 signUpCheck["password"] = true
             } else {
-                binding.tvPwConfirm.text = "비밀번호가 일치하지 않습니다."
+                binding.tvPasswordConfirm.text = "비밀번호가 일치하지 않습니다."
                 signUpCheck["password"] = false
             }
         } else {
-            binding.tvPwConfirm.text = ""
+            binding.tvPasswordConfirm.text = ""
             signUpCheck["password"] = false
         }
         setSignupBtnAble()

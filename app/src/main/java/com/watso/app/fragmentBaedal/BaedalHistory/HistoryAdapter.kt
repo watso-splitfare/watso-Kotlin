@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.watso.app.API.BaedalPost
 import com.watso.app.databinding.LytBaedalHistoryBinding
 import java.time.LocalDateTime
@@ -25,7 +26,7 @@ class HistoryAdapter(val posts: MutableList<BaedalPost>) : RecyclerView.Adapter<
         holder.bind(post)
     }
 
-    interface OnOrderBtnListener { fun showOrder(postId: String) }
+    interface OnOrderBtnListener { fun showOrder(postJson: String) }
     interface OnPostBtnListener { fun showPost(postId: String) }
 
     fun setShowOrderListener(onOrderListener: OnOrderBtnListener) { this.orderListener = onOrderListener }
@@ -54,7 +55,7 @@ class HistoryAdapter(val posts: MutableList<BaedalPost>) : RecyclerView.Adapter<
                 DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
             )
             binding.tvStoreName.text = post.store.name
-            binding.btnShowOrder.setOnClickListener { orderListener.showOrder(post._id) }
+            binding.btnShowOrder.setOnClickListener { orderListener.showOrder(Gson().toJson(post)) }
             binding.btnShowPost.setOnClickListener { postListener.showPost(post._id) }
             binding.lytBaedalHistory.setOnClickListener { postListener.showPost(post._id) }
         }

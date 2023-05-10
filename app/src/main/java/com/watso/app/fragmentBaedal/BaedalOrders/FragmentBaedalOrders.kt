@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
@@ -19,9 +20,14 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalOrders :Fragment() {
-    var postId = "-1"
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
+
+    lateinit var post: BaedalPost
+    //var postId = "-1"
     var isMyorder = true
+//    var storeName = ""
+//    var fee = 0
+//    var currentMember = 1
 
     lateinit var userOrders: MutableList<UserOrder>
     lateinit var adapter: BaedalUserOrderAdapter
@@ -34,7 +40,7 @@ class FragmentBaedalOrders :Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            postId = it.getString("postId")!!
+            post = Gson().fromJson(it.getString("postJson")!!, BaedalPost::class.java)
             isMyorder = it.getString("isMyOrder")!!.toBoolean()
         }
 
@@ -53,14 +59,16 @@ class FragmentBaedalOrders :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.tvStoreName.text = post.store.name
         mappingAdapter()
         getOrders()
+
     }
 
     fun getOrders() {
         val loopingDialog = looping()
         if (isMyorder) {
-            api.getMyOrders(postId).enqueue(object: Callback<MyOrderInfo> {
+            api.getMyOrders(post._id).enqueue(object: Callback<MyOrderInfo> {
                 override fun onResponse(call: Call<MyOrderInfo>, response: Response<MyOrderInfo>) {
                     looping(false, loopingDialog)
                     if (response.code() == 200) {
@@ -83,7 +91,7 @@ class FragmentBaedalOrders :Fragment() {
                 }
             })
         } else {
-            api.getAllOrders(postId).enqueue(object: Callback<AllOrderInfo> {
+            api.getAllOrders(post._id).enqueue(object: Callback<AllOrderInfo> {
                 override fun onResponse(call: Call<AllOrderInfo>, response: Response<AllOrderInfo>) {
                     looping(false, loopingDialog)
                     if (response.code() == 200) setUserOrder(response.body()!!.userOrders)
@@ -130,8 +138,26 @@ class FragmentBaedalOrders :Fragment() {
             }
         }
         binding.rvOrders.adapter!!.notifyDataSetChanged()
+
+        bindPrice()
     }
 
+    fun bindPrice() {
+        if (isMyorder) {
+            val dec = DecimalFormat("#,###")
+            var price = 0
+            userOrders[0].orders.forEach {
+                price += it.price!! * it.quantity
+            }
+            val personalFee = post.fee / post.users.size
+            binding.tvOrderPrice.text = "${dec.format(price)}원"
+            binding.tvBaedalFee.text = "${dec.format(personalFee)}원"
+            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
+        } else {
+            binding.divider43.visibility = View.GONE
+            binding.lytTable.visibility = View.GONE
+        }
+    }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity

@@ -133,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:background="@drawable/btn_primary_white_with_stroke">
+                android:background="@drawable/btn_white_with_primary_stroke">
 
                 <TextView
                     android:id="@+id/textView64"
@@ -142,7 +142,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="회원가입"
-                    android:textColor="@color/black"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

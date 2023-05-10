@@ -53,7 +53,7 @@
             android:orientation="vertical" >
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_pw"
+                android:id="@+id/lyt_password"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
@@ -61,7 +61,7 @@
                 android:elevation="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_current_pw"
+                    android:id="@+id/lyt_current_password"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="16dp"
@@ -76,11 +76,11 @@
                         android:text="현재 비밀번호"
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="@+id/et_current_pw"
+                        app:layout_constraintStart_toStartOf="@+id/et_current_password"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
-                        android:id="@+id/et_current_pw"
+                        android:id="@+id/et_current_password"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/box_style_sign_up_input"
@@ -92,13 +92,13 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_new_pw"
+                    android:id="@+id/lyt_new_password"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lyt_current_pw">
+                    app:layout_constraintTop_toBottomOf="@+id/lyt_current_password">
 
                     <TextView
                         android:id="@+id/textView39"
@@ -107,11 +107,11 @@
                         android:text="새로운 비밀번호"
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="@+id/et_new_pw"
+                        app:layout_constraintStart_toStartOf="@+id/et_new_password"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
-                        android:id="@+id/et_new_pw"
+                        android:id="@+id/et_new_password"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/box_style_sign_up_input"
@@ -124,13 +124,13 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/lyt_pw_confirm"
+                    android:id="@+id/lyt_password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lyt_new_pw">
+                    app:layout_constraintTop_toBottomOf="@+id/lyt_new_password">
 
                     <TextView
                         android:id="@+id/textView37"
@@ -139,11 +139,11 @@
                         android:text="비밀번호 확인"
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="@+id/et_pw_confirm"
+                        app:layout_constraintStart_toStartOf="@+id/et_password_confirm"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tv_pw_confirm"
+                        android:id="@+id/tv_password_confirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -152,7 +152,7 @@
                         app:layout_constraintStart_toEndOf="@+id/textView37" />
 
                     <EditText
-                        android:id="@+id/et_pw_confirm"
+                        android:id="@+id/et_password_confirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/box_style_sign_up_input"
@@ -164,7 +164,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/btn_update_pw"
+                    android:id="@+id/btn_update_password"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
@@ -173,7 +173,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lyt_pw_confirm">
+                    app:layout_constraintTop_toBottomOf="@+id/lyt_password_confirm">
 
                     <TextView
                         android:id="@+id/textView33"

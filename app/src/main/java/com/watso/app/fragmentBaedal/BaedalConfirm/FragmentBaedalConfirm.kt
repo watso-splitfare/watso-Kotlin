@@ -63,7 +63,7 @@ class FragmentBaedalConfirm :Fragment() {
             fee = storeInfo.fee / baedalPosting.minMember
         }
         else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
-        Log.d("FragBaedalConfirm storeInfo.fee", storeInfo.fee.toString())
+        Log.d("FragBaedalConfirm storeInfo", storeInfo.toString())
         Log.d("FragBaedalConfirm minMember", prefs.getString("minMember", ""))
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -182,7 +182,8 @@ class FragmentBaedalConfirm :Fragment() {
         }
         binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
         binding.tvTotalPrice.text = "${dec.format(orderPrice + fee)}원"
-        binding.btnConfirm.text = "메뉴 확정"
+        if (postId != "-1")
+            binding.tvConfirm.text = "주문 등록"
     }
 
     fun requestNotiPermission() {

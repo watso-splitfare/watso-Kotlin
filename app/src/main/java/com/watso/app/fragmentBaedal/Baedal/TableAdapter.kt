@@ -6,13 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.watso.app.databinding.LytBaedalTableBinding
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TableAdapter(val context: Context) : RecyclerView.Adapter<TableAdapter.CustomViewHolder>() {
+class TableAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<TableAdapter.CustomViewHolder>() {
 
     private val tables = mutableListOf<Table>()
 
@@ -51,7 +52,7 @@ class TableAdapter(val context: Context) : RecyclerView.Adapter<TableAdapter.Cus
             binding.tvDate.text = table.date.format(
                 DateTimeFormatter.ofPattern("MM월 dd일(E)").withLocale(Locale.forLanguageTag("ko")))
             binding.rvDateTable.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val adapter = TableRowAdapter()
+            val adapter = TableRowAdapter(context)
             binding.rvDateTable.adapter = adapter
             adapter.setData(table.rows)
 
