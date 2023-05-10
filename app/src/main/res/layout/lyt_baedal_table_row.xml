@@ -27,7 +27,7 @@
         app:layout_constraintTop_toBottomOf="@id/divider">
 
         <ImageView
-            android:id="@+id/img_baedal_list"
+            android:id="@+id/iv_store_logo"
             android:layout_width="80dp"
             android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_baedal_list"
+            app:layout_constraintStart_toEndOf="@+id/iv_store_logo"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView

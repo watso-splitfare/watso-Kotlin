@@ -2,14 +2,17 @@ package com.watso.app.fragmentBaedal.Baedal
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.watso.app.API.BaedalPost
+import com.watso.app.R
 import com.watso.app.databinding.LytBaedalTableRowBinding
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TableRowAdapter() : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
+class TableRowAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>() {
 
     private val tableRows = mutableListOf<BaedalPost>()
 
@@ -43,7 +46,7 @@ class TableRowAdapter() : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>
         return tableRows.size
     }
 
-    class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CustomViewHolder(var binding: LytBaedalTableRowBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(post: BaedalPost) {
             val currentMember = post.users.size.toString()
             val maxMember = post.maxMember
@@ -55,6 +58,15 @@ class TableRowAdapter() : RecyclerView.Adapter<TableRowAdapter.CustomViewHolder>
                 "delivered" -> "배달 완료"
                 else -> "마감"
             }
+
+            val defaultImage = R.drawable.delivery
+            Glide.with(context)
+                .load(post.store.logoImgUrl) // 불러올 이미지 url
+                .placeholder(defaultImage) // 이미지 로딩 시작하기 전 표시할 이미지
+                .error(defaultImage) // 로딩 에러 발생 시 표시할 이미지
+                .fallback(defaultImage) // 로드할 url 이 비어있을(null 등) 경우 표시할 이미지
+                .into(binding.ivStoreLogo) // 이미지를 넣을 뷰
+
             binding.tvTime.text = orderTime.format(
                     DateTimeFormatter.ofPattern("HH시 mm분", Locale.KOREAN)
                     )
