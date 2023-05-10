@@ -6,12 +6,11 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.util.TypedValue
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -69,7 +68,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
 
         refreshView()
-        binding.nestedScrollView2.setOnTouchListener(this)
+        binding.lytContent.setOnTouchListener(this)
         binding.lytComment.setOnTouchListener(this)
         binding.rvComment.setOnTouchListener(this)
         return binding.root
@@ -150,6 +149,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         })
     }
 
+    fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, requireContext().resources.displayMetrics).toInt()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun setPost() {
         val joinUsers = baedalPost.users
@@ -171,6 +174,64 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
         }
+
+
+        val contentView = binding.lytContent
+        val marginLayoutParams = binding.scrollMargin.layoutParams
+
+        /** 가게 정보의 길이에 맞게 스크롤의 길이를 늘린다 */
+        binding.lytStoreInfo.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val infoHeight = binding.lytStoreInfo.height
+                contentView.scrollTo(0, infoHeight)
+                marginLayoutParams.height = infoHeight
+                binding.scrollMargin.layoutParams = marginLayoutParams
+                binding.scrollMargin.requestLayout()
+                if (contentView.scrollY == infoHeight)
+                    binding.lytStoreInfo.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
+        /** 댓글 길이에 맞게 content하단에 마진을 넣는다 */
+        binding.lytComment.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val windowh = binding.constraintLayout2.height
+                val headh = binding.lytHead.height
+                val posth = binding.lytPostContent.height
+                val commenth = binding.lytComment.height
+                val realContenth = posth + commenth
+                val addComh = binding.lytAddComment.height
+                val needMargin = windowh - headh - realContenth - addComh
+
+                if (needMargin > 0) {
+                    val contentLayoutParams = binding.lytComment.layoutParams as ViewGroup.MarginLayoutParams
+                    val m8 = dpToPx(8.0f)
+                    contentLayoutParams.setMargins(m8, m8, m8, needMargin - m8)
+                    binding.lytComment.layoutParams = contentLayoutParams
+                    if (binding.lytComment.marginBottom == needMargin - m8)
+                        binding.lytComment.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                } else binding.lytComment.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
+        contentView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            Log.d(TAG, "scroolY: $scrollY")
+            val max = contentView.getChildAt(0).height - contentView.height
+            val alpha = 1.0f - ( (max-scrollY).toFloat() / max.toFloat())
+
+            binding.lytBack.alpha = alpha
+        }
+
+        binding.tvMinOrder.text = store.minOrder.toString()
+        binding.tvFee.text = store.fee.toString()
+        binding.tvTelNum.text = store.telNum
+        var noteStr = ""
+        for ((idx, note) in store.note.withIndex()) {
+            noteStr += note
+            if (idx < store.note.size - 1)
+                noteStr += "\n"
+        }
+        binding.tvNote.text = noteStr
 
         /** 게시글 삭제 버튼 */
         binding.tvDelete.setOnClickListener {
@@ -210,10 +271,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
         /** 포스트 내용 바인딩 */
 
+        binding.tvStore.text = store.name
+        binding.lytStore.setOnClickListener { }
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
-        binding.tvStore.text = store.name
         binding.tvCurrentMember.text = "${baedalPost.users.size}명 (최소 ${baedalPost.minMember}명 필요)"
         binding.tvFee.text = "${dec.format(store.fee)}원"
 

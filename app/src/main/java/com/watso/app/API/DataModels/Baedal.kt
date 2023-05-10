@@ -11,7 +11,7 @@ data class Store(
     @SerializedName("phone_number")
     val telNum: String,
     @SerializedName("logo_img_url")
-    val logiImgUrl: String,
+    val logoImgUrl: String,
     val note: List<String>
 )
 
