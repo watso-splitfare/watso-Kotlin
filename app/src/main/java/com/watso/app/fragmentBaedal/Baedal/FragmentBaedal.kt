@@ -172,6 +172,7 @@ class FragmentBaedal :Fragment() {
         }
 
         if (tables.isNotEmpty()) {
+            binding.lytEmptyList.visibility = View.GONE
             if (isJoinedTable) {
                 joinedAdapter.setData(tables)
                 binding.lytJoinedTable.visibility = View.VISIBLE
