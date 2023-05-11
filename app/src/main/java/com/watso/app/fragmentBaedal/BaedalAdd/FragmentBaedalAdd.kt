@@ -1,7 +1,9 @@
 package com.watso.app.fragmentBaedal.BaedalAdd
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -28,6 +30,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.DecimalFormat
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -261,6 +264,16 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun btnCompletePostInfo() {
+        if (!isPostAbleTime()) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("게시글 작성 불가")
+                .setMessage("주문은 현재시간부터 10분 이후로 등록 가능합니다.")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+
+            return
+        }
+
         val minMember = if (binding.etMinMember.text.toString() != "")
             binding.etMinMember.text.toString().toInt() else 2
         val maxMember = if (binding.etMaxMember.text.toString() != "")
@@ -298,11 +311,9 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 })
         } else {
             /** 게시글 신규 등록 */
-            var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
-
             val baedalPosting = BaedalPosting(
                 storeIds[selectedIdx],
-                orderTimeString,
+                orderTime!!,
                 binding.spnPlace.selectedItem.toString(),
                 minMember,
                 maxMember,
@@ -316,6 +327,17 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 "storeId" to storeIds[selectedIdx])
             )
         }
+    }
+
+    fun isPostAbleTime(): Boolean {
+        val orderDateTime = LocalDateTime.parse(orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+        val now = LocalDateTime.now()
+        val diff = Duration.between(now, orderDateTime).toMinutes()
+        Log.d(TAG, orderDateTime.toString())
+        Log.d(TAG, now.toString())
+        Log.d(TAG, diff.toString())
+        Log.d(TAG, orderDateTime.isAfter(now).toString())
+        return (orderDateTime.isAfter(now) && diff > 10)
     }
 
     fun hideSoftInput() {
