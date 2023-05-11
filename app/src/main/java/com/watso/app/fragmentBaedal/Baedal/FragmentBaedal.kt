@@ -50,6 +50,11 @@ class FragmentBaedal :Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalBinding.inflate(inflater, container, false)
 
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("deletePost", this) {
+                requestKey, bundle ->
+            getPostPreview()
+        }
+
         binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
         binding.btnBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
         binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
