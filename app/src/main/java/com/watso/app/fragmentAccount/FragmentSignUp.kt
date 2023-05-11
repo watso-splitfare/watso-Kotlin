@@ -322,10 +322,10 @@ class FragmentSignUp :Fragment() {
     fun setSignupBtnAble() {
         if (signUpCheck["username"]!! && signUpCheck["password"]!! && signUpCheck["nickname"]!! && signUpCheck["email"]!!) {
             binding.btnSignup.setEnabled(true)
-            binding.btnSignup.setBackgroundResource(R.drawable.btn_taxi_propose)
+            binding.btnSignup.setBackgroundResource(R.drawable.btn_white_with_primary_stroke_10)
         } else {
             binding.btnSignup.setEnabled(false)
-            binding.btnSignup.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+            binding.btnSignup.setBackgroundResource(R.drawable.btn_lightgray_10)
         }
     }
 
