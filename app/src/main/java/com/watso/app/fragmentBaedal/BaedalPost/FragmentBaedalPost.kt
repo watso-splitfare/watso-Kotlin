@@ -235,7 +235,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         /** 포스트 내용 바인딩 */
 
         binding.tvStore.text = store.name
-        binding.lytStore.setOnClickListener { }
+        binding.lytStore.setOnClickListener { binding.lytContent.scrollTo(0, 0) }
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
