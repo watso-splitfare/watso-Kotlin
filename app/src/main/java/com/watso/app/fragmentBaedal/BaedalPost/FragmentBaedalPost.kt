@@ -522,9 +522,15 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             builder.show()
         }
         else {
-
-            prefs.setString("minMember", baedalPost.minMember.toString())
-            setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
+            if (baedalPost.users.size < baedalPost.maxMember) {
+                prefs.setString("minMember", baedalPost.minMember.toString())
+                setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
+            } else {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("인원 마감")
+                    .setMessage("참여 가능한 최대 인원에 도달했습니다.\n대표자에게 문의하세요")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener{_, _ ->})
+            }
         }
     }
 
