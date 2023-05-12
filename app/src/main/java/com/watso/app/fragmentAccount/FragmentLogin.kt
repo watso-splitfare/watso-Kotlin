@@ -22,8 +22,10 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 class FragmentLogin :Fragment() {
+    val TAG = "FragLogin"
 
     private var mBinding: FragLoginBinding? = null
     private val binding get() = mBinding!!
@@ -65,10 +67,13 @@ class FragmentLogin :Fragment() {
                         prefs.setString("nickname", dNickname)
 
                         setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
-                    } else if (response.code() == 401) {
-                        val errorBody = response.errorBody()?.string()
-                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        showAlert(errorResponse.msg)
+                    } else  {
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            showAlert(errorResponse.msg)
+                            Log.d("$TAG[login]", errorResponse.msg)
+                        } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
                     }
                 }
 

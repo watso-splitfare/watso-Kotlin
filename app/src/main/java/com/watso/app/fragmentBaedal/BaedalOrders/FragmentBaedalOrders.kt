@@ -11,15 +11,18 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalOrdersBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOrders :Fragment() {
+    val TAG = "FragBaedalOrders"
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
     lateinit var post: BaedalPost
@@ -77,8 +80,12 @@ class FragmentBaedalOrders :Fragment() {
                     }
 
                     else {
-                        Log.d("FragBaedalOrders getMyOrders", response.toString())
-                        makeToast("주문정보를 불러오지 못했습니다.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[getMyOrders]", errorResponse.msg)
+                        } catch (e: Exception) { Log.e("$TAG[getMyOrders]", e.toString())}
                         onBackPressed()
                     }
                 }
@@ -96,8 +103,12 @@ class FragmentBaedalOrders :Fragment() {
                     looping(false, loopingDialog)
                     if (response.code() == 200) setUserOrder(response.body()!!.userOrders)
                     else {
-                        Log.d("FragBaedalOrders getMyOrders", response.toString())
-                        makeToast("주문정보를 불러오지 못했습니다.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[getAllOrders]", errorResponse.msg)
+                        } catch (e: Exception) { Log.e("$TAG[getAllOrders]", e.toString())}
                         onBackPressed()
                     }
                 }

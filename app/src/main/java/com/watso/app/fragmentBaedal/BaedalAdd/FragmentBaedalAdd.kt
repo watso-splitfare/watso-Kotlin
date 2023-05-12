@@ -26,9 +26,11 @@ import com.watso.app.R
 import com.watso.app.databinding.FragBaedalAddBinding
 import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.google.gson.Gson
+import com.watso.app.API.DataModels.ErrorResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 import java.time.Duration
 import java.time.LocalDateTime
@@ -210,8 +212,13 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
                         }
                 } else {
-                    Log.e("FragBaedalAdd setStoreSpinner", response.toString())
-                    makeToast("가게 리스트 조회 실패")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getStoreList]", errorResponse.msg)
+                    } catch (e: Exception) { Log.e("$TAG[getStoreList]", e.toString())}
+                    onBackPressed()
                 }
             }
 

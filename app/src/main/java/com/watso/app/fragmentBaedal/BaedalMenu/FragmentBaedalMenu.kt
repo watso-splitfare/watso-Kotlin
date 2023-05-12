@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
@@ -23,6 +24,7 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
+    val TAG = "FragBaedalMenu"
     var postId = ""
     var storeId = "0"
     lateinit var storeInfo: StoreInfo
@@ -101,8 +103,12 @@ class FragmentBaedalMenu :Fragment() {
                     binding.tvStoreName.text = storeInfo.name
                     adapter.setData(storeInfo.sections)
                 } else {
-                    Log.e("baedalMenu Fragment - getSectionMenu", response.toString())
-                    makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getStoreInfo]", errorResponse.msg)
+                    } catch (e:Exception) { Log.e("$TAG[getStoreInfo]", e.toString())}
                 }
             }
 

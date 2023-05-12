@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
@@ -33,6 +34,7 @@ import com.watso.app.fragmentBaedal.BaedalOrders.FragmentBaedalOrders
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -42,6 +44,9 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalPost"
     val prefs = MainActivity.prefs
     var isScrolled = false
+    var infoHeight = 0
+    var needMargin = 0
+    var acconutHeight = 0
 
     var postId: String? = null
     var userId = prefs.getString("userId", "-1").toLong()
@@ -115,8 +120,12 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     Log.d(TAG+"baedalPost", baedalPost.toString())
                     setPost()
                 } else {
-                    Log.e("baedal Post Fragment - getBaedalPost", response.toString())
-                    makeToast("게시글 조회 실패")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getPostInfo]", errorResponse.msg)
+                    } catch (e: Exception) { Log.e("$TAG[getPostInfo]", e.toString())}
                     onBackPressed()
                 }
             }
@@ -144,8 +153,12 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     comments = response.body()!!.comments
                     setComments()
                 } else {
-                    Log.e("baedal Post Fragment - getComments", response.toString())
-                    makeToast("댓글 조회 실패")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getComments]", errorResponse.msg)
+                    } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
                 }
             }
 
@@ -190,7 +203,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         /** 가게 정보의 길이에 맞게 스크롤의 길이를 늘린다 */
         binding.lytStoreInfo.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                val infoHeight = binding.lytStoreInfo.height
+                infoHeight = binding.lytStoreInfo.height
                 contentView.scrollTo(0, infoHeight)
                 marginLayoutParams.height = infoHeight
                 binding.scrollMargin.layoutParams = marginLayoutParams
@@ -209,7 +222,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 val commenth = binding.lytComment.height
                 val realContenth = posth + commenth
                 val addComh = binding.lytAddComment.height
-                val needMargin = windowh - headh - realContenth - addComh
+                needMargin = windowh - headh - realContenth - addComh
 
                 if (needMargin > 0) {
                     val contentLayoutParams = binding.lytComment.layoutParams as ViewGroup.MarginLayoutParams
@@ -352,8 +365,15 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             requestNotiPermission()
                             getComments()
                         } else {
-                            Log.e("[ERR][POST][postComment]", "${response.errorBody()?.string()}")
-                            makeToast("다시 시도해주세요.")
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[postComment]", errorResponse.msg)
+                            } catch (e:Exception) {
+                                Log.e("$TAG[postComment]", e.toString())
+                                Log.d("$TAG[postComment]", response.errorBody()?.string().toString())
+                            }
                         }
                     }
 
@@ -372,8 +392,12 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         Log.d("FragBaedalPost postComment", "성공")
                         getComments()
                     } else {
-                        Log.e("[ERR][POST][postSubComment]", "${response.errorBody()?.string()}")
-                        makeToast("다시 시도해주세요.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[postSubComment]", errorResponse.msg)
+                        } catch (e:Exception) { Log.e("$TAG[postSubComment]", e.toString())}
                     }
                 }
 
@@ -399,8 +423,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     onBackPressed()
                 }
                 else {
-                    Log.d("FragBaedalPost-deletePost", "실패")
-                    makeToast("다시 시도해주세요.")}
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[deletePost]", errorResponse.msg)
+                    } catch (e:Exception) { Log.e("$TAG[deletePost]", e.toString())}
+                }
             }
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 looping(false, loopingDialog)
@@ -569,8 +598,12 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     makeToast("상태가 변경되었습니다.")
                     getPostInfo()
                 } else {
-                    Log.e("FragBaedalPost setStatus", response.toString())
-                    makeToast("상태 변경에 실패했습니다.")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[setStatus]", errorResponse.msg)
+                    } catch (e:Exception) { Log.e("$TAG[setStatus]", e.toString())}
                 }
             }
 
@@ -592,14 +625,18 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             makeToast("배달비가 변경되었습니다.")
                             setStatus("delivered")
                         } else {
-                            Log.e(TAG+"setDelivered", response.toString())
-                            makeToast("다시시도해주세요.")
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[updateFee]", errorResponse.msg)
+                            } catch (e:Exception) { Log.e("$TAG[updateFee]", e.toString())}
                         }
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                         looping(false, loopingDialog)
-                        Log.e(TAG+"setDelivered", t.message.toString())
+                        Log.e(TAG+"updateFee", t.message.toString())
                         makeToast("다시시도해주세요.")
                     }
                 })
@@ -639,9 +676,12 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     makeToast("주문이 취소되었습니다.")
                     getPostInfo()
                 } else {
-                    Log.e("FragBaedalPost deleteOrders", response.toString())
-                    makeToast("주문 취소 실패")
-                    onBackPressed()
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[deleteOrders]", errorResponse.msg)
+                    } catch (e:Exception) { Log.e("$TAG[deleteOrders]", e.toString())}
                 }
             }
 
@@ -649,7 +689,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 looping(false, loopingDialog)
                 Log.e("FragBaedalPost deleteOrders", t.message.toString())
                 makeToast("주문 취소 실패")
-                onBackPressed()
             }
         })
     }
