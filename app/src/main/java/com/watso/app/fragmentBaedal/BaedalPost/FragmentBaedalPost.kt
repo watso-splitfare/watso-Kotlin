@@ -1,22 +1,15 @@
 package com.watso.app.fragmentBaedal.BaedalPost
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.AttributeSet
 import android.util.Log
-import android.util.TypedValue
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.view.marginBottom
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -170,10 +163,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         })
     }
 
-    fun dpToPx(dp: Float): Int {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, requireContext().resources.displayMetrics).toInt()
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun setPost() {
         val joinUsers = baedalPost.users
@@ -194,53 +183,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         if (baedalPost.status != "recruiting") {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
-        }
-
-
-        val contentView = binding.lytContent
-        val marginLayoutParams = binding.scrollMargin.layoutParams
-
-        /** 가게 정보의 길이에 맞게 스크롤의 길이를 늘린다 */
-        binding.lytStoreInfo.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                infoHeight = binding.lytStoreInfo.height
-                contentView.scrollTo(0, infoHeight)
-                marginLayoutParams.height = infoHeight
-                binding.scrollMargin.layoutParams = marginLayoutParams
-                binding.scrollMargin.requestLayout()
-                if (contentView.scrollY == infoHeight)
-                    binding.lytStoreInfo.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-
-        /** 댓글 길이에 맞게 content하단에 마진을 넣는다 */
-        binding.lytComment.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val windowh = binding.constraintLayout2.height
-                val headh = binding.lytHead.height
-                val posth = binding.lytPostContent.height
-                val commenth = binding.lytComment.height
-                val realContenth = posth + commenth
-                val addComh = binding.lytAddComment.height
-                needMargin = windowh - headh - realContenth - addComh
-
-                if (needMargin > 0) {
-                    val contentLayoutParams = binding.lytComment.layoutParams as ViewGroup.MarginLayoutParams
-                    val m8 = dpToPx(8.0f)
-                    contentLayoutParams.setMargins(m8, m8, m8, needMargin - m8)
-                    binding.lytComment.layoutParams = contentLayoutParams
-                    if (binding.lytComment.marginBottom == needMargin - m8)
-                        binding.lytComment.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                } else binding.lytComment.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-
-        contentView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            Log.d(TAG, "scroolY: $scrollY")
-            val max = contentView.getChildAt(0).height - contentView.height
-            val alpha = 1.0f - ( (max-scrollY).toFloat() / max.toFloat())
-
-            binding.lytBack.alpha = alpha
         }
 
         binding.tvMinOrder.text = store.minOrder.toString()
@@ -312,6 +254,54 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         bindStatusBtn()
         bindBottomBtn()
         setBottomBtn()
+
+        val contentView = binding.lytContent
+        val marginLayoutParams = binding.scrollMargin.layoutParams
+
+        /** 가게 정보의 길이에 맞게 스크롤의 길이를 늘린다 */
+        binding.lytStoreInfo.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                infoHeight = binding.lytStoreInfo.height
+                contentView.scrollTo(0, infoHeight)
+                marginLayoutParams.height = infoHeight
+                binding.scrollMargin.layoutParams = marginLayoutParams
+                binding.scrollMargin.requestLayout()
+                Log.d("$TAG[스토어 인포 옵저버][infoHeight]", infoHeight.toString())
+                Log.d("$TAG[스토어 인포 옵저버][contentView.scrollY]", contentView.scrollY.toString())
+                if (contentView.scrollY == infoHeight)
+                    binding.lytStoreInfo.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
+        contentView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            //Log.d(TAG, "scroolY: $scrollY")
+            val max = contentView.getChildAt(0).height - contentView.height
+            val alpha = 1.0f - ( (max-scrollY).toFloat() / max.toFloat())
+
+            binding.lytBack.alpha = alpha
+        }
+
+    }
+
+    fun setLayoutListner(view: View, where: String="") {
+        view.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (where != "") Log.d("$TAG[컨텐츠 옵저버]:", where)
+                val windowh = binding.constraintLayout2.height
+                val headh = binding.lytHead.height
+                val realContenth = binding.lytContentWithComment.height//posth + commenth
+                val addComh = binding.lytAddComment.height
+                needMargin = windowh - headh - realContenth - addComh
+                if (needMargin < 0) needMargin = 0
+                val contentLayoutParams = binding.lytContentWithComment.layoutParams as ViewGroup.MarginLayoutParams
+                contentLayoutParams.setMargins(0, 0, 0, needMargin)
+                binding.lytContentWithComment.layoutParams = contentLayoutParams
+                binding.lytContentWithComment.requestLayout()
+
+                if (binding.lytContentWithComment.marginBottom == needMargin)
+                    view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
     }
 
     fun setComments() {
@@ -347,6 +337,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             val content = binding.etComment.text.toString()
             if (content.trim() != "") postComment(content, replyTo?._id)
         }
+
+        setLayoutListner(binding.lytComment, "댓글")
     }
 
     fun cancelReply() {
@@ -477,6 +469,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             "canceld" -> binding.tvStatus.text = "취소"
             else -> binding.tvStatus.text = "모집 마감"
         }
+
+        setLayoutListner(binding.constraintLayout17, "내용")
     }
 
     fun bindBottomBtn() {
@@ -513,6 +507,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             }
             binding.btnOrder.visibility = View.VISIBLE
         }
+
+        setLayoutListner(binding.lytBottomButton, "버튼")
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
