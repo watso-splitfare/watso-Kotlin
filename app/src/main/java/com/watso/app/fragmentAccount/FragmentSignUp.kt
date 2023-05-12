@@ -224,6 +224,8 @@ class FragmentSignUp :Fragment() {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
+                            if (::job.isInitialized && job.isActive)
+                                job.cancel()
                             job = GlobalScope.launch { countDown(valifyTime) }
                         } else {
                             Log.e("signUp Fragment - sendMail", response.toString())
