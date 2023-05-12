@@ -60,16 +60,9 @@ class FragmentBaedal :Fragment() {
         binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
         binding.btnBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
         binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
-        binding.scrollView.setOnTouchListener { _, event -> isTouched = when (event.action)
-            {
-                MotionEvent.ACTION_UP ->
-                {
-                    if (isTouched && binding.scrollView.scrollY == 0) getPostPreview()
-                    false
-                }
-                else -> true
-            }
-            return@setOnTouchListener false
+        binding.lytRefresh.setOnRefreshListener {
+            binding.lytRefresh.isRefreshing = false
+            getPostPreview()
         }
 
         setAdapter()
