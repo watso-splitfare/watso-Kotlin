@@ -1,16 +1,22 @@
 package com.watso.app.fragmentBaedal.BaedalPost
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.view.marginBottom
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -19,6 +25,7 @@ import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.adapterHome.CommentAdapter
+import com.watso.app.databinding.AlertdialogInputtextBinding
 import com.watso.app.databinding.FragBaedalPostBinding
 import com.watso.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
@@ -105,6 +112,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 looping(false, loopingDialog)
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
+                    Log.d(TAG+"baedalPost", baedalPost.toString())
                     setPost()
                 } else {
                     Log.e("baedal Post Fragment - getBaedalPost", response.toString())
@@ -223,7 +231,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         }
 
         binding.tvMinOrder.text = store.minOrder.toString()
-        binding.tvFee.text = store.fee.toString()
+        binding.tvFee.text = baedalPost.fee.toString()
         binding.tvTelNum.text = store.telNum
         var noteStr = ""
         for ((idx, note) in store.note.withIndex()) {
@@ -532,10 +540,14 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             builder.show()
         } // 주문 완료
         else {
+            val builderItem = EtBuilder()
+            builderItem.init()
+
             builder.setTitle("배달 완료")
-                .setMessage("배달이 완료되었나요?\n주문 참가자들에게 알림이 전송됩니다.")
+                .setMessage("배달이 완료되었나요?\n주문 참가자들에게 알림이 전송됩니다.\n확정된 배달비를 입력해주세요.")
+                .setView(builderItem.getView().root)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                    setStatus("delivered")
+                    updateFee(builderItem.getFee())
                 })
                 .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
             builder.show()} // 배달 완료
@@ -562,6 +574,53 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 makeToast("상태 변경에 실패했습니다.")
             }
         })
+    }
+
+    fun updateFee(fee: Int) {
+        if (fee != baedalPost.fee) {
+            val loopingDialog = looping()
+            api.updateBaedalFee(postId!!, Fee(fee)).enqueue(object : Callback<VoidResponse> {
+                    override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
+                        looping(false, loopingDialog)
+                        if (response.code() == 204) {
+                            makeToast("배달비가 변경되었습니다.")
+                            setStatus("delivered")
+                        } else {
+                            Log.e(TAG+"setDelivered", response.toString())
+                            makeToast("다시시도해주세요.")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                        looping(false, loopingDialog)
+                        Log.e(TAG+"setDelivered", t.message.toString())
+                        makeToast("다시시도해주세요.")
+                    }
+                })
+        } else setStatus("delivered")
+    }
+
+    inner class EtBuilder {
+        private val view = AlertdialogInputtextBinding.inflate(layoutInflater)
+
+        fun init() {
+            view.etFee.setText(baedalPost.fee.toString())
+            /*view.etFee.addTextChangedListener(object: TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
+                    view.etFee.setText(dec.format(view.etFee.text))
+                }
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            })*/
+        }
+
+        fun getView(): AlertdialogInputtextBinding { return view }
+
+        fun getFee(): Int {
+            return view.etFee.text.toString().replace(",","").toInt()
+        }
+
+
     }
 
     fun deleteOrders() {

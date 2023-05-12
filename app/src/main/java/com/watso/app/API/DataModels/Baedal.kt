@@ -115,6 +115,10 @@ data class BaedalPostUpdate(
     val maxMember: Int
 )
 
+data class Fee(
+    val fee: Int
+)
+
 /** 게시글 상태 설정 */
 data class BaedalStatus(
     val status: String

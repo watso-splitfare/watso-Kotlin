@@ -57,6 +57,12 @@ interface BaedalAPI {
         @Body jsonparams: BaedalPostUpdate
     ): Call<VoidResponse>
 
+    @PATCH("${POST}/{post_id}/fee")     // 배달비 수정
+    fun updateBaedalFee(
+        @Path("post_id") postId: String,
+        @Body jsonparams: Fee
+    ): Call<VoidResponse>
+
     @PATCH("${POST}/{post_id}/status")    // 게시글 상태 변경
     fun setBaedalStatus(
         @Path("post_id") postId: String,
