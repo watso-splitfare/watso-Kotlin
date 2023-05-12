@@ -731,7 +731,7 @@
                         android:id="@+id/imageView6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="16dp"
@@ -739,7 +739,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/constraintLayout46"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/outline_account_balance_black_24" />
+                        app:srcCompat="@drawable/baseline_account_balance_black_24" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constraintLayout46"
