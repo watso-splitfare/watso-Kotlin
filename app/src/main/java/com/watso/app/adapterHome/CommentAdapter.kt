@@ -88,6 +88,7 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
                     } else binding.btnDelete.visibility = View.GONE // 내 댓글이 아니면
                 }
             } else {        // 삭제된 댓글
+                binding.ivReply.visibility = View.GONE
                 binding.tvNickname.visibility = View.GONE
                 binding.tvContent.text = "삭제된 댓글입니다."
                 binding.tvCreatedAt.visibility = View.GONE
