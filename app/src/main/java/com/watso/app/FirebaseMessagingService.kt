@@ -69,8 +69,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP) // Activity Stack 을 경로만 남김(A-B-C-D-B => A-B)
         val pendingIntent = PendingIntent.getActivity(this, uniId, intent, PendingIntent.FLAG_IMMUTABLE)
 
+        // 진동 패턴
+        val vibrationPattern = longArrayOf(0, 400, 200, 400)
         // 알림 채널 이름
-        val channelId = "my_channel"
+        val channelId = "watso"
         // 알림 소리
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
@@ -88,6 +90,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // 오레오 버전 이후에는 채널이 필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, "게시글 알림", NotificationManager.IMPORTANCE_DEFAULT)
+            channel.enableVibration(true)
+            channel.vibrationPattern = vibrationPattern
             notificationManager.createNotificationChannel(channel)
         }
 
