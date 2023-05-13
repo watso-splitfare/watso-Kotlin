@@ -16,6 +16,7 @@ import java.lang.reflect.Type
 interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
 
     companion object {
+        private val TAG = "API"
         //private const val BASE_URL = "https://24489c78-e8fa-4f59-9466-05c9d568ce74.mock.pstmn.io/"
         private const val BASE_URL = "http://129.154.49.156/api/"
         private val EXCEPTION_URL = listOf(
@@ -50,6 +51,7 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                 val refreshToken = prefs.getString("refreshToken", "")
 
                 val targetUrl = chain.request().url().toString()
+                Log.d("$TAG[targetURL]", targetUrl)
 
                 val tokenAddedRequest = chain.request().newBuilder()
                     .addHeader("Authorization", accessToken)
@@ -57,33 +59,38 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
 
                 val response = chain.proceed(tokenAddedRequest)
 
-                if (response.code() == 401 && (targetUrl !in EXCEPTION_URL)) {
-                    try {
-                        Log.d("API", "토큰 만료")
-                        response.close()
-                        Log.d("어세스 토큰 갱신 시도 access", accessToken)
-                        Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
-                        val refreshRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", refreshToken)
-                            .method("GET", null)
-                            .url(BASE_URL + "auth/refresh")
-                            .build()
+                if (response.code() == 401) {
+                    var isExpired = true
+                    EXCEPTION_URL.forEach {
+                        if (targetUrl.contains(it)) isExpired = false
+                    }
+                    if (isExpired) {
+                        try {
+                            Log.d("API", "토큰 만료")
+                            response.close()
+                            Log.d("어세스 토큰 갱신 시도 access", accessToken)
+                            Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
+                            val refreshRequest = chain.request().newBuilder()
+                                .addHeader("Authorization", refreshToken)
+                                .method("GET", null)
+                                .url(BASE_URL + "auth/refresh")
+                                .build()
 
-                        val refreshResponse = chain.proceed(refreshRequest)
-                        val token = refreshResponse.headers().get("Authentication").toString()
-                        prefs.setString("accessToken", token)
+                            val refreshResponse = chain.proceed(refreshRequest)
+                            val token = refreshResponse.headers().get("Authentication").toString()
+                            prefs.setString("accessToken", token)
 
-                        Log.d("어세스 토큰 갱신 성공", token)
-                        val newRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", token)
-                            .build()
+                            Log.d("어세스 토큰 갱신 성공", token)
+                            val newRequest = chain.request().newBuilder()
+                                .addHeader("Authorization", token)
+                                .build()
 
-                        val newRes = chain.proceed(newRequest)
-                        Log.d("API intercept newRes", newRes.toString())
-                        Log.d("API intercept newRes.code", newRes.code().toString())
-                        return newRes
-                    } catch (e: Exception) { }
-                    finally { }
+                            val newRes = chain.proceed(newRequest)
+                            Log.d("API intercept newRes", newRes.toString())
+                            Log.d("API intercept newRes.code", newRes.code().toString())
+                            return newRes
+                        } catch (e: Exception) { }
+                    }
                 }
                 return response
             }
