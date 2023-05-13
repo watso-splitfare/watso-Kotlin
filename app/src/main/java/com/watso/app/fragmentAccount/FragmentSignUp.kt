@@ -22,6 +22,7 @@ import retrofit2.Response
 
 
 class FragmentSignUp :Fragment() {
+    val TAG = "FragSignUp"
     var remainingSeconds = 0
     var valifyTime = 300
     var sendCoolTime = 10
@@ -34,7 +35,7 @@ class FragmentSignUp :Fragment() {
     val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "email" to false)
     var checkedUsername: String? = null
     var checkedNickname: String? = null
-    var verifingEmail: String? = null
+    var verifingEmail = ""
     var authToken = ""
     var bankName = ""
 
@@ -207,7 +208,7 @@ class FragmentSignUp :Fragment() {
 
         binding.etEmail.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                signUpCheck["email"] = verifingEmail != null && binding.etEmail.text.toString() == verifingEmail!!
+                signUpCheck["email"] = verifingEmail != "" && binding.etEmail.text.toString() == verifingEmail
                 setSignupBtnAble()
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -217,10 +218,10 @@ class FragmentSignUp :Fragment() {
         binding.tvCoolTime.visibility = View.GONE
         binding.btnSendCode.setOnClickListener {
             verifingEmail = binding.etEmail.text.toString()
-            if (verifingEmail != null && isSendAble) {
+            if (verifingEmail != "" && isSendAble) {
 
                 val loopingDialog = looping()
-                api.sendVerificationCode(verifingEmail!!).enqueue(object : Callback<VoidResponse> {
+                api.sendVerificationCode(verifingEmail).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
@@ -240,14 +241,15 @@ class FragmentSignUp :Fragment() {
                     }
                 })
             }
-            else if (verifingEmail != null && !isSendAble ) binding.tvCoolTime.visibility = View.VISIBLE
+            else if (verifingEmail != "" && !isSendAble ) binding.tvCoolTime.visibility = View.VISIBLE
 
         }
 
         binding.btnVerifyEmail.setOnClickListener {
-            if (binding.etVerifyCode.text.toString() != "") {
+            Log.d("$TAG[메일 인증]", binding.etEmail.text.toString())
+            if (verifingEmail != "" && binding.etVerifyCode.text.toString() != "") {
                 val loopingDialog = looping()
-                api.checkVerificationCode(verifingEmail!!, binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
+                api.checkVerificationCode(verifingEmail, binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
                     override fun onResponse(call: Call<VerificationResponse>, response: Response<VerificationResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 200) {
