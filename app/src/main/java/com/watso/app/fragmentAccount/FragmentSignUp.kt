@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import com.watso.app.API.*
+import com.watso.app.API.DataModels.ErrorResponse
 import kotlinx.coroutines.*
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
@@ -19,6 +21,7 @@ import com.watso.app.databinding.FragSignUpBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 
 class FragmentSignUp :Fragment() {
@@ -249,7 +252,7 @@ class FragmentSignUp :Fragment() {
             Log.d("$TAG[메일 인증]", binding.etEmail.text.toString())
             if (verifingEmail != "" && binding.etVerifyCode.text.toString() != "") {
                 val loopingDialog = looping()
-                api.checkVerificationCode(verifingEmail, binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
+                api.checkVerificationCode("a", binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
                     override fun onResponse(call: Call<VerificationResponse>, response: Response<VerificationResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 200) {
@@ -259,12 +262,21 @@ class FragmentSignUp :Fragment() {
                             setSignupBtnAble()
                             Log.d("signUp Fragment - signUpCheck", signUpCheck.toString())
                         } else {
-                            Log.e("signUp Fragment - sendMail", response.toString())
-                            makeToast("다시 시도해 주세요.")
+                            Log.d("$TAG[onResponse]", "")
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[verifyMail]", errorResponse.msg)
+                            } catch (e: Exception) {
+                                Log.e("$TAG[verifyMail]", e.toString())
+                                Log.d("$TAG[verifyMail]", response.errorBody()?.string().toString())
+                            }
                         }
                     }
 
                     override fun onFailure(call: Call<VerificationResponse>, t: Throwable) {
+                        Log.d("$TAG[onFailure]", "")
                         looping(false, loopingDialog)
                         Log.e("signUp Fragment - sendMail", t.message.toString())
                         makeToast("다시 시도해 주세요.")
