@@ -9,6 +9,7 @@ data class SignUpModel(
     val authToken: String,
     val name: String,
     val username: String,
+    @SerializedName("pw")
     val password: String,
     val nickname: String,
     @SerializedName("account_number")
