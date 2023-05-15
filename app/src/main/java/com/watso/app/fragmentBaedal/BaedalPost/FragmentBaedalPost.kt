@@ -3,10 +3,12 @@ package com.watso.app.fragmentBaedal.BaedalPost
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.view.marginBottom
@@ -39,7 +41,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     var isScrolled = false
     var infoHeight = 0
     var needMargin = 0
-    var acconutHeight = 0
+    var addCommentOriginY = 0f
+    private var isKeyboardOpen = false
+    var originViewHeight = 0
+    var keyBoardHeight = 0
+    var viewSetted = false
 
     var postId: String? = null
     var userId = prefs.getString("userId", "-1").toLong()
@@ -63,11 +69,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        hideSoftInput()
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
@@ -76,13 +77,25 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         binding.lytContent.setOnTouchListener(this)
         binding.lytComment.setOnTouchListener(this)
         binding.rvComment.setOnTouchListener(this)
+
         return binding.root
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        hideSoftInput()
     }
 
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
         when (event?.action) {
-            MotionEvent.ACTION_MOVE -> isScrolled = true
+            MotionEvent.ACTION_DOWN -> Log.d("[$TAG][온터치]", "터치시작")
+            MotionEvent.ACTION_MOVE -> {
+                isScrolled = true
+                Log.d("[$TAG][온터치]", "움직임")
+            }
             MotionEvent.ACTION_UP -> {
+                Log.d("[$TAG][온터치]", "터치끝")
                 if (!isScrolled) hideSoftInput()
                 isScrolled = false
             }
@@ -235,7 +248,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         /** 포스트 내용 바인딩 */
 
         binding.tvStore.text = store.name
-        binding.lytStore.setOnClickListener { binding.lytContent.scrollTo(0, 0) }
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
@@ -254,55 +266,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         bindStatusBtn()
         bindBottomBtn()
         setBottomBtn()
-
-        val contentView = binding.lytContent
-        val marginLayoutParams = binding.scrollMargin.layoutParams
-
-        /** 가게 정보의 길이에 맞게 스크롤의 길이를 늘린다 */
-        binding.lytStoreInfo.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                infoHeight = binding.lytStoreInfo.height
-                contentView.scrollTo(0, infoHeight)
-                marginLayoutParams.height = infoHeight
-                binding.scrollMargin.layoutParams = marginLayoutParams
-                binding.scrollMargin.requestLayout()
-                Log.d("$TAG[스토어 인포 옵저버][infoHeight]", infoHeight.toString())
-                Log.d("$TAG[스토어 인포 옵저버][contentView.scrollY]", contentView.scrollY.toString())
-                if (contentView.scrollY == infoHeight)
-                    binding.lytStoreInfo.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-
-        contentView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            //Log.d(TAG, "scroolY: $scrollY")
-            val max = contentView.getChildAt(0).height - contentView.height
-            val alpha = 1.0f - ( (max-scrollY).toFloat() / max.toFloat())
-
-            binding.lytBack.alpha = alpha
-        }
-
     }
 
-    fun setLayoutListner(view: View, where: String="") {
-        view.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                if (where != "") Log.d("$TAG[컨텐츠 옵저버]:", where)
-                val windowh = binding.constraintLayout2.height
-                val headh = binding.lytHead.height
-                val realContenth = binding.lytContentWithComment.height//posth + commenth
-                val addComh = binding.lytAddComment.height
-                needMargin = windowh - headh - realContenth - addComh
-                if (needMargin < 0) needMargin = 0
-                val contentLayoutParams = binding.lytContentWithComment.layoutParams as ViewGroup.MarginLayoutParams
-                contentLayoutParams.setMargins(0, 0, 0, needMargin)
-                binding.lytContentWithComment.layoutParams = contentLayoutParams
-                binding.lytContentWithComment.requestLayout()
-
-                if (binding.lytContentWithComment.marginBottom == needMargin)
-                    view.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-    }
 
     fun setComments() {
         var count = 0
@@ -338,7 +303,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             if (content.trim() != "") postComment(content, replyTo?._id)
         }
 
-        setLayoutListner(binding.lytComment, "댓글")
+        //setLayoutListner(binding.lytComment, "댓글")
     }
 
     fun cancelReply() {
@@ -398,8 +363,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                     Log.e("[FAIL][POST][postSubComment]", t.message.toString())
                     makeToast("다시 시도해주세요.")
                 }
-            }
-            )
+            })
         }
     }
 
@@ -470,7 +434,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             else -> binding.tvStatus.text = "모집 마감"
         }
 
-        setLayoutListner(binding.constraintLayout17, "내용")
+        //setLayoutListner(binding.constraintLayout17, "내용")
     }
 
     fun bindBottomBtn() {
@@ -508,11 +472,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             binding.btnOrder.visibility = View.VISIBLE
         }
 
-        setLayoutListner(binding.lytBottomButton, "버튼")
+        //setLayoutListner(binding.lytBottomButton, "버튼")
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
-        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_blue_10)
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_10)
         else binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_gray_10)
         binding.btnOrder.isEnabled = isEnabled
         binding.tvOrder.text = text
@@ -644,13 +608,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
         fun init() {
             view.etFee.setText(baedalPost.fee.toString())
-            /*view.etFee.addTextChangedListener(object: TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                    view.etFee.setText(dec.format(view.etFee.text))
-                }
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            })*/
         }
 
         fun getView(): AlertdialogInputtextBinding { return view }
@@ -701,10 +658,9 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun hideSoftInput() {
-        Log.d(TAG, "키보드 숨기기")
-        Log.d(TAG, view.toString())
+        Log.d("$TAG[하이드 소프트 인풋]", "")
         val mActivity = activity as MainActivity
-        return mActivity.hideSoftInput()
+        mActivity.hideSoftInput()
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
@@ -723,7 +679,9 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun onBackPressed() {
-        cancelReply()
+        Log.d("$TAG[뒤로가기 키 눌림]", "")
+//        cancelReply()
+        hideSoftInput()
         val mActivity =activity as MainActivity
         mActivity.onBackPressed()
     }
