@@ -96,7 +96,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/btn_primary_blue_10"
+            android:background="@drawable/solid_blue_10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -136,7 +136,7 @@
                         android:id="@+id/lyt_cart_count"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:background="@drawable/box_cart_count"
+                        android:background="@drawable/solid_red_circle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 

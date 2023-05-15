@@ -106,7 +106,7 @@ class FragmentBaedalConfirm :Fragment() {
                 }
                 if (!confirmAble) {
                     binding.btnConfirm.setEnabled(false)
-                    binding.btnConfirm.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                    binding.btnConfirm.setBackgroundResource(R.drawable.solid_gray_10)
                 }
             }
         })

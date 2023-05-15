@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/btn_white_10_stroke_silver"
+        android:background="@drawable/stroked_white_10_silver"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

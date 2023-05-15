@@ -15,8 +15,8 @@
     <color name="primary">#FF7700</color>
     <color name="secondery">#FFF9EE</color>
     <color name="gray">#636363</color>
-    <color name="light_gray">#f4f4f4</color>
     <color name="silver">#B4B4B4</color>
+    <color name="light_gray">#ECECEC</color>
     <color name="blue">#3f51b5</color>
     <color name="red">#FF4747</color>
     <color name="green">#4caf50</color>

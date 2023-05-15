@@ -111,7 +111,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/btn_primary">
+                android:background="@drawable/solid_primary">
 
                 <TextView
                     android:id="@+id/textView62"
@@ -133,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:background="@drawable/btn_white_with_primary_stroke">
+                android:background="@drawable/stroked_white_primary_2">
 
                 <TextView
                     android:id="@+id/textView64"

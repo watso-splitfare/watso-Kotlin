@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
-                android:background="@drawable/box_post_list"
+                android:background="@drawable/stroked_background_8_lightgray"
                 android:elevation="5dp"
                 android:orientation="vertical">
 
@@ -338,7 +338,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="8dp"
-                android:background="@drawable/box_post_list"
+                android:background="@drawable/stroked_background_8_lightgray"
                 android:elevation="5dp">
 
                 <TextView
@@ -385,7 +385,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_margin="8dp"
-                android:background="@drawable/box_post_list"
+                android:background="@drawable/stroked_background_8_lightgray"
                 android:elevation="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

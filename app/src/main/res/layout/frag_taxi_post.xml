@@ -297,7 +297,6 @@
                     android:layout_height="28dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="10dp"
-                    android:background="@drawable/btn_taxi_propose"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_content">
@@ -406,7 +405,7 @@
                         android:layout_height="30dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:background="@drawable/box_add_comment"
+                        android:background="@drawable/solid_lightgray_10"
                         android:ems="10"
                         android:inputType="textPersonName"
                         android:text="댓글입력"

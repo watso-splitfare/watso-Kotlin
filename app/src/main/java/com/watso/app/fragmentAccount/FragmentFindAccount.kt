@@ -52,7 +52,7 @@ class FragmentFindAccount :Fragment() {
             binding.etUsername.setText("")
             binding.lytFindUsername.visibility = View.VISIBLE
             binding.lytFindPassword.visibility = View.GONE
-            binding.tvFindUsername.setTextColor(ContextCompat.getColor(requireContext(), R.color.kara))
+            binding.tvFindUsername.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
             binding.tvFindPassword.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
         }
         binding.tvFindPassword.setOnClickListener {
@@ -62,7 +62,7 @@ class FragmentFindAccount :Fragment() {
             binding.lytFindUsername.visibility = View.GONE
             binding.lytFindPassword.visibility = View.VISIBLE
             binding.tvFindUsername.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.tvFindPassword.setTextColor(ContextCompat.getColor(requireContext(), R.color.kara))
+            binding.tvFindPassword.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         }
         binding.btnFindUsername.setOnClickListener { findUsername() }
         binding.btnIssueTempPassword.setOnClickListener { issueTmpePassword() }

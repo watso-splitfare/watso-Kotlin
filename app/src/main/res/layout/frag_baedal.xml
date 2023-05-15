@@ -92,7 +92,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/box_post_list"
+                    android:background="@drawable/stroked_background_8_lightgray"
                     android:elevation="5dp"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -155,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:background="@drawable/box_post_list"
+                    android:background="@drawable/stroked_background_8_lightgray"
                     android:elevation="5dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -201,7 +201,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:background="@drawable/box_post_list"
+                    android:background="@drawable/stroked_background_8_lightgray"
                     android:elevation="5dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -235,7 +235,6 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="4dp"
-                            android:background="@drawable/box_choice"
                             android:elevation="5dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -274,7 +273,7 @@
         android:layout_height="50dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="32dp"
-        android:background="@drawable/btn_circle_primary"
+        android:background="@drawable/solid_primary_circle"
         android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

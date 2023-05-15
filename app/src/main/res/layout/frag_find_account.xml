@@ -62,7 +62,7 @@
             android:layout_weight="1"
             android:text="아이디 찾기"
             android:textAlignment="center"
-            android:textColor="@color/kara"
+            android:textColor="@color/primary"
             android:textStyle="bold"
             android:textSize="16sp"/>
 
@@ -92,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/box_post_list">
+            android:background="@drawable/stroked_background_8_lightgray">
 
             <TextView
                 android:id="@+id/tv_line_username"
@@ -120,7 +120,7 @@
                     android:id="@+id/constraintLayout20"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:background="@drawable/btn_primary_white_with_stroke_10"
+                    android:background="@drawable/stroked_white_10_black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/textView44"
                     app:layout_constraintStart_toStartOf="parent"
@@ -164,7 +164,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_white_with_primary_stroke_10"
+                android:background="@drawable/stroked_white_10_primary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout23">
@@ -202,7 +202,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/box_post_list"
+            android:background="@drawable/stroked_background_8_lightgray"
             android:elevation="5dp">
 
             <TextView
@@ -223,7 +223,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_primary_white_with_stroke_10"
+                android:background="@drawable/stroked_white_10_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView41">
@@ -271,7 +271,7 @@
                     android:id="@+id/constraintLayout19"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/btn_primary_white_with_stroke_10"
+                    android:background="@drawable/stroked_white_10_black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/textView45"
                     app:layout_constraintStart_toStartOf="parent"
@@ -315,7 +315,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_white_with_primary_stroke_10"
+                android:background="@drawable/stroked_white_10_primary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout24">

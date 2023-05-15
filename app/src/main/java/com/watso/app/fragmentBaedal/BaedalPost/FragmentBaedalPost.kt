@@ -3,15 +3,12 @@ package com.watso.app.fragmentBaedal.BaedalPost
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
-import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -415,16 +412,16 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         when (baedalPost.status) {
             "recruiting" -> {
                 binding.ivStatus.setImageResource(R.drawable.baseline_person_black_24)
-                binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_pressed)
+                binding.lytStatusOpen.setBackgroundResource(R.drawable.patch_green_10_green_left)
                 binding.tvStatusOpen.setTextColor(Color.WHITE)
-                binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_released)
+                binding.lytStatusClosed.setBackgroundResource(R.drawable.patch_white_10_silver_right)
                 binding.tvStatusClosed.setTextColor(Color.GRAY)
                 binding.tvStatus.text = "모집중"
             }
             "closed" -> {
-                binding.lytStatusOpen.setBackgroundResource(R.drawable.btn_baedal_open_released)
+                binding.lytStatusOpen.setBackgroundResource(R.drawable.patch_white_10_silver_left)
                 binding.tvStatusOpen.setTextColor(Color.GRAY)
-                binding.lytStatusClosed.setBackgroundResource(R.drawable.btn_baedal_close_pressed)
+                binding.lytStatusClosed.setBackgroundResource(R.drawable.patch_silver_10_gray_right)
                 binding.tvStatusClosed.setTextColor(Color.WHITE)
                 binding.tvStatus.text = "모집 마감"
             }
@@ -476,8 +473,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
-        if (background) binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_10)
-        else binding.btnOrder.setBackgroundResource(R.drawable.btn_primary_gray_10)
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.solid_primary_10)
+        else binding.btnOrder.setBackgroundResource(R.drawable.solid_gray_10)
         binding.btnOrder.isEnabled = isEnabled
         binding.tvOrder.text = text
     }

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginVertical="4dp"
     android:layout_marginHorizontal="8dp"
-    android:background="@drawable/box_post_list"
+    android:background="@drawable/stroked_background_8_lightgray"
     android:elevation="5dp">
 
     <TextView
