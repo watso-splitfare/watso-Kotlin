@@ -213,6 +213,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         val store = baedalPost.store
         val orderTime = LocalDateTime.parse(baedalPost.orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
 
+        binding.tvStoreName.text = store.name
         if (userId == baedalPost.userId) {
             binding.tvDelete.text = "삭제"
             binding.tvUpdate.text = "수정"
@@ -227,18 +228,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
         }
-
-        binding.tvMinOrder.text = store.minOrder.toString()
-        binding.tvFee.text = baedalPost.fee.toString()
-        binding.tvTelNum.text = store.telNum
-        var noteStr = ""
-        for ((idx, note) in store.note.withIndex()) {
-            noteStr += note
-            if (idx < store.note.size - 1)
-                noteStr += "\n"
-        }
-        if (noteStr.trim() == "") noteStr = "없음"
-        binding.tvNote.text = noteStr
 
         /** 게시글 삭제 버튼 */
         binding.tvDelete.setOnClickListener {
@@ -276,128 +265,46 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             builder.show()
         }
 
+        /** 가게 정보 */
+        binding.tvTelNum.text = store.telNum
+        binding.tvMinOrder.text = "${dec.format(store.minOrder)}원"
+        binding.tvFee.text = "${dec.format(baedalPost.store.fee)}원"
+
+        var noteStr = ""
+        for ((idx, note) in store.note.withIndex()) {
+            noteStr += note
+            if (idx < store.note.size - 1)
+                noteStr += "\n"
+        }
+        if (noteStr.trim() == "") noteStr = "없음"
+        binding.tvNote.text = noteStr
+
         /** 포스트 내용 바인딩 */
 
-        binding.tvStore.text = store.name
         binding.tvOrderTime.text = orderTime.format(
             DateTimeFormatter.ofPattern("M월 d일(E) H시 m분",Locale.KOREAN)
         )
         binding.tvCurrentMember.text = "${baedalPost.users.size}명 (최소 ${baedalPost.minMember}명 필요)"
-        binding.tvFee.text = "${dec.format(store.fee)}원"
+        binding.tvConfirmedFee.text = "${dec.format(baedalPost.fee)}원"
+        if (baedalPost.userId == userId) {
+            binding.lytConfirmedFee.visibility = View.VISIBLE
+            binding.btnUpdateFee.visibility = View.VISIBLE
+            binding.btnUpdateFee.setOnClickListener { onUpdateFee() }
+        } else {
+            binding.btnUpdateFee.visibility = View.GONE
+            if (baedalPost.status == "delivered") binding.lytConfirmedFee.visibility = View.VISIBLE
+            else binding.lytConfirmedFee.visibility = View.GONE
+        }
 
         getAccountNum()
 
         /** 하단 버튼 바인딩 */
-        /*binding.lytStatus.setOnClickListener {
-            //bindStatusBtn()
-            if (baedalPost.status == "recruiting") setStatus("closed")
-            else setStatus("recruiting")
-        }*/
         binding.lytStatusOpen.setOnClickListener { if (baedalPost.status == "closed") setStatus("recruiting")}
         binding.lytStatusClosed.setOnClickListener { if (baedalPost.status == "recruiting") setStatus("closed") }
 
         bindStatusBtn()
         bindBottomBtn()
         setBottomBtn()
-    }
-
-
-    fun setComments() {
-        var count = 0
-        for (comment in comments) {
-            if (comment.status == "created") count++
-        }
-        binding.tvCommentCount.text = "댓글 $count"
-        binding.rvComment.layoutManager =
-        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvComment.setHasFixedSize(true)
-        val adapter = CommentAdapter(requireContext(), comments, userId)
-        binding.rvComment.adapter = adapter
-
-        adapter.setDeleteListener(object: CommentAdapter.OnDeleteListener {
-            override fun deleteComment() {
-                getComments()
-            }
-        })
-        adapter.setReplyListener(object : CommentAdapter.OnReplyListener {
-            override fun makeReply(parentComment: Comment) {
-                replyTo = parentComment
-                binding.tvReplyTo.text = "${replyTo!!.nickname}님에게 대댓글"
-                binding.lytReplyTo.visibility = View.VISIBLE
-                showSoftInput(binding.etComment)
-            }
-        })
-
-        binding.lytReplyTo.visibility = View.GONE
-        binding.btnCancelReply.setOnClickListener { cancelReply() }
-
-        binding.btnPostComment.setOnClickListener {
-            val content = binding.etComment.text.toString()
-            if (content.trim() != "") postComment(content, replyTo?._id)
-        }
-
-        //setLayoutListner(binding.lytComment, "댓글")
-    }
-
-    fun cancelReply() {
-        replyTo = null
-        binding.lytReplyTo.visibility = View.GONE
-    }
-
-    fun postComment(content: String, parentId: String? = null) {
-        val loopingDialog = looping()
-        if (parentId == null) {
-            api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
-                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 204) {
-                            Log.d("FragBaedalPost postComment", "성공")
-                            requestNotiPermission()
-                            getComments()
-                        } else {
-                            try {
-                                val errorBody = response.errorBody()?.string()
-                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
-                                Log.d("$TAG[postComment]", errorResponse.msg)
-                            } catch (e:Exception) {
-                                Log.e("$TAG[postComment]", e.toString())
-                                Log.d("$TAG[postComment]", response.errorBody()?.string().toString())
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("[FAIL][POST][postComment]", t.message.toString())
-                        makeToast("다시 시도해주세요.")
-                    }
-                }
-            )
-        } else {
-            api.postSubComment(postId!!, parentId, PostComment(content)).enqueue(object : Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
-                    if (response.code() == 204) {
-                        Log.d("FragBaedalPost postComment", "성공")
-                        getComments()
-                    } else {
-                        try {
-                            val errorBody = response.errorBody()?.string()
-                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
-                            Log.d("$TAG[postSubComment]", errorResponse.msg)
-                        } catch (e:Exception) { Log.e("$TAG[postSubComment]", e.toString())}
-                    }
-                }
-
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
-                    Log.e("[FAIL][POST][postSubComment]", t.message.toString())
-                    makeToast("다시 시도해주세요.")
-                }
-            })
-        }
     }
 
     fun deletePost() {
@@ -427,6 +334,21 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 makeToast("다시 시도해주세요.")
             }
         })
+    }
+
+    fun onUpdateFee() {
+        val builder = AlertDialog.Builder(requireContext())
+        val builderItem = EtBuilder()
+        builderItem.init()
+
+        builder.setTitle("배달비 변경")
+            .setMessage("변경된 배달비를 입력해주세요")
+            .setView(builderItem.getView().root)
+            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                updateFee(builderItem.getFee())
+            })
+            .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+        builder.show()
     }
 
     fun bindStatusBtn() {
@@ -575,7 +497,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 .setMessage("배달이 완료되었나요?\n주문 참가자들에게 알림이 전송됩니다.\n확정된 배달비를 입력해주세요.")
                 .setView(builderItem.getView().root)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                    updateFee(builderItem.getFee())
+                    updateFee(builderItem.getFee(), true)
                 })
                 .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
             builder.show()} // 배달 완료
@@ -608,7 +530,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         })
     }
 
-    fun updateFee(fee: Int) {
+    fun updateFee(fee: Int, completed: Boolean=false) {
         if (fee != baedalPost.fee) {
             val loopingDialog = looping()
             api.updateBaedalFee(postId!!, Fee(fee)).enqueue(object : Callback<VoidResponse> {
@@ -616,7 +538,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
                             makeToast("배달비가 변경되었습니다.")
-                            setStatus("delivered")
+                            if (completed) setStatus("delivered")
                         } else {
                             try {
                                 val errorBody = response.errorBody()?.string()
@@ -677,6 +599,104 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 makeToast("주문 취소 실패")
             }
         })
+    }
+
+    fun setComments() {
+        var count = 0
+        for (comment in comments) {
+            if (comment.status == "created") count++
+        }
+        binding.tvCommentCount.text = "댓글 $count"
+        binding.rvComment.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvComment.setHasFixedSize(true)
+        val adapter = CommentAdapter(requireContext(), comments, userId)
+        binding.rvComment.adapter = adapter
+
+        adapter.setDeleteListener(object: CommentAdapter.OnDeleteListener {
+            override fun deleteComment() {
+                getComments()
+            }
+        })
+        adapter.setReplyListener(object : CommentAdapter.OnReplyListener {
+            override fun makeReply(parentComment: Comment) {
+                replyTo = parentComment
+                binding.tvReplyTo.text = "${replyTo!!.nickname}님에게 대댓글"
+                binding.lytReplyTo.visibility = View.VISIBLE
+                showSoftInput(binding.etComment)
+            }
+        })
+
+        binding.lytReplyTo.visibility = View.GONE
+        binding.btnCancelReply.setOnClickListener { cancelReply() }
+
+        binding.btnPostComment.setOnClickListener {
+            val content = binding.etComment.text.toString()
+            if (content.trim() != "") postComment(content, replyTo?._id)
+        }
+
+        //setLayoutListner(binding.lytComment, "댓글")
+    }
+
+    fun cancelReply() {
+        replyTo = null
+        binding.lytReplyTo.visibility = View.GONE
+    }
+
+    fun postComment(content: String, parentId: String? = null) {
+        val loopingDialog = looping()
+        if (parentId == null) {
+            api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    looping(false, loopingDialog)
+                    if (response.code() == 204) {
+                        Log.d("FragBaedalPost postComment", "성공")
+                        requestNotiPermission()
+                        getComments()
+                    } else {
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[postComment]", errorResponse.msg)
+                        } catch (e:Exception) {
+                            Log.e("$TAG[postComment]", e.toString())
+                            Log.d("$TAG[postComment]", response.errorBody()?.string().toString())
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                    looping(false, loopingDialog)
+                    Log.e("[FAIL][POST][postComment]", t.message.toString())
+                    makeToast("다시 시도해주세요.")
+                }
+            }
+            )
+        } else {
+            api.postSubComment(postId!!, parentId, PostComment(content)).enqueue(object : Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    looping(false, loopingDialog)
+                    if (response.code() == 204) {
+                        Log.d("FragBaedalPost postComment", "성공")
+                        getComments()
+                    } else {
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[postSubComment]", errorResponse.msg)
+                        } catch (e:Exception) { Log.e("$TAG[postSubComment]", e.toString())}
+                    }
+                }
+
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                    looping(false, loopingDialog)
+                    Log.e("[FAIL][POST][postSubComment]", t.message.toString())
+                    makeToast("다시 시도해주세요.")
+                }
+            })
+        }
     }
 
     fun requestNotiPermission() {
