@@ -143,7 +143,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
             setStoreSpinner()
         }
-        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_blue_10)
+        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_primary_10)
         binding.btnCompletePostinfo.setOnClickListener { btnCompletePostInfo() }
     }
 
@@ -262,7 +262,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 min.toInt() < 2 -> memberAlert.text = "최소주문 인원은 2명 이상이어야 합니다."
                 else -> {
                     memberAlert.text = ""
-                    binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_blue_10)
+                    binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_primary_10)
                     binding.btnCompletePostinfo.isEnabled = true
                 }
             }
