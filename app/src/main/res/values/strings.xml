@@ -3,8 +3,5 @@
     <string name="app_title">여기 왔소</string>
     <string name="baedal">배달왔소</string>
     <string name="taxi">택시왔소</string>
-    <string name="kara">학관 노래방</string>
-    <string name="free_board">자유게시판</string>
-    <string name="club_board">구인게시판</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 </resources>

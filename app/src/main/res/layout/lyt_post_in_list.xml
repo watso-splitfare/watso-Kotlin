@@ -31,7 +31,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/heart" />
+            app:srcCompat="@drawable/outline_close_black_24" />
 
         <TextView
             android:id="@+id/tv_like"
@@ -51,7 +51,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_like"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/speech_bubble" />
+            app:srcCompat="@drawable/outline_close_black_24" />
 
         <TextView
             android:id="@+id/tv_comment"
