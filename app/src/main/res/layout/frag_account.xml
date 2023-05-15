@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/outline_arrow_back_black_36" />
+            app:srcCompat="@drawable/outline_arrow_back_black_24" />
 
         <TextView
             android:id="@+id/textView10"
@@ -33,7 +33,7 @@
             android:layout_marginStart="24dp"
             android:text="설정"
             android:textColor="@color/black"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/btn_previous"
             app:layout_constraintStart_toEndOf="@+id/btn_previous"
