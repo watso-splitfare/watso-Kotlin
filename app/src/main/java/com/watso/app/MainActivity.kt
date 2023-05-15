@@ -261,7 +261,6 @@ class MainActivity : AppCompatActivity() {
         val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText(label, content)
         clipboardManager.setPrimaryClip(clipData)
-        makeToast("클립보드에 계좌번호가 복사되었습니다.")
     }
 
     fun makeToast(message: String){
