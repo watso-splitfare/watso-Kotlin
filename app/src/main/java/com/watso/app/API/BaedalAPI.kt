@@ -57,6 +57,11 @@ interface BaedalAPI {
         @Body jsonparams: BaedalPostUpdate
     ): Call<VoidResponse>
 
+    @GET("${POST}/{post_id}/account-number")    // 대표자 계좌번호 조회
+    fun getAccountNumber(
+        @Path("post_id") postId: String,
+    ): Call<AccountNumber>
+
     @PATCH("${POST}/{post_id}/fee")     // 배달비 수정
     fun updateBaedalFee(
         @Path("post_id") postId: String,

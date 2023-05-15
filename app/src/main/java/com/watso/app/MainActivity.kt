@@ -1,5 +1,7 @@
 package com.watso.app
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -253,6 +255,13 @@ class MainActivity : AppCompatActivity() {
             loopingDialog!!.dismiss()
             null
         }
+    }
+
+    fun copyToClipboard(label:String, content: String) {
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText(label, content)
+        clipboardManager.setPrimaryClip(clipData)
+        makeToast("클립보드에 계좌번호가 복사되었습니다.")
     }
 
     fun makeToast(message: String){

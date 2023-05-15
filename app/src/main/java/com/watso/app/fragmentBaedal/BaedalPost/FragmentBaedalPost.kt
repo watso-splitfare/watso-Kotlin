@@ -142,6 +142,39 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         })
     }
 
+    fun getAccountNum() {
+        if (isMember && baedalPost.status == "delivered") {
+            binding.lytAccountNumber.visibility = View.VISIBLE
+            val loopingDialog = looping()
+            api.getAccountNumber(postId!!).enqueue(object : Callback<AccountNumber> {
+                override fun onResponse(call: Call<AccountNumber>, response: Response<AccountNumber>) {
+                    looping(false, loopingDialog)
+                    if (response.code() == 200) {
+                        binding.tvAccountNumber.text = response.body()!!.AccountNumber
+                        binding.btnCopyAccountNum.setOnClickListener {
+                            copyToClipboard("대표자 계좌번호", binding.tvAccountNumber.text.toString())
+                        }
+                    } else {
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[getAccountNum]", errorResponse.msg)
+                        } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
+                        finally { binding.tvAccountNumber.text = "계좌번호를 조회할 수 없습니다."  }
+                    }
+                }
+
+                override fun onFailure(call: Call<AccountNumber>, t: Throwable) {
+                    looping(false, loopingDialog)
+                    binding.tvAccountNumber.text = "계좌번호를 조회할 수 없습니다."
+                    Log.e("baedal Post Fragment - getComments", t.message.toString())
+                    makeToast("댓글 조회 실패")
+                }
+            })
+        } else binding.lytAccountNumber.visibility = View.GONE
+    }
+
     fun getComments() {
         cancelReply()
         binding.etComment.setText("")
@@ -250,6 +283,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         )
         binding.tvCurrentMember.text = "${baedalPost.users.size}명 (최소 ${baedalPost.minMember}명 필요)"
         binding.tvFee.text = "${dec.format(store.fee)}원"
+
+        getAccountNum()
 
         /** 하단 버튼 바인딩 */
         /*binding.lytStatus.setOnClickListener {
@@ -663,6 +698,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
         val mActivity = activity as MainActivity
         return mActivity.looping(loopStart, loopingDialog)
+    }
+
+    fun copyToClipboard(label:String="", content: String) {
+        val mActivity = activity as MainActivity
+        mActivity.copyToClipboard(label, content)
     }
 
     fun makeToast(message: String){

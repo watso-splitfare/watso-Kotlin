@@ -115,6 +115,11 @@ data class BaedalPostUpdate(
     val maxMember: Int
 )
 
+data class AccountNumber(
+    @SerializedName("account_number")
+    val AccountNumber: String
+)
+
 data class Fee(
     val fee: Int
 )
