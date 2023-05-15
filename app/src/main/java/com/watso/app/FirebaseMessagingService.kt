@@ -1,5 +1,6 @@
 package com.watso.app
 
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -12,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import java.security.Permission
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     /** 푸시 알림으로 보낼 수 있는 메세지는 2가지
@@ -46,10 +48,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Message noti : ${remoteMessage.notification}")
 
         if(remoteMessage.data.isNotEmpty()){
-            //알림생성
             sendNotification(remoteMessage)
-//            Log.d(TAG, remoteMessage.data["title"].toString())
-//            Log.d(TAG, remoteMessage.data["body"].toString())
         }else {
             Log.e(TAG, "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
         }
@@ -65,6 +64,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         //각 key, value 추가
         for(key in remoteMessage.data.keys){
             intent.putExtra(key, remoteMessage.data.getValue(key))
+            Log.d("[$TAG][알림] (key, value)", "${key}, ${remoteMessage.data.getValue(key)}")
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP) // Activity Stack 을 경로만 남김(A-B-C-D-B => A-B)
         val pendingIntent = PendingIntent.getActivity(this, uniId, intent, PendingIntent.FLAG_IMMUTABLE)
@@ -96,11 +96,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         // 알림 생성
-        Log.d("fcm", "요청")
-        if (MainActivity.prefs.getString("notificationPermission", "") == "true") {
-            notificationManager.notify(uniId, notificationBuilder.build())
-            Log.d("fcm", "성공")
-        }
+        //if (MainActivity.prefs.getString("notificationPermission", "") == "true") {
+        notificationManager.notify(uniId, notificationBuilder.build())
+        //}
     }
 
     /** Token 가져오기 */
