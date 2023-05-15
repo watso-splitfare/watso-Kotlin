@@ -473,8 +473,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
-        if (background) binding.btnOrder.setBackgroundResource(R.drawable.solid_primary_10)
-        else binding.btnOrder.setBackgroundResource(R.drawable.solid_gray_10)
+        if (background) binding.btnOrder.setBackgroundResource(R.drawable.solid_primary)
+        else binding.btnOrder.setBackgroundResource(R.drawable.solid_gray)
         binding.btnOrder.isEnabled = isEnabled
         binding.tvOrder.text = text
     }
