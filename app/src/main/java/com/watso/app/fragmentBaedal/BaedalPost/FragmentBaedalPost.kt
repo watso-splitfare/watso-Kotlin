@@ -254,7 +254,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         binding.tvUpdate.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("게시글 수정하기")
-                .setMessage("게시글을 수정하시겠습니까? \n주문 수정은 주문수정 버튼을 이용해 주세요.")
+                .setMessage("게시글을 수정하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
                     setFrag(FragmentBaedalAdd(), mapOf(
                         "isUpdating" to "true",
