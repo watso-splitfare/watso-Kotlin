@@ -186,7 +186,7 @@ class FragmentBaedal :Fragment() {
         if (!joined && !joinable) {
             binding.lytEmptyList.visibility = View.VISIBLE
             binding.lytEmptyList.setOnClickListener { setFrag(FragmentBaedalAdd()) }
-        }
+        } else binding.lytEmptyList.visibility = View.GONE
     }
 
     fun setSpiner() {
