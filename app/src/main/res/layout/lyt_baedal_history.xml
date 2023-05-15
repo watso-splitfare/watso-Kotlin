@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/stroked_background_8_lightgray"
-    android:elevation="5dp">
+    android:background="@drawable/stroked_background_5_silver">
 
     <TextView
         android:id="@+id/tv_status"
@@ -36,8 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/stroked_background_8_lightgray"
-        android:elevation="5dp"
+        android:background="@drawable/stroked_background_5_silver"
         app:layout_constraintBottom_toBottomOf="@+id/tv_datetime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_status">
@@ -92,7 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@drawable/stroked_white_black"
+        android:background="@drawable/stroked_white_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="16dp"
             android:text="게시글 보러가기"
-            android:textColor="@color/black"
+            android:textColor="@color/primary"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
