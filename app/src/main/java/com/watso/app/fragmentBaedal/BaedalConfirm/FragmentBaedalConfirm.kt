@@ -16,6 +16,7 @@ import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragBaedalConfirmBinding
 import com.google.gson.Gson
+import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
@@ -106,7 +107,7 @@ class FragmentBaedalConfirm :Fragment() {
                 }
                 if (!confirmAble) {
                     binding.btnConfirm.setEnabled(false)
-                    binding.btnConfirm.setBackgroundResource(R.drawable.btn_baedal_confirm_false)
+                    binding.btnConfirm.setBackgroundResource(R.drawable.solid_gray_10)
                 }
             }
         })
@@ -124,15 +125,12 @@ class FragmentBaedalConfirm :Fragment() {
     fun ordering(){
         val loopingDialog = looping()
         Log.d("FragBaedalConfirm orders", userOrder.orders.toString())
-        if (postId == "-1") {
+        if (postId == "-1") {   // 게시글 작성일 때
             baedalPosting.order = userOrder
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     looping(false, loopingDialog)
-                    if (response.code() == 201) {
-                        postId = response.body()!!.postId
-                        goToPosting()
-                    }
+                    if (response.code() == 201) setFrag(FragmentBaedal())
                     else {
                         Log.e("baedal Confirm Fragment - baedalPosting", response.toString())
                         makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
@@ -145,7 +143,7 @@ class FragmentBaedalConfirm :Fragment() {
                     makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
             })
-        } else {
+        } else {            // 게시글에 참가할 때
             userOrder.requestComment = binding.etRequest.text.toString()
             api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/box_post_list"
+    android:background="@drawable/stroked_background_8_lightgray"
     android:elevation="5dp">
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/box_post_list"
+        android:background="@drawable/stroked_background_8_lightgray"
         android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_datetime"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,7 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@drawable/btn_primary_white_with_stroke"
+        android:background="@drawable/stroked_white_black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

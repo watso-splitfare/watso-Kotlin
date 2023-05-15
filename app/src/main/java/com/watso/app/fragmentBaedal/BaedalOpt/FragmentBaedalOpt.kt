@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalOptBinding
@@ -17,9 +18,11 @@ import com.watso.app.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
+    val TAG="FragBaedalOpt"
     var postId = ""
     var menuId = ""
     lateinit var storeInfo: StoreInfo
@@ -129,8 +132,12 @@ class FragmentBaedalOpt :Fragment() {
                     setGroupOptionData()
                     setOrderPrice()
                 } else {
-                    Log.e("baedalOpt Fragment - getGroupOption", response.toString())
-                    makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getMenuInfo]", errorResponse.msg)
+                    } catch (e: Exception) { Log.e("$TAG[getMenuInfo]", e.toString())}
                 }
             }
 

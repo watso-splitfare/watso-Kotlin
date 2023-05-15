@@ -1,5 +1,7 @@
 package com.watso.app
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -21,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.watso.app.databinding.ActivityMainBinding
 import com.watso.app.fragmentAccount.FragmentLogin
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
+import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import java.util.*
 
 
@@ -61,21 +64,20 @@ class MainActivity : AppCompatActivity() {
         binding.btnHome.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentHome(), popBackStack = 0, fragIndex=0)*/ }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, fragIndex=1) }
         binding.btnTaxi.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2)*/ }
-        binding.btnKara.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentKara(), popBackStack = 0, fragIndex=3)*/ }
-        binding.btnFreeBoard.setOnClickListener { makeToast("게시판 준비중입니다.") /*setFrag(FragmentFreeBoard(), popBackStack = 0, fragIndex=4)*/ }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initDynamicLink()
     }
 
     /** DynamicLink */
     private fun initDynamicLink() {
         val dynamicLinkData = intent.extras
         if (dynamicLinkData != null) {
-            var dataStr = "DynamicLink 수신받은 값\n"
-            for (key in dynamicLinkData.keySet()) {
-                dataStr += "key: $key / value: ${dynamicLinkData.getString(key)}\n"
-            }
-
-            Log.d("FCM 수신", dataStr)
-            //binding.tvToken.text = dataStr
+            val postId = dynamicLinkData.getString("post_id")
+            if (postId != null)
+                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
         }
     }
 
@@ -253,6 +255,13 @@ class MainActivity : AppCompatActivity() {
             loopingDialog!!.dismiss()
             null
         }
+    }
+
+    fun copyToClipboard(label:String, content: String) {
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText(label, content)
+        clipboardManager.setPrimaryClip(clipData)
+        makeToast("클립보드에 계좌번호가 복사되었습니다.")
     }
 
     fun makeToast(message: String){

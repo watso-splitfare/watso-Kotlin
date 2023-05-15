@@ -22,23 +22,23 @@
 
         <ImageView
             android:id="@+id/btn_previous"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/previous" />
+            app:srcCompat="@drawable/outline_arrow_back_black_24" />
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="24dp"
             android:text="배달왔소 참가 내역"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="@+id/btn_previous"

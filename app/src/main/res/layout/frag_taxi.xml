@@ -41,15 +41,15 @@
 
         <ImageButton
             android:id="@+id/btn_option"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="6dp"
             android:background="#ffffff"
             android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/cogwheel" />
+            app:srcCompat="@drawable/round_settings_black_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -85,7 +85,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    app:srcCompat="@drawable/edit" />
+                    app:srcCompat="@drawable/outline_add_black_24" />
 
                 <TextView
                     android:id="@+id/btn_baedal_post_add_text"

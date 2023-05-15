@@ -175,7 +175,7 @@ class FragmentTaxiPost :Fragment() {
         binding.ivBottom.visibility = View.GONE
         binding.btnBottom.setOnClickListener { switchCondition() }
         if (isClosed) {
-            binding.btnBottom.setBackgroundResource(R.drawable.btn_baedal_order_closed)
+            //binding.btnBottom.setBackgroundResource(R.drawable.btn_baedal_order_closed)
             if (userId == taxiPost.user_id) binding.tvBottom.text = "동승자 다시받기"
             else {
                 binding.tvBottom.text = "마감되었습니다."
@@ -183,7 +183,7 @@ class FragmentTaxiPost :Fragment() {
             }
         }
         else {
-            binding.btnBottom.setBackgroundResource(R.drawable.btn_taxi_propose)
+            //binding.btnBottom.setBackgroundResource(R.drawable.btn_taxi_propose)
             if (userId == taxiPost.user_id) binding.tvBottom.text = "동승자 그만받기"
             else {
                 if (isMember) binding.tvBottom.text = "동승 취소하기"

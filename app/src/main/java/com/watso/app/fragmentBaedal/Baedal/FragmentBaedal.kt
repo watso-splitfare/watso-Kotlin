@@ -40,6 +40,8 @@ class FragmentBaedal :Fragment() {
     lateinit var joinedAdapter: TableAdapter
     lateinit var joinableAdapter: TableAdapter
     lateinit var joinablePosts: List<BaedalPost>
+    var joined = true       // 참가한 게시글 여부
+    var joinable = true     // 참가 가능한 게시글 여부
 
     private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
@@ -50,19 +52,17 @@ class FragmentBaedal :Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalBinding.inflate(inflater, container, false)
 
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("deletePost", this) {
+                requestKey, bundle ->
+            getPostPreview()
+        }
+
         binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
         binding.btnBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
         binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
-        binding.scrollView.setOnTouchListener { _, event -> isTouched = when (event.action)
-            {
-                MotionEvent.ACTION_UP ->
-                {
-                    if (isTouched && binding.scrollView.scrollY == 0) getPostPreview()
-                    false
-                }
-                else -> true
-            }
-            return@setOnTouchListener false
+        binding.lytRefresh.setOnRefreshListener {
+            binding.lytRefresh.isRefreshing = false
+            getPostPreview()
         }
 
         setAdapter()
@@ -165,11 +165,28 @@ class FragmentBaedal :Fragment() {
         }
 
         if (tables.isNotEmpty()) {
+            binding.lytEmptyList.visibility = View.GONE
             if (isJoinedTable) {
                 joinedAdapter.setData(tables)
-                binding.rvBaedalListJoined.visibility = View.VISIBLE
-            } else joinableAdapter.setData(tables)
-        } else if (isJoinedTable) binding.rvBaedalListJoined.visibility = View.GONE
+                binding.lytJoinedTable.visibility = View.VISIBLE
+            } else {
+                joinableAdapter.setData(tables)
+                binding.lytJoinableTable.visibility = View.VISIBLE
+            }
+        } else {
+            if (isJoinedTable) {
+                binding.lytJoinedTable.visibility = View.GONE
+                joined = false
+            } else {
+                binding.lytJoinableTable.visibility = View.GONE
+                joinable = false
+            }
+        }
+
+        if (!joined && !joinable) {
+            binding.lytEmptyList.visibility = View.VISIBLE
+            binding.lytEmptyList.setOnClickListener { setFrag(FragmentBaedalAdd()) }
+        } else binding.lytEmptyList.visibility = View.GONE
     }
 
     fun setSpiner() {

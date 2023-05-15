@@ -1,7 +1,9 @@
 package com.watso.app.fragmentBaedal.BaedalAdd
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -15,7 +17,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.watso.app.API.*
 import com.watso.app.LoopingDialog
@@ -24,10 +25,13 @@ import com.watso.app.R
 import com.watso.app.databinding.FragBaedalAddBinding
 import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.google.gson.Gson
+import com.watso.app.API.DataModels.ErrorResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -139,7 +143,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
             setStoreSpinner()
         }
-        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.btn_baedal_confirm)
+        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_primary_10)
         binding.btnCompletePostinfo.setOnClickListener { btnCompletePostInfo() }
     }
 
@@ -166,7 +170,8 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
         val dpd = DatePickerDialog(requireContext(), dateSetListener,
             cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
-        dpd.datePicker.minDate = System.currentTimeMillis() - 1000;
+        dpd.datePicker.minDate = System.currentTimeMillis() - 1000
+        dpd.datePicker.maxDate = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7
         dpd.show()
     }
 
@@ -207,8 +212,13 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
                         }
                 } else {
-                    Log.e("FragBaedalAdd setStoreSpinner", response.toString())
-                    makeToast("가게 리스트 조회 실패")
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getStoreList]", errorResponse.msg)
+                    } catch (e: Exception) { Log.e("$TAG[getStoreList]", e.toString())}
+                    onBackPressed()
                 }
             }
 
@@ -223,9 +233,9 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     }
 
     fun bindStoreInfo() {
+        binding.tvTelNum.text = "가게번호 : ${selectedStore!!.telNum}"
         binding.tvMinOrder.text = "최소 주문 금액 : ${selectedStore!!.minOrder}원"
         binding.tvFee.text = "배달비 : ${selectedStore!!.fee}원"
-        binding.tvTelNum.text = "가게번호 : ${selectedStore!!.telNum}"
         var noteStr = ""
         for ((idx, note)in selectedStore!!.note.withIndex()) {
             if (note.trim() != "") {
@@ -243,7 +253,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         val min = binding.etMinMember.text.toString()
         val max = binding.etMaxMember.text.toString()
         val memberAlert = binding.tvMemberAlert
-        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.btn_primary_gray_10)
+        binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_gray_10)
         binding.btnCompletePostinfo.isEnabled = false
 
         if (min != "" && max != "") {
@@ -252,7 +262,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 min.toInt() < 2 -> memberAlert.text = "최소주문 인원은 2명 이상이어야 합니다."
                 else -> {
                     memberAlert.text = ""
-                    binding.btnCompletePostinfo.setBackgroundResource(R.drawable.btn_primary_blue_10)
+                    binding.btnCompletePostinfo.setBackgroundResource(R.drawable.solid_primary_10)
                     binding.btnCompletePostinfo.isEnabled = true
                 }
             }
@@ -261,6 +271,16 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun btnCompletePostInfo() {
+        if (!isPostAbleTime()) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("게시글 작성 불가")
+                .setMessage("주문은 현재시간부터 10분 이후로 등록 가능합니다.")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+
+            return
+        }
+
         val minMember = if (binding.etMinMember.text.toString() != "")
             binding.etMinMember.text.toString().toInt() else 2
         val maxMember = if (binding.etMaxMember.text.toString() != "")
@@ -298,11 +318,9 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 })
         } else {
             /** 게시글 신규 등록 */
-            var orderTimeString = orderTime!!//formattedToDateTimeString(binding.tvOrderTime.text.toString())
-
             val baedalPosting = BaedalPosting(
                 storeIds[selectedIdx],
-                orderTimeString,
+                orderTime!!,
                 binding.spnPlace.selectedItem.toString(),
                 minMember,
                 maxMember,
@@ -316,6 +334,17 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 "storeId" to storeIds[selectedIdx])
             )
         }
+    }
+
+    fun isPostAbleTime(): Boolean {
+        val orderDateTime = LocalDateTime.parse(orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+        val now = LocalDateTime.now()
+        val diff = Duration.between(now, orderDateTime).toMinutes()
+        Log.d(TAG, orderDateTime.toString())
+        Log.d(TAG, now.toString())
+        Log.d(TAG, diff.toString())
+        Log.d(TAG, orderDateTime.isAfter(now).toString())
+        return (orderDateTime.isAfter(now) && diff > 10)
     }
 
     fun hideSoftInput() {

@@ -21,28 +21,31 @@
 
         <ImageView
             android:id="@+id/btn_previous"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/divider34"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/previous" />
+            app:srcCompat="@drawable/outline_arrow_back_black_24" />
 
         <TextView
             android:id="@+id/tv_store_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"
-            android:text="TextView"
+            android:ellipsize="end"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/divider34"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_previous"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -141,24 +144,39 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
                     android:text="요청사항"
-                    app:layout_constraintBottom_toTopOf="@+id/et_request"
+                    app:layout_constraintBottom_toTopOf="@+id/constraintLayout43"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/divider2" />
 
-                <EditText
-                    android:id="@+id/et_request"
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/box_request"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:inputType="textMultiLine"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout43"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/stroked_lightgray_silver"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <EditText
+                        android:id="@+id/et_request"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@null"
+                        android:ems="10"
+                        android:gravity="start|top"
+                        android:inputType="textMultiLine"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -291,7 +309,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/btn_primary_blue_10"
+            android:background="@drawable/solid_primary_10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

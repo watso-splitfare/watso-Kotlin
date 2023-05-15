@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/fontstyle_title"
-            android:text="@string/app_title"
+            android:text='여기 "왔소"'
             android:textSize="28sp"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -111,7 +111,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/btn_primary">
+                android:background="@drawable/solid_primary">
 
                 <TextView
                     android:id="@+id/textView62"
@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="로그인하기"
+                    android:text="로그인"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -133,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:background="@drawable/btn_white_with_primary_stroke">
+                android:background="@drawable/stroked_white_primary_2">
 
                 <TextView
                     android:id="@+id/textView64"

@@ -21,28 +21,31 @@
 
         <ImageView
             android:id="@+id/btn_previous"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@id/divider38"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/previous" />
+            app:srcCompat="@drawable/outline_arrow_back_black_24" />
 
         <TextView
             android:id="@+id/tv_menu_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"
             android:text=""
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:ellipsize="end"
             app:layout_constraintBottom_toTopOf="@id/divider38"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_previous"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -127,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/btn_area_alone_10"
+                    android:background="@drawable/solid_lightgray_10"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -136,7 +139,7 @@
                         android:id="@+id/btn_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/btn_area_left_10"
+                        android:background="@drawable/patch_lightgray_10_left"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -172,7 +175,7 @@
                         android:layout_width="45dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/btn_area_center"
+                        android:background="@drawable/patch_lightgray_center"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/divider42"
                         app:layout_constraintTop_toTopOf="parent">
@@ -208,7 +211,7 @@
                         android:id="@+id/btn_add"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/btn_area_right_10"
+                        android:background="@drawable/patch_lightgray_10_right"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/divider41"
@@ -231,18 +234,6 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <LinearLayout
-                    android:id="@+id/constraintLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="horizontal"
-                    android:background="@drawable/btn_area_alone_10"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
@@ -275,7 +266,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/btn_primary_blue_10"
+            android:background="@drawable/solid_primary_10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -287,7 +278,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="메뉴 담기"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/background"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -301,7 +292,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="TextView"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/background"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

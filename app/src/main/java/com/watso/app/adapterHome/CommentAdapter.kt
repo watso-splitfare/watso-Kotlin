@@ -9,9 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.watso.app.API.BaedalPost
 import com.watso.app.API.Comment
 import com.watso.app.API.VoidResponse
 import com.watso.app.R
@@ -77,17 +75,18 @@ class CommentAdapter(val context: Context, val comments: MutableList<Comment>, v
                     binding.ivReply.visibility = View.GONE
                     if (comment.userId != userId) {                 // 내 댓글이 아니면
                         binding.btnDelete.visibility = View.GONE
-                        binding.btnReply.setBackgroundResource(R.drawable.btn_area_alone)
+                        binding.btnReply.setBackgroundResource(R.drawable.solid_lightgray)
                         binding.divCommentArea.visibility = View.GONE
                     }
                 } else {                                // 대댓글일 때
                     binding.btnReply.visibility = View.GONE
                     binding.divCommentArea.visibility = View.GONE
                     if (comment.userId == userId ) {                // 내 댓글이면
-                        binding.btnDelete.setBackgroundResource(R.drawable.btn_area_alone)
+                        binding.btnDelete.setBackgroundResource(R.drawable.solid_lightgray)
                     } else binding.btnDelete.visibility = View.GONE // 내 댓글이 아니면
                 }
             } else {        // 삭제된 댓글
+                binding.ivReply.visibility = View.GONE
                 binding.tvNickname.visibility = View.GONE
                 binding.tvContent.text = "삭제된 댓글입니다."
                 binding.tvCreatedAt.visibility = View.GONE
