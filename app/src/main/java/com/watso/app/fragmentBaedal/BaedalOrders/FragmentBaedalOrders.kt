@@ -160,10 +160,19 @@ class FragmentBaedalOrders :Fragment() {
             userOrders[0].orders.forEach {
                 price += it.price!! * it.quantity
             }
-            val personalFee = post.fee / post.users.size
             binding.tvOrderPrice.text = "${dec.format(price)}원"
-            binding.tvBaedalFee.text = "${dec.format(personalFee)}원"
-            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
+
+            if (post.status == "delivered") {
+                val personalFee = post.fee / post.users.size
+                binding.lbFee.text = "1인당 배달비"
+                binding.lbTotalPrice.text = "본인 부담 금액"
+                binding.tvFee.text = "${dec.format(personalFee)}원"
+                binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
+            } else {
+                val personalFee = post.fee / post.minMember
+                binding.tvFee.text = "${dec.format(personalFee)}원"
+                binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
+            }
         } else {
             binding.divider43.visibility = View.GONE
             binding.lytTable.visibility = View.GONE
