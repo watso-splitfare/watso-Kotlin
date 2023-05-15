@@ -237,6 +237,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             if (idx < store.note.size - 1)
                 noteStr += "\n"
         }
+        if (noteStr.trim() == "") noteStr = "없음"
         binding.tvNote.text = noteStr
 
         /** 게시글 삭제 버튼 */
