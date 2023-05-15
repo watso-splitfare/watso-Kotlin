@@ -1,5 +1,6 @@
 package com.watso.app.fragmentAccount
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -65,9 +66,11 @@ class FragmentSignUp :Fragment() {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkedUsername != null && binding.etUsername.text.toString() == checkedUsername) {
                     binding.tvUsernameConfirm.text = "사용가능한 아이디입니다."
+                    binding.tvUsernameConfirm.setTextColor(Color.BLACK)
                     signUpCheck["username"] = true
                 } else {
                     binding.tvUsernameConfirm.text = "아이디 중복확인이 필요합니다."
+                    binding.tvUsernameConfirm.setTextColor(Color.RED)
                     signUpCheck["username"] = false
                 }
                 setSignupBtnAble()
@@ -89,8 +92,10 @@ class FragmentSignUp :Fragment() {
                             if (response.body()!!.isDuplicated) {
                                 signUpCheck["username"] = false
                                 binding.tvUsernameConfirm.text = "사용 불가능한 아이디입니다."
+                                binding.tvUsernameConfirm.setTextColor(Color.RED)
                             } else {
                                 binding.tvUsernameConfirm.text = "사용 가능한 아이디입니다."
+                                binding.tvUsernameConfirm.setTextColor(Color.BLACK)
                                 signUpCheck["username"] = true
                                 checkedUsername = username
                             }
@@ -133,9 +138,11 @@ class FragmentSignUp :Fragment() {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
                     binding.tvNicknameConfirm.text = "사용 가능한 닉네임입니다."
+                    binding.tvNicknameConfirm.setTextColor(Color.BLACK)
                     signUpCheck["nickname"] = true
                 } else {
                     binding.tvNicknameConfirm.text = "닉네임 중복확인이 필요합니다."
+                    binding.tvNicknameConfirm.setTextColor(Color.RED)
                     signUpCheck["nickname"] = false
                 }
                 setSignupBtnAble()
@@ -157,8 +164,10 @@ class FragmentSignUp :Fragment() {
                             if (response.body()!!.isDuplicated) {
                                 signUpCheck["nickname"] = false
                                 binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
+                                binding.tvNicknameConfirm.setTextColor(Color.RED)
                             } else {
                                 binding.tvNicknameConfirm.text = "사용 가능한 닉네임입니다."
+                                binding.tvNicknameConfirm.setTextColor(Color.BLACK)
                                 signUpCheck["nickname"] = true
                                 checkedNickname = nickname
                             }
@@ -322,10 +331,11 @@ class FragmentSignUp :Fragment() {
         if (binding.etPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
             if (binding.etPassword.text.toString().equals(binding.etPasswordConfirm.text.toString())) {
                 binding.tvPasswordConfirm.text = "비밀번호가 일치합니다."
-                //binding.tvPasswordConfirm.setTextColor()
+                binding.tvPasswordConfirm.setTextColor(Color.BLACK)
                 signUpCheck["password"] = true
             } else {
                 binding.tvPasswordConfirm.text = "비밀번호가 일치하지 않습니다."
+                binding.tvPasswordConfirm.setTextColor(Color.RED)
                 signUpCheck["password"] = false
             }
         } else {

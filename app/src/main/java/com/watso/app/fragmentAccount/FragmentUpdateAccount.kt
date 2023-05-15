@@ -1,5 +1,6 @@
 package com.watso.app.fragmentAccount
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -110,8 +111,10 @@ class FragmentUpdateAccount :Fragment() {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
                     binding.tvNicknameConfirm.text = "사용 가능한 닉네임입니다."
+                    binding.tvNicknameConfirm.setTextColor(Color.BLACK)
                 } else {
                     binding.tvNicknameConfirm.text = "닉네임 중복확인이 필요합니다."
+                    binding.tvNicknameConfirm.setTextColor(Color.RED)
                 }
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -126,8 +129,10 @@ class FragmentUpdateAccount :Fragment() {
                     if (response.code() == 200) {
                         if (response.body()!!.isDuplicated) {
                             binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
+                            binding.tvNicknameConfirm.setTextColor(Color.RED)
                         } else {
                             binding.tvNicknameConfirm.text = "사용 가능한 닉네임입니다."
+                            binding.tvNicknameConfirm.setTextColor(Color.BLACK)
                             checkedNickname = binding.etNickname.text.toString()
                         }
                     } else {
@@ -225,10 +230,11 @@ class FragmentUpdateAccount :Fragment() {
         if (binding.etNewPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
             if (binding.etNewPassword.text.toString().equals(binding.etPasswordConfirm.text.toString())) {
                 binding.tvPasswordConfirm.text = "비밀번호가 일치합니다."
-                //binding.tvPasswordConfirm.setTextColor()
+                binding.tvPasswordConfirm.setTextColor(Color.BLACK)
                 checkedPassword = binding.etNewPassword.text.toString()
             } else {
                 binding.tvPasswordConfirm.text = "비밀번호가 일치하지 않습니다."
+                binding.tvPasswordConfirm.setTextColor(Color.RED)
                 checkedPassword = ""
             }
         } else {
