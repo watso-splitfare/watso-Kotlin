@@ -443,10 +443,12 @@ class FragmentSignUp :Fragment() {
     fun setSignupBtnAble() {
         if (signUpCheck["username"]!! && signUpCheck["password"]!! && signUpCheck["nickname"]!! && signUpCheck["email"]!!) {
             binding.btnSignup.setEnabled(true)
-            binding.btnSignup.setBackgroundResource(R.drawable.stroked_white_10_primary_2)
+            binding.btnSignup.setBackgroundResource(R.drawable.solid_primary_10)
+            binding.tvSignup.setTextColor(Color.WHITE)
         } else {
             binding.btnSignup.setEnabled(false)
             binding.btnSignup.setBackgroundResource(R.drawable.solid_lightgray_10)
+            binding.tvSignup.setTextColor(Color.BLACK)
         }
     }
 
