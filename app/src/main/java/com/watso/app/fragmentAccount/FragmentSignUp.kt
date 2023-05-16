@@ -275,6 +275,8 @@ class FragmentSignUp :Fragment() {
                                 if (::job.isInitialized && job.isActive)
                                     job.cancel()
                                 job = GlobalScope.launch { countDown(valifyTime) }
+                                binding.btnVerifyEmail.setBackgroundResource(R.drawable.solid_primary)
+                                binding.tvVerifyEmail.setTextColor(Color.WHITE)
                             } else {
                                 try {
                                     val errorBody = response.errorBody()?.string()
@@ -428,11 +430,11 @@ class FragmentSignUp :Fragment() {
     fun setSignupBtnAble() {
         if (signUpCheck["username"]!! && signUpCheck["password"]!! && signUpCheck["nickname"]!! && signUpCheck["email"]!!) {
             binding.btnSignup.setEnabled(true)
-            binding.btnSignup.setBackgroundResource(R.drawable.solid_primary_10)
+            binding.btnSignup.setBackgroundResource(R.drawable.solid_primary)
             binding.tvSignup.setTextColor(Color.WHITE)
         } else {
             binding.btnSignup.setEnabled(false)
-            binding.btnSignup.setBackgroundResource(R.drawable.solid_lightgray_10)
+            binding.btnSignup.setBackgroundResource(R.drawable.stroked_lightgray_silver)
             binding.tvSignup.setTextColor(Color.BLACK)
         }
     }
