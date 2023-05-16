@@ -195,7 +195,7 @@ class FragmentSignUp :Fragment() {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[username check]", errorResponse.msg)
+                                Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) { Log.e("$TAG[username check]", e.toString()) }
                         }
                     }
@@ -281,7 +281,7 @@ class FragmentSignUp :Fragment() {
                                     val errorResponse =
                                         Gson().fromJson(errorBody, ErrorResponse::class.java)
                                     makeToast(errorResponse.msg)
-                                    Log.d("$TAG[sendVerificationCode]", errorResponse.msg)
+                                    Log.d("$TAG[sendVerificationCode]", "${errorResponse.code}: ${errorResponse.msg}")
                                 } catch (e: Exception) {
                                     Log.e("$TAG[sendVerificationCode]", e.toString())
                                 }
@@ -325,7 +325,7 @@ class FragmentSignUp :Fragment() {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[verifyMail]", errorResponse.msg)
+                                Log.d("$TAG[verifyMail]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e: Exception) {
                                 Log.e("$TAG[verifyMail]", e.toString())
                                 Log.d("$TAG[verifyMail]", response.errorBody()?.string().toString())
@@ -368,7 +368,7 @@ class FragmentSignUp :Fragment() {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[signUp]", errorResponse.msg)
+                                Log.d("$TAG[signUp]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) { Log.e("$TAG[signUp]", e.toString()) }
                         }
                     }

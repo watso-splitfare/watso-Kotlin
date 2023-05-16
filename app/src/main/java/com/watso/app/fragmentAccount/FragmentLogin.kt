@@ -72,7 +72,7 @@ class FragmentLogin :Fragment() {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             showAlert(errorResponse.msg)
-                            Log.d("$TAG[login]", errorResponse.msg)
+                            Log.d("$TAG[login]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
                     }
                 }

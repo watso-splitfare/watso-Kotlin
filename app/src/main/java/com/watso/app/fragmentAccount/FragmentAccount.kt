@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
 import com.watso.app.MainActivity
@@ -15,6 +17,7 @@ import com.watso.app.databinding.FragAccountBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 class FragmentAccount :Fragment() {
     private val TAG = "FragAccount"
@@ -49,11 +52,15 @@ class FragmentAccount :Fragment() {
                     binding.tvNickname.text = userInfo.nickname
                     binding.tvAccountNum.text = userInfo.accountNumber
                 } else {
-                    Log.e("FragAccount getUserInfo", response.toString())
-                    binding.tvUsername.text = "ID"
-                    binding.tvNickname.text = "닉네임"
-                    makeToast("다시 시도해 주세요.")
-                    //onBackPressed()
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) {
+                        Log.e("$TAG[getUserInfo]", e.toString())
+                        Log.e("$TAG[getUserInfo]", response.errorBody()!!.toString())
+                    }
                 }
             }
 

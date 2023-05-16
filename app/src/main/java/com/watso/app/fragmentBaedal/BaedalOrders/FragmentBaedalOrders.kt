@@ -84,7 +84,7 @@ class FragmentBaedalOrders :Fragment() {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[getMyOrders]", errorResponse.msg)
+                            Log.d("$TAG[getMyOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getMyOrders]", e.toString())}
                         onBackPressed()
                     }
@@ -107,7 +107,7 @@ class FragmentBaedalOrders :Fragment() {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[getAllOrders]", errorResponse.msg)
+                            Log.d("$TAG[getAllOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getAllOrders]", e.toString())}
                         onBackPressed()
                     }

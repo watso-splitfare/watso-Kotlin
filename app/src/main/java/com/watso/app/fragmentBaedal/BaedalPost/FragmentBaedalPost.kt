@@ -127,7 +127,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getPostInfo]", errorResponse.msg)
+                        Log.d("$TAG[getPostInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getPostInfo]", e.toString())}
                     onBackPressed()
                 }
@@ -159,7 +159,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[getAccountNum]", errorResponse.msg)
+                            Log.d("$TAG[getAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
                         finally { binding.tvAccountNumber.text = "계좌번호를 조회할 수 없습니다."  }
                     }
@@ -193,7 +193,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getComments]", errorResponse.msg)
+                        Log.d("$TAG[getComments]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
                 }
             }
@@ -323,7 +323,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[deletePost]", errorResponse.msg)
+                        Log.d("$TAG[deletePost]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[deletePost]", e.toString())}
                 }
             }
@@ -517,7 +517,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[setStatus]", errorResponse.msg)
+                        Log.d("$TAG[setStatus]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[setStatus]", e.toString())}
                 }
             }
@@ -545,7 +545,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[updateFee]", errorResponse.msg)
+                                Log.d("$TAG[updateFee]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) { Log.e("$TAG[updateFee]", e.toString())}
                         }
                     }
@@ -589,7 +589,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[deleteOrders]", errorResponse.msg)
+                        Log.d("$TAG[deleteOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[deleteOrders]", e.toString())}
                 }
             }
@@ -659,7 +659,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[postComment]", errorResponse.msg)
+                            Log.d("$TAG[postComment]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) {
                             Log.e("$TAG[postComment]", e.toString())
                             Log.d("$TAG[postComment]", response.errorBody()?.string().toString())
@@ -686,7 +686,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[postSubComment]", errorResponse.msg)
+                            Log.d("$TAG[postSubComment]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) { Log.e("$TAG[postSubComment]", e.toString())}
                     }
                 }

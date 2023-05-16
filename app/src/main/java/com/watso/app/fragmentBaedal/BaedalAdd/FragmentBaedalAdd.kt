@@ -216,7 +216,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getStoreList]", errorResponse.msg)
+                        Log.d("$TAG[getStoreList]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getStoreList]", e.toString())}
                     onBackPressed()
                 }

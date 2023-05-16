@@ -107,7 +107,7 @@ class FragmentBaedalMenu :Fragment() {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getStoreInfo]", errorResponse.msg)
+                        Log.d("$TAG[getStoreInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[getStoreInfo]", e.toString())}
                 }
             }
