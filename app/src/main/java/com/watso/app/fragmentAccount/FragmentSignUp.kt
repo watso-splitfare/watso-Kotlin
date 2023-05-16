@@ -393,7 +393,7 @@ class FragmentSignUp :Fragment() {
             "username" -> { regexPattern = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,16}$") }
             "password" -> { regexPattern = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&])[a-zA-Z0-9~!@#$%^&]{8,16}$") }
             "accountNum" -> { regexPattern = Regex("^[a-zA-Z0-9가-힣-\\s]{8,30}$") }
-            "email" -> { regexPattern = Regex("^[a-zA-Z0-9]{2,20}@[a-zA-Z0-9.]{2,20}$") }
+            "email" -> { regexPattern = Regex("^[a-zA-Z0-9]{2,40}@[a-zA-Z0-9.]{2,20}$") }
         }
         return regexPattern.matches(text)
     }
