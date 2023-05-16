@@ -85,20 +85,15 @@ class FragmentUpdateAccount :Fragment() {
                         override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                             looping(false, loopingDialog)
                             if (response.code() == 204) {
-                                if (response.code() == 204) {
-                                    makeToast("비밀번호가 변경되었습니다.")
-                                    setFrag(FragmentAccount())
-                                } else {
-                                    try {
-                                        val errorBody = response.errorBody()?.string()
-                                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                        makeToast(errorResponse.msg)
-                                        Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
-                                    } catch (e: Exception) { Log.e("$TAG[username check]", e.toString()) }
-                                }
+                                makeToast("비밀번호가 변경되었습니다.")
+                                setFrag(FragmentAccount())
                             } else {
-                                Log.e("FragUpdateAccount password", response.toString())
-                                makeToast("다시 시도해 주세요.")
+                                try {
+                                    val errorBody = response.errorBody()?.string()
+                                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                    makeToast(errorResponse.msg)
+                                    Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
+                                } catch (e: Exception) { Log.e("$TAG[username check]", e.toString()) }
                             }
                         }
 
@@ -169,20 +164,15 @@ class FragmentUpdateAccount :Fragment() {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         looping(false, loopingDialog)
                         if (response.code() == 204) {
-                            if (response.code() == 204) {
-                                makeToast("닉네임이 변경되었습니다.")
-                                setFrag(FragmentAccount())
-                            } else {
-                                try {
-                                    val errorBody = response.errorBody()?.string()
-                                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                    makeToast(errorResponse.msg)
-                                    Log.d("$TAG[nickname check]", "${errorResponse.code}: ${errorResponse.msg}")
-                                } catch (e: Exception) { Log.e("$TAG[nickname check]", e.toString()) }
-                            }
+                            makeToast("닉네임이 변경되었습니다.")
+                            setFrag(FragmentAccount())
                         } else {
-                            Log.e("FragUpdateAccount nickname", response.toString())
-                            makeToast("다시 시도해 주세요.")
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[nickname check]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e: Exception) { Log.e("$TAG[nickname check]", e.toString()) }
                         }
                     }
 
@@ -232,13 +222,9 @@ class FragmentUpdateAccount :Fragment() {
                         } else {
                             try {
                                 val errorBody = response.errorBody()?.string()
-                                val errorResponse =
-                                    Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d(
-                                    "$TAG[updateAccountNum]",
-                                    "${errorResponse.code}: ${errorResponse.msg}"
-                                )
+                                Log.d("$TAG[updateAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e: Exception) {
                                 Log.e("$TAG[updateAccountNum]", e.toString())
                             }
