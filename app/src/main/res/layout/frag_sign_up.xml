@@ -98,6 +98,7 @@
                     android:layout_marginTop="4dp"
                     android:background="@drawable/stroked_white_10_silver"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView_real_name">
 
@@ -731,6 +732,7 @@
                         android:id="@+id/check_email_permit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -740,6 +742,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="입력하신 이메일은 인증을 위하여 사용되며, 한 메일당 한 계정만 가입 가능합니다."
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/check_email_permit"
                         app:layout_constraintTop_toTopOf="@+id/check_email_permit" />

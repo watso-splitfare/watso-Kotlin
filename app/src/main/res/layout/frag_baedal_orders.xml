@@ -63,13 +63,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lyt_post_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
             <View
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
@@ -122,38 +115,44 @@
 
                 <TextView
                     android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="주문금액"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toTopOf="@+id/lb_fee"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_order_price"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView_mail" />
 
                 <TextView
                     android:id="@+id/lb_fee"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="1인당 예상 배달비 (최소 인원 달성시)"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toTopOf="@+id/lb_total_price"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_fee"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
                     android:id="@+id/lb_total_price"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:text="예상 본인 부담 금액"
-                    android:textSize="16sp"
                     android:textColor="@color/black"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_total_price"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
