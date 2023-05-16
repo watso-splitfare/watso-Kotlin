@@ -18,7 +18,7 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
     companion object {
         private val TAG = "API"
         //private const val BASE_URL = "https://24489c78-e8fa-4f59-9466-05c9d568ce74.mock.pstmn.io/"
-        private const val BASE_URL = "https://api.watso.kr/api/"
+        private const val BASE_URL = "https://api.watso.kr/"
         private val EXCEPTION_URL = listOf(
             "${BASE_URL}auth/login",
             "${BASE_URL}user/signup",
