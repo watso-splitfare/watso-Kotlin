@@ -9,16 +9,28 @@
     android:background="@drawable/stroked_background_5_silver">
 
     <TextView
-        android:id="@+id/tv_order_user"
+        android:id="@+id/tv_nickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text=""
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_total_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -30,15 +42,17 @@
         android:layout_marginEnd="8dp"
         android:text=""
         android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/divider1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_order_user" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_nickname" />
 
     <View
         android:id="@+id/divider1"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:layout_marginVertical="8dp"
+        android:layout_marginTop="4dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
