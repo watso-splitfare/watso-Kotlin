@@ -79,33 +79,43 @@ class FragmentUpdateAccount :Fragment() {
             val currentPassword = binding.etCurrentPassword.text.toString()
             if (currentPassword != "" && checkedPassword != "") {
                 if (verifyInput("password", checkedPassword)) {
-                    val updatePassword = UpdatePassword(currentPassword, checkedPassword)
-                    val loopingDialog = looping()
-                    api.updatePassword(updatePassword).enqueue(object : Callback<VoidResponse> {
-                        override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                            looping(false, loopingDialog)
-                            if (response.code() == 204) {
-                                makeToast("비밀번호가 변경되었습니다.")
-                                setFrag(FragmentAccount())
-                            } else {
-                                try {
-                                    val errorBody = response.errorBody()?.string()
-                                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                    makeToast(errorResponse.msg)
-                                    Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
-                                } catch (e: Exception) { Log.e("$TAG[username check]", e.toString()) }
-                            }
-                        }
-
-                        override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                            looping(false, loopingDialog)
-                            Log.e("FragUpdateAccount password", t.message.toString())
-                            makeToast("다시 시도해 주세요.")
-                        }
-                    })
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("비밀번호 변경")
+                        .setMessage("비밀번호를 변경하시겠습니까?")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                            updatePassword(currentPassword) })
+                        .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
                 }
             }
         }
+    }
+
+    fun updatePassword(currentPassword: String) {
+        val updatePassword = UpdatePassword(currentPassword, checkedPassword)
+        val loopingDialog = looping()
+        api.updatePassword(updatePassword).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                looping(false, loopingDialog)
+                if (response.code() == 204) {
+                    makeToast("비밀번호가 변경되었습니다.")
+                    setFrag(FragmentAccount())
+                } else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) { Log.e("$TAG[username check]", e.toString()) }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                looping(false, loopingDialog)
+                Log.e("FragUpdateAccount password", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun setLytNickname() {
@@ -159,31 +169,41 @@ class FragmentUpdateAccount :Fragment() {
         }
         binding.btnUpdateNickname.setOnClickListener {
             if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
-                val loopingDialog = looping()
-                api.updateNickname(UpdateNickname(checkedNickname!!)).enqueue(object : Callback<VoidResponse> {
-                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 204) {
-                            makeToast("닉네임이 변경되었습니다.")
-                            setFrag(FragmentAccount())
-                        } else {
-                            try {
-                                val errorBody = response.errorBody()?.string()
-                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
-                                Log.d("$TAG[nickname check]", "${errorResponse.code}: ${errorResponse.msg}")
-                            } catch (e: Exception) { Log.e("$TAG[nickname check]", e.toString()) }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("FragUpdateAccount nickname", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                })
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("닉네임 변경")
+                    .setMessage("닉네임을 변경하시겠습니까?")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        updateNickname(checkedNickname!!) })
+                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
             }
         }
+    }
+
+    fun updateNickname(checkedNickname: String) {
+        val loopingDialog = looping()
+        api.updateNickname(UpdateNickname(checkedNickname)).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                looping(false, loopingDialog)
+                if (response.code() == 204) {
+                    makeToast("닉네임이 변경되었습니다.")
+                    setFrag(FragmentAccount())
+                } else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[nickname check]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) { Log.e("$TAG[nickname check]", e.toString()) }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                looping(false, loopingDialog)
+                Log.e("FragUpdateAccount nickname", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun setLytAccountNum() {
@@ -191,7 +211,7 @@ class FragmentUpdateAccount :Fragment() {
         binding.lytNickname.visibility = View.GONE
         binding.lytPassword.visibility = View.GONE
 
-        val banks = resources.getStringArray(R.array.banks)
+        /*val banks = resources.getStringArray(R.array.banks)
         var bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
@@ -207,40 +227,49 @@ class FragmentUpdateAccount :Fragment() {
             ) {
                 bankName = (banks[position])
             }
-        }
+        }*/
 
         binding.btnUpdateAccountNum.setOnClickListener {
             if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
-                val accountNumber = UpdateAccountNumber(binding.etAccountNum.text.toString() + " " + bankName)
-                val loopingDialog = looping()
-                api.updateAccountNumber(accountNumber).enqueue(object : Callback<VoidResponse> {
-                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 204) {
-                            makeToast("계좌 정보가 변경되었습니다.")
-                            setFrag(FragmentAccount())
-                        } else {
-                            try {
-                                val errorBody = response.errorBody()?.string()
-                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
-                                Log.d("$TAG[updateAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
-                            } catch (e: Exception) {
-                                Log.e("$TAG[updateAccountNum]", e.toString())
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("FragUpdateAccount AccountNum", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                })
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("계좌번호 변경")
+                    .setMessage("계좌번호를 변경하시겠습니까?")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        updateAccountNum() })
+                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
             }
         }
     }
 
+    fun updateAccountNum() {
+        val accountNumber = UpdateAccountNumber(binding.etAccountNum.text.toString())
+        val loopingDialog = looping()
+        api.updateAccountNumber(accountNumber).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                looping(false, loopingDialog)
+                if (response.code() == 204) {
+                    makeToast("계좌 정보가 변경되었습니다.")
+                    setFrag(FragmentAccount())
+                } else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[updateAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) {
+                        Log.e("$TAG[updateAccountNum]", e.toString())
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                looping(false, loopingDialog)
+                Log.e("FragUpdateAccount AccountNum", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
+    }
 
     fun onChangedPassword() {
         if (binding.etNewPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
