@@ -539,6 +539,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         if (response.code() == 204) {
                             makeToast("배달비가 변경되었습니다.")
                             if (completed) setStatus("delivered")
+                            else getPostInfo()
                         } else {
                             try {
                                 val errorBody = response.errorBody()?.string()
