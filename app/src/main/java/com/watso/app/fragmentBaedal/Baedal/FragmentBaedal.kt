@@ -171,14 +171,16 @@ class FragmentBaedal :Fragment() {
                 binding.lytJoinedTable.visibility = View.VISIBLE
             } else {
                 joinableAdapter.setData(tables)
-                binding.lytJoinableTable.visibility = View.VISIBLE
+                binding.lytJoinableTableHeader.visibility = View.VISIBLE
+                binding.rvBaedalListJoinable.visibility = View.VISIBLE
             }
         } else {
             if (isJoinedTable) {
                 binding.lytJoinedTable.visibility = View.GONE
                 joined = false
             } else {
-                binding.lytJoinableTable.visibility = View.GONE
+                binding.lytJoinableTableHeader.visibility = View.GONE
+                binding.rvBaedalListJoinable.visibility = View.GONE
                 joinable = false
             }
         }
