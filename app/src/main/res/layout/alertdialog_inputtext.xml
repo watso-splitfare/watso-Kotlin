@@ -21,6 +21,7 @@
             android:layout_margin="8dp"
             android:background="@null"
             android:inputType="number"
+            android:maxLength="6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/textView77"
             app:layout_constraintStart_toStartOf="parent"
