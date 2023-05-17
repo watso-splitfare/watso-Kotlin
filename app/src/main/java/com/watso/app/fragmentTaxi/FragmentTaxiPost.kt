@@ -10,9 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
-import com.watso.app.R
 import com.watso.app.databinding.FragTaxiPostBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,6 +23,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentTaxiPost :Fragment() {
+    lateinit var AC: ActivityController
+
     var postId = ""
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
@@ -47,6 +48,7 @@ class FragmentTaxiPost :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragTaxiPostBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
 
@@ -81,10 +83,11 @@ class FragmentTaxiPost :Fragment() {
     ) {}
 
     fun getPostInfo() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getTaxiPost(postId).enqueue(object : Callback<TaxiPostModel> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<TaxiPostModel>, response: Response<TaxiPostModel>) {
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     taxiPost = response.body()!!
                     isMember = userId in taxiPost.join_users
@@ -137,14 +140,13 @@ class FragmentTaxiPost :Fragment() {
                     makeToast("게시글 조회 실패")
                     onBackPressed()
                 }
-                looping(false, loopingDialog)
             }
 
             override fun onFailure(call: Call<TaxiPostModel>, t: Throwable) {
+                AC.hideProgressBar()
                 Log.e("taxi Post Fragment - getTaxiPost", t.message.toString())
                 makeToast("게시글 조회 실패")
                 onBackPressed()
-                looping(false, loopingDialog)
             }
         })
     }
@@ -246,11 +248,6 @@ class FragmentTaxiPost :Fragment() {
                 looping(false, loopingDialog)
             }
         })*/
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,13 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Switch
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.ActivityController
 import kotlinx.coroutines.*
-import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragSignUpBinding
@@ -28,9 +26,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
 
-
 class FragmentSignUp :Fragment() {
     val TAG = "FragSignUp"
+    lateinit var AC: ActivityController
+
     var remainingSeconds = 0
     var valifyTime = 300
     var sendCoolTime = 10
@@ -57,6 +56,8 @@ class FragmentSignUp :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragSignUpBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
+
         refreshView()
 
         return binding.root
@@ -102,10 +103,10 @@ class FragmentSignUp :Fragment() {
         binding.btnNicknameDuplicationCheck.setOnClickListener {
             val nickname = binding.etNickname.text.toString()
             if (verifyInputFormat("nickname", nickname)) {
-                val loopingDialog = looping()
+                AC.showProgressBar()
                 api.checkDuplication("nickname", nickname).enqueue(object : Callback<DuplicationCheckResult> {
                     override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.d("닉네임 중복확인", response.toString())
                         Log.d("닉네임 중복확인", response.body().toString())
                         if (response.code() == 200) {
@@ -130,7 +131,7 @@ class FragmentSignUp :Fragment() {
                     }
 
                     override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e(
                             "signUp Fragment - nicknameDuplicationCheck",
                             t.message.toString()
@@ -172,10 +173,10 @@ class FragmentSignUp :Fragment() {
         binding.btnUsernameDuplicationCheck.setOnClickListener {
             val username = binding.etUsername.text.toString()
             if (verifyInputFormat("username", username)) {
-                val loopingDialog = looping()
+                AC.showProgressBar()
                 api.checkDuplication("username", username).enqueue(object : Callback<DuplicationCheckResult> {
                     override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.d("아이디 중복확인", response.toString())
                         Log.d("아이디 중복확인", response.body().toString())
                         if (response.code() == 200) {
@@ -201,7 +202,7 @@ class FragmentSignUp :Fragment() {
                     }
 
                     override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e(
                             "signUp Fragment - usernameDuplicationCheck",
                             t.message.toString()
@@ -267,10 +268,10 @@ class FragmentSignUp :Fragment() {
             if (temp != "" && isSendAble) {
                 if (verifyInputFormat("email", temp)) {
                     verifingEmail = temp
-                    val loopingDialog = looping()
+                    AC.showProgressBar()
                     api.sendVerificationCode(verifingEmail).enqueue(object : Callback<VoidResponse> {
                         override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                            looping(false, loopingDialog)
+                            AC.hideProgressBar()
                             if (response.code() == 204) {
                                 if (::job.isInitialized && job.isActive)
                                     job.cancel()
@@ -291,7 +292,7 @@ class FragmentSignUp :Fragment() {
                         }
 
                         override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                            looping(false, loopingDialog)
+                            AC.hideProgressBar()
                             Log.e("signUp Fragment - sendMail", t.message.toString())
                             makeToast("다시 시도해 주세요.")
                         }
@@ -311,10 +312,10 @@ class FragmentSignUp :Fragment() {
         binding.btnVerifyEmail.setOnClickListener {
             Log.d("$TAG[메일 인증]", binding.etEmail.text.toString())
             if (verifingEmail != "" && binding.etVerifyCode.text.toString() != "") {
-                val loopingDialog = looping()
+                AC.showProgressBar()
                 api.checkVerificationCode(verifingEmail, binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
                     override fun onResponse(call: Call<VerificationResponse>, response: Response<VerificationResponse>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         if (response.code() == 200) {
                             remainingSeconds = 0
                             verifiedEmail = verifingEmail
@@ -337,7 +338,7 @@ class FragmentSignUp :Fragment() {
 
                     override fun onFailure(call: Call<VerificationResponse>, t: Throwable) {
                         Log.d("$TAG[onFailure]", "")
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e("signUp Fragment - sendMail", t.message.toString())
                         makeToast("다시 시도해 주세요.")
                     }
@@ -349,7 +350,6 @@ class FragmentSignUp :Fragment() {
     fun bindSignUp() {
         binding.btnSignup.setOnClickListener {
             if (verifyInput()) {
-                val loopingDialog = looping()
                 var data = SignUpModel(
                     authToken,
                     binding.etRealName.text.toString(),
@@ -359,9 +359,10 @@ class FragmentSignUp :Fragment() {
                     binding.etAccountNum.text.toString() + " " + bankName,
                     binding.etEmail.text.toString()// + "@pusan.ac.kr"
                 )
+                AC.showProgressBar()
                 api.signup(data).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         if (response.code() == 201) {
                             makeToast("회원가입에 성공하였습니다.")
                             onBackPressed()
@@ -376,7 +377,7 @@ class FragmentSignUp :Fragment() {
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e("signUp Fragment - signup", t.message.toString())
                         makeToast("다시 시도해 주세요.")
                     }
@@ -477,11 +478,6 @@ class FragmentSignUp :Fragment() {
         val min = seconds / 60
         val sec = seconds % 60
         return String.format("%02d:%02d", min, sec)
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

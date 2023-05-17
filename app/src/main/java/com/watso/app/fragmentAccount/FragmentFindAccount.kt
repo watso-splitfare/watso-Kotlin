@@ -13,7 +13,7 @@ import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.ForgotPassword
 import com.watso.app.API.VoidResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragFindAccountBinding
@@ -24,6 +24,7 @@ import java.lang.Exception
 
 class FragmentFindAccount :Fragment() {
     val TAG = "FragFindAccount"
+    lateinit var AC: ActivityController
     var forgot = "username"
     var isSendAble = true
 
@@ -33,6 +34,7 @@ class FragmentFindAccount :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragFindAccountBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
 
@@ -75,10 +77,10 @@ class FragmentFindAccount :Fragment() {
 
     fun findUsername() {
         if (verifyInput("email", binding.etEmailUsername.text.toString())) {
-            val loopingDialog = looping()
+            AC.showProgressBar()
             api.sendForgotUsername(binding.etEmailUsername.text.toString()).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 204) {
                         binding.tvResultUsername.text = "입력하신 메일로 아이디가 전송되었습니다."
                     } else {
@@ -95,7 +97,7 @@ class FragmentFindAccount :Fragment() {
                 }
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("FragFindAccount username", t.message.toString())
                     binding.tvResultUsername.text = ""
                 }
@@ -108,10 +110,10 @@ class FragmentFindAccount :Fragment() {
         val email = binding.etEmailPassword.text.toString()
         if (isSendAble && verifyInput("username", username) && verifyInput("email", email)) {
             isSendAble = false
-            val loopingDialog = looping()
+            AC.showProgressBar()
             api.issueTempPassword(ForgotPassword(username, email)).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 204) {
                         binding.tvResultPassword.text = "입력하신 메일로 임시 비밀번호가 전송되었습니다."
                     } else {
@@ -128,7 +130,7 @@ class FragmentFindAccount :Fragment() {
                 }
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("FragFindAccount username", t.message.toString())
                     binding.tvResultPassword.text = "다시 시도해주세요"
                 }
@@ -161,11 +163,6 @@ class FragmentFindAccount :Fragment() {
 
     fun verifyInputFormat(case: String, text: String): Boolean {
         return VerifyInputFormat().verifyInputFormat(case, text)
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

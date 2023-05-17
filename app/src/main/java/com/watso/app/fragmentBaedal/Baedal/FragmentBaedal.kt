@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -16,11 +15,9 @@ import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
 import com.watso.app.API.BaedalPost
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
-import com.watso.app.RequestPermission
 import com.watso.app.databinding.FragBaedalBinding
 import com.watso.app.fragmentAccount.FragmentAccount
 import com.watso.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
@@ -34,7 +31,7 @@ import java.time.format.DateTimeFormatter
 
 class FragmentBaedal :Fragment() {
     val TAG = "FragBaedal"
-    var isTouched = false       // 새로고침 용
+    lateinit var AC: ActivityController
     var viewClickAble = true    // 포스트 중복 클릭 방지
 
     lateinit var joinedAdapter: TableAdapter
@@ -51,6 +48,7 @@ class FragmentBaedal :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("deletePost", this) {
                 requestKey, bundle ->
@@ -107,11 +105,11 @@ class FragmentBaedal :Fragment() {
     }
 
     fun getPostPreview() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getBaedalPostList("joined").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     val joinedPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinedPosts, true)
@@ -122,16 +120,17 @@ class FragmentBaedal :Fragment() {
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
         })
 
+        AC.showProgressBar()
         api.getBaedalPostList("joinable").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     joinablePosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinablePosts)
@@ -143,7 +142,7 @@ class FragmentBaedal :Fragment() {
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoinable", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
@@ -215,11 +214,6 @@ class FragmentBaedal :Fragment() {
         }
 
         return filteredPosts
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

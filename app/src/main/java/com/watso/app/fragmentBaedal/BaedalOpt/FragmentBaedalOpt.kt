@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalOptBinding
 import com.watso.app.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
@@ -23,6 +23,8 @@ import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
     val TAG="FragBaedalOpt"
+    lateinit var AC: ActivityController
+
     var postId = ""
     var menuId = ""
     lateinit var storeInfo: StoreInfo
@@ -57,6 +59,7 @@ class FragmentBaedalOpt :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalOptBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
 
@@ -119,10 +122,10 @@ class FragmentBaedalOpt :Fragment() {
     }
 
     fun setRecyclerView() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getMenuInfo(storeInfo._id, menuId).enqueue(object : Callback<Menu> {
             override fun onResponse(call: Call<Menu>, response: Response<Menu>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     menuInfo = response.body()!!
                     binding.tvMenuName.text = menuInfo.name
@@ -142,7 +145,7 @@ class FragmentBaedalOpt :Fragment() {
             }
 
             override fun onFailure(call: Call<Menu>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
                 makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
             }
@@ -216,11 +219,6 @@ class FragmentBaedalOpt :Fragment() {
         }
         val orderPriceStr = "${dec.format(price * quantity)}원"
         binding.tvOrderPrice.text = orderPriceStr
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

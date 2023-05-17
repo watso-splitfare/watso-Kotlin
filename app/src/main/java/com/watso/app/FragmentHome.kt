@@ -46,11 +46,6 @@ class FragmentHome :Fragment() {
     fun mappingTaxiAdapter(taxiPosts: List<TaxiPostPreviewModel>) {
     }
 
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
-    }
-
     fun makeToast(message: String){
         val mActivity = activity as MainActivity
         mActivity.makeToast(message)

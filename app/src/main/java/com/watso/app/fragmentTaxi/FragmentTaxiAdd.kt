@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragTaxiAddBinding
 import retrofit2.Call
@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentTaxiAdd :Fragment() {
+    lateinit var AC: ActivityController
+
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -43,6 +45,7 @@ class FragmentTaxiAdd :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragTaxiAddBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
         //println("택시1: ${departTime}")
@@ -149,7 +152,7 @@ class FragmentTaxiAdd :Fragment() {
             minMember,
             maxMember
         )
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.taxiPosting(taxiPostingModel).enqueue(object : Callback<PostingResponse> {
             override fun onResponse(call: Call<PostingResponse>,response: Response<PostingResponse>) {
                 if (response.code() == 200) {
@@ -161,20 +164,15 @@ class FragmentTaxiAdd :Fragment() {
                     Log.e("taxiAdd Fragment - taxiPosting", response.toString())
                     makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                 }
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
             }
 
             override fun onFailure(call: Call<PostingResponse>, t: Throwable) {
                 Log.e("taxiAdd Fragment - taxiPosting", t.message.toString())
                 makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
             }
         })
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

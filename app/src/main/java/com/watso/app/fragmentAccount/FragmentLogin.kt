@@ -14,7 +14,7 @@ import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.LoginModel
 import com.watso.app.API.VoidResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragLoginBinding
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
@@ -26,6 +26,7 @@ import java.lang.Exception
 
 class FragmentLogin :Fragment() {
     val TAG = "FragLogin"
+    lateinit var AC: ActivityController
 
     private var mBinding: FragLoginBinding? = null
     private val binding get() = mBinding!!
@@ -34,6 +35,7 @@ class FragmentLogin :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragLoginBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
 
@@ -59,12 +61,12 @@ class FragmentLogin :Fragment() {
     }
 
     fun login() {
-        val loopingDialog = looping()
         val prefs = MainActivity.prefs
         val reg = prefs.getString("registration", "")
+        AC.showProgressBar()
         api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code()==200) {
                     val tokens = response.headers().get("Authentication").toString().split("/")
                     val payload = decodeToken(tokens[0])
@@ -88,7 +90,7 @@ class FragmentLogin :Fragment() {
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("login Fragment - login", t.message.toString())
                 makeToast("다시 시도해 주세요.")
             }
@@ -116,11 +118,6 @@ class FragmentLogin :Fragment() {
 
     fun verifyInputFormat(case: String, text: String): Boolean {
         return VerifyInputFormat().verifyInputFormat(case, text)
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

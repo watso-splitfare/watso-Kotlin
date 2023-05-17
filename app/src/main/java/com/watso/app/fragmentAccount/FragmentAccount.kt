@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragAccountBinding
 import retrofit2.Call
@@ -21,6 +22,7 @@ import java.lang.Exception
 
 class FragmentAccount :Fragment() {
     private val TAG = "FragAccount"
+    lateinit var AC: ActivityController
     lateinit var userInfo: UserInfo
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
@@ -29,6 +31,7 @@ class FragmentAccount :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         getUserInfo()
         refreshView()
@@ -42,8 +45,10 @@ class FragmentAccount :Fragment() {
     }
 
     fun getUserInfo() {
+        AC.showProgressBar()
         api.getUserInfo().enqueue(object: Callback<UserInfo> {
             override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                AC.hideProgressBar()
                 if (response.code()==200) {
                     userInfo = response.body()!!
                     binding.tvRealName.text = userInfo.name
@@ -65,6 +70,7 @@ class FragmentAccount :Fragment() {
             }
 
             override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                AC.hideProgressBar()
                 Log.e("FragAccount getUserInfo", t.message.toString())
                 binding.tvUsername.text = "ID"
                 binding.tvNickname.text = "닉네임"
@@ -128,14 +134,17 @@ class FragmentAccount :Fragment() {
     }
 
     fun logout() {
+        AC.showProgressBar()
         api.logout().enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
                 if (response.code() == 204) {}
                 else Log.e("로그아웃 에러", response.toString())
                 removePrefs()
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
                 Log.d("로그아웃",t.message.toString())
                 removePrefs()
             }
@@ -153,8 +162,10 @@ class FragmentAccount :Fragment() {
     }
 
     fun deleteAccount() {
+        AC.showProgressBar()
         api.deleteAccount().enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
                 if (response.code()==204) {
                     makeToast("탈퇴되었습니다.")
                     removePrefs(false)
@@ -165,6 +176,7 @@ class FragmentAccount :Fragment() {
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
                 Log.e("FragAccount deleteAccount", t.message.toString())
                 makeToast("다시 시도해 주세요.")
             }

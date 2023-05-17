@@ -19,13 +19,13 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragBaedalAddBinding
 import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.ActivityController
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,6 +38,8 @@ import java.util.*
 
 class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalAdd"
+    lateinit var AC: ActivityController
+
     var isScrolled = false
 
     var isUpdating = false
@@ -85,6 +87,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalAddBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
         binding.scrollView2.setOnTouchListener(this)
@@ -183,10 +186,10 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     }
 
     fun setStoreSpinner(){
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getStoreList().enqueue(object : Callback<List<Store>> {
             override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     stores = response.body()!!
                     stores.forEach {
@@ -223,8 +226,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             }
 
             override fun onFailure(call: Call<List<Store>>, t: Throwable) {
-                // 실패
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("FragBaedalAdd setStoreSpinner", t.message.toString())
                 makeToast("가게 리스트 조회 실패")
                 onBackPressed()
@@ -295,11 +297,11 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 maxMember
             )
 
-            val loopingDialog = looping()
+            AC.showProgressBar()
             api.updateBaedalPost(postId!!, baedalPostUpdate)
                 .enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         if (response.code() == 204) {
                             val bundle = bundleOf("success" to true, "postId" to postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
@@ -311,7 +313,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e("baedalAdd Fragment - updateBaedalPost", t.message.toString())
                         makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
                     }
@@ -350,11 +352,6 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     fun hideSoftInput() {
         val mActivity = activity as MainActivity
         return mActivity.hideSoftInput()
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){
