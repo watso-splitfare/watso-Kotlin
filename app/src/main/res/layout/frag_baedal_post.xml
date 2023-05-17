@@ -1023,7 +1023,7 @@
                     android:background="@null"
                     android:ems="10"
                     android:hint="댓글입력"
-                    android:inputType="textPersonName"
+                    android:inputType="text"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
