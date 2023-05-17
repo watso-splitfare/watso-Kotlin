@@ -142,7 +142,12 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
             binding.tvCompletePostinfo.text = "수정 완료"
         } else {
-            orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
+            val currentDateTime = LocalDateTime.now()
+            val minute = currentDateTime.minute
+            val roundedMinute = (minute / 10) * 10 + 30
+            val roundedDateTime = currentDateTime.withMinute(roundedMinute)
+
+            orderTime = roundedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
             setStoreSpinner()
         }
