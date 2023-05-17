@@ -539,7 +539,7 @@
 
                                 <TextView
                                     android:id="@+id/textView23"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:text="확정 배달비"
                                     android:textSize="12sp"
@@ -579,7 +579,7 @@
                                     android:layout_marginEnd="24dp"
                                     android:layout_marginBottom="8dp"
                                     android:text="변경"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/primary"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
