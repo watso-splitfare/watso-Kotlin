@@ -43,7 +43,7 @@ class BaedalUserOrderAdapter(val context: Context, val userOrders: MutableList<U
             binding.tvNickname.text = "주문자: ${userOrder.nickname}"
             binding.tvTotalPrice.text = "주문금액: ${dec.format(sumPrice)}원"
             val requestComment = userOrder.requestComment
-            if (requestComment.trim() == "") binding.tvRequest.visibility = View.GONE
+            if (requestComment.trim() == "") binding.lytRequest.visibility = View.GONE
             else binding.tvRequest.text = "요청사항: ${requestComment}"
             binding.rvOrderMenu.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
