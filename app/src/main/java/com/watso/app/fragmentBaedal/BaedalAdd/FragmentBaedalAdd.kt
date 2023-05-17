@@ -143,11 +143,12 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             binding.tvCompletePostinfo.text = "수정 완료"
         } else {
             val currentDateTime = LocalDateTime.now()
-            val minute = currentDateTime.minute
-            val roundedMinute = (minute / 10) * 10 + 30
-            val roundedDateTime = currentDateTime.withMinute(roundedMinute)
+            val roundedMinute = (currentDateTime.minute / 10) * 10
+            //val roundedMinute = (minute / 10) * 10
+            //val roundedDateTime = currentDateTime.withMinute(roundedMinute)
+            val tartgetDatetime = currentDateTime.withMinute(roundedMinute).plusMinutes(30)
 
-            orderTime = roundedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
+            orderTime = tartgetDatetime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
             setStoreSpinner()
         }
@@ -158,8 +159,18 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     @RequiresApi(Build.VERSION_CODES.O)
     fun showCalendar() {
         val themeResId = com.google.android.material.R.style.Widget_Material3_MaterialTimePicker
+        val orderTimeObj = LocalDateTime.parse(orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
 
-        val cal = Calendar.getInstance()
+        Log.d("[$TAG][orderTime]", orderTime.toString())
+        Log.d("[$TAG][orderTimeObj]", orderTimeObj.toString())
+
+        Log.d("[$TAG][orderTimeObj.year]", orderTimeObj.year.toString())
+        Log.d("[$TAG][orderTimeObj.monthValue]", orderTimeObj.monthValue.toString())
+        Log.d("[$TAG][orderTimeObj.dayOfMonth]", orderTimeObj.dayOfMonth.toString())
+        Log.d("[$TAG][orderTimeObj.hour]", orderTimeObj.hour.toString())
+        Log.d("[$TAG][orderTimeObj.minute]", orderTimeObj.minute.toString())
+
+        //val cal = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             run {
                 var dateString = "${year}-${decDt.format(month + 1)}-${decDt.format(dayOfMonth)}T"
@@ -172,14 +183,13 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
                         }
                     }
-
                 TimePickerDialog(requireContext(), themeResId, timeSetListener,
-                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
+                    orderTimeObj.hour, orderTimeObj.minute, false).show()
             }
         }
 
         val dpd = DatePickerDialog(requireContext(), themeResId, dateSetListener,
-            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            orderTimeObj.year, orderTimeObj.monthValue-1, orderTimeObj.dayOfMonth)
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000
         dpd.datePicker.maxDate = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7
         dpd.show()
