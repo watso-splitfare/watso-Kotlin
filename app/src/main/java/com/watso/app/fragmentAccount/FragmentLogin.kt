@@ -49,46 +49,50 @@ class FragmentLogin :Fragment() {
     fun refreshView() {
         /** 로그인 */
         binding.btnLogin.setOnClickListener {
-            val loopingDialog = looping()
-            val prefs = MainActivity.prefs
-            val reg = prefs.getString("registration", "")
-            api.login(LoginModel(binding.etUsername.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
-                    if (response.code()==200) {
-                        val tokens = response.headers().get("Authentication").toString().split("/")
-                        val payload = decodeToken(tokens[0])
-                        val dUserId = JSONObject(payload).getString("user_id")
-                        val dNickname = JSONObject(payload).getString("nickname")
-
-                        prefs.setString("accessToken", tokens[0])
-                        prefs.setString("refreshToken", tokens[1])
-                        prefs.setString("userId", dUserId)
-                        prefs.setString("nickname", dNickname)
-
-                        setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
-                    } else  {
-                        try {
-                            val errorBody = response.errorBody()?.string()
-                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            showAlert(errorResponse.msg)
-                            Log.d("$TAG[login]", "${errorResponse.code}: ${errorResponse.msg}")
-                        } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
-                    }
-                }
-
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
-                    Log.e("login Fragment - login", t.message.toString())
-                    makeToast("다시 시도해 주세요.")
-                }
-            })
+            val username = binding.etUsername.text.toString()
+            val password = binding.etPassword.text.toString()
+            if (verifyInput("username", username) && verifyInput("password", password)) login()
         }
 
-        binding.tvFindAccount.setOnClickListener {
-            setFrag(FragmentFindAccount())
-        }
+        binding.tvFindAccount.setOnClickListener { setFrag(FragmentFindAccount()) }
         binding.btnSignup.setOnClickListener { setFrag(FragmentSignUp()) }
+    }
+
+    fun login() {
+        val loopingDialog = looping()
+        val prefs = MainActivity.prefs
+        val reg = prefs.getString("registration", "")
+        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                looping(false, loopingDialog)
+                if (response.code()==200) {
+                    val tokens = response.headers().get("Authentication").toString().split("/")
+                    val payload = decodeToken(tokens[0])
+                    val dUserId = JSONObject(payload).getString("user_id")
+                    val dNickname = JSONObject(payload).getString("nickname")
+
+                    prefs.setString("accessToken", tokens[0])
+                    prefs.setString("refreshToken", tokens[1])
+                    prefs.setString("userId", dUserId)
+                    prefs.setString("nickname", dNickname)
+
+                    setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+                } else  {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        showAlert(errorResponse.msg)
+                        Log.d("$TAG[login]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                looping(false, loopingDialog)
+                Log.e("login Fragment - login", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun showAlert(msg: String) {
@@ -96,6 +100,22 @@ class FragmentLogin :Fragment() {
         .setMessage(msg)
         .setPositiveButton("확인", DialogInterface.OnClickListener { _, _ -> })
         .show()
+    }
+
+    fun verifyInput(case: String, text: String): Boolean {
+        val builder = AlertDialog.Builder(requireContext())
+        if (verifyInputFormat(case, text)) {
+            return true
+        } else {
+            builder.setMessage("아이디 혹은 비밀번호가 일치하지 않습니다")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                .show()
+        }
+        return false
+    }
+
+    fun verifyInputFormat(case: String, text: String): Boolean {
+        return VerifyInputFormat().verifyInputFormat(case, text)
     }
 
     fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
