@@ -15,15 +15,18 @@ import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragBaedalConfirmBinding
 import com.google.gson.Gson
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.ActivityController
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
+    val TAG = "FragBaedalConfirm"
     lateinit var AC: ActivityController
     var postId = ""
     lateinit var userOrder: UserOrder
@@ -129,10 +132,17 @@ class FragmentBaedalConfirm :Fragment() {
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     AC.hideProgressBar()
-                    if (response.code() == 201) setFrag(FragmentBaedal())
+                    if (response.code() == 201) setFrag(FragmentBaedal(), popBackStack = 0)
                     else {
-                        Log.e("baedal Confirm Fragment - baedalPosting", response.toString())
-                        makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[baedalPosting]", "${errorResponse.code}: ${errorResponse.msg}")
+                        } catch (e: Exception) {
+                            Log.e("$TAG[baedalPosting]", e.toString())
+                            Log.d("$TAG[baedalPosting]", response.errorBody()?.string().toString())
+                        }
                     }
                 }
 
@@ -149,8 +159,15 @@ class FragmentBaedalConfirm :Fragment() {
                     AC.hideProgressBar()
                     if (response.code() == 204) goToPosting()
                     else {
-                        Log.e("baedal Confirm Fragment - postOrders", response.toString())
-                        makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[postOrders]", "${errorResponse.code}: ${errorResponse.msg}")
+                        } catch (e: Exception) {
+                            Log.e("$TAG[postOrders]", e.toString())
+                            Log.d("$TAG[postOrders]", response.errorBody()?.string().toString())
+                        }
                     }
                 }
 
@@ -193,13 +210,13 @@ class FragmentBaedalConfirm :Fragment() {
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack: Int=3) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, 3)
+        mActivity.setFrag(fragment, arguments, popBackStack)
     }
 
     fun onBackPressed() {
-        val mActivity =activity as MainActivity
+        val mActivity = activity as MainActivity
         prefs.setString("userOrder", gson.toJson(userOrder))
 
         val bundle = bundleOf("orderCnt" to userOrder.orders.size)
