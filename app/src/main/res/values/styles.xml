@@ -10,6 +10,7 @@
 
     <style name="customEditTextFontStyle" parent="@android:style/Widget.DeviceDefault.EditText">
         <item name="android:fontFamily">@font/fontstyle</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="customRadioButtonFontStyle" parent="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton">

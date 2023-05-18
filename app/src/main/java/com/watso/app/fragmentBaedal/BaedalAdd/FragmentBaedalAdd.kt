@@ -4,15 +4,14 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
@@ -158,37 +157,32 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun showCalendar() {
-        val themeResId = com.google.android.material.R.style.Widget_Material3_MaterialTimePicker
         val orderTimeObj = LocalDateTime.parse(orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
 
-        Log.d("[$TAG][orderTime]", orderTime.toString())
-        Log.d("[$TAG][orderTimeObj]", orderTimeObj.toString())
-
-        Log.d("[$TAG][orderTimeObj.year]", orderTimeObj.year.toString())
-        Log.d("[$TAG][orderTimeObj.monthValue]", orderTimeObj.monthValue.toString())
-        Log.d("[$TAG][orderTimeObj.dayOfMonth]", orderTimeObj.dayOfMonth.toString())
-        Log.d("[$TAG][orderTimeObj.hour]", orderTimeObj.hour.toString())
-        Log.d("[$TAG][orderTimeObj.minute]", orderTimeObj.minute.toString())
-
-        //val cal = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             run {
                 var dateString = "${year}-${decDt.format(month + 1)}-${decDt.format(dayOfMonth)}T"
-
-                val timeSetListener =
-                    TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-                        run {
-                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:00"
-                            orderTime = dateString+timeString
-                            binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
-                        }
+                val timePicker = DialogTimePicker(requireContext(), object: DialogTimePicker.TimePickerClickListener {
+                    override fun onPositiveClick(hour: Int, minute: Int) {
+                        var timeString = "${decDt.format(hour)}:${decDt.format(minute)}:00"
+                        orderTime = dateString+timeString
+                        binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
                     }
-                TimePickerDialog(requireContext(), themeResId, timeSetListener,
-                    orderTimeObj.hour, orderTimeObj.minute, false).show()
+
+                    override fun onNegativeClick() { }
+                })
+
+                timePicker.setHourValue(orderTimeObj.hour)
+                timePicker.setMinuteValue(orderTimeObj.minute)
+                timePicker.setCanceledOnTouchOutside(true)
+                timePicker.setCancelable(true)
+                timePicker.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                timePicker.window?.requestFeature(Window.FEATURE_NO_TITLE)
+                timePicker.show()
             }
         }
 
-        val dpd = DatePickerDialog(requireContext(), themeResId, dateSetListener,
+        val dpd = DatePickerDialog(requireContext(), dateSetListener,
             orderTimeObj.year, orderTimeObj.monthValue-1, orderTimeObj.dayOfMonth)
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000
         dpd.datePicker.maxDate = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7
