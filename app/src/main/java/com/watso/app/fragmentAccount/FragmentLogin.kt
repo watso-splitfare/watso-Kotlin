@@ -105,19 +105,16 @@ class FragmentLogin :Fragment() {
     }
 
     fun verifyInput(case: String, text: String): Boolean {
-        val builder = AlertDialog.Builder(requireContext())
-        if (verifyInputFormat(case, text)) {
-            return true
+        val message = VerifyInputFormat().verifyInput(case, text)
+        return if (message == "") {
+            true
         } else {
-            builder.setMessage("아이디 혹은 비밀번호가 일치하지 않습니다")
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()
+            false
         }
-        return false
-    }
-
-    fun verifyInputFormat(case: String, text: String): Boolean {
-        return VerifyInputFormat().verifyInputFormat(case, text)
     }
 
     fun makeToast(message: String){

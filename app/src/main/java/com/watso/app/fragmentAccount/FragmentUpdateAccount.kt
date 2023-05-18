@@ -288,24 +288,16 @@ class FragmentUpdateAccount :Fragment() {
     }
 
     fun verifyInput(case: String, text: String): Boolean {
-        val builder = AlertDialog.Builder(requireContext())
-        if (verifyInputFormat(case, text)) {
-            return true
+        val message = VerifyInputFormat().verifyInput(case, text)
+        return if (message == "") {
+            true
         } else {
-            val message = when(case) {
-                "nickname" -> {"사용할 수 없는 닉네임 형식입니다."}
-                "accountNum" -> {"사용할 수 없는 계좌번호 형식입니다."}
-                else -> {"비밀번호는 숫자, 영문자, 특수문자(~!@#\$%^&)를 각각 하나이상 포함하여 8~16자여야 합니다."}
-            }
+            val builder = AlertDialog.Builder(requireContext())
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()
+            false
         }
-        return false
-    }
-
-    fun verifyInputFormat(case: String, text: String): Boolean {
-        return VerifyInputFormat().verifyInputFormat(case, text)
     }
 
     fun makeToast(message: String){
