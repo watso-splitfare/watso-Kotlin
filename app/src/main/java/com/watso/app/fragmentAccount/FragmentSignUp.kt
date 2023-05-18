@@ -102,7 +102,7 @@ class FragmentSignUp :Fragment() {
 
         binding.btnNicknameDuplicationCheck.setOnClickListener {
             val nickname = binding.etNickname.text.toString()
-            if (verifyInputFormat("nickname", nickname)) {
+            if (verifyInput("nickname", nickname)) {
                 AC.showProgressBar()
                 api.checkDuplication("nickname", nickname).enqueue(object : Callback<DuplicationCheckResult> {
                     override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
@@ -160,7 +160,7 @@ class FragmentSignUp :Fragment() {
                     signUpCheck["username"] = false
                 }
                 if (binding.etUsername.text.toString() == "") {
-                    binding.tvUsernameConfirm.text = "숫자, 영문자를 각각 하나이상 포함하여 8~16자여야 합니다."
+                    binding.tvUsernameConfirm.text = ""
                     binding.tvUsernameConfirm.setTextColor(Color.BLACK)
                     signUpCheck["username"] = false
                 }
@@ -172,7 +172,7 @@ class FragmentSignUp :Fragment() {
 
         binding.btnUsernameDuplicationCheck.setOnClickListener {
             val username = binding.etUsername.text.toString()
-            if (verifyInputFormat("username", username)) {
+            if (verifyInput("username", username)) {
                 AC.showProgressBar()
                 api.checkDuplication("username", username).enqueue(object : Callback<DuplicationCheckResult> {
                     override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
@@ -266,7 +266,7 @@ class FragmentSignUp :Fragment() {
         binding.btnSendCode.setOnClickListener {
             val temp = binding.etEmail.text.toString()
             if (temp != "" && isSendAble) {
-                if (verifyInputFormat("email", temp)) {
+                if (verifyInput("email", temp)) {
                     verifingEmail = temp
                     AC.showProgressBar()
                     api.sendVerificationCode(verifingEmail).enqueue(object : Callback<VoidResponse> {
@@ -388,9 +388,9 @@ class FragmentSignUp :Fragment() {
 
     fun verifyInput(): Boolean {
         val builder = AlertDialog.Builder(requireContext())
-        if (verifyInputFormat("realName", binding.etRealName.text.toString())) {
-            if (verifyInputFormat("password", binding.etPassword.text.toString())) {
-                if (verifyInputFormat("accountNum", binding.etAccountNum.text.toString())) {
+        if (verifyInput("realName", binding.etRealName.text.toString())) {
+            if (verifyInput("password", binding.etPassword.text.toString())) {
+                if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
                     return true
                 } else {
                     builder.setMessage("사용할 수 없는 계좌번호 형식입니다.")
@@ -470,8 +470,17 @@ class FragmentSignUp :Fragment() {
         }
     }
 
-    fun verifyInputFormat(case: String, text: String): Boolean {
-        return VerifyInputFormat().verifyInputFormat(case, text)
+    fun verifyInput(case: String, text: String): Boolean {
+        val message = VerifyInputFormat().verifyInput(case, text)
+        return if (message == "") {
+            true
+        } else {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(message)
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                .show()
+            false
+        }
     }
 
     fun countDownStr(seconds: Int): String {
