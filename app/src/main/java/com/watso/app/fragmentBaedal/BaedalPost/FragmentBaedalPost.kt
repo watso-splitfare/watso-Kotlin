@@ -253,7 +253,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         "isUpdating" to "true",
                         "postId" to postId!!,
                         "orderTime" to baedalPost.orderTime,
-                        "storeName" to store.name,
+                        "storeInfo" to gson.toJson(store),
                         "place" to baedalPost.place,
                         "minMember" to if (baedalPost.minMember != null) baedalPost.minMember.toString() else "0",
                         "maxMember" to if (baedalPost.maxMember != null )baedalPost.maxMember.toString() else "0",

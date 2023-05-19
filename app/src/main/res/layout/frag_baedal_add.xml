@@ -286,19 +286,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tv_store_name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="TextView"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/lyt_store"
-                    app:layout_constraintEnd_toEndOf="@+id/lyt_store"
-                    app:layout_constraintStart_toStartOf="@+id/lyt_store"
-                    app:layout_constraintTop_toTopOf="@+id/lyt_store" />
-
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/lyt_store"
                     android:layout_width="match_parent"

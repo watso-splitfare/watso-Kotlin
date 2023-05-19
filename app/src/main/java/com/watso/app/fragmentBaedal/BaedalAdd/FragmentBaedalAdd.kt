@@ -74,7 +74,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             if (isUpdating) {
                 postId = it.getString("postId")
                 orderTime = it.getString("orderTime")
-                storeName = it.getString("storeName")
+                selectedStore = Gson().fromJson(it.getString("storeInfo"), Store::class.java)
                 place = it.getString("place")
                 minMember = it.getString("minMember")?.toInt()
                 maxMember = it.getString("maxMember")?.toInt()
@@ -133,12 +133,13 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         if (isUpdating) {
             binding.tvOrderTime.text = getDateTimeFormating(orderTime!!)
             binding.lytStore.visibility = View.GONE
-            binding.tvStoreName.text = storeName
+            binding.tvStore.text = selectedStore!!.name
 
             if (place == "기숙사") binding.spnPlace.setSelection(1)
             binding.etMinMember.setText(minMember.toString())
             binding.etMaxMember.setText(maxMember.toString())
 
+            bindStoreInfo()
             binding.tvCompletePostinfo.text = "수정 완료"
         } else {
             val currentDateTime = LocalDateTime.now()
