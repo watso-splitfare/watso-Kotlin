@@ -122,11 +122,15 @@ class FragmentSignUp :Fragment() {
                             }
                             setSignupBtnAble()
                         } else {
-                            Log.e(
-                                "signUp Fragment - nicknameDuplicationCheck",
-                                response.toString()
-                            )
-                            makeToast("다시 시도해 주세요.")
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[nicknameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e:Exception) {
+                                Log.e("$TAG[nicknameVerify]", e.toString())
+                                Log.d("$TAG[nicknameVerify]", response.errorBody()?.string().toString())
+                            }
                         }
                     }
 
@@ -191,13 +195,16 @@ class FragmentSignUp :Fragment() {
                                 checkedUsername = username
                             }
                             setSignupBtnAble()
-                        } else {
+                        } else  {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
-                            } catch (e:Exception) { Log.e("$TAG[username check]", e.toString()) }
+                                Log.d("$TAG[usernameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e:Exception) {
+                                Log.e("$TAG[usernameVerify]", e.toString())
+                                Log.d("$TAG[usernameVerify]", response.errorBody()?.string().toString())
+                            }
                         }
                     }
 
@@ -281,12 +288,12 @@ class FragmentSignUp :Fragment() {
                             } else {
                                 try {
                                     val errorBody = response.errorBody()?.string()
-                                    val errorResponse =
-                                        Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                     makeToast(errorResponse.msg)
-                                    Log.d("$TAG[sendVerificationCode]", "${errorResponse.code}: ${errorResponse.msg}")
-                                } catch (e: Exception) {
-                                    Log.e("$TAG[sendVerificationCode]", e.toString())
+                                    Log.d("$TAG[sencCode]", "${errorResponse.code}: ${errorResponse.msg}")
+                                } catch (e:Exception) {
+                                    Log.e("$TAG[sendCode]", e.toString())
+                                    Log.d("$TAG[sencCode]", response.errorBody()?.string().toString())
                                 }
                             }
                         }
@@ -356,7 +363,7 @@ class FragmentSignUp :Fragment() {
                     binding.etUsername.text.toString(),
                     binding.etPassword.text.toString(),
                     binding.etNickname.text.toString(),
-                    binding.etAccountNum.text.toString() + " " + bankName,
+                    binding.etAccountNum.text.toString(),
                     binding.etEmail.text.toString()// + "@pusan.ac.kr"
                 )
                 AC.showProgressBar()
@@ -366,13 +373,16 @@ class FragmentSignUp :Fragment() {
                         if (response.code() == 201) {
                             makeToast("회원가입에 성공하였습니다.")
                             onBackPressed()
-                        } else {
+                        } else  {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[signUp]", "${errorResponse.code}: ${errorResponse.msg}")
-                            } catch (e:Exception) { Log.e("$TAG[signUp]", e.toString()) }
+                                Log.d("$TAG[signup]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e:Exception) {
+                                Log.e("$TAG[signup]", e.toString())
+                                Log.d("$TAG[signup]", response.errorBody()?.string().toString())
+                            }
                         }
                     }
 
