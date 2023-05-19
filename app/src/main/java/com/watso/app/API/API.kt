@@ -1,3 +1,4 @@
+import android.os.Build
 import android.util.Log
 import com.watso.app.API.*
 import com.watso.app.MainActivity
@@ -7,11 +8,13 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.lang.reflect.Type
+import java.util.*
 
 interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
 
@@ -53,10 +56,30 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                 val targetUrl = chain.request().url().toString()
                 Log.d("$TAG[targetURL]", targetUrl)
 
+                if (targetUrl == BASE_URL + "auth/refresh") {
+                    Log.d("[${TAG}]refresh token", refreshToken)
+                    val tokenAddedRequest = chain.request().newBuilder()
+                        .addHeader("Authorization", refreshToken)
+                        .build()
+                    val response = chain.proceed(tokenAddedRequest)
+                    if (response.code() == 200) {
+                        val token = response.headers().get("Authentication").toString()
+                        val payload = decodeToken(token)
+                        val dUserId = JSONObject(payload).getString("user_id")
+                        val dNickname = JSONObject(payload).getString("nickname")
+                        prefs.setString("accessToken", token)
+                        prefs.setString("userId", dUserId)
+                        prefs.setString("nickname", dNickname)
+                        Log.d("어세스 토큰 갱신 성공", token)
+                        Log.d("어세스 토큰 갱신 성공", dUserId)
+                        Log.d("어세스 토큰 갱신 성공", dNickname)
+                    }
+                    return response
+                }
+
                 val tokenAddedRequest = chain.request().newBuilder()
                     .addHeader("Authorization", accessToken)
                     .build()
-
                 val response = chain.proceed(tokenAddedRequest)
 
                 if (response.code() == 401) {
@@ -115,6 +138,20 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                 }
             }
         }
+    }
+}
+
+fun decodeToken(jwt: String): String {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return "Requires SDK 26"
+    val parts = jwt.split(".")
+    return try {
+        val charset = charset("UTF-8")
+        val header = String(Base64.getUrlDecoder().decode(parts[0].toByteArray(charset)), charset)
+        val payload = String(Base64.getUrlDecoder().decode(parts[1].toByteArray(charset)), charset)
+        "$header"
+        "$payload"
+    } catch (e: Exception) {
+        "Error parsing JWT: $e"
     }
 }
 

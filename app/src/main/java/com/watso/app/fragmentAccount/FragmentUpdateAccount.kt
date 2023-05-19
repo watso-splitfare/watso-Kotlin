@@ -186,7 +186,7 @@ class FragmentUpdateAccount :Fragment() {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
                     makeToast("닉네임이 변경되었습니다.")
-                    setFrag(FragmentAccount())
+                    refreshToken()
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
@@ -199,7 +199,34 @@ class FragmentUpdateAccount :Fragment() {
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
-                Log.e("FragUpdateAccount nickname", t.message.toString())
+                Log.e("$TAG[nickname check]", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
+    }
+    fun refreshToken() {
+        AC.showProgressBar()
+        api.refreshToken().enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
+                setFrag(FragmentAccount())
+                if (response.code() == 200)
+                    Log.d("$TAG[refreshToken]토큰 재발급 완료", "")
+                else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        Log.d("$TAG[refreshToken]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e:Exception) {
+                        Log.e("$TAG[refreshToken]", e.toString())
+                        Log.d("$TAG[refreshToken]", response.errorBody()?.string().toString())
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("$TAG[refreshToken]", t.message.toString())
                 makeToast("다시 시도해 주세요.")
             }
         })
