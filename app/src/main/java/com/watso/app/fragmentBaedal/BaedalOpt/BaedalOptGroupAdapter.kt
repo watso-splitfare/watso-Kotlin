@@ -12,7 +12,15 @@ import com.watso.app.databinding.LytBaedalOptGroupBinding
 import java.lang.ref.WeakReference
 
 
-class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>) : RecyclerView.Adapter<BaedalOptGroupAdapter.CustomViewHolder>() {
+class BaedalOptGroupAdapter(val context: Context) : RecyclerView.Adapter<BaedalOptGroupAdapter.CustomViewHolder>() {
+
+    private var groups = mutableListOf<Group>()
+
+    fun setData(groupData: List<Group>) {
+        groups.clear()
+        groups.addAll(groupData)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOptGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -25,19 +33,11 @@ class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>) : Rec
         holder.bind(group)
     }
 
-    interface OnItemClickListener {
-        fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean)
-    }
+    interface OnGroupOptClickListener { fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) }
 
-    private var listener = WeakReference<OnItemClickListener>(null)
+    fun setGroupOptClickListener(onGroupOptClickListener: OnGroupOptClickListener) { this.groupOptClickListener = onGroupOptClickListener }
 
-    fun itemClick(groupId: String, isRadio:Boolean, optionId: String, isChecked: Boolean) {
-        listener.get()?.onClick(groupId, isRadio, optionId, isChecked)
-    }
-
-    fun addListener(listener: OnItemClickListener) {
-        this.listener = WeakReference(listener)
-    }
+    private lateinit var groupOptClickListener: OnGroupOptClickListener
 
     override fun getItemCount(): Int {
         return groups.size
@@ -53,12 +53,13 @@ class BaedalOptGroupAdapter(val context: Context, val groups: List<Group>) : Rec
             binding.rvMenuGroup.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val adapter = BaedalOptAdapter(context, group.options!!, group.minOrderQuantity, group.maxOrderQuantity)
+            val adapter = BaedalOptAdapter(context)
             binding.rvMenuGroup.adapter = adapter
+            adapter.setData(group)
 
-            adapter.setItemClickListener(object: BaedalOptAdapter.OnItemClickListener {
-                override fun onClick(isRadio:Boolean, optionId: String, isChecked: Boolean) {
-                    itemClick(group._id, isRadio, optionId, isChecked)
+            adapter.setOptionClickListener(object: BaedalOptAdapter.OnOptionClickListener {
+                override fun onOptionClick(isRadio:Boolean, optionId: String, isChecked: Boolean) {
+                    groupOptClickListener.onClick(group._id, isRadio, optionId, isChecked)
                 }
             })
         }
