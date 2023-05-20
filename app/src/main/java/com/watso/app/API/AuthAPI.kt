@@ -14,4 +14,8 @@ interface AuthAPI {
     @DELETE("auth/logout")         // 로그아웃
     fun logout(
     ): Call<VoidResponse>
+
+    @GET("auth/refresh")        // 토큰 재발급
+    fun refreshToken(
+    ): Call<VoidResponse>
 }

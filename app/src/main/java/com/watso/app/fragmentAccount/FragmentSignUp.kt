@@ -1,5 +1,7 @@
 package com.watso.app.fragmentAccount
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -14,8 +16,8 @@ import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.ActivityController
 import kotlinx.coroutines.*
-import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragSignUpBinding
@@ -24,9 +26,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
 
-
 class FragmentSignUp :Fragment() {
     val TAG = "FragSignUp"
+    lateinit var AC: ActivityController
+
     var remainingSeconds = 0
     var valifyTime = 300
     var sendCoolTime = 10
@@ -36,15 +39,25 @@ class FragmentSignUp :Fragment() {
     private var mBinding: FragSignUpBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
-    val signUpCheck = mutableMapOf("username" to false, "password" to false, "nickname" to false, "email" to false)
+    val signUpCheck = mutableMapOf(
+        "realName" to false,    // verifyInputFormat
+        "username" to false,    // 중복확인할 때 유효성 검사 함
+        "password" to false,    // verifyInputFormat, 비밀번호 확인
+        "nickname" to false,    // 중복확인할 때 유효성 검사 함
+        "accountNum" to false,  // verifyInputFormat
+        "email" to false        // 코드확인할 때 유효성 검사 함
+    )
     var checkedUsername: String? = null
     var checkedNickname: String? = null
     var verifingEmail = ""
+    var verifiedEmail = ""
     var authToken = ""
     var bankName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragSignUpBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
+
         refreshView()
 
         return binding.root
@@ -60,80 +73,15 @@ class FragmentSignUp :Fragment() {
     fun refreshView() {
         binding.btnPrevious.setOnClickListener { onBackPressed() }
         binding.btnSignup.setEnabled(false)
+        bindNickname()
+        bindUsername()
+        bindPassword()
+        bindAccountNum()
+        bindEmail()
+        bindSignUp()
+    }
 
-        /** 아이디 중복확인*/
-        binding.etUsername.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                if (checkedUsername != null && binding.etUsername.text.toString() == checkedUsername) {
-                    binding.tvUsernameConfirm.text = "사용가능한 아이디입니다."
-                    binding.tvUsernameConfirm.setTextColor(Color.BLACK)
-                    signUpCheck["username"] = true
-                } else {
-                    binding.tvUsernameConfirm.text = "아이디 중복확인이 필요합니다."
-                    binding.tvUsernameConfirm.setTextColor(Color.RED)
-                    signUpCheck["username"] = false
-                }
-                setSignupBtnAble()
-            }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-        })
-
-        binding.btnUsernameDuplicationCheck.setOnClickListener {
-            val username = binding.etUsername.text.toString()
-            if (username != "" && !username.contains(" ")) {
-                val loopingDialog = looping()
-                api.checkDuplication("username", username).enqueue(object : Callback<DuplicationCheckResult> {
-                    override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
-                        looping(false, loopingDialog)
-                        Log.d("아이디 중복확인", response.toString())
-                        Log.d("아이디 중복확인", response.body().toString())
-                        if (response.code() == 200) {
-                            if (response.body()!!.isDuplicated) {
-                                signUpCheck["username"] = false
-                                binding.tvUsernameConfirm.text = "사용 불가능한 아이디입니다."
-                                binding.tvUsernameConfirm.setTextColor(Color.RED)
-                            } else {
-                                binding.tvUsernameConfirm.text = "사용 가능한 아이디입니다."
-                                binding.tvUsernameConfirm.setTextColor(Color.BLACK)
-                                signUpCheck["username"] = true
-                                checkedUsername = username
-                            }
-                            setSignupBtnAble()
-                        } else {
-                            Log.e(
-                                "signUp Fragment - usernameDuplicationCheck",
-                                response.toString()
-                            )
-                            makeToast("다시 시도해 주세요.")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e(
-                            "signUp Fragment - usernameDuplicationCheck",
-                            t.message.toString()
-                        )
-                        makeToast("다시 시도해 주세요.")
-                    }
-                })
-            }
-        }
-
-        /** 비밀번호 확인 */
-        binding.etPasswordConfirm.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onChangedPassword() }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-        binding.etPassword.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onChangedPassword() }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-
-        /** 닉네임 중복확인*/
+    fun bindNickname() {
         binding.etNickname.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
@@ -145,6 +93,7 @@ class FragmentSignUp :Fragment() {
                     binding.tvNicknameConfirm.setTextColor(Color.RED)
                     signUpCheck["nickname"] = false
                 }
+                if (binding.etNickname.text.toString() == "") binding.tvNicknameConfirm.text = ""
                 setSignupBtnAble()
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -153,11 +102,11 @@ class FragmentSignUp :Fragment() {
 
         binding.btnNicknameDuplicationCheck.setOnClickListener {
             val nickname = binding.etNickname.text.toString()
-            if (nickname != "" && !nickname.contains(" ")) {
-                val loopingDialog = looping()
+            if (verifyInput("nickname", nickname)) {
+                AC.showProgressBar()
                 api.checkDuplication("nickname", nickname).enqueue(object : Callback<DuplicationCheckResult> {
                     override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.d("닉네임 중복확인", response.toString())
                         Log.d("닉네임 중복확인", response.body().toString())
                         if (response.code() == 200) {
@@ -173,16 +122,20 @@ class FragmentSignUp :Fragment() {
                             }
                             setSignupBtnAble()
                         } else {
-                            Log.e(
-                                "signUp Fragment - nicknameDuplicationCheck",
-                                response.toString()
-                            )
-                            makeToast("다시 시도해 주세요.")
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[nicknameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e:Exception) {
+                                Log.e("$TAG[nicknameVerify]", e.toString())
+                                Log.d("$TAG[nicknameVerify]", response.errorBody()?.string().toString())
+                            }
                         }
                     }
 
                     override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e(
                             "signUp Fragment - nicknameDuplicationCheck",
                             t.message.toString()
@@ -190,10 +143,102 @@ class FragmentSignUp :Fragment() {
                         makeToast("다시 시도해 주세요.")
                     }
                 })
+            } else {
+                signUpCheck["nickname"] = false
+                binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
+                binding.tvNicknameConfirm.setTextColor(Color.RED)
             }
         }
+    }
 
-        /** 계좌 */
+    fun bindUsername() {
+        binding.etUsername.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if (checkedUsername != null && binding.etUsername.text.toString() == checkedUsername) {
+                    binding.tvUsernameConfirm.text = "사용가능한 아이디입니다."
+                    binding.tvUsernameConfirm.setTextColor(Color.BLACK)
+                    signUpCheck["username"] = true
+                } else {
+                    binding.tvUsernameConfirm.text = "아이디 중복확인이 필요합니다."
+                    binding.tvUsernameConfirm.setTextColor(Color.RED)
+                    signUpCheck["username"] = false
+                }
+                if (binding.etUsername.text.toString() == "") {
+                    binding.tvUsernameConfirm.text = ""
+                    binding.tvUsernameConfirm.setTextColor(Color.BLACK)
+                    signUpCheck["username"] = false
+                }
+                setSignupBtnAble()
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+        })
+
+        binding.btnUsernameDuplicationCheck.setOnClickListener {
+            val username = binding.etUsername.text.toString()
+            if (verifyInput("username", username)) {
+                AC.showProgressBar()
+                api.checkDuplication("username", username).enqueue(object : Callback<DuplicationCheckResult> {
+                    override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
+                        AC.hideProgressBar()
+                        Log.d("아이디 중복확인", response.toString())
+                        Log.d("아이디 중복확인", response.body().toString())
+                        if (response.code() == 200) {
+                            if (response.body()!!.isDuplicated) {
+                                signUpCheck["username"] = false
+                                binding.tvUsernameConfirm.text = "사용 불가능한 아이디입니다."
+                                binding.tvUsernameConfirm.setTextColor(Color.RED)
+                            } else {
+                                binding.tvUsernameConfirm.text = "사용 가능한 아이디입니다."
+                                binding.tvUsernameConfirm.setTextColor(Color.BLACK)
+                                signUpCheck["username"] = true
+                                checkedUsername = username
+                            }
+                            setSignupBtnAble()
+                        } else  {
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[usernameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e:Exception) {
+                                Log.e("$TAG[usernameVerify]", e.toString())
+                                Log.d("$TAG[usernameVerify]", response.errorBody()?.string().toString())
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
+                        AC.hideProgressBar()
+                        Log.e(
+                            "signUp Fragment - usernameDuplicationCheck",
+                            t.message.toString()
+                        )
+                        makeToast("다시 시도해 주세요.")
+                    }
+                })
+            } else {
+                signUpCheck["username"] = false
+                binding.tvUsernameConfirm.text = "사용 불가능한 아이디입니다."
+                binding.tvUsernameConfirm.setTextColor(Color.RED)
+            }
+        }
+    }
+
+    fun bindPassword() {
+        binding.etPasswordConfirm.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { compairPassword() }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+        binding.etPassword.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { compairPassword() }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+    }
+
+    fun bindAccountNum() {
         binding.btnAccountNumDuplicationCheck.visibility = View.GONE
         binding.tvAccountNumConfirm.visibility = View.GONE
         val banks = resources.getStringArray(R.array.banks)
@@ -212,15 +257,12 @@ class FragmentSignUp :Fragment() {
             ) {
                 bankName = (banks[position])
             }
-        }
+        }}
 
-        /** 메일 */
-        //binding.btnSendMail.isEnabled = false
-        //binding.btnVerifyMail.isEnabled = false
-
+    fun bindEmail() {
         binding.etEmail.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                signUpCheck["email"] = verifingEmail != "" && binding.etEmail.text.toString() == verifingEmail
+                signUpCheck["email"] = verifiedEmail != "" && binding.etEmail.text.toString() == verifiedEmail
                 setSignupBtnAble()
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -229,29 +271,46 @@ class FragmentSignUp :Fragment() {
 
         binding.tvCoolTime.visibility = View.GONE
         binding.btnSendCode.setOnClickListener {
-            verifingEmail = binding.etEmail.text.toString()
-            if (verifingEmail != "" && isSendAble) {
+            val temp = binding.etEmail.text.toString()
+            if (temp != "" && isSendAble) {
+                if (verifyInput("email", temp)) {
+                    verifingEmail = temp
+                    AC.showProgressBar()
+                    api.sendVerificationCode(verifingEmail).enqueue(object : Callback<VoidResponse> {
+                        override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                            AC.hideProgressBar()
+                            if (response.code() == 204) {
+                                if (::job.isInitialized && job.isActive)
+                                    job.cancel()
+                                job = GlobalScope.launch { countDown(valifyTime) }
+                                binding.btnVerifyEmail.setBackgroundResource(R.drawable.solid_primary)
+                                binding.tvVerifyEmail.setTextColor(Color.WHITE)
+                            } else {
+                                try {
+                                    val errorBody = response.errorBody()?.string()
+                                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                    makeToast(errorResponse.msg)
+                                    Log.d("$TAG[sencCode]", "${errorResponse.code}: ${errorResponse.msg}")
+                                } catch (e:Exception) {
+                                    Log.e("$TAG[sendCode]", e.toString())
+                                    Log.d("$TAG[sencCode]", response.errorBody()?.string().toString())
+                                }
+                            }
+                        }
 
-                val loopingDialog = looping()
-                api.sendVerificationCode(verifingEmail).enqueue(object : Callback<VoidResponse> {
-                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 204) {
-                            if (::job.isInitialized && job.isActive)
-                                job.cancel()
-                            job = GlobalScope.launch { countDown(valifyTime) }
-                        } else {
-                            Log.e("signUp Fragment - sendMail", response.toString())
+                        override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                            AC.hideProgressBar()
+                            Log.e("signUp Fragment - sendMail", t.message.toString())
                             makeToast("다시 시도해 주세요.")
                         }
-                    }
-
-                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("signUp Fragment - sendMail", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                })
+                    })
+                } else {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("이메일 확인")
+                        .setMessage("사용할 수 없는 메일 형식입니다.")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
+                }
             }
             else if (verifingEmail != "" && !isSendAble ) binding.tvCoolTime.visibility = View.VISIBLE
 
@@ -260,23 +319,23 @@ class FragmentSignUp :Fragment() {
         binding.btnVerifyEmail.setOnClickListener {
             Log.d("$TAG[메일 인증]", binding.etEmail.text.toString())
             if (verifingEmail != "" && binding.etVerifyCode.text.toString() != "") {
-                val loopingDialog = looping()
-                api.checkVerificationCode("a", binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
+                AC.showProgressBar()
+                api.checkVerificationCode(verifingEmail, binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
                     override fun onResponse(call: Call<VerificationResponse>, response: Response<VerificationResponse>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         if (response.code() == 200) {
                             remainingSeconds = 0
+                            verifiedEmail = verifingEmail
                             signUpCheck["email"] = true
                             authToken = response.body()!!.authToken
                             setSignupBtnAble()
                             Log.d("signUp Fragment - signUpCheck", signUpCheck.toString())
                         } else {
-                            Log.d("$TAG[onResponse]", "")
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[verifyMail]", errorResponse.msg)
+                                Log.d("$TAG[verifyMail]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e: Exception) {
                                 Log.e("$TAG[verifyMail]", e.toString())
                                 Log.d("$TAG[verifyMail]", response.errorBody()?.string().toString())
@@ -286,48 +345,82 @@ class FragmentSignUp :Fragment() {
 
                     override fun onFailure(call: Call<VerificationResponse>, t: Throwable) {
                         Log.d("$TAG[onFailure]", "")
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e("signUp Fragment - sendMail", t.message.toString())
                         makeToast("다시 시도해 주세요.")
                     }
                 })
             }
         }
+    }
 
-        /** 회원가입 */
+    fun bindSignUp() {
         binding.btnSignup.setOnClickListener {
-            val loopingDialog = looping()
-            var data = SignUpModel(
-                authToken,
-                binding.etRealName.text.toString(),
-                binding.etUsername.text.toString(),
-                binding.etPassword.text.toString(),
-                binding.etNickname.text.toString(),
-                binding.etAccountNum.text.toString() + " "+ bankName,
-                binding.etEmail.text.toString()// + "@pusan.ac.kr"
-            )
-            api.signup(data).enqueue(object : Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
-                    if (response.code() == 201) {
-                        makeToast("회원가입에 성공하였습니다.")
-                        onBackPressed()
-                    } else {
-                        Log.e("signUp Fragment - signup", response.toString())
+            if (verifyInput()) {
+                var data = SignUpModel(
+                    authToken,
+                    binding.etRealName.text.toString(),
+                    binding.etUsername.text.toString(),
+                    binding.etPassword.text.toString(),
+                    binding.etNickname.text.toString(),
+                    binding.etAccountNum.text.toString(),
+                    binding.etEmail.text.toString()// + "@pusan.ac.kr"
+                )
+                AC.showProgressBar()
+                api.signup(data).enqueue(object : Callback<VoidResponse> {
+                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                        AC.hideProgressBar()
+                        if (response.code() == 201) {
+                            makeToast("회원가입에 성공하였습니다.")
+                            onBackPressed()
+                        } else  {
+                            try {
+                                val errorBody = response.errorBody()?.string()
+                                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                                makeToast(errorResponse.msg)
+                                Log.d("$TAG[signup]", "${errorResponse.code}: ${errorResponse.msg}")
+                            } catch (e:Exception) {
+                                Log.e("$TAG[signup]", e.toString())
+                                Log.d("$TAG[signup]", response.errorBody()?.string().toString())
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                        AC.hideProgressBar()
+                        Log.e("signUp Fragment - signup", t.message.toString())
                         makeToast("다시 시도해 주세요.")
                     }
-                }
-
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
-                    Log.e("signUp Fragment - signup", t.message.toString())
-                    makeToast("다시 시도해 주세요.")
-                }
-            })
+                })
+            }
         }
     }
 
-    fun onChangedPassword() {
+    fun verifyInput(): Boolean {
+        val builder = AlertDialog.Builder(requireContext())
+        if (verifyInput("realName", binding.etRealName.text.toString())) {
+            if (verifyInput("password", binding.etPassword.text.toString())) {
+                if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
+                    return true
+                } else {
+                    builder.setMessage("사용할 수 없는 계좌번호 형식입니다.")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
+                }
+            } else {
+                builder.setMessage("비밀번호는 숫자, 영문자, 특수문자(~!@#\$%^&)를 각각 하나이상 포함하여 8~16자여야 합니다.")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
+            }
+        } else {
+            builder.setMessage("사용할 수 없는 이름 형식입니다.")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+        }
+        return false
+    }
+
+    fun compairPassword() {
         if (binding.etPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
             if (binding.etPassword.text.toString().equals(binding.etPasswordConfirm.text.toString())) {
                 binding.tvPasswordConfirm.text = "비밀번호가 일치합니다."
@@ -348,10 +441,12 @@ class FragmentSignUp :Fragment() {
     fun setSignupBtnAble() {
         if (signUpCheck["username"]!! && signUpCheck["password"]!! && signUpCheck["nickname"]!! && signUpCheck["email"]!!) {
             binding.btnSignup.setEnabled(true)
-            binding.btnSignup.setBackgroundResource(R.drawable.stroked_white_10_primary_2)
+            binding.btnSignup.setBackgroundResource(R.drawable.solid_primary)
+            binding.tvSignup.setTextColor(Color.WHITE)
         } else {
             binding.btnSignup.setEnabled(false)
-            binding.btnSignup.setBackgroundResource(R.drawable.solid_lightgray_10)
+            binding.btnSignup.setBackgroundResource(R.drawable.stroked_lightgray_silver)
+            binding.tvSignup.setTextColor(Color.BLACK)
         }
     }
 
@@ -385,15 +480,23 @@ class FragmentSignUp :Fragment() {
         }
     }
 
+    fun verifyInput(case: String, text: String): Boolean {
+        val message = VerifyInputFormat().verifyInput(case, text)
+        return if (message == "") {
+            true
+        } else {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(message)
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                .show()
+            false
+        }
+    }
+
     fun countDownStr(seconds: Int): String {
         val min = seconds / 60
         val sec = seconds % 60
         return String.format("%02d:%02d", min, sec)
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

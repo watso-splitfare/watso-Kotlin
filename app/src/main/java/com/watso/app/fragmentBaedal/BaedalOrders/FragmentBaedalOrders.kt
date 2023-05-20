@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalOrdersBinding
 import retrofit2.Call
@@ -23,6 +23,8 @@ import java.text.DecimalFormat
 
 class FragmentBaedalOrders :Fragment() {
     val TAG = "FragBaedalOrders"
+    lateinit var AC: ActivityController
+
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
     lateinit var post: BaedalPost
@@ -53,6 +55,8 @@ class FragmentBaedalOrders :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalOrdersBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
+
         binding.tvOrder.text = if (isMyorder) "내가 고른 메뉴" else "주문할 메뉴"
         refreshView()
 
@@ -69,11 +73,11 @@ class FragmentBaedalOrders :Fragment() {
     }
 
     fun getOrders() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         if (isMyorder) {
             api.getMyOrders(post._id).enqueue(object: Callback<MyOrderInfo> {
                 override fun onResponse(call: Call<MyOrderInfo>, response: Response<MyOrderInfo>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 200) {
                         val userOrder = mutableListOf(response.body()!!.userOrder)
                         setUserOrder(userOrder)
@@ -84,14 +88,14 @@ class FragmentBaedalOrders :Fragment() {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[getMyOrders]", errorResponse.msg)
+                            Log.d("$TAG[getMyOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getMyOrders]", e.toString())}
                         onBackPressed()
                     }
                 }
 
                 override fun onFailure(call: Call<MyOrderInfo>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
                     makeToast("주문정보를 불러오지 못했습니다.")
                     onBackPressed()
@@ -100,21 +104,21 @@ class FragmentBaedalOrders :Fragment() {
         } else {
             api.getAllOrders(post._id).enqueue(object: Callback<AllOrderInfo> {
                 override fun onResponse(call: Call<AllOrderInfo>, response: Response<AllOrderInfo>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 200) setUserOrder(response.body()!!.userOrders)
                     else {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[getAllOrders]", errorResponse.msg)
+                            Log.d("$TAG[getAllOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getAllOrders]", e.toString())}
                         onBackPressed()
                     }
                 }
 
                 override fun onFailure(call: Call<AllOrderInfo>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
                     makeToast("주문정보를 불러오지 못했습니다.")
                     onBackPressed()
@@ -160,28 +164,20 @@ class FragmentBaedalOrders :Fragment() {
             userOrders[0].orders.forEach {
                 price += it.price!! * it.quantity
             }
+
+            val personalFee = post.fee / post.users.size
             binding.tvOrderPrice.text = "${dec.format(price)}원"
+            binding.tvFee.text = "${dec.format(personalFee)}원"
+            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
 
             if (post.status == "delivered") {
-                val personalFee = post.fee / post.users.size
                 binding.lbFee.text = "1인당 배달비"
                 binding.lbTotalPrice.text = "본인 부담 금액"
-                binding.tvFee.text = "${dec.format(personalFee)}원"
-                binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
-            } else {
-                val personalFee = post.fee / post.minMember
-                binding.tvFee.text = "${dec.format(personalFee)}원"
-                binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
             }
         } else {
             binding.divider43.visibility = View.GONE
             binding.lytTable.visibility = View.GONE
         }
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

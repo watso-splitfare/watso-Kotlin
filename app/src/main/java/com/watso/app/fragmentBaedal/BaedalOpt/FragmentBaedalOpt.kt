@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalOptBinding
 import com.watso.app.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
@@ -23,6 +23,8 @@ import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
     val TAG="FragBaedalOpt"
+    lateinit var AC: ActivityController
+
     var postId = ""
     var menuId = ""
     lateinit var storeInfo: StoreInfo
@@ -35,6 +37,7 @@ class FragmentBaedalOpt :Fragment() {
     val optionChecked = mutableMapOf<String, MutableMap<String, Boolean>>()
     var quantity = 1
     var price = 0
+    lateinit var adapter: BaedalOptGroupAdapter
 
     var viewClickAble = true
 
@@ -57,10 +60,28 @@ class FragmentBaedalOpt :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalOptBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
+        setAdapter()
         refreshView()
 
         return binding.root
+    }
+
+    fun setAdapter() {
+        binding.rvOptionGroup.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvOptionGroup.setHasFixedSize(true)
+
+        adapter = BaedalOptGroupAdapter(requireContext())
+
+        adapter.setGroupOptClickListener(object: BaedalOptGroupAdapter.OnGroupOptClickListener {
+            override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
+                setChecked(groupId, isRadio, optionId, isChecked)
+                setOrderPrice()
+            }
+        })
+        binding.rvOptionGroup.adapter = adapter
     }
 
     fun refreshView() {
@@ -119,16 +140,16 @@ class FragmentBaedalOpt :Fragment() {
     }
 
     fun setRecyclerView() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getMenuInfo(storeInfo._id, menuId).enqueue(object : Callback<Menu> {
             override fun onResponse(call: Call<Menu>, response: Response<Menu>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     menuInfo = response.body()!!
                     binding.tvMenuName.text = menuInfo.name
+                    menuInfo.groups?.let{ adapter.setData(it) }
                     val dec = DecimalFormat("#,###")
                     binding.tvMenuPrice.text = "기본 가격 : ${dec.format(menuInfo.price)}원"
-                    mappingAdapter()
                     setGroupOptionData()
                     setOrderPrice()
                 } else {
@@ -136,33 +157,17 @@ class FragmentBaedalOpt :Fragment() {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getMenuInfo]", errorResponse.msg)
+                        Log.d("$TAG[getMenuInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getMenuInfo]", e.toString())}
                 }
             }
 
             override fun onFailure(call: Call<Menu>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
                 makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
             }
         })
-    }
-
-    fun mappingAdapter() {
-        binding.rvOptionGroup.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvOptionGroup.setHasFixedSize(true)
-
-        val adapter = BaedalOptGroupAdapter(requireContext(), menuInfo.groups!!)
-
-        adapter.addListener(object: BaedalOptGroupAdapter.OnItemClickListener {
-            override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {
-                setChecked(groupId, isRadio, optionId, isChecked)
-                setOrderPrice()
-            }
-        })
-        binding.rvOptionGroup.adapter = adapter
     }
 
     fun setGroupOptionData() {
@@ -216,11 +221,6 @@ class FragmentBaedalOpt :Fragment() {
         }
         val orderPriceStr = "${dec.format(price * quantity)}원"
         binding.tvOrderPrice.text = orderPriceStr
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

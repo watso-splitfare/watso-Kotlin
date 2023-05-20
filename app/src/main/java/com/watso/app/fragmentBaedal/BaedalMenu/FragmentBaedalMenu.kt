@@ -12,9 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
-import com.watso.app.R
 import com.watso.app.databinding.FragBaedalMenuBinding
 import com.watso.app.fragmentBaedal.BaedalConfirm.FragmentBaedalConfirm
 import com.watso.app.fragmentBaedal.BaedalOpt.FragmentBaedalOpt
@@ -25,6 +24,8 @@ import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
     val TAG = "FragBaedalMenu"
+    lateinit var AC: ActivityController
+
     var postId = ""
     var storeId = "0"
     lateinit var storeInfo: StoreInfo
@@ -51,6 +52,7 @@ class FragmentBaedalMenu :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalMenuBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("addOrder", this) {
             requestKey, bundle ->
@@ -94,10 +96,10 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun getStoreInfo() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getStoreInfo(storeId).enqueue(object : Callback<StoreInfo> {
             override fun onResponse(call: Call<StoreInfo>, response: Response<StoreInfo>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     storeInfo = response.body()!!
                     binding.tvStoreName.text = storeInfo.name
@@ -107,13 +109,13 @@ class FragmentBaedalMenu :Fragment() {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getStoreInfo]", errorResponse.msg)
+                        Log.d("$TAG[getStoreInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[getStoreInfo]", e.toString())}
                 }
             }
 
             override fun onFailure(call: Call<StoreInfo>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedalMenu Fragment - getSectionMenu", t.message.toString())
                 makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
             }
@@ -136,11 +138,6 @@ class FragmentBaedalMenu :Fragment() {
         )
 
         setFrag(FragmentBaedalConfirm(), map)
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

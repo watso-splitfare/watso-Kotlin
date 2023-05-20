@@ -11,19 +11,23 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragBaedalConfirmBinding
 import com.google.gson.Gson
+import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.ActivityController
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
+    val TAG = "FragBaedalConfirm"
+    lateinit var AC: ActivityController
     var postId = ""
     lateinit var userOrder: UserOrder
     lateinit var storeInfo: StoreInfo
@@ -53,7 +57,6 @@ class FragmentBaedalConfirm :Fragment() {
             }
 
             if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
-
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
         prefs.setString("userOrder", gson.toJson(userOrder))
@@ -64,12 +67,11 @@ class FragmentBaedalConfirm :Fragment() {
             fee = storeInfo.fee / baedalPosting.minMember
         }
         else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
-        Log.d("FragBaedalConfirm storeInfo", storeInfo.toString())
-        Log.d("FragBaedalConfirm minMember", prefs.getString("minMember", ""))
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
         Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
 
         refreshView()
@@ -123,22 +125,29 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun ordering(){
-        val loopingDialog = looping()
+        AC.showProgressBar()
         Log.d("FragBaedalConfirm orders", userOrder.orders.toString())
         if (postId == "-1") {   // 게시글 작성일 때
             baedalPosting.order = userOrder
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
-                    looping(false, loopingDialog)
-                    if (response.code() == 201) setFrag(FragmentBaedal())
+                    AC.hideProgressBar()
+                    if (response.code() == 201) setFrag(FragmentBaedal(), popBackStack = 0)
                     else {
-                        Log.e("baedal Confirm Fragment - baedalPosting", response.toString())
-                        makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[baedalPosting]", "${errorResponse.code}: ${errorResponse.msg}")
+                        } catch (e: Exception) {
+                            Log.e("$TAG[baedalPosting]", e.toString())
+                            Log.d("$TAG[baedalPosting]", response.errorBody()?.string().toString())
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("baedal Confirm Fragment - baedalPosting", t.message.toString())
                     makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
@@ -147,16 +156,23 @@ class FragmentBaedalConfirm :Fragment() {
             userOrder.requestComment = binding.etRequest.text.toString()
             api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 204) goToPosting()
                     else {
-                        Log.e("baedal Confirm Fragment - postOrders", response.toString())
-                        makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
+                        try {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            makeToast(errorResponse.msg)
+                            Log.d("$TAG[postOrders]", "${errorResponse.code}: ${errorResponse.msg}")
+                        } catch (e: Exception) {
+                            Log.e("$TAG[postOrders]", e.toString())
+                            Log.d("$TAG[postOrders]", response.errorBody()?.string().toString())
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("baedal Confirm Fragment - postOrders", t.message.toString())
                     makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
@@ -189,23 +205,18 @@ class FragmentBaedalConfirm :Fragment() {
         mActivity.requestNotiPermission()
     }
 
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
-    }
-
     fun makeToast(message: String){
         val mActivity = activity as MainActivity
         mActivity.makeToast(message)
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
+    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack: Int=3) {
         val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, 3)
+        mActivity.setFrag(fragment, arguments, popBackStack)
     }
 
     fun onBackPressed() {
-        val mActivity =activity as MainActivity
+        val mActivity = activity as MainActivity
         prefs.setString("userOrder", gson.toJson(userOrder))
 
         val bundle = bundleOf("orderCnt" to userOrder.orders.size)

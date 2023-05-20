@@ -74,7 +74,7 @@ class TableRowAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<Tab
             binding.tvStatus.text = status
             binding.tvPlace.text = post.place
             binding.tvMember.text = currentMember + " / " + maxMember + "명"
-            binding.tvNickname.text = post.nickname
+            binding.tvNickname.text = "모임장 : " + post.nickname
         }
     }
 }

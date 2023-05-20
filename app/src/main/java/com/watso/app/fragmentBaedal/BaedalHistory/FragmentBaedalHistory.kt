@@ -12,20 +12,17 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.watso.app.API.BaedalPost
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalHistoryBinding
-import com.watso.app.fragmentBaedal.Baedal.Table
-import com.watso.app.fragmentBaedal.Baedal.TableAdapter
 import com.watso.app.fragmentBaedal.BaedalOrders.FragmentBaedalOrders
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class FragmentBaedalHistory :Fragment() {
+    lateinit var AC: ActivityController
     var isTouched = false
 
     private var mBinding: FragBaedalHistoryBinding? = null
@@ -36,6 +33,7 @@ class FragmentBaedalHistory :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalHistoryBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         binding.scrollView.setOnTouchListener { _, event -> isTouched = when (event.action)
             {
@@ -56,11 +54,11 @@ class FragmentBaedalHistory :Fragment() {
     }
 
     fun getPostPreview() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getBaedalPostList("all").enqueue(object : Callback<List<BaedalPost>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     val baedalPosts = mutableListOf<BaedalPost>()
                     baedalPosts.addAll(response.body()!!)
@@ -72,7 +70,7 @@ class FragmentBaedalHistory :Fragment() {
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
                 makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
@@ -99,11 +97,6 @@ class FragmentBaedalHistory :Fragment() {
                 setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
             }
         })
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

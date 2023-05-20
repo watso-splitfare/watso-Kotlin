@@ -10,7 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragTaxiBinding
 import com.watso.app.fragmentTaxi.adapterTaxi.TaxiTable
@@ -23,6 +23,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class FragmentTaxi :Fragment() {
+    lateinit var AC: ActivityController
     private var mBinding: FragTaxiBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
@@ -30,6 +31,7 @@ class FragmentTaxi :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragTaxiBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
 
@@ -46,7 +48,7 @@ class FragmentTaxi :Fragment() {
     }
 
     fun getPostPreview() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getTaxiPostListPreview().enqueue(object : Callback<List<TaxiPostPreviewModel>> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<TaxiPostPreviewModel>>, response: Response<List<TaxiPostPreviewModel>>) {
@@ -57,13 +59,13 @@ class FragmentTaxi :Fragment() {
                     Log.e("taxi Fragment - getTaxiPostListPreview", response.toString())
                     makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 }
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
             }
 
             override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
                 Log.e("taxi Fragment - getTaxiPostListPreview", t.message.toString())
                 makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
             }
         })
     }
@@ -93,11 +95,6 @@ class FragmentTaxi :Fragment() {
                 setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
             }
         })
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

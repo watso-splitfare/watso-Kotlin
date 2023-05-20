@@ -4,28 +4,27 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.databinding.FragBaedalAddBinding
 import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.ActivityController
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,6 +37,8 @@ import java.util.*
 
 class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalAdd"
+    lateinit var AC: ActivityController
+
     var isScrolled = false
 
     var isUpdating = false
@@ -73,7 +74,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             if (isUpdating) {
                 postId = it.getString("postId")
                 orderTime = it.getString("orderTime")
-                storeName = it.getString("storeName")
+                selectedStore = Gson().fromJson(it.getString("storeInfo"), Store::class.java)
                 place = it.getString("place")
                 minMember = it.getString("minMember")?.toInt()
                 maxMember = it.getString("maxMember")?.toInt()
@@ -85,6 +86,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalAddBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
         binding.scrollView2.setOnTouchListener(this)
@@ -131,15 +133,22 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         if (isUpdating) {
             binding.tvOrderTime.text = getDateTimeFormating(orderTime!!)
             binding.lytStore.visibility = View.GONE
-            binding.tvStoreName.text = storeName
+            binding.tvStore.text = selectedStore!!.name
 
             if (place == "기숙사") binding.spnPlace.setSelection(1)
             binding.etMinMember.setText(minMember.toString())
             binding.etMaxMember.setText(maxMember.toString())
 
+            bindStoreInfo()
             binding.tvCompletePostinfo.text = "수정 완료"
         } else {
-            orderTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
+            val currentDateTime = LocalDateTime.now()
+            val roundedMinute = (currentDateTime.minute / 10) * 10
+            //val roundedMinute = (minute / 10) * 10
+            //val roundedDateTime = currentDateTime.withMinute(roundedMinute)
+            val tartgetDatetime = currentDateTime.withMinute(roundedMinute).plusMinutes(30)
+
+            orderTime = tartgetDatetime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
             binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
             setStoreSpinner()
         }
@@ -149,27 +158,33 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun showCalendar() {
-        val cal = Calendar.getInstance()
+        val orderTimeObj = LocalDateTime.parse(orderTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+
         val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             run {
                 var dateString = "${year}-${decDt.format(month + 1)}-${decDt.format(dayOfMonth)}T"
-
-                val timeSetListener =
-                    TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-                        run {
-                            var timeString = "${decDt.format(hourOfDay)}:${decDt.format(minute)}:00"
-                            orderTime = dateString+timeString
-                            binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
-                        }
+                val timePicker = DialogTimePicker(requireContext(), object: DialogTimePicker.TimePickerClickListener {
+                    override fun onPositiveClick(hour: Int, minute: Int) {
+                        var timeString = "${decDt.format(hour)}:${decDt.format(minute)}:00"
+                        orderTime = dateString+timeString
+                        binding.tvOrderTime.text = getDateTimeFormating(orderTime.toString())
                     }
 
-                TimePickerDialog(requireContext(), timeSetListener,
-                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
+                    override fun onNegativeClick() { }
+                })
+
+                timePicker.setHourValue(orderTimeObj.hour)
+                timePicker.setMinuteValue(orderTimeObj.minute)
+                timePicker.setCanceledOnTouchOutside(true)
+                timePicker.setCancelable(true)
+                timePicker.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                timePicker.window?.requestFeature(Window.FEATURE_NO_TITLE)
+                timePicker.show()
             }
         }
 
         val dpd = DatePickerDialog(requireContext(), dateSetListener,
-            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            orderTimeObj.year, orderTimeObj.monthValue-1, orderTimeObj.dayOfMonth)
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000
         dpd.datePicker.maxDate = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7
         dpd.show()
@@ -183,10 +198,10 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     }
 
     fun setStoreSpinner(){
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getStoreList().enqueue(object : Callback<List<Store>> {
             override fun onResponse(call: Call<List<Store>>, response: Response<List<Store>>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     stores = response.body()!!
                     stores.forEach {
@@ -216,15 +231,14 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getStoreList]", errorResponse.msg)
+                        Log.d("$TAG[getStoreList]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getStoreList]", e.toString())}
                     onBackPressed()
                 }
             }
 
             override fun onFailure(call: Call<List<Store>>, t: Throwable) {
-                // 실패
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("FragBaedalAdd setStoreSpinner", t.message.toString())
                 makeToast("가게 리스트 조회 실패")
                 onBackPressed()
@@ -295,11 +309,11 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 maxMember
             )
 
-            val loopingDialog = looping()
+            AC.showProgressBar()
             api.updateBaedalPost(postId!!, baedalPostUpdate)
                 .enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         if (response.code() == 204) {
                             val bundle = bundleOf("success" to true, "postId" to postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
@@ -311,7 +325,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e("baedalAdd Fragment - updateBaedalPost", t.message.toString())
                         makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
                     }
@@ -350,11 +364,6 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     fun hideSoftInput() {
         val mActivity = activity as MainActivity
         return mActivity.hideSoftInput()
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun makeToast(message: String){

@@ -71,6 +71,26 @@ class MainActivity : AppCompatActivity() {
         initDynamicLink()
     }
 
+    override fun onDestroy() {
+        mBinding = null
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        val fm = supportFragmentManager
+        val count = fm.backStackEntryCount
+        if (count > 0)
+            super.onBackPressed()
+        else {
+            if(System.currentTimeMillis() - mBackWait >= 2000) {
+                mBackWait = System.currentTimeMillis()
+                Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                finish()
+            }
+        }
+    }
+
     /** DynamicLink */
     private fun initDynamicLink() {
         val dynamicLinkData = intent.extras
@@ -102,40 +122,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
-        }
-    }
-
-    override fun onDestroy() {
-        mBinding = null
-        super.onDestroy()
-    }
-
-    override fun onBackPressed() {
-        val fm = supportFragmentManager
-        val count = fm.backStackEntryCount
-        if (count > 0)
-            super.onBackPressed()
-        else {
-            if(System.currentTimeMillis() - mBackWait >= 2000) {
-                mBackWait = System.currentTimeMillis()
-                Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                finish()
-            }
-        }
-    }
-
-    fun showSoftInput(view: View) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(view, 0)
-    }
-
-    fun hideSoftInput() {
-        val currentFocus = this.currentFocus
-        if (currentFocus is EditText) {
-            currentFocus.clearFocus()
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
     }
 
@@ -178,7 +164,6 @@ class MainActivity : AppCompatActivity() {
                 transaction.add(R.id.main_frame, fragment).addToBackStack(null)
             }
         }
-
         transaction.commit()
     }
 
@@ -239,29 +224,28 @@ class MainActivity : AppCompatActivity() {
         bottomBarIndex = fragindex
     }
 
-    /**
-     * Api 호출시 응답시간 동안 회전하는 다이얼로그 생성.
-     * loopStart 인자로 True를 전달 할 경우 loop가 시작되고 다이얼로그가 return 됨.
-     * loopingDialog 인자에 생성됐던 다이얼로그를 전달할 경우 해당 loop가 제거됨.
-     */
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        return if (loopStart) {
-            Log.d("루프 시작", "")
-            val newLoopingDialog = LoopingDialog(this)
-            newLoopingDialog.show()
-            newLoopingDialog
-        } else {
-            Log.d("루프 종료", "")
-            loopingDialog!!.dismiss()
-            null
+    fun showSoftInput(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, 0)
+    }
+
+    fun hideSoftInput() {
+        val currentFocus = this.currentFocus
+        if (currentFocus is EditText) {
+            currentFocus.clearFocus()
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
     }
+
+    fun showProgress() { binding.progressBackground.visibility = View.VISIBLE }
+
+    fun hideProgress() { binding.progressBackground.visibility = View.GONE }
 
     fun copyToClipboard(label:String, content: String) {
         val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText(label, content)
         clipboardManager.setPrimaryClip(clipData)
-        makeToast("클립보드에 계좌번호가 복사되었습니다.")
     }
 
     fun makeToast(message: String){

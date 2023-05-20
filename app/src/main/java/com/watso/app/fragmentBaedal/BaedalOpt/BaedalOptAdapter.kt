@@ -7,23 +7,35 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.watso.app.API.Group
 import com.watso.app.API.Option
 import com.watso.app.databinding.LytBaedalOptBinding
 import java.text.DecimalFormat
 
-class BaedalOptAdapter(val context: Context, val options: List<Option>, val minOrderableQuantity: Int, val maxOrderableQuantity: Int):
-    RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
+class BaedalOptAdapter(val context: Context): RecyclerView.Adapter<BaedalOptAdapter.CustomViewHolder>() {
 
-    var isRadio = false
-    var checkedPosition = -1
-    var count = 0
+    private var options = mutableListOf<Option>()
+    private var minOrderableQuantity = 1
+    private var maxOrderableQuantity = 1
+
+    private var isRadio = false
+    private var checkedPosition = -1
+    private var count = 0
+
+    fun setData(group: Group) {
+        group.options?.let {
+            options.clear()
+            options.addAll(it)
+            minOrderableQuantity = group.minOrderQuantity
+            maxOrderableQuantity = group.maxOrderQuantity
+            if (minOrderableQuantity == 1 && maxOrderableQuantity == 1)
+                isRadio = true
+            notifyDataSetChanged()
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = LytBaedalOptBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
-        if (minOrderableQuantity == 1 && maxOrderableQuantity == 1){
-            isRadio = true
-        }
         return CustomViewHolder(binding)
     }
 
@@ -32,15 +44,11 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
         holder.bind(option)
     }
 
-    interface OnItemClickListener {
-        fun onClick(isRadio:Boolean, optionId: String, isChecked: Boolean)
-    }
+    interface OnOptionClickListener { fun onOptionClick(isRadio:Boolean, optionId: String, isChecked: Boolean) }
 
-    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
-        this.itemClickListener = onItemClickListener
-    }
+    fun setOptionClickListener(onOptionClickListener: OnOptionClickListener) { this.optionClickListener = onOptionClickListener }
 
-    private lateinit var itemClickListener : OnItemClickListener
+    private lateinit var optionClickListener : OnOptionClickListener
 
     override fun getItemCount(): Int {
         return options.size
@@ -67,12 +75,12 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
                 checkBtn.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
-                    itemClickListener.onClick(isRadio, option._id, true)
+                    optionClickListener.onOptionClick(isRadio, option._id, true)
                 }
                 itemView.setOnClickListener {
                     checkedPosition = adapterPosition
                     notifyDataSetChanged()
-                    itemClickListener.onClick(isRadio, option._id, true)
+                    optionClickListener.onOptionClick(isRadio, option._id, true)
                 }
             } else {
                 binding.cbOption.text = option.name
@@ -80,10 +88,10 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
                 checkBtn = binding.cbOption
 
 
-                checkBtn.setOnClickListener { callItemClickListener(option._id) }
+                checkBtn.setOnClickListener { callOptionClickListener(option._id) }
                 itemView.setOnClickListener {
                     checkBtn.setChecked(!checkBtn.isChecked)
-                    callItemClickListener(option._id)
+                    callOptionClickListener(option._id)
                 }
 
             }
@@ -92,19 +100,17 @@ class BaedalOptAdapter(val context: Context, val options: List<Option>, val minO
             binding.tvPrice.text = "${dec.format(option.price)}원"
         }
 
-        fun callItemClickListener(optionId: String) {
-            if (checkBtn.isChecked) {
-                count += 1
-            } else {
-                count -= 1
-            }
+        fun callOptionClickListener(optionId: String) {
+            if (checkBtn.isChecked) count += 1
+            else count -= 1
+
 
             if (count > maxOrderableQuantity) {
                 checkBtn.setChecked(false)
                 count -= 1
                 Toast.makeText(context, "최대 ${maxOrderableQuantity}개까지 선택 가능합니다.", Toast.LENGTH_SHORT).show()
             } else {
-                itemClickListener.onClick(isRadio, optionId, checkBtn.isChecked)
+                optionClickListener.onOptionClick(isRadio, optionId, checkBtn.isChecked)
             }
         }
     }

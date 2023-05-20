@@ -1,5 +1,7 @@
 package com.watso.app.fragmentAccount
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -8,19 +10,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import com.watso.app.API.*
-import com.watso.app.LoopingDialog
+import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
-import com.watso.app.R
 import com.watso.app.databinding.FragUpdateAccountBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 class FragmentUpdateAccount :Fragment() {
+    val TAG = "FragUpdateAccount"
+    lateinit var AC: ActivityController
     var taget = ""
     var checkedPassword = ""
 
@@ -37,6 +41,7 @@ class FragmentUpdateAccount :Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragUpdateAccountBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         binding.btnPrevious.setOnClickListener { onBackPressed() }
 
@@ -72,33 +77,44 @@ class FragmentUpdateAccount :Fragment() {
         binding.btnUpdatePassword.setOnClickListener {
             val currentPassword = binding.etCurrentPassword.text.toString()
             if (currentPassword != "" && checkedPassword != "") {
-                val updatePassword = UpdatePassword(currentPassword, checkedPassword)
-                val loopingDialog = looping()
-                api.updatePassword(updatePassword).enqueue(object : Callback<VoidResponse> {
-                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 204) {
-                            if (response.code() == 204) {
-                                makeToast("비밀번호가 변경되었습니다.")
-                                setFrag(FragmentAccount())
-                            } else {
-                                Log.e("FragUpdateAccount password", response.toString())
-                                makeToast("다시 시도해 주세요.")
-                            }
-                        } else {
-                            Log.e("FragUpdateAccount password", response.toString())
-                            makeToast("다시 시도해 주세요.")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("FragUpdateAccount password", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                })
+                if (verifyInput("password", checkedPassword)) {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("비밀번호 변경")
+                        .setMessage("비밀번호를 변경하시겠습니까?")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                            updatePassword(currentPassword) })
+                        .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
+                }
             }
         }
+    }
+
+    fun updatePassword(currentPassword: String) {
+        val updatePassword = UpdatePassword(currentPassword, checkedPassword)
+        AC.showProgressBar()
+        api.updatePassword(updatePassword).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
+                if (response.code() == 204) {
+                    makeToast("비밀번호가 변경되었습니다.")
+                    setFrag(FragmentAccount())
+                } else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) { Log.e("$TAG[username check]", e.toString()) }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("FragUpdateAccount password", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun setLytNickname() {
@@ -122,60 +138,98 @@ class FragmentUpdateAccount :Fragment() {
         })
 
         binding.btnNicknameDuplicationCheck.setOnClickListener {
-            val loopingDialog = looping()
-            api.checkDuplication("nickname", binding.etNickname.text.toString()).enqueue(object : Callback<DuplicationCheckResult> {
-                override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
-                    looping(false, loopingDialog)
-                    if (response.code() == 200) {
-                        if (response.body()!!.isDuplicated) {
-                            binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
-                            binding.tvNicknameConfirm.setTextColor(Color.RED)
-                        } else {
-                            binding.tvNicknameConfirm.text = "사용 가능한 닉네임입니다."
-                            binding.tvNicknameConfirm.setTextColor(Color.BLACK)
-                            checkedNickname = binding.etNickname.text.toString()
-                        }
-                    } else {
-                        Log.e("FragUpdateAccount nicknameCheck", response.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                }
-
-                override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
-                    looping(false, loopingDialog)
-                    Log.e("FragUpdateAccount nicknameCheck", t.message.toString())
-                    makeToast("다시 시도해 주세요.")
-                }
-            })
-        }
-        binding.btnUpdateNickname.setOnClickListener {
-            if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
-                val loopingDialog = looping()
-                api.updateNickname(UpdateNickname(checkedNickname!!)).enqueue(object : Callback<VoidResponse> {
-                    override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
-                        if (response.code() == 204) {
-                            if (response.code() == 204) {
-                                makeToast("닉네임이 변경되었습니다.")
-                                setFrag(FragmentAccount())
+            if (verifyInput("nickname", binding.etNickname.text.toString())) {
+                AC.showProgressBar()
+                api.checkDuplication("nickname", binding.etNickname.text.toString()).enqueue(object : Callback<DuplicationCheckResult> {
+                    override fun onResponse(call: Call<DuplicationCheckResult>, response: Response<DuplicationCheckResult>) {
+                        AC.hideProgressBar()
+                        if (response.code() == 200) {
+                            if (response.body()!!.isDuplicated) {
+                                binding.tvNicknameConfirm.text = "사용 불가능한 닉네임입니다."
+                                binding.tvNicknameConfirm.setTextColor(Color.RED)
                             } else {
-                                Log.e("FragUpdateAccount nickname", response.toString())
-                                makeToast("다시 시도해 주세요.")
+                                binding.tvNicknameConfirm.text = "사용 가능한 닉네임입니다."
+                                binding.tvNicknameConfirm.setTextColor(Color.BLACK)
+                                checkedNickname = binding.etNickname.text.toString()
                             }
                         } else {
-                            Log.e("FragUpdateAccount nickname", response.toString())
+                            Log.e("FragUpdateAccount nicknameCheck", response.toString())
                             makeToast("다시 시도해 주세요.")
                         }
                     }
 
-                    override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
-                        Log.e("FragUpdateAccount nickname", t.message.toString())
+                    override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
+                        AC.hideProgressBar()
+                        Log.e("FragUpdateAccount nicknameCheck", t.message.toString())
                         makeToast("다시 시도해 주세요.")
                     }
                 })
             }
         }
+        binding.btnUpdateNickname.setOnClickListener {
+            if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("닉네임 변경")
+                    .setMessage("닉네임을 변경하시겠습니까?")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        updateNickname(checkedNickname!!) })
+                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
+            }
+        }
+    }
+
+    fun updateNickname(checkedNickname: String) {
+        AC.showProgressBar()
+        api.updateNickname(UpdateNickname(checkedNickname)).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
+                if (response.code() == 204) {
+                    makeToast("닉네임이 변경되었습니다.")
+                    refreshToken()
+                } else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[nickname check]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) { Log.e("$TAG[nickname check]", e.toString()) }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("$TAG[nickname check]", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
+    }
+    fun refreshToken() {
+        AC.showProgressBar()
+        api.refreshToken().enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
+                setFrag(FragmentAccount())
+                if (response.code() == 200)
+                    Log.d("$TAG[refreshToken]토큰 재발급 완료", "")
+                else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        Log.d("$TAG[refreshToken]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e:Exception) {
+                        Log.e("$TAG[refreshToken]", e.toString())
+                        Log.d("$TAG[refreshToken]", response.errorBody()?.string().toString())
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("$TAG[refreshToken]", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun setLytAccountNum() {
@@ -183,7 +237,7 @@ class FragmentUpdateAccount :Fragment() {
         binding.lytNickname.visibility = View.GONE
         binding.lytPassword.visibility = View.GONE
 
-        val banks = resources.getStringArray(R.array.banks)
+        /*val banks = resources.getStringArray(R.array.banks)
         var bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
@@ -199,32 +253,49 @@ class FragmentUpdateAccount :Fragment() {
             ) {
                 bankName = (banks[position])
             }
-        }
+        }*/
 
         binding.btnUpdateAccountNum.setOnClickListener {
-            val accountNumber = UpdateAccountNumber(binding.etAccountNum.text.toString() + " " + bankName)
-            val loopingDialog = looping()
-            api.updateAccountNumber(accountNumber).enqueue(object : Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
-                    if (response.code() == 204) {
-                        makeToast("계좌 정보가 변경되었습니다.")
-                        setFrag(FragmentAccount())
-                    } else {
-                        Log.e("FragUpdateAccount AccountNum", response.toString())
-                        makeToast("다시 시도해 주세요.")
-                    }
-                }
-
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
-                    Log.e("FragUpdateAccount AccountNum", t.message.toString())
-                    makeToast("다시 시도해 주세요.")
-                }
-            })
+            if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("계좌번호 변경")
+                    .setMessage("계좌번호를 변경하시겠습니까?")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        updateAccountNum() })
+                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
+            }
         }
     }
 
+    fun updateAccountNum() {
+        val accountNumber = UpdateAccountNumber(binding.etAccountNum.text.toString())
+        AC.showProgressBar()
+        api.updateAccountNumber(accountNumber).enqueue(object : Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
+                if (response.code() == 204) {
+                    makeToast("계좌 정보가 변경되었습니다.")
+                    setFrag(FragmentAccount())
+                } else {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[updateAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e: Exception) {
+                        Log.e("$TAG[updateAccountNum]", e.toString())
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("FragUpdateAccount AccountNum", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
+    }
 
     fun onChangedPassword() {
         if (binding.etNewPassword.text.toString() != "" && binding.etPasswordConfirm.text.toString() != "") {
@@ -243,9 +314,17 @@ class FragmentUpdateAccount :Fragment() {
         }
     }
 
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
+    fun verifyInput(case: String, text: String): Boolean {
+        val message = VerifyInputFormat().verifyInput(case, text)
+        return if (message == "") {
+            true
+        } else {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(message)
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                .show()
+            false
+        }
     }
 
     fun makeToast(message: String){

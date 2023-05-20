@@ -14,7 +14,7 @@ import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.LoginModel
 import com.watso.app.API.VoidResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragLoginBinding
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
@@ -26,6 +26,7 @@ import java.lang.Exception
 
 class FragmentLogin :Fragment() {
     val TAG = "FragLogin"
+    lateinit var AC: ActivityController
 
     private var mBinding: FragLoginBinding? = null
     private val binding get() = mBinding!!
@@ -34,6 +35,7 @@ class FragmentLogin :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragLoginBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
 
@@ -49,46 +51,50 @@ class FragmentLogin :Fragment() {
     fun refreshView() {
         /** 로그인 */
         binding.btnLogin.setOnClickListener {
-            val loopingDialog = looping()
-            val prefs = MainActivity.prefs
-            val reg = prefs.getString("registration", "")
-            api.login(LoginModel(binding.etUsername.text.toString(), binding.etPw.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
-                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
-                    if (response.code()==200) {
-                        val tokens = response.headers().get("Authentication").toString().split("/")
-                        val payload = decodeToken(tokens[0])
-                        val dUserId = JSONObject(payload).getString("user_id")
-                        val dNickname = JSONObject(payload).getString("nickname")
-
-                        prefs.setString("accessToken", tokens[0])
-                        prefs.setString("refreshToken", tokens[1])
-                        prefs.setString("userId", dUserId)
-                        prefs.setString("nickname", dNickname)
-
-                        setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
-                    } else  {
-                        try {
-                            val errorBody = response.errorBody()?.string()
-                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            showAlert(errorResponse.msg)
-                            Log.d("$TAG[login]", errorResponse.msg)
-                        } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
-                    }
-                }
-
-                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
-                    Log.e("login Fragment - login", t.message.toString())
-                    makeToast("다시 시도해 주세요.")
-                }
-            })
+            val username = binding.etUsername.text.toString()
+            val password = binding.etPassword.text.toString()
+            if (verifyInput("username", username) && verifyInput("password", password)) login()
         }
 
-        binding.tvFindAccount.setOnClickListener {
-            setFrag(FragmentFindAccount())
-        }
+        binding.tvFindAccount.setOnClickListener { setFrag(FragmentFindAccount()) }
         binding.btnSignup.setOnClickListener { setFrag(FragmentSignUp()) }
+    }
+
+    fun login() {
+        val prefs = MainActivity.prefs
+        val reg = prefs.getString("registration", "")
+        AC.showProgressBar()
+        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                AC.hideProgressBar()
+                if (response.code()==200) {
+                    val tokens = response.headers().get("Authentication").toString().split("/")
+                    val payload = decodeToken(tokens[0])
+                    val dUserId = JSONObject(payload).getString("user_id")
+                    val dNickname = JSONObject(payload).getString("nickname")
+
+                    prefs.setString("accessToken", tokens[0])
+                    prefs.setString("refreshToken", tokens[1])
+                    prefs.setString("userId", dUserId)
+                    prefs.setString("nickname", dNickname)
+
+                    setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+                } else  {
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        showAlert(errorResponse.msg)
+                        Log.d("$TAG[login]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("login Fragment - login", t.message.toString())
+                makeToast("다시 시도해 주세요.")
+            }
+        })
     }
 
     fun showAlert(msg: String) {
@@ -98,9 +104,17 @@ class FragmentLogin :Fragment() {
         .show()
     }
 
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
+    fun verifyInput(case: String, text: String): Boolean {
+        val message = VerifyInputFormat().verifyInput(case, text)
+        return if (message == "") {
+            true
+        } else {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(message)
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                .show()
+            false
+        }
     }
 
     fun makeToast(message: String){

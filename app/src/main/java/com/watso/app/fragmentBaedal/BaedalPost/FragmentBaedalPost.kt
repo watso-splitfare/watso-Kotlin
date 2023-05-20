@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.LoopingDialog
+import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.R
 import com.watso.app.adapterHome.CommentAdapter
@@ -34,6 +34,8 @@ import java.util.*
 
 class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalPost"
+    lateinit var AC: ActivityController
+
     val prefs = MainActivity.prefs
     var isScrolled = false
     var infoHeight = 0
@@ -69,6 +71,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
 
         refreshView()
         binding.lytContent.setOnTouchListener(this)
@@ -114,10 +117,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getPostInfo() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getBaedalPost(postId!!).enqueue(object : Callback<BaedalPost> {
             override fun onResponse(call: Call<BaedalPost>, response: Response<BaedalPost>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     baedalPost = response.body()!!
                     Log.d(TAG+"baedalPost", baedalPost.toString())
@@ -127,14 +130,14 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getPostInfo]", errorResponse.msg)
+                        Log.d("$TAG[getPostInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getPostInfo]", e.toString())}
                     onBackPressed()
                 }
             }
 
             override fun onFailure(call: Call<BaedalPost>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedal Post Fragment - getBaedalPost", t.message.toString())
                 makeToast("게시글 조회 실패")
                 onBackPressed()
@@ -145,10 +148,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     fun getAccountNum() {
         if (isMember && baedalPost.status == "delivered") {
             binding.lytAccountNumber.visibility = View.VISIBLE
-            val loopingDialog = looping()
+            AC.showProgressBar()
             api.getAccountNumber(postId!!).enqueue(object : Callback<AccountNumber> {
                 override fun onResponse(call: Call<AccountNumber>, response: Response<AccountNumber>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 200) {
                         binding.tvAccountNumber.text = response.body()!!.AccountNumber
                         binding.btnCopyAccountNum.setOnClickListener {
@@ -159,14 +162,14 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[getAccountNum]", errorResponse.msg)
+                            Log.d("$TAG[getAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
                         finally { binding.tvAccountNumber.text = "계좌번호를 조회할 수 없습니다."  }
                     }
                 }
 
                 override fun onFailure(call: Call<AccountNumber>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     binding.tvAccountNumber.text = "계좌번호를 조회할 수 없습니다."
                     Log.e("baedal Post Fragment - getComments", t.message.toString())
                     makeToast("댓글 조회 실패")
@@ -178,10 +181,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     fun getComments() {
         cancelReply()
         binding.etComment.setText("")
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.getComments(postId!!).enqueue(object : Callback<GetComments> {
             override fun onResponse(call: Call<GetComments>, response: Response<GetComments>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 200) {
                     Log.d("FragBaedalPost getComments", response.toString())
                     Log.d("FragBaedalPost getComments body", response.body()!!.toString())
@@ -193,13 +196,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[getComments]", errorResponse.msg)
+                        Log.d("$TAG[getComments]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
                 }
             }
 
             override fun onFailure(call: Call<GetComments>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("baedal Post Fragment - getComments", t.message.toString())
                 makeToast("댓글 조회 실패")
             }
@@ -250,7 +253,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         "isUpdating" to "true",
                         "postId" to postId!!,
                         "orderTime" to baedalPost.orderTime,
-                        "storeName" to store.name,
+                        "storeInfo" to gson.toJson(store),
                         "place" to baedalPost.place,
                         "minMember" to if (baedalPost.minMember != null) baedalPost.minMember.toString() else "0",
                         "maxMember" to if (baedalPost.maxMember != null )baedalPost.maxMember.toString() else "0",
@@ -308,10 +311,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun deletePost() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.deleteBaedalPost(postId!!).enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 204) {
                     Log.d("FragBaedalPost-deletePost", "성공")
                     val bundle = bundleOf("success" to true)
@@ -323,12 +326,12 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[deletePost]", errorResponse.msg)
+                        Log.d("$TAG[deletePost]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[deletePost]", e.toString())}
                 }
             }
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.d("log",t.message.toString())
                 Log.d("log","fail")
                 makeToast("다시 시도해주세요.")
@@ -504,11 +507,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun setStatus(status: String) {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.setBaedalStatus(postId!!, BaedalStatus(status)).enqueue(object : Callback<VoidResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 204) {
                     makeToast("상태가 변경되었습니다.")
                     getPostInfo()
@@ -517,13 +520,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[setStatus]", errorResponse.msg)
+                        Log.d("$TAG[setStatus]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[setStatus]", e.toString())}
                 }
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("FragBaedalPost setStatus", t.message.toString())
                 makeToast("상태 변경에 실패했습니다.")
             }
@@ -532,25 +535,26 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
     fun updateFee(fee: Int, completed: Boolean=false) {
         if (fee != baedalPost.fee) {
-            val loopingDialog = looping()
+            AC.showProgressBar()
             api.updateBaedalFee(postId!!, Fee(fee)).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         if (response.code() == 204) {
                             makeToast("배달비가 변경되었습니다.")
                             if (completed) setStatus("delivered")
+                            else getPostInfo()
                         } else {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                                 makeToast(errorResponse.msg)
-                                Log.d("$TAG[updateFee]", errorResponse.msg)
+                                Log.d("$TAG[updateFee]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) { Log.e("$TAG[updateFee]", e.toString())}
                         }
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                        looping(false, loopingDialog)
+                        AC.hideProgressBar()
                         Log.e(TAG+"updateFee", t.message.toString())
                         makeToast("다시시도해주세요.")
                     }
@@ -575,11 +579,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun deleteOrders() {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         api.deleteOrders(postId!!).enqueue(object : Callback<VoidResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 if (response.code() == 204) {
                     makeToast("주문이 취소되었습니다.")
                     getPostInfo()
@@ -588,13 +592,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                         makeToast(errorResponse.msg)
-                        Log.d("$TAG[deleteOrders]", errorResponse.msg)
+                        Log.d("$TAG[deleteOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[deleteOrders]", e.toString())}
                 }
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                looping(false, loopingDialog)
+                AC.hideProgressBar()
                 Log.e("FragBaedalPost deleteOrders", t.message.toString())
                 makeToast("주문 취소 실패")
             }
@@ -644,11 +648,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun postComment(content: String, parentId: String? = null) {
-        val loopingDialog = looping()
+        AC.showProgressBar()
         if (parentId == null) {
             api.postComment(postId!!, PostComment(content)).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 204) {
                         Log.d("FragBaedalPost postComment", "성공")
                         requestNotiPermission()
@@ -658,7 +662,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[postComment]", errorResponse.msg)
+                            Log.d("$TAG[postComment]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) {
                             Log.e("$TAG[postComment]", e.toString())
                             Log.d("$TAG[postComment]", response.errorBody()?.string().toString())
@@ -667,7 +671,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 }
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("[FAIL][POST][postComment]", t.message.toString())
                     makeToast("다시 시도해주세요.")
                 }
@@ -676,7 +680,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         } else {
             api.postSubComment(postId!!, parentId, PostComment(content)).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     if (response.code() == 204) {
                         Log.d("FragBaedalPost postComment", "성공")
                         getComments()
@@ -685,13 +689,13 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             makeToast(errorResponse.msg)
-                            Log.d("$TAG[postSubComment]", errorResponse.msg)
+                            Log.d("$TAG[postSubComment]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) { Log.e("$TAG[postSubComment]", e.toString())}
                     }
                 }
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                    looping(false, loopingDialog)
+                    AC.hideProgressBar()
                     Log.e("[FAIL][POST][postSubComment]", t.message.toString())
                     makeToast("다시 시도해주세요.")
                 }
@@ -714,11 +718,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         Log.d("$TAG[하이드 소프트 인풋]", "")
         val mActivity = activity as MainActivity
         mActivity.hideSoftInput()
-    }
-
-    fun looping(loopStart: Boolean = true, loopingDialog: LoopingDialog? = null): LoopingDialog? {
-        val mActivity = activity as MainActivity
-        return mActivity.looping(loopStart, loopingDialog)
     }
 
     fun copyToClipboard(label:String="", content: String) {
