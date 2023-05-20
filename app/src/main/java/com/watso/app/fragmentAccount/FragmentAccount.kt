@@ -2,12 +2,14 @@ package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.UserInfo
@@ -91,6 +93,10 @@ class FragmentAccount :Fragment() {
 
         bindSWNotificationPermission()
 
+        binding.lytOss.setOnClickListener {
+            startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
+            OssLicensesMenuActivity.setActivityTitle("오픈소스 라이선스")
+        }
         binding.lytLogout.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("로그아웃하기")

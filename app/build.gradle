@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id "com.google.android.gms.oss-licenses-plugin"
 }
 
 android {
@@ -37,6 +38,9 @@ android {
         viewBinding true
         dataBinding true
     }
+    lintOptions {
+        baseline(file("lint-baseline.xml"))
+    }
 }
 
 dependencies {
@@ -58,5 +62,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:29.1.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation "com.google.android.gms:play-services-oss-licenses:17.0.1"
     implementation 'com.github.bumptech.glide:glide:4.12.0' // 이미지로딩 라이브러리
 }

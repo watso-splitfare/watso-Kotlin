@@ -14,6 +14,9 @@
 .cxx
 local.properties
 
+app/lint-baseline.xml
+app/release/output-metadata.json
+
 ### Android ###
 # Gradle files
 .gradle/
