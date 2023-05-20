@@ -168,10 +168,12 @@ class FragmentBaedal :Fragment() {
             if (isJoinedTable) {
                 joinedAdapter.setData(tables)
                 binding.lytJoinedTable.visibility = View.VISIBLE
+                joined = true
             } else {
                 joinableAdapter.setData(tables)
                 binding.lytJoinableTableHeader.visibility = View.VISIBLE
                 binding.rvBaedalListJoinable.visibility = View.VISIBLE
+                joinable = true
             }
         } else {
             if (isJoinedTable) {
