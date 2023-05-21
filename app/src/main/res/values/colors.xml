@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    <color name="purple_200">#FFBB86FC</color>-->
-<!--    <color name="purple_500">#FF6200EE</color>-->
-<!--    <color name="purple_700">#FF3700B3</color>-->
-<!--    <color name="teal_200">#FF03DAC5</color>-->
-<!--    <color name="teal_700">#FF018786</color>-->
     <color name="black">#FF000000</color>
-<!--    <color name="white">#FFFFFFFF</color>-->
     <color name="background">#FFFFFF</color>
-<!--    <color name="complete">#FF9800</color>-->
-<!--    <color name="baedal">#3f51b5</color>-->
-<!--    <color name="taxi">#FAF2B0</color>-->
-
     <color name="primary">#FF7700</color>
     <color name="secondery">#FFF9EE</color>
     <color name="gray">#636363</color>
@@ -21,12 +11,4 @@
     <color name="red">#FF4747</color>
     <color name="green">#4caf50</color>
     <color name="green_stroke">#428046</color>
-<!--    <color name="primary_stroke">#FF3C00</color>-->
-
-<!--    <color name="baedal_status_open_pressed">#B6EABC</color>-->
-<!--    <color name="baedal_status_open_pressed_stroke">#428046</color>-->
-<!--    <color name="baedal_status_closed_pressed">#EDBEA5</color>-->
-<!--    <color name="baedal_status_closed_pressed_stroke">#F3A579</color>-->
-<!--    <color name="baedal_status_released_stroke">#98A399</color>-->
-<!--    <color name="baedal_status_released_text">#68BF6D</color>-->
 </resources>
