@@ -179,7 +179,7 @@ class FragmentBaedal :Fragment() {
                 joined = true
             } else {
                 joinableAdapter.setData(tables)
-                binding.lytJoinableTableHeader.visibility = View.VISIBLE
+                binding.divJoinable.visibility = View.VISIBLE
                 binding.rvBaedalListJoinable.visibility = View.VISIBLE
                 joinable = true
             }
@@ -188,7 +188,7 @@ class FragmentBaedal :Fragment() {
                 binding.lytJoinedTable.visibility = View.GONE
                 joined = false
             } else {
-                binding.lytJoinableTableHeader.visibility = View.GONE
+                binding.divJoinable.visibility = View.GONE
                 binding.rvBaedalListJoinable.visibility = View.GONE
                 joinable = false
             }

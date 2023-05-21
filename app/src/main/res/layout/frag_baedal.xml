@@ -115,7 +115,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:layout_marginTop="16dp"
-                            android:layout_marginBottom="8dp"
+                            android:layout_marginBottom="16dp"
                             android:text="내 모임"
                             android:textColor="@color/black"
                             android:textSize="16sp"
@@ -172,7 +172,7 @@
                             android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintBottom_toTopOf="@+id/div_joinable"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -183,7 +183,7 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="4dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintBottom_toTopOf="@+id/div_joinable"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
@@ -198,19 +198,9 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/lyt_joinable_table_header"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout44"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
 
                         <View
-                            android:id="@+id/divider46"
+                            android:id="@+id/div_joinable"
                             android:layout_width="match_parent"
                             android:layout_height="4dp"
                             android:background="?android:attr/listDivider"
