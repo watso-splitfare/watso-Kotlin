@@ -1,5 +1,6 @@
 package com.watso.app.fragmentTaxi
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ import java.util.*
 
 class FragmentTaxiPost :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var postId = ""
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
@@ -36,6 +38,11 @@ class FragmentTaxiPost :Fragment() {
     val api= API.create()
     var member = 0
     lateinit var taxiPost:TaxiPostModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,7 +137,7 @@ class FragmentTaxiPost :Fragment() {
 
                     //binding.tvCommentCount.text = "댓글 ${content.comment.size}"
                     binding.rvComment.layoutManager =
-                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                        LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
                     binding.rvComment.setHasFixedSize(true)
                     //binding.rvComment.adapter = CommentAdapter(content.comment)
 

@@ -1,6 +1,7 @@
 package com.watso.app.fragmentBaedal.BaedalHistory
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,11 +24,18 @@ import retrofit2.Response
 
 class FragmentBaedalHistory :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     var isTouched = false
 
     private var mBinding: FragBaedalHistoryBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -83,7 +91,7 @@ class FragmentBaedalHistory :Fragment() {
         val adapter = HistoryAdapter(baedalPosts)
 
         binding.rvBaedalListJoined.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalListJoined.setHasFixedSize(true)
         binding.rvBaedalListJoined.adapter = adapter
 

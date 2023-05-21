@@ -2,6 +2,7 @@ package com.watso.app.fragmentBaedal.Baedal
 
 import android.R
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -32,6 +33,8 @@ import java.time.format.DateTimeFormatter
 class FragmentBaedal :Fragment() {
     val TAG = "FragBaedal"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     var viewClickAble = true    // 포스트 중복 클릭 방지
 
     lateinit var joinedAdapter: TableAdapter
@@ -43,6 +46,11 @@ class FragmentBaedal :Fragment() {
     private var mBinding: FragBaedalBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -94,12 +102,12 @@ class FragmentBaedal :Fragment() {
         })
 
         binding.rvBaedalListJoined.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalListJoined.setHasFixedSize(true)
         binding.rvBaedalListJoined.adapter = joinedAdapter
 
         binding.rvBaedalListJoinable.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalListJoinable.setHasFixedSize(true)
         binding.rvBaedalListJoinable.adapter = joinableAdapter
     }
@@ -194,7 +202,7 @@ class FragmentBaedal :Fragment() {
 
     fun setSpiner() {
         val places = listOf("모두", "생자대", "기숙사")
-        val placeSpinerAdapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, places)
+        val placeSpinerAdapter = ArrayAdapter(fragmentContext, R.layout.simple_list_item_1, places)
         binding.spnFilter.adapter = placeSpinerAdapter
         binding.spnFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {

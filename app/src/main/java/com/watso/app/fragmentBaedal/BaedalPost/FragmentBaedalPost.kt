@@ -1,6 +1,7 @@
 package com.watso.app.fragmentBaedal.BaedalPost
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Build
@@ -35,6 +36,7 @@ import java.util.*
 class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalPost"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     val prefs = MainActivity.prefs
     var isScrolled = false
@@ -61,6 +63,11 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     val api= API.create()
     val gson = Gson()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -80,7 +87,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
         return binding.root
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -234,7 +240,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
         /** 게시글 삭제 버튼 */
         binding.tvDelete.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("게시글 삭제하기")
                 .setMessage("게시글을 삭제하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -245,7 +251,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
         /** 게시글 수정 버튼 */
         binding.tvUpdate.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("게시글 수정하기")
                 .setMessage("게시글을 수정하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -340,7 +346,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun onUpdateFee() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(fragmentContext)
         val builderItem = EtBuilder()
         builderItem.init()
 
@@ -459,7 +465,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
     fun btnOrder() {
         if (isMember) {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("주문 취소하기")
                 .setMessage("주문을 취소하시겠습니까?\n다시 참가하기 위해선 주문을 다시 작성해야합니다.")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -473,7 +479,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 prefs.setString("minMember", baedalPost.minMember.toString())
                 setFrag(FragmentBaedalMenu(), mapOf("postId" to postId!!, "storeId" to baedalPost.store._id))
             } else {
-                val builder = AlertDialog.Builder(requireContext())
+                val builder = AlertDialog.Builder(fragmentContext)
                 builder.setTitle("인원 마감")
                     .setMessage("참여 가능한 최대 인원에 도달했습니다.\n대표자에게 문의하세요")
                     .setPositiveButton("확인", DialogInterface.OnClickListener{_, _ ->})
@@ -482,7 +488,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun btnComplete() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(fragmentContext)
         if (baedalPost.status == "closed") {
             builder.setTitle("주문 완료")
                 .setMessage("주문을 완료하셨나요?\n가게에 주문을 접수한 뒤에 확인버튼을 눌러주세요!")
@@ -612,9 +618,9 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         }
         binding.tvCommentCount.text = "댓글 $count"
         binding.rvComment.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvComment.setHasFixedSize(true)
-        val adapter = CommentAdapter(requireContext(), comments, userId)
+        val adapter = CommentAdapter(fragmentContext, comments, userId)
         binding.rvComment.adapter = adapter
 
         adapter.setDeleteListener(object: CommentAdapter.OnDeleteListener {

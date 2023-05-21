@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
@@ -25,12 +26,19 @@ import java.lang.Exception
 class FragmentUpdateAccount :Fragment() {
     val TAG = "FragUpdateAccount"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     var taget = ""
     var checkedPassword = ""
 
     private var mBinding: FragUpdateAccountBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +86,7 @@ class FragmentUpdateAccount :Fragment() {
             val currentPassword = binding.etCurrentPassword.text.toString()
             if (currentPassword != "" && checkedPassword != "") {
                 if (verifyInput("password", checkedPassword)) {
-                    val builder = AlertDialog.Builder(requireContext())
+                    val builder = AlertDialog.Builder(fragmentContext)
                     builder.setTitle("비밀번호 변경")
                         .setMessage("비밀번호를 변경하시겠습니까?")
                         .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -168,7 +176,7 @@ class FragmentUpdateAccount :Fragment() {
         }
         binding.btnUpdateNickname.setOnClickListener {
             if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
-                val builder = AlertDialog.Builder(requireContext())
+                val builder = AlertDialog.Builder(fragmentContext)
                 builder.setTitle("닉네임 변경")
                     .setMessage("닉네임을 변경하시겠습니까?")
                     .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -241,7 +249,7 @@ class FragmentUpdateAccount :Fragment() {
         var bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.banks, android.R.layout.simple_spinner_item)
+            fragmentContext, R.array.banks, android.R.layout.simple_spinner_item)
         binding.spnAccountNum.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) { }
 
@@ -257,7 +265,7 @@ class FragmentUpdateAccount :Fragment() {
 
         binding.btnUpdateAccountNum.setOnClickListener {
             if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
-                val builder = AlertDialog.Builder(requireContext())
+                val builder = AlertDialog.Builder(fragmentContext)
                 builder.setTitle("계좌번호 변경")
                     .setMessage("계좌번호를 변경하시겠습니까?")
                     .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -319,7 +327,7 @@ class FragmentUpdateAccount :Fragment() {
         return if (message == "") {
             true
         } else {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()

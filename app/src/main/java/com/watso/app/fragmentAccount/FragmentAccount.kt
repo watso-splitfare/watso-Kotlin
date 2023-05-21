@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -25,11 +26,18 @@ import java.lang.Exception
 class FragmentAccount :Fragment() {
     private val TAG = "FragAccount"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     lateinit var userInfo: UserInfo
     private var mBinding: FragAccountBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
     val prefs = MainActivity.prefs
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
@@ -39,11 +47,6 @@ class FragmentAccount :Fragment() {
         refreshView()
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        mBinding = null
-        super.onDestroyView()
     }
 
     fun getUserInfo() {
@@ -94,11 +97,11 @@ class FragmentAccount :Fragment() {
         bindSWNotificationPermission()
 
         binding.lytOss.setOnClickListener {
-            startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
+            startActivity(Intent(fragmentContext, OssLicensesMenuActivity::class.java))
             OssLicensesMenuActivity.setActivityTitle("오픈소스 라이선스")
         }
         binding.lytLogout.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("로그아웃하기")
                 .setMessage("로그아웃 하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> logout() })
@@ -106,7 +109,7 @@ class FragmentAccount :Fragment() {
             builder.show()
         }
         binding.lytDeleteAccount.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("회원 탈퇴하기")
                 .setMessage("탈퇴 하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->

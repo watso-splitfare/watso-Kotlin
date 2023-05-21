@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalOrders
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ import java.text.DecimalFormat
 class FragmentBaedalOrders :Fragment() {
     val TAG = "FragBaedalOrders"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
@@ -42,6 +44,11 @@ class FragmentBaedalOrders :Fragment() {
     private var mBinding: FragBaedalOrdersBinding? = null
     private val binding get() = mBinding!!
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -50,7 +57,7 @@ class FragmentBaedalOrders :Fragment() {
         }
 
         userOrders = mutableListOf<UserOrder>()
-        adapter = BaedalUserOrderAdapter(requireContext(), userOrders, isMyorder)
+        adapter = BaedalUserOrderAdapter(fragmentContext, userOrders, isMyorder)
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -130,7 +137,7 @@ class FragmentBaedalOrders :Fragment() {
     fun mappingAdapter() {
 
         binding.rvOrders.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvOrders.setHasFixedSize(true)
         binding.rvOrders.adapter = adapter
     }

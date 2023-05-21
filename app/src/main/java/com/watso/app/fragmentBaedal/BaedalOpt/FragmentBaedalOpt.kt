@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalOpt
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ import java.text.DecimalFormat
 class FragmentBaedalOpt :Fragment() {
     val TAG="FragBaedalOpt"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var postId = ""
     var menuId = ""
@@ -48,6 +50,11 @@ class FragmentBaedalOpt :Fragment() {
     val api= API.create()
     val dec = DecimalFormat("#,###")
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -70,10 +77,10 @@ class FragmentBaedalOpt :Fragment() {
 
     fun setAdapter() {
         binding.rvOptionGroup.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvOptionGroup.setHasFixedSize(true)
 
-        adapter = BaedalOptGroupAdapter(requireContext())
+        adapter = BaedalOptGroupAdapter(fragmentContext)
 
         adapter.setGroupOptClickListener(object: BaedalOptGroupAdapter.OnGroupOptClickListener {
             override fun onClick(groupId: String, isRadio: Boolean, optionId: String, isChecked: Boolean) {

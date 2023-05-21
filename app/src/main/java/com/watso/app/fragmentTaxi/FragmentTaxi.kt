@@ -1,5 +1,6 @@
 package com.watso.app.fragmentTaxi
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,9 +25,16 @@ import java.time.LocalDateTime
 
 class FragmentTaxi :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     private var mBinding: FragTaxiBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -85,10 +93,10 @@ class FragmentTaxi :Fragment() {
             posts[idx].rows.add(TaxiTableRow(
                 post._id, post.depart_name, post.dest_name, LocalDateTime.parse(post.depart_time), post.join_users.size))
         }
-        binding.rvTaxiTable.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvTaxiTable.layoutManager = LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvTaxiTable.setHasFixedSize(true)
 
-        val adapter = TaxiTableAdapter(requireContext(), posts)
+        val adapter = TaxiTableAdapter(fragmentContext, posts)
         binding.rvTaxiTable.adapter = adapter
         adapter.addListener(object: TaxiTableAdapter.OnItemClickListener{
             override fun onClick(postId: String) {

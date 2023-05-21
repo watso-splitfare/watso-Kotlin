@@ -3,6 +3,7 @@ package com.watso.app.fragmentBaedal.BaedalAdd
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -38,6 +39,7 @@ import java.util.*
 class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     val TAG = "FragBaedalAdd"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var isScrolled = false
 
@@ -66,6 +68,11 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     val gson = Gson()
     val api = API.create()
     var decDt = DecimalFormat("00")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,7 +124,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         binding.lytTime.setOnClickListener { showCalendar() }
 
         val places = listOf("생자대", "기숙사")
-        val placeSpinerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, places)
+        val placeSpinerAdapter = ArrayAdapter(fragmentContext, android.R.layout.simple_list_item_1, places)
         binding.spnPlace.adapter = placeSpinerAdapter
         binding.etMinMember.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) { onMemberChanged() }
@@ -163,7 +170,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             run {
                 var dateString = "${year}-${decDt.format(month + 1)}-${decDt.format(dayOfMonth)}T"
-                val timePicker = DialogTimePicker(requireContext(), object: DialogTimePicker.TimePickerClickListener {
+                val timePicker = DialogTimePicker(fragmentContext, object: DialogTimePicker.TimePickerClickListener {
                     override fun onPositiveClick(hour: Int, minute: Int) {
                         var timeString = "${decDt.format(hour)}:${decDt.format(minute)}:00"
                         orderTime = dateString+timeString
@@ -183,7 +190,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
             }
         }
 
-        val dpd = DatePickerDialog(requireContext(), dateSetListener,
+        val dpd = DatePickerDialog(fragmentContext, dateSetListener,
             orderTimeObj.year, orderTimeObj.monthValue-1, orderTimeObj.dayOfMonth)
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000
         dpd.datePicker.maxDate = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7
@@ -210,7 +217,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                         storeFees.add(it.fee)
                     }
                     storeName = storeNames[0]
-                    val searchmethod = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, storeNames)
+                    val searchmethod = ArrayAdapter(fragmentContext, android.R.layout.simple_spinner_item, storeNames)
 
                     searchmethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     binding.spnStore.setTitle("")
@@ -286,7 +293,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     @RequiresApi(Build.VERSION_CODES.O)
     fun btnCompletePostInfo() {
         if (!isPostAbleTime()) {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("게시글 작성 불가")
                 .setMessage("주문은 현재시간부터 10분 이후로 등록 가능합니다.")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })

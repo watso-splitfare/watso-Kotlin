@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalMenu
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -25,6 +26,7 @@ import java.text.DecimalFormat
 class FragmentBaedalMenu :Fragment() {
     val TAG = "FragBaedalMenu"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var postId = ""
     var storeId = "0"
@@ -39,6 +41,11 @@ class FragmentBaedalMenu :Fragment() {
     val api= API.create()
     val gson = Gson()
     val dec = DecimalFormat("#,###")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +78,7 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun setAdapter() {
-        adapter = BaedalMenuSectionAdapter(requireContext())
+        adapter = BaedalMenuSectionAdapter(fragmentContext)
 
         /** 이중 어댑터안의 메뉴 이름을 선택할 경우 해당 메뉴의 옵션을 보여주는 프래그먼트로 이동 */
         adapter.setSecMenuClickListener(object : BaedalMenuSectionAdapter.OnSecMenuClickListener {
@@ -90,7 +97,7 @@ class FragmentBaedalMenu :Fragment() {
             }
         })
         binding.rvMenuSection.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSection.setHasFixedSize(true)
         binding.rvMenuSection.adapter = adapter
     }

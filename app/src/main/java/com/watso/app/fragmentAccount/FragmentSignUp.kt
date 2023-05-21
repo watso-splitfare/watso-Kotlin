@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
@@ -29,6 +30,7 @@ import java.lang.Exception
 class FragmentSignUp :Fragment() {
     val TAG = "FragSignUp"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var remainingSeconds = 0
     var valifyTime = 300
@@ -53,6 +55,11 @@ class FragmentSignUp :Fragment() {
     var verifiedEmail = ""
     var authToken = ""
     var bankName = ""
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragSignUpBinding.inflate(inflater, container, false)
@@ -245,7 +252,7 @@ class FragmentSignUp :Fragment() {
         bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.banks, android.R.layout.simple_spinner_item)
+            fragmentContext, R.array.banks, android.R.layout.simple_spinner_item)
         binding.spnAccountNum.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) { }
 
@@ -305,7 +312,7 @@ class FragmentSignUp :Fragment() {
                         }
                     })
                 } else {
-                    val builder = AlertDialog.Builder(requireContext())
+                    val builder = AlertDialog.Builder(fragmentContext)
                     builder.setTitle("이메일 확인")
                         .setMessage("사용할 수 없는 메일 형식입니다.")
                         .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
@@ -397,7 +404,7 @@ class FragmentSignUp :Fragment() {
     }
 
     fun verifyInput(): Boolean {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(fragmentContext)
         if (verifyInput("realName", binding.etRealName.text.toString())) {
             if (verifyInput("password", binding.etPassword.text.toString())) {
                 if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
@@ -485,7 +492,7 @@ class FragmentSignUp :Fragment() {
         return if (message == "") {
             true
         } else {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()

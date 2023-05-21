@@ -2,6 +2,7 @@ package com.watso.app.fragmentTaxi
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -25,6 +26,7 @@ import java.util.*
 
 class FragmentTaxiAdd :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     var userId = MainActivity.prefs.getString("userId", "-1").toLong()
 
@@ -41,6 +43,10 @@ class FragmentTaxiAdd :Fragment() {
     val api = API.create()
     var decDt = DecimalFormat("00")
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -84,12 +90,12 @@ class FragmentTaxiAdd :Fragment() {
                         }
                     }
 
-                TimePickerDialog(requireContext(), timeSetListener,
+                TimePickerDialog(fragmentContext, timeSetListener,
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
             }
         }
 
-        val dpd = DatePickerDialog(requireContext(), dateSetListener,
+        val dpd = DatePickerDialog(fragmentContext, dateSetListener,
             cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000;
         dpd.show()

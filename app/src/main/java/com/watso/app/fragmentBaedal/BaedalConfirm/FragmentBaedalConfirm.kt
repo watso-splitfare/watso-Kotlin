@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalConfirm
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +29,8 @@ import java.text.DecimalFormat
 class FragmentBaedalConfirm :Fragment() {
     val TAG = "FragBaedalConfirm"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     var postId = ""
     lateinit var userOrder: UserOrder
     lateinit var storeInfo: StoreInfo
@@ -41,6 +44,11 @@ class FragmentBaedalConfirm :Fragment() {
     val gson = Gson()
     val prefs = MainActivity.prefs
     val dec = DecimalFormat("#,###")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,10 +93,10 @@ class FragmentBaedalConfirm :Fragment() {
 
         binding.tvStoreName.text = storeInfo.name
         binding.rvOrderList.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
-        val adapter = SelectedMenuAdapter(requireContext(), userOrder.orders)
+        val adapter = SelectedMenuAdapter(fragmentContext, userOrder.orders)
         binding.rvOrderList.adapter = adapter
 
         adapter.setItemClickListener(object: SelectedMenuAdapter.OnItemClickListener {

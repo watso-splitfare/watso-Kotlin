@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
@@ -27,10 +28,16 @@ import java.lang.Exception
 class FragmentLogin :Fragment() {
     val TAG = "FragLogin"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
     private var mBinding: FragLoginBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -98,7 +105,7 @@ class FragmentLogin :Fragment() {
     }
 
     fun showAlert(msg: String) {
-        AlertDialog.Builder(requireContext()).setTitle("로그인 실패")
+        AlertDialog.Builder(fragmentContext).setTitle("로그인 실패")
         .setMessage(msg)
         .setPositiveButton("확인", DialogInterface.OnClickListener { _, _ -> })
         .show()
@@ -109,7 +116,7 @@ class FragmentLogin :Fragment() {
         return if (message == "") {
             true
         } else {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()

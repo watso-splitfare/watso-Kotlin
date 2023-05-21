@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
@@ -25,12 +26,19 @@ import java.lang.Exception
 class FragmentFindAccount :Fragment() {
     val TAG = "FragFindAccount"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
     var forgot = "username"
     var isSendAble = true
 
     private var mBinding: FragFindAccountBinding? = null
     private val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragFindAccountBinding.inflate(inflater, container, false)
@@ -59,8 +67,8 @@ class FragmentFindAccount :Fragment() {
             binding.etUsername.setText("")
             binding.lytFindUsername.visibility = View.VISIBLE
             binding.lytFindPassword.visibility = View.GONE
-            binding.tvFindUsername.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-            binding.tvFindPassword.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            binding.tvFindUsername.setTextColor(ContextCompat.getColor(fragmentContext, R.color.primary))
+            binding.tvFindPassword.setTextColor(ContextCompat.getColor(fragmentContext, R.color.black))
         }
         binding.tvFindPassword.setOnClickListener {
             forgot = "password"
@@ -68,8 +76,8 @@ class FragmentFindAccount :Fragment() {
             binding.etEmailUsername.setText("")
             binding.lytFindUsername.visibility = View.GONE
             binding.lytFindPassword.visibility = View.VISIBLE
-            binding.tvFindUsername.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.tvFindPassword.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+            binding.tvFindUsername.setTextColor(ContextCompat.getColor(fragmentContext, R.color.black))
+            binding.tvFindPassword.setTextColor(ContextCompat.getColor(fragmentContext, R.color.primary))
         }
         binding.btnFindUsername.setOnClickListener { findUsername() }
         binding.btnIssueTempPassword.setOnClickListener { issueTmpePassword() }
@@ -146,7 +154,7 @@ class FragmentFindAccount :Fragment() {
     }
 
     fun verifyInput(case: String, text: String): Boolean {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(fragmentContext)
         if (verifyInputFormat(case, text)) {
             return true
         } else {
