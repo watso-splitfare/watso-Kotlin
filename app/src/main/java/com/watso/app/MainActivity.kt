@@ -41,20 +41,19 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        Log.d("[$TAG] onCreate", "")
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         prefs = PreferenceUtil(applicationContext)
         Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
         Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
 
-        super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         /** FCM설정, Token값 가져오기 */
         MyFirebaseMessagingService().getFirebaseToken()
-
-        /** DynamicLink 수신확인 */
-        initDynamicLink()
 
         if (prefs.getString("refreshToken", "") == "") {
             setFrag(FragmentLogin(), popBackStack=0, fragIndex=0)
@@ -68,6 +67,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("[$TAG] onResume", "")
         initDynamicLink()
     }
 
@@ -96,14 +96,15 @@ class MainActivity : AppCompatActivity() {
         val dynamicLinkData = intent.extras
         if (dynamicLinkData != null) {
             val postId = dynamicLinkData.getString("post_id")
-            if (postId != null)
+            if (postId != null) {
                 setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+                intent.removeExtra("post_id")
+            }
         }
     }
 
     fun requestNotiPermission() {
         if (prefs.getString("notificationPermission", "") == "") {
-            //val mActivity = activity as MainActivity
             val requestPermission = RequestPermission(this)
             requestPermission.requestNotificationPermission()
         }
