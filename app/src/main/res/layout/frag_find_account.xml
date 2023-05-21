@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/stroked_background_8_lightgray">
+            android:background="@drawable/stroked_white_8_lightgray">
 
             <TextView
                 android:id="@+id/tv_line_username"
@@ -206,7 +206,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/stroked_background_8_lightgray"
+            android:background="@drawable/stroked_white_8_lightgray"
             android:elevation="5dp">
 
             <TextView

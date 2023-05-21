@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/stroked_background_5_silver">
+                    android:background="@drawable/stroked_white_5_silver">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constraintLayout18"
@@ -151,7 +151,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:background="@drawable/stroked_background_5_silver">
+                    android:background="@drawable/stroked_white_5_silver">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constraintLayout44"
@@ -236,7 +236,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:background="@drawable/stroked_background_5_silver"
+                    android:background="@drawable/stroked_white_5_silver"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
