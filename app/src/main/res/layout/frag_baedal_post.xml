@@ -169,7 +169,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/baseline_phone_black_24" />
+                                    app:srcCompat="@drawable/baseline_phone_black_24"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -224,7 +226,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/outline_attach_money_black_24" />
+                                    app:srcCompat="@drawable/outline_attach_money_black_24"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -279,7 +283,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/delivery" />
+                                    app:srcCompat="@drawable/delivery"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -336,7 +342,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/baseline_info_outline_black_24" />
+                                    app:srcCompat="@drawable/baseline_info_outline_black_24"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -431,7 +439,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/outline_schedule_black_24" />
+                                    app:srcCompat="@drawable/outline_schedule_black_24"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -482,7 +492,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/round_group_black_24" />
+                                    app:srcCompat="@drawable/round_group_black_24"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -536,7 +548,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/delivery" />
+                                    app:srcCompat="@drawable/delivery"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint" />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="0dp"
@@ -614,7 +628,9 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/baseline_person_black_24" />
+                                    app:srcCompat="@drawable/baseline_person_black_24"
+                                    android:tint="@color/gray"
+                                    tools:ignore="UseAppTint"  />
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="wrap_content"
@@ -841,7 +857,9 @@
                             app:layout_constraintEnd_toStartOf="@+id/constraintLayout46"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/baseline_account_balance_black_24" />
+                            app:srcCompat="@drawable/baseline_account_balance_black_24"
+                            android:tint="@color/gray"
+                            tools:ignore="UseAppTint"  />
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/constraintLayout46"
@@ -883,7 +901,9 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toEndOf="@+id/tv_account_number"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@drawable/outline_content_copy_black_24" />
+                                app:srcCompat="@drawable/outline_content_copy_black_24"
+                                android:tint="@color/gray"
+                                tools:ignore="UseAppTint"  />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
