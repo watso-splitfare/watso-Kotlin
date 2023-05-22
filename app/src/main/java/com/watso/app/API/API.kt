@@ -88,22 +88,23 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                         if (targetUrl.contains(it)) isExpired = false
                     }
                     if (isExpired) {
-                        try {
-                            Log.d("API", "토큰 만료")
-                            response.close()
-                            Log.d("어세스 토큰 갱신 시도 access", accessToken)
-                            Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
-                            val refreshRequest = chain.request().newBuilder()
-                                .addHeader("Authorization", refreshToken)
-                                .method("GET", null)
-                                .url(BASE_URL + "auth/refresh")
-                                .build()
+                        Log.d("API", "토큰 만료")
+                        response.close()
+                        Log.d("어세스 토큰 갱신 시도 access", accessToken)
+                        Log.d("어세스 토큰 갱신 시도 refresh", refreshToken)
+                        val refreshRequest = chain.request().newBuilder()
+                            .addHeader("Authorization", refreshToken)
+                            .method("GET", null)
+                            .url(BASE_URL + "auth/refresh")
+                            .build()
 
-                            val refreshResponse = chain.proceed(refreshRequest)
-                            val token = refreshResponse.headers().get("Authentication").toString()
+                        val refreshResponse = chain.proceed(refreshRequest)
+                        if (refreshResponse.code() == 200) {
+                            val token =
+                                refreshResponse.headers().get("Authentication").toString()
                             prefs.setString("accessToken", token)
 
-                            Log.d("어세스 토큰 갱신 성공", token)
+                            Log.d("[$TAG]어세스 토큰 갱신 성공", token)
                             val newRequest = chain.request().newBuilder()
                                 .addHeader("Authorization", token)
                                 .build()
@@ -112,7 +113,10 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                             Log.d("API intercept newRes", newRes.toString())
                             Log.d("API intercept newRes.code", newRes.code().toString())
                             return newRes
-                        } catch (e: Exception) { }
+                        } else {
+                            Log.d("[$TAG]어세스 토큰 갱신 실패", "")
+                            return refreshResponse
+                        }
                     }
                 }
                 return response
