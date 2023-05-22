@@ -78,6 +78,9 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         AC = ActivityController(activity as MainActivity)
 
         userId = AC.getString("userId", "-1").toLong()
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("updatePost", this) {
+                requestKey, bundle -> refreshView()
+        }
 
         refreshView()
         binding.lytContent.setOnTouchListener(this)
