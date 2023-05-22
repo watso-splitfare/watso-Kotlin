@@ -42,6 +42,7 @@ class FragmentBaedalConfirm :Fragment() {
     val dec = DecimalFormat("#,###")
 
     var postId = ""
+    var orderString = ""
     var orderPrice = 0
     var fee = 0
 
@@ -54,19 +55,25 @@ class FragmentBaedalConfirm :Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postId = it.getString("postId")!!
-            val orderString = it.getString("order")
-            val userOrderString = AC.getString("userOrder", "")
-
-            userOrder = if (userOrderString != "") gson.fromJson(userOrderString, UserOrder::class.java)
-            else {
-                val userId = AC.getString("userId", "").toLong()
-                val nickname = AC.getString("nickname", "")
-                UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
-            }
-
-            if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
+            orderString = it.getString("order")!!
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
+
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
+        AC = ActivityController(activity as MainActivity)
+
+        val userOrderString = AC.getString("userOrder", "")
+        userOrder = if (userOrderString != "") gson.fromJson(userOrderString, UserOrder::class.java)
+        else {
+            val userId = AC.getString("userId", "").toLong()
+            val nickname = AC.getString("nickname", "")
+            UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
+        }
+
+        if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
         AC.setString("userOrder", gson.toJson(userOrder))
 
         var postString = AC.getString("baedalPosting", "")
@@ -75,11 +82,7 @@ class FragmentBaedalConfirm :Fragment() {
             fee = storeInfo.fee / baedalPosting.minMember
         }
         else fee = storeInfo.fee / AC.getString("minMember", "").toInt()
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
-        AC = ActivityController(activity as MainActivity)
+
         Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
 
         refreshView()
