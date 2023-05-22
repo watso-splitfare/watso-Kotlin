@@ -188,6 +188,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
 
     fun getComments() {
         cancelReply()
+        AC.hideSoftInput()
         binding.etComment.setText("")
         AC.showProgressBar()
         api.getComments(postId!!).enqueue(object : Callback<GetComments> {
