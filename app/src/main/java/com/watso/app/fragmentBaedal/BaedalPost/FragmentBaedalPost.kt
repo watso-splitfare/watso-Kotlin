@@ -86,6 +86,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         binding.lytContent.setOnTouchListener(this)
         binding.lytComment.setOnTouchListener(this)
         binding.rvComment.setOnTouchListener(this)
+        binding.lytRefresh.setOnRefreshListener {
+            binding.lytRefresh.isRefreshing = false
+            refreshView()
+        }
 
         return binding.root
     }
