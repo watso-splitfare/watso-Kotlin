@@ -240,45 +240,50 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             binding.tvUpdate.visibility = View.GONE
         }
 
-        if (baedalPost.status != "recruiting") {
+        if (baedalPost.status != "recruiting" && baedalPost.status != "closed") {
             binding.tvDelete.visibility = View.GONE
             binding.tvUpdate.visibility = View.GONE
         }
 
         /** 게시글 삭제 버튼 */
         binding.tvDelete.setOnClickListener {
-            val builder = AlertDialog.Builder(fragmentContext)
-            builder.setTitle("게시글 삭제하기")
-                .setMessage("게시글을 삭제하시겠습니까?")
-                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                    deletePost() })
-                .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
-            builder.show()
+            if (baedalPost.status == "recruiting") {
+                val builder = AlertDialog.Builder(fragmentContext)
+                builder.setTitle("게시글 삭제하기")
+                    .setMessage("게시글을 삭제하시겠습니까?")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        deletePost()
+                    })
+                    .setNegativeButton("취소", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
+            } else AC.showAlert("모임이 모집중인 상태에서만 삭제 가능합니다.")
         }
 
         /** 게시글 수정 버튼 */
         binding.tvUpdate.setOnClickListener {
-            val builder = AlertDialog.Builder(fragmentContext)
-            builder.setTitle("게시글 수정하기")
-                .setMessage("게시글을 수정하시겠습니까?")
-                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                    AC.setFrag(FragmentBaedalAdd(), mapOf(
-                        "isUpdating" to "true",
-                        "postId" to postId!!,
-                        "orderTime" to baedalPost.orderTime,
-                        "storeInfo" to gson.toJson(store),
-                        "place" to baedalPost.place,
-                        "minMember" to if (baedalPost.minMember != null) baedalPost.minMember.toString() else "0",
-                        "maxMember" to if (baedalPost.maxMember != null )baedalPost.maxMember.toString() else "0",
-                        "fee" to store.fee.toString()
-                    ))
-                })
-                .setNegativeButton("취소",
-                    DialogInterface.OnClickListener { dialog, id ->
-                        println("취소")
-                    }
-                )
-            builder.show()
+            if (baedalPost.status == "recruiting") {
+                val builder = AlertDialog.Builder(fragmentContext)
+                builder.setTitle("게시글 수정하기")
+                    .setMessage("게시글을 수정하시겠습니까?")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                        AC.setFrag(FragmentBaedalAdd(), mapOf(
+                            "isUpdating" to "true",
+                            "postId" to postId!!,
+                            "orderTime" to baedalPost.orderTime,
+                            "storeInfo" to gson.toJson(store),
+                            "place" to baedalPost.place,
+                            "minMember" to if (baedalPost.minMember != null) baedalPost.minMember.toString() else "0",
+                            "maxMember" to if (baedalPost.maxMember != null) baedalPost.maxMember.toString() else "0",
+                            "fee" to store.fee.toString()
+                        ))
+                    })
+                    .setNegativeButton("취소",
+                        DialogInterface.OnClickListener { dialog, id ->
+                            println("취소")
+                        }
+                    )
+                builder.show()
+            } else AC.showAlert("모임이 모집중인 상태에서만 수정 가능합니다.")
         }
 
         /** 가게 정보 */

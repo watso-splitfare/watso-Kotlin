@@ -58,6 +58,7 @@
             android:layout_marginEnd="16dp"
             android:text="삭제"
             android:textSize="18dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/tv_update"
             app:layout_constraintTop_toTopOf="@+id/tv_update" />
 
@@ -69,6 +70,7 @@
             android:layout_marginBottom="16dp"
             android:text="수정"
             android:textSize="18dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/divider45"
             app:layout_constraintEnd_toEndOf="parent" />
 
