@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
+import android.preference.PreferenceManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessaging
@@ -37,20 +38,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /** 메시지 수신 메서드(포그라운드) */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: " + remoteMessage!!.from)
-
-        // Notification 메시지를 수신할 경우
-        // remoteMessage.notification?.body!! 여기에 내용이 저장되있음
-        // Log.d(TAG, "Notification Message Body: " + remoteMessage.notification?.body!!)
-
-        //받은 remoteMessage의 값 출력해보기. 데이터메세지 / 알림메세지
-        Log.d(TAG, "Message data : ${remoteMessage.data}")
-        Log.d(TAG, "Message noti : ${remoteMessage.notification}")
-
-        if(remoteMessage.data.isNotEmpty()){
-            sendNotification(remoteMessage)
-        }else {
-            Log.e(TAG, "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
+        val sharedPreferences = getSharedPreferences("cache", Context.MODE_PRIVATE)
+        val isNotificationEnabled = sharedPreferences.getString("notificationPermission", "false")
+        if (isNotificationEnabled.toBoolean()) {
+            if (remoteMessage.data.isNotEmpty()) {
+                sendNotification(remoteMessage)
+            } else {
+                Log.e(TAG, "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
+            }
         }
     }
 
@@ -94,11 +89,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             channel.vibrationPattern = vibrationPattern
             notificationManager.createNotificationChannel(channel)
         }
-
-        // 알림 생성
-        //if (MainActivity.prefs.getString("notificationPermission", "") == "true") {
         notificationManager.notify(uniId, notificationBuilder.build())
-        //}
     }
 
     /** Token 가져오기 */
