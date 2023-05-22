@@ -124,16 +124,15 @@ class FragmentBaedal :Fragment() {
                 if (response.code() == 200) {
                     val joinedPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinedPosts, true)
+                } else if (response.code() == 401) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.logOut(errorResponse.msg)
                 } else {
-                    try {
-                        val errorBody = response.errorBody()?.string()
-                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        AC.makeToast(errorResponse.msg)
-                        Log.d("$TAG[getBaedalPostList-joined]", "${errorResponse.code}: ${errorResponse.msg}")
-                    } catch (e: Exception) {
-                        Log.e("$TAG[getBaedalPostList-joined]", e.toString())
-                        Log.d("$TAG[getBaedalPostList-joined]", response.errorBody()?.string().toString())
-                    }
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.makeToast(errorResponse.msg)
+                    Log.d("$TAG[getBaedalPostList-joined]", "${errorResponse.code}: ${errorResponse.msg}")
                 }
             }
 
@@ -153,16 +152,15 @@ class FragmentBaedal :Fragment() {
                     joinablePosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinablePosts)
                     setSpiner()
+                } else if (response.code() == 401) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.logOut(errorResponse.msg)
                 } else {
-                    try {
-                        val errorBody = response.errorBody()?.string()
-                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        AC.makeToast(errorResponse.msg)
-                        Log.d("$[TAG][getBaedalPostList-joinable]", "${errorResponse.code}: ${errorResponse.msg}")
-                    } catch (e: Exception) {
-                        Log.e("$[TAG][getBaedalPostList-joinable]", e.toString())
-                        Log.d("$[TAG][getBaedalPostList-joinable]", response.errorBody()?.string().toString())
-                    }
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.makeToast(errorResponse.msg)
+                    Log.d("$[TAG][getBaedalPostList-joinable]", "${errorResponse.code}: ${errorResponse.msg}")
                 }
             }
 
