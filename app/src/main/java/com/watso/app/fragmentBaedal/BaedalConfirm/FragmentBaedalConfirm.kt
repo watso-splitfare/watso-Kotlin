@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -58,8 +59,8 @@ class FragmentBaedalConfirm :Fragment() {
             orderString = it.getString("order")!!
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
-
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
@@ -88,6 +89,13 @@ class FragmentBaedalConfirm :Fragment() {
         refreshView()
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        AC.setString("userOrder", gson.toJson(userOrder))
+        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
+        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
+        super.onDestroyView()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
