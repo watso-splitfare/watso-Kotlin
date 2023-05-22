@@ -143,7 +143,10 @@ class FragmentBaedalConfirm :Fragment() {
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     AC.hideProgressBar()
-                    if (response.code() == 201) AC.setFrag(FragmentBaedal(), popBackStack = 0)
+                    if (response.code() == 201) {
+                        AC.requestNotiPermission()
+                        AC.setFrag(FragmentBaedal(), popBackStack = 0)
+                    }
                     else {
                         try {
                             val errorBody = response.errorBody()?.string()
