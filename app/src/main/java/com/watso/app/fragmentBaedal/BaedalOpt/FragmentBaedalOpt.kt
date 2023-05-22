@@ -140,7 +140,8 @@ class FragmentBaedalOpt :Fragment() {
                         "postId" to postId,
                         "order" to gson.toJson(order),
                         "storeInfo" to gson.toJson(storeInfo)
-                    )
+                    ),
+                    1
                 )
             }
         }
