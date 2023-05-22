@@ -26,11 +26,11 @@ class FragmentBaedalHistory :Fragment() {
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    var isTouched = false
-
-    private var mBinding: FragBaedalHistoryBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragBaedalHistoryBinding? = null
+    val binding get() = mBinding!!
     val api= API.create()
+
+    var isTouched = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -55,7 +55,7 @@ class FragmentBaedalHistory :Fragment() {
             return@setOnTouchListener false
         }
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         getPostPreview()
 
         return binding.root
@@ -73,14 +73,14 @@ class FragmentBaedalHistory :Fragment() {
                     mappingAdapter(baedalPosts)
                 } else {
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
-                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                    AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
-                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
         })
     }
@@ -97,28 +97,13 @@ class FragmentBaedalHistory :Fragment() {
 
         adapter.setShowOrderListener(object : HistoryAdapter.OnOrderBtnListener {
             override fun showOrder(postJson: String) {
-                setFrag(FragmentBaedalOrders(), mapOf("postJson" to postJson, "isMyOrder" to "true"))
+                AC.setFrag(FragmentBaedalOrders(), mapOf("postJson" to postJson, "isMyOrder" to "true"))
             }
         })
         adapter.setShowPostListener(object : HistoryAdapter.OnPostBtnListener {
             override fun showPost(postId: String) {
-                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+                AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex:Int = 1) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

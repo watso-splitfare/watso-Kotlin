@@ -23,26 +23,22 @@ import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOrders :Fragment() {
-    val TAG = "FragBaedalOrders"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
-
-    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
-
-    lateinit var post: BaedalPost
-    //var postId = "-1"
-    var isMyorder = true
-//    var storeName = ""
-//    var fee = 0
-//    var currentMember = 1
 
     lateinit var userOrders: MutableList<UserOrder>
     lateinit var adapter: BaedalUserOrderAdapter
 
+    lateinit var post: BaedalPost
+
+    var mBinding: FragBaedalOrdersBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedalOrders"
     val api= API.create()
     val dec = DecimalFormat("#,###")
-    private var mBinding: FragBaedalOrdersBinding? = null
-    private val binding get() = mBinding!!
+
+    var userId = (-1).toLong()
+    var isMyorder = true
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,6 +60,8 @@ class FragmentBaedalOrders :Fragment() {
         mBinding = FragBaedalOrdersBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
 
+        userId = AC.getString("userId", "-1").toLong()
+
         binding.tvOrder.text = if (isMyorder) "내가 고른 메뉴" else "주문할 메뉴"
         refreshView()
 
@@ -72,7 +70,7 @@ class FragmentBaedalOrders :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.tvStoreName.text = post.store.name
         mappingAdapter()
         getOrders()
@@ -94,18 +92,18 @@ class FragmentBaedalOrders :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[getMyOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getMyOrders]", e.toString())}
-                        onBackPressed()
+                        AC.onBackPressed()
                     }
                 }
 
                 override fun onFailure(call: Call<MyOrderInfo>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
-                    makeToast("주문정보를 불러오지 못했습니다.")
-                    onBackPressed()
+                    AC.makeToast("주문정보를 불러오지 못했습니다.")
+                    AC.onBackPressed()
                 }
             })
         } else {
@@ -117,18 +115,18 @@ class FragmentBaedalOrders :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[getAllOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getAllOrders]", e.toString())}
-                        onBackPressed()
+                        AC.onBackPressed()
                     }
                 }
 
                 override fun onFailure(call: Call<AllOrderInfo>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
-                    makeToast("주문정보를 불러오지 못했습니다.")
-                    onBackPressed()
+                    AC.makeToast("주문정보를 불러오지 못했습니다.")
+                    AC.onBackPressed()
                 }
             })
         }
@@ -186,19 +184,4 @@ class FragmentBaedalOrders :Fragment() {
             binding.lytTable.visibility = View.GONE
         }
     }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
-        }
 }

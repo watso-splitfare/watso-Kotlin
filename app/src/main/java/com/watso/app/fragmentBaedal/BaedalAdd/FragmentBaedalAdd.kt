@@ -37,15 +37,19 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
-    val TAG = "FragBaedalAdd"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    var isScrolled = false
+    var mBinding: FragBaedalAddBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedalAdd"
+    val api = API.create()
+    val gson = Gson()
+    val decDt = DecimalFormat("00")
 
+    var isScrolled = false
     var isUpdating = false
     var postId:String? = null
-    var title: String? = null
     var content: String? = null
     var orderTime: String? = null
     var storeName: String? = null
@@ -62,12 +66,6 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     var storeFees = mutableListOf<Int>()
     var selectedIdx = 0
     var selectedStore: Store? = null
-
-    private var mBinding: FragBaedalAddBinding? = null
-    private val binding get() = mBinding!!
-    val gson = Gson()
-    val api = API.create()
-    var decDt = DecimalFormat("00")
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -103,14 +101,14 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        hideSoftInput()
+        AC.hideSoftInput()
     }
 
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_MOVE -> isScrolled = true
             MotionEvent.ACTION_UP -> {
-                if (!isScrolled) hideSoftInput()
+                if (!isScrolled) AC.hideSoftInput()
                 isScrolled = false
             }
         }
@@ -120,7 +118,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.lytTime.setOnClickListener { showCalendar() }
 
         val places = listOf("생자대", "기숙사")
@@ -151,8 +149,6 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         } else {
             val currentDateTime = LocalDateTime.now()
             val roundedMinute = (currentDateTime.minute / 10) * 10
-            //val roundedMinute = (minute / 10) * 10
-            //val roundedDateTime = currentDateTime.withMinute(roundedMinute)
             val tartgetDatetime = currentDateTime.withMinute(roundedMinute).plusMinutes(30)
 
             orderTime = tartgetDatetime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString()
@@ -237,18 +233,18 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[getStoreList]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getStoreList]", e.toString())}
-                    onBackPressed()
+                    AC.onBackPressed()
                 }
             }
 
             override fun onFailure(call: Call<List<Store>>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("FragBaedalAdd setStoreSpinner", t.message.toString())
-                makeToast("가게 리스트 조회 실패")
-                onBackPressed()
+                AC.makeToast("가게 리스트 조회 실패")
+                AC.onBackPressed()
             }
         })
     }
@@ -324,17 +320,17 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                         if (response.code() == 204) {
                             val bundle = bundleOf("success" to true, "postId" to postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
-                            onBackPressed()
+                            AC.onBackPressed()
                         } else {
                             Log.e("baedalAdd Fragment - updateBaedalPost", response.toString())
-                            makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
+                            AC.makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
                         }
                     }
 
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                         AC.hideProgressBar()
                         Log.e("baedalAdd Fragment - updateBaedalPost", t.message.toString())
-                        makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
+                        AC.makeToast("게시글을 수정하지 못 했습니다.\n다시 시도해 주세요.")
                     }
                 })
         } else {
@@ -347,10 +343,9 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 maxMember,
                 null
             )
-            val prefs = MainActivity.prefs
-            prefs.setString("postOrder", "")
-            prefs.setString("baedalPosting", gson.toJson(baedalPosting))
-            setFrag( FragmentBaedalMenu(), mapOf(
+            AC.setString("postOrder", "")
+            AC.setString("baedalPosting", gson.toJson(baedalPosting))
+            AC.setFrag( FragmentBaedalMenu(), mapOf(
                 "postId" to "-1",
                 "storeId" to storeIds[selectedIdx])
             )
@@ -366,25 +361,5 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
         Log.d(TAG, diff.toString())
         Log.d(TAG, orderDateTime.isAfter(now).toString())
         return (orderDateTime.isAfter(now) && diff > 10)
-    }
-
-    fun hideSoftInput() {
-        val mActivity = activity as MainActivity
-        return mActivity.hideSoftInput()
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

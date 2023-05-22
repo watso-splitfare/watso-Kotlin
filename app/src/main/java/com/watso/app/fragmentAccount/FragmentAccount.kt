@@ -24,15 +24,15 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentAccount :Fragment() {
-    private val TAG = "FragAccount"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
     lateinit var userInfo: UserInfo
-    private var mBinding: FragAccountBinding? = null
-    private val binding get() = mBinding!!
+
+    var mBinding: FragAccountBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragAccount"
     val api= API.create()
-    val prefs = MainActivity.prefs
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -65,7 +65,7 @@ class FragmentAccount :Fragment() {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) {
                         Log.e("$TAG[getUserInfo]", e.toString())
@@ -79,20 +79,19 @@ class FragmentAccount :Fragment() {
                 Log.e("FragAccount getUserInfo", t.message.toString())
                 binding.tvUsername.text = "ID"
                 binding.tvNickname.text = "닉네임"
-                makeToast("다시 시도해 주세요.")
-                //onBackPressed()
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
 
     fun refreshView() {
         binding.btnPrevious.setOnClickListener {
-            onBackPressed()
+            AC.onBackPressed()
         }
 
-        binding.lytPassword.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "password")) }
-        binding.lytNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
-        binding.lytAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
+        binding.lytPassword.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "password")) }
+        binding.lytNickname.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
+        binding.lytAccountNum.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
 
         bindSWNotificationPermission()
 
@@ -120,24 +119,19 @@ class FragmentAccount :Fragment() {
     }
 
     fun bindSWNotificationPermission() {
-        when (prefs.getString("notificationPermission", "")) {
+        when (AC.getString("notificationPermission", "")) {
             "true" -> binding.swNotification.isChecked = true
             else -> binding.swNotification.isChecked = false
         }
         binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
-        //binding.swNotification.setOnClickListener { setNotificationPermission() }
     }
 
     fun setNotificationPermission() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
-        when (prefs.getString("notificationPermission", "")) {
-            "" ->
-            {
-                val mActivity = activity as MainActivity
-                mActivity.requestNotiPermission()
-            }
-            "true" -> { prefs.setString("notificationPermission", "false") }
-            else -> prefs.setString("notificationPermission", "true")
+        when (AC.getString("notificationPermission", "")) {
+            "" -> { AC.requestNotiPermission() }
+            "true" -> { AC.setString("notificationPermission", "false") }
+            else -> AC.setString("notificationPermission", "true")
         }
 
     }
@@ -148,26 +142,16 @@ class FragmentAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {}
-                else Log.e("로그아웃 에러", response.toString())
-                removePrefs()
+                else Log.d("$TAG[logtout]", response.errorBody()?.string().toString())
+                AC.logOut("로그아웃 되었습니다.")
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
-                Log.d("로그아웃",t.message.toString())
-                removePrefs()
+                Log.d("$TAG[logtout]", t.message.toString())
+                AC.logOut("로그아웃 되었습니다.")
             }
         })
-    }
-
-    fun removePrefs(makeToast: Boolean = true) {
-        if (makeToast)
-            makeToast("로그아웃 되었습니다.")
-        prefs.removeString("accessToken")
-        prefs.removeString("refreshToken")
-        prefs.removeString("userId")
-        prefs.removeString("nickname")
-        setFrag(FragmentLogin(), null, 0)
     }
 
     fun deleteAccount() {
@@ -176,34 +160,18 @@ class FragmentAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code()==204) {
-                    makeToast("탈퇴되었습니다.")
-                    removePrefs(false)
+                    AC.logOut("탈퇴되었습니다.")
                 } else {
                     Log.e("FragAccount deleteAccount", response.toString())
-                    makeToast("다시 시도해 주세요.")
+                    AC.makeToast("다시 시도해 주세요.")
                 }
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("FragAccount deleteAccount", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

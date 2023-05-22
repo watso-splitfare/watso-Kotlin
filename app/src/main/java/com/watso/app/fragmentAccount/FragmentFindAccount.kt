@@ -24,16 +24,16 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentFindAccount :Fragment() {
-    val TAG = "FragFindAccount"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    var forgot = "username"
-    var isSendAble = true
-
-    private var mBinding: FragFindAccountBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragFindAccountBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragFindAccount"
     val api= API.create()
+
+    var forgot = "username"
+    var isSendAble = true       // 중복 클릭 방지 flag
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -50,19 +50,19 @@ class FragmentFindAccount :Fragment() {
     }
 
     override fun onDestroyView() {
-        mBinding = null
         super.onDestroyView()
-        hideSoftInput()
+        mBinding = null
+        AC.hideSoftInput()
     }
 
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
 
         binding.lytFindPassword.visibility = View.GONE
 
         binding.tvFindUsername.setOnClickListener {
             forgot = "username"
-            hideSoftInput()
+            AC.hideSoftInput()
             binding.etEmailPassword.setText("")
             binding.etUsername.setText("")
             binding.lytFindUsername.visibility = View.VISIBLE
@@ -72,7 +72,7 @@ class FragmentFindAccount :Fragment() {
         }
         binding.tvFindPassword.setOnClickListener {
             forgot = "password"
-            hideSoftInput()
+            AC.hideSoftInput()
             binding.etEmailUsername.setText("")
             binding.lytFindUsername.visibility = View.GONE
             binding.lytFindPassword.visibility = View.VISIBLE
@@ -95,7 +95,7 @@ class FragmentFindAccount :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[sendForgotUsername]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) {
                             Log.e("$TAG[sendForgotUsername]", e.toString())
@@ -128,7 +128,7 @@ class FragmentFindAccount :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[issueTempPassword]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) {
                             Log.e("$TAG[issueTempPassword]", e.toString())
@@ -146,45 +146,16 @@ class FragmentFindAccount :Fragment() {
         }
     }
 
-    fun hideSoftInput() {
-        Log.d(TAG, "키보드 숨기기")
-        Log.d(TAG, view.toString())
-        val mActivity = activity as MainActivity
-        return mActivity.hideSoftInput()
-    }
-
     fun verifyInput(case: String, text: String): Boolean {
-        val builder = AlertDialog.Builder(fragmentContext)
-        if (verifyInputFormat(case, text)) {
-            return true
+        val message = AC.verifyInput(case, text)
+        return if (message == "") {
+            true
         } else {
-            val message = when(case) {
-                "username" -> {"사용할 수 없는 아이디 형식입니다."}
-                else -> {"사용할 수 없는 메일 형식입니다."}
-            }
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()
+            false
         }
-        return false
-    }
-
-    fun verifyInputFormat(case: String, text: String): Boolean {
-        return VerifyInputFormat().verifyInputFormat(case, text)
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

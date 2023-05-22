@@ -27,23 +27,23 @@ import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
-    val TAG = "FragBaedalConfirm"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    var postId = ""
     lateinit var userOrder: UserOrder
     lateinit var storeInfo: StoreInfo
     lateinit var baedalPosting: BaedalPosting
-    var orderPrice = 0
-    var fee = 0
 
-    private var mBinding: FragBaedalConfirmBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragBaedalConfirmBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedalConfirm"
     val api= API.create()
     val gson = Gson()
-    val prefs = MainActivity.prefs
     val dec = DecimalFormat("#,###")
+
+    var postId = ""
+    var orderPrice = 0
+    var fee = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -55,26 +55,26 @@ class FragmentBaedalConfirm :Fragment() {
         arguments?.let {
             postId = it.getString("postId")!!
             val orderString = it.getString("order")
-            val userOrderString = prefs.getString("userOrder", "")
+            val userOrderString = AC.getString("userOrder", "")
 
             userOrder = if (userOrderString != "") gson.fromJson(userOrderString, UserOrder::class.java)
             else {
-                val userId = prefs.getString("userId", "").toLong()
-                val nickname = prefs.getString("nickname", "")
+                val userId = AC.getString("userId", "").toLong()
+                val nickname = AC.getString("nickname", "")
                 UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
             }
 
             if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
-        prefs.setString("userOrder", gson.toJson(userOrder))
+        AC.setString("userOrder", gson.toJson(userOrder))
 
-        var postString = prefs.getString("baedalPosting", "")
+        var postString = AC.getString("baedalPosting", "")
         if (postString != "") {
             baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
             fee = storeInfo.fee / baedalPosting.minMember
         }
-        else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
+        else fee = storeInfo.fee / AC.getString("minMember", "").toInt()
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -140,12 +140,12 @@ class FragmentBaedalConfirm :Fragment() {
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     AC.hideProgressBar()
-                    if (response.code() == 201) setFrag(FragmentBaedal(), popBackStack = 0)
+                    if (response.code() == 201) AC.setFrag(FragmentBaedal(), popBackStack = 0)
                     else {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[baedalPosting]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) {
                             Log.e("$TAG[baedalPosting]", e.toString())
@@ -157,7 +157,7 @@ class FragmentBaedalConfirm :Fragment() {
                 override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("baedal Confirm Fragment - baedalPosting", t.message.toString())
-                    makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
+                    AC.makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
             })
         } else {            // 게시글에 참가할 때
@@ -170,7 +170,7 @@ class FragmentBaedalConfirm :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[postOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) {
                             Log.e("$TAG[postOrders]", e.toString())
@@ -182,19 +182,19 @@ class FragmentBaedalConfirm :Fragment() {
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("baedal Confirm Fragment - postOrders", t.message.toString())
-                    makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
+                    AC.makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
             })
         }
     }
 
     fun goToPosting() {
-        requestNotiPermission()
-        prefs.removeString("baedalPosting")
-        prefs.removeString("storeInfo")
-        prefs.removeString("userOrder")
-        prefs.removeString("minMember")
-        setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+        AC.requestNotiPermission()
+        AC.removeString("baedalPosting")
+        AC.removeString("storeInfo")
+        AC.removeString("userOrder")
+        AC.removeString("minMember")
+        AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
     }
 
     fun bindSetText() {
@@ -208,28 +208,11 @@ class FragmentBaedalConfirm :Fragment() {
             binding.tvConfirm.text = "주문 등록"
     }
 
-    fun requestNotiPermission() {
-        val mActivity = activity as MainActivity
-        mActivity.requestNotiPermission()
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack: Int=3) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack)
-    }
-
     fun onBackPressed() {
-        val mActivity = activity as MainActivity
-        prefs.setString("userOrder", gson.toJson(userOrder))
-
+        AC.setString("userOrder", gson.toJson(userOrder))
         val bundle = bundleOf("orderCnt" to userOrder.orders.size)
         getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
 
-        mActivity.onBackPressed()
+        AC.onBackPressed()
     }
 }

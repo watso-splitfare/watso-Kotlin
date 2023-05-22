@@ -27,8 +27,8 @@ class FragmentTaxi :Fragment() {
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    private var mBinding: FragTaxiBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragTaxiBinding? = null
+    val binding get() = mBinding!!
     val api= API.create()
 
     override fun onAttach(context: Context) {
@@ -48,7 +48,7 @@ class FragmentTaxi :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentTaxiAdd()) }
+        binding.btnBaedalPostAdd.setOnClickListener { AC.setFrag(FragmentTaxiAdd()) }
         binding.constraintLayout8.visibility = View.GONE    // 출발지, 목적지 필터 숨김
         binding.constraintLayout9.visibility = View.GONE
         binding.textView7.visibility = View.GONE            // 예상비용 숨김
@@ -65,14 +65,14 @@ class FragmentTaxi :Fragment() {
                     mappingAdapter(taxiPosts)
                 } else {
                     Log.e("taxi Fragment - getTaxiPostListPreview", response.toString())
-                    makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                    AC.makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 }
                 AC.hideProgressBar()
             }
 
             override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
                 Log.e("taxi Fragment - getTaxiPostListPreview", t.message.toString())
-                makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                AC.makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 AC.hideProgressBar()
             }
         })
@@ -100,18 +100,8 @@ class FragmentTaxi :Fragment() {
         binding.rvTaxiTable.adapter = adapter
         adapter.addListener(object: TaxiTableAdapter.OnItemClickListener{
             override fun onClick(postId: String) {
-                setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
+                AC.setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
     }
 }

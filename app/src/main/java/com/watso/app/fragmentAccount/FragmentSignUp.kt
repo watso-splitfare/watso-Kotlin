@@ -28,19 +28,15 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentSignUp :Fragment() {
-    val TAG = "FragSignUp"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
-
-    var remainingSeconds = 0
-    var valifyTime = 300
-    var sendCoolTime = 10
-    var isSendAble = true
     lateinit var job: Job
 
-    private var mBinding: FragSignUpBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragSignUpBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragSignUp"
     val api= API.create()
+
     val signUpCheck = mutableMapOf(
         "realName" to false,    // verifyInputFormat
         "username" to false,    // 중복확인할 때 유효성 검사 함
@@ -49,6 +45,10 @@ class FragmentSignUp :Fragment() {
         "accountNum" to false,  // verifyInputFormat
         "email" to false        // 코드확인할 때 유효성 검사 함
     )
+    var remainingSeconds = 0
+    var valifyTime = 300
+    var sendCoolTime = 10
+    var isSendAble = true
     var checkedUsername: String? = null
     var checkedNickname: String? = null
     var verifingEmail = ""
@@ -71,14 +71,14 @@ class FragmentSignUp :Fragment() {
     }
 
     override fun onDestroyView() {
-        mBinding = null
         super.onDestroyView()
+        mBinding = null
         if (::job.isInitialized && job.isActive)
             job.cancel()
     }
 
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.btnSignup.setEnabled(false)
         bindNickname()
         bindUsername()
@@ -132,7 +132,7 @@ class FragmentSignUp :Fragment() {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[nicknameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) {
                                 Log.e("$TAG[nicknameVerify]", e.toString())
@@ -147,7 +147,7 @@ class FragmentSignUp :Fragment() {
                             "signUp Fragment - nicknameDuplicationCheck",
                             t.message.toString()
                         )
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             } else {
@@ -206,7 +206,7 @@ class FragmentSignUp :Fragment() {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[usernameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) {
                                 Log.e("$TAG[usernameVerify]", e.toString())
@@ -221,7 +221,7 @@ class FragmentSignUp :Fragment() {
                             "signUp Fragment - usernameDuplicationCheck",
                             t.message.toString()
                         )
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             } else {
@@ -296,7 +296,7 @@ class FragmentSignUp :Fragment() {
                                 try {
                                     val errorBody = response.errorBody()?.string()
                                     val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                    makeToast(errorResponse.msg)
+                                    AC.makeToast(errorResponse.msg)
                                     Log.d("$TAG[sencCode]", "${errorResponse.code}: ${errorResponse.msg}")
                                 } catch (e:Exception) {
                                     Log.e("$TAG[sendCode]", e.toString())
@@ -308,7 +308,7 @@ class FragmentSignUp :Fragment() {
                         override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                             AC.hideProgressBar()
                             Log.e("signUp Fragment - sendMail", t.message.toString())
-                            makeToast("다시 시도해 주세요.")
+                            AC.makeToast("다시 시도해 주세요.")
                         }
                     })
                 } else {
@@ -341,7 +341,7 @@ class FragmentSignUp :Fragment() {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[verifyMail]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e: Exception) {
                                 Log.e("$TAG[verifyMail]", e.toString())
@@ -354,7 +354,7 @@ class FragmentSignUp :Fragment() {
                         Log.d("$TAG[onFailure]", "")
                         AC.hideProgressBar()
                         Log.e("signUp Fragment - sendMail", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             }
@@ -378,13 +378,13 @@ class FragmentSignUp :Fragment() {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         AC.hideProgressBar()
                         if (response.code() == 201) {
-                            makeToast("회원가입에 성공하였습니다.")
-                            onBackPressed()
+                            AC.makeToast("회원가입에 성공하였습니다.")
+                            AC.onBackPressed()
                         } else  {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[signup]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) {
                                 Log.e("$TAG[signup]", e.toString())
@@ -396,7 +396,7 @@ class FragmentSignUp :Fragment() {
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                         AC.hideProgressBar()
                         Log.e("signUp Fragment - signup", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             }
@@ -488,7 +488,7 @@ class FragmentSignUp :Fragment() {
     }
 
     fun verifyInput(case: String, text: String): Boolean {
-        val message = VerifyInputFormat().verifyInput(case, text)
+        val message = AC.verifyInput(case, text)
         return if (message == "") {
             true
         } else {
@@ -504,20 +504,5 @@ class FragmentSignUp :Fragment() {
         val min = seconds / 60
         val sec = seconds % 60
         return String.format("%02d:%02d", min, sec)
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

@@ -26,31 +26,26 @@ import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
-    private val TAG = "MainActivity"
+    var mBinding: ActivityMainBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "MainActivity"
 
-    companion object {
-        lateinit var prefs: PreferenceUtil
-    }
+    companion object { lateinit var prefs: PreferenceUtil }
 
-    private var mBinding: ActivityMainBinding? = null
-    private val binding get() = mBinding!!
     var mBackWait:Long = 0
     var bottomBarIndex:Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Log.d("[$TAG] onCreate", "")
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        prefs = PreferenceUtil(applicationContext)
-        Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
-        Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
-
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        prefs = PreferenceUtil(applicationContext)
+
+        Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
+        Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
 
         /** FCM설정, Token값 가져오기 */
         MyFirebaseMessagingService().getFirebaseToken()

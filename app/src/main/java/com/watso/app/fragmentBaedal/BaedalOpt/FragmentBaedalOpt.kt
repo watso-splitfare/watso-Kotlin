@@ -23,32 +23,32 @@ import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOpt :Fragment() {
-    val TAG="FragBaedalOpt"
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    var postId = ""
-    var menuId = ""
     lateinit var storeInfo: StoreInfo
-    var orderCnt = ""
+    lateinit var menuInfo: Menu                   // 메뉴 정보. 현재화면 구성에 사용
+    lateinit var adapter: BaedalOptGroupAdapter
+
+    var mBinding: FragBaedalOptBinding? = null
+    val binding get() = mBinding!!
+    val TAG="FragBaedalOpt"
+    val api= API.create()
+    val gson = Gson()
+    val dec = DecimalFormat("#,###")
 
     val groupNames = mutableMapOf<String, String>()
     val optionNames = mutableMapOf<String, String>()
     val quantities = mutableMapOf<String, List<Int>>()
     val optionPrice = mutableMapOf<String, MutableMap<String, Int>>()
     val optionChecked = mutableMapOf<String, MutableMap<String, Boolean>>()
+
+    var postId = ""
+    var menuId = ""
+    var orderCnt = ""
     var quantity = 1
     var price = 0
-    lateinit var adapter: BaedalOptGroupAdapter
-
     var viewClickAble = true
-
-    lateinit var menuInfo: Menu                   // 메뉴 정보. 현재화면 구성에 사용
-    private var mBinding: FragBaedalOptBinding? = null
-    private val binding get() = mBinding!!
-    val gson = Gson()
-    val api= API.create()
-    val dec = DecimalFormat("#,###")
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -135,7 +135,7 @@ class FragmentBaedalOpt :Fragment() {
                 }
                 val menu = Menu(menuInfo._id, menuInfo.name, menuInfo.price, groups)
                 val order = Order(quantity, price, menu)
-                setFrag(
+                AC.setFrag(
                     FragmentBaedalConfirm(), mapOf(
                         "postId" to postId,
                         "order" to gson.toJson(order),
@@ -163,7 +163,7 @@ class FragmentBaedalOpt :Fragment() {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[getMenuInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[getMenuInfo]", e.toString())}
                 }
@@ -172,7 +172,7 @@ class FragmentBaedalOpt :Fragment() {
             override fun onFailure(call: Call<Menu>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("baedalOpt Fragment - getGroupOption", t.message.toString())
-                makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                AC.makeToast("옵션정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
             }
         })
     }
@@ -230,21 +230,10 @@ class FragmentBaedalOpt :Fragment() {
         binding.tvOrderPrice.text = orderPriceStr
     }
 
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, 1)
-    }
-
     fun onBackPressed() {
         val bundle = bundleOf("orderCnt" to orderCnt.toInt())
         getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
 
-        val mActivity = activity as MainActivity
-        mActivity.onBackPressed()
+        AC.onBackPressed()
     }
 }

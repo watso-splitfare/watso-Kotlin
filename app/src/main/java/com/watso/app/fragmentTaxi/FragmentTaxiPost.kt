@@ -27,16 +27,16 @@ class FragmentTaxiPost :Fragment() {
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
 
-    var postId = ""
-    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
+    var mBinding: FragTaxiPostBinding? = null
+    val binding get() = mBinding!!
+    val api= API.create()
 
+    var postId = ""
+    var userId = (-1).toLong()
     var isMember = false
     var isClosed = false
-
-    private var mBinding: FragTaxiPostBinding? = null
-    private val binding get() = mBinding!!
-    val api= API.create()
     var member = 0
+
     lateinit var taxiPost:TaxiPostModel
 
     override fun onAttach(context: Context) {
@@ -57,6 +57,7 @@ class FragmentTaxiPost :Fragment() {
         mBinding = FragTaxiPostBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
 
+        userId = AC.getString("userId", "-1").toLong()
         refreshView()
 
         return binding.root
@@ -64,7 +65,7 @@ class FragmentTaxiPost :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.lytComment.visibility = View.GONE       // 댓글 비활성화
         binding.textView16.visibility = View.GONE
         binding.divider20.visibility = View.GONE
@@ -144,16 +145,16 @@ class FragmentTaxiPost :Fragment() {
                     setBottomBtn()
                 } else {
                     Log.e("taxi Post Fragment - getTaxiPost", response.toString())
-                    makeToast("게시글 조회 실패")
-                    onBackPressed()
+                    AC.makeToast("게시글 조회 실패")
+                    AC.onBackPressed()
                 }
             }
 
             override fun onFailure(call: Call<TaxiPostModel>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("taxi Post Fragment - getTaxiPost", t.message.toString())
-                makeToast("게시글 조회 실패")
-                onBackPressed()
+                AC.makeToast("게시글 조회 실패")
+                AC.onBackPressed()
             }
         })
     }
@@ -165,7 +166,7 @@ class FragmentTaxiPost :Fragment() {
                 response: Response<PostingResponse>
             ) {
                 val res = response.body()!!
-                if (res.success) onBackPressed() // 새로고침하기
+                if (res.success) AC.onBackPressed() // 새로고침하기
                 else println("삭제 실패")
             }
             override fun onFailure(call: Call<PostingResponse>, t: Throwable) {
@@ -255,20 +256,5 @@ class FragmentTaxiPost :Fragment() {
                 looping(false, loopingDialog)
             }
         })*/
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }
