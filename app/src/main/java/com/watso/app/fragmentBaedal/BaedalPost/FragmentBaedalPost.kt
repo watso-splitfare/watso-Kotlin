@@ -447,8 +447,6 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
             }
             binding.btnOrder.visibility = View.VISIBLE
         }
-
-        //setLayoutListner(binding.lytBottomButton, "버튼")
     }
 
     fun bindBtnOrder(background: Boolean, isEnabled: Boolean, text: String) {
@@ -476,6 +474,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     }
 
     fun btnOrder() {
+        Log.d("[$TAG]btnOrder", "isMember: $isMember, ${baedalPost.users.size}, ${baedalPost.maxMember}")
         if (isMember) {
             val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("주문 취소하기")
@@ -495,6 +494,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 builder.setTitle("인원 마감")
                     .setMessage("참여 가능한 최대 인원에 도달했습니다.\n대표자에게 문의하세요")
                     .setPositiveButton("확인", DialogInterface.OnClickListener{_, _ ->})
+                    .show()
             }
         }
     }
