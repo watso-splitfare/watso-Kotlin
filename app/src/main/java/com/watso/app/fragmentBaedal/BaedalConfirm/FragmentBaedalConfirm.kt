@@ -190,6 +190,8 @@ class FragmentBaedalConfirm :Fragment() {
                     AC.hideProgressBar()
                     if (response.code() == 204) {
                         complete = true
+                        val bundle = bundleOf()
+                        getActivity()?.getSupportFragmentManager()?.setFragmentResult("backToBaedalList", bundle)
                         goToPosting()
                     }
                     else {

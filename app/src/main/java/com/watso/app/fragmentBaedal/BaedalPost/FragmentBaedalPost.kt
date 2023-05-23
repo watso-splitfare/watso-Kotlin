@@ -78,7 +78,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         AC = ActivityController(activity as MainActivity)
 
         userId = AC.getString("userId", "-1").toLong()
-        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("updatePost", this) {
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("backToList", this) {
                 requestKey, bundle -> refreshView()
         }
 
@@ -604,6 +604,8 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
                     AC.makeToast("주문이 취소되었습니다.")
+                    val bundle = bundleOf()
+                    getActivity()?.getSupportFragmentManager()?.setFragmentResult("backToBaedalList", bundle)
                     getPostInfo()
                 } else {
                     try {

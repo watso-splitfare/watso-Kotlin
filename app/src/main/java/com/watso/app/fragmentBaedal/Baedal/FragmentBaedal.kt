@@ -62,8 +62,10 @@ class FragmentBaedal :Fragment() {
         AC = ActivityController(activity as MainActivity)
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("deletePost", this) {
-                requestKey, bundle ->
-            getPostPreview()
+                requestKey, bundle -> getPostPreview()
+        }
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("backToBaedalList", this) {
+                requestKey, bundle -> getPostPreview()
         }
 
         binding.btnOption.setOnClickListener { AC.setFrag(FragmentAccount(), fragIndex=0) }
