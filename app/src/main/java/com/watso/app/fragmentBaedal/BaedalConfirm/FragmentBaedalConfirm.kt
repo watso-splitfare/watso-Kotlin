@@ -152,8 +152,7 @@ class FragmentBaedalConfirm :Fragment() {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     AC.hideProgressBar()
                     if (response.code() == 201) {
-                        AC.requestNotiPermission()
-                        AC.setFrag(FragmentBaedal(), popBackStack = 0)
+                        goToPosting(true)
                     }
                     else {
                         try {
@@ -202,13 +201,16 @@ class FragmentBaedalConfirm :Fragment() {
         }
     }
 
-    fun goToPosting() {
+    fun goToPosting(isPostiong: Boolean=false) {
         AC.requestNotiPermission()
         AC.removeString("baedalPosting")
         AC.removeString("storeInfo")
         AC.removeString("userOrder")
         AC.removeString("minMember")
-        AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+        if (isPostiong)
+            AC.setFrag(FragmentBaedal(), popBackStack = 0)
+        else
+            AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 3)
     }
 
     fun bindSetText() {
