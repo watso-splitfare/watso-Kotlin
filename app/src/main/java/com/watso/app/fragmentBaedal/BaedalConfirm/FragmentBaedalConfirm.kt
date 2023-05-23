@@ -46,6 +46,7 @@ class FragmentBaedalConfirm :Fragment() {
     var orderString = ""
     var orderPrice = 0
     var fee = 0
+    var complete = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -92,9 +93,17 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     override fun onDestroyView() {
-        AC.setString("userOrder", gson.toJson(userOrder))
-        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
-        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
+        Log.d("[$TAG]onDestroyView", complete.toString())
+        if (complete) {
+            AC.removeString("baedalPosting")
+            AC.removeString("storeInfo")
+            AC.removeString("userOrder")
+            AC.removeString("minMember")
+        } else {
+            AC.setString("userOrder", gson.toJson(userOrder))
+            val bundle = bundleOf("orderCnt" to userOrder.orders.size)
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
+        }
         super.onDestroyView()
     }
 
@@ -152,6 +161,7 @@ class FragmentBaedalConfirm :Fragment() {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     AC.hideProgressBar()
                     if (response.code() == 201) {
+                        complete = true
                         goToPosting(true)
                     }
                     else {
@@ -178,7 +188,10 @@ class FragmentBaedalConfirm :Fragment() {
             api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     AC.hideProgressBar()
-                    if (response.code() == 204) goToPosting()
+                    if (response.code() == 204) {
+                        complete = true
+                        goToPosting()
+                    }
                     else {
                         try {
                             val errorBody = response.errorBody()?.string()
@@ -203,10 +216,6 @@ class FragmentBaedalConfirm :Fragment() {
 
     fun goToPosting(isPostiong: Boolean=false) {
         AC.requestNotiPermission()
-        AC.removeString("baedalPosting")
-        AC.removeString("storeInfo")
-        AC.removeString("userOrder")
-        AC.removeString("minMember")
         if (isPostiong)
             AC.setFrag(FragmentBaedal(), popBackStack = 0)
         else
@@ -225,9 +234,9 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun onBackPressed() {
-        AC.setString("userOrder", gson.toJson(userOrder))
-        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
-        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
+//        AC.setString("userOrder", gson.toJson(userOrder))
+//        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
+//        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
 
         AC.onBackPressed()
     }
