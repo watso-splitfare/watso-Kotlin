@@ -67,26 +67,7 @@ class FragmentBaedalConfirm :Fragment() {
         mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
 
-        val userOrderString = AC.getString("userOrder", "")
-        userOrder = if (userOrderString != "") gson.fromJson(userOrderString, UserOrder::class.java)
-        else {
-            val userId = AC.getString("userId", "").toLong()
-            val nickname = AC.getString("nickname", "")
-            UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
-        }
-
-        if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
-        AC.setString("userOrder", gson.toJson(userOrder))
-
-        var postString = AC.getString("baedalPosting", "")
-        if (postString != "") {
-            baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
-            fee = storeInfo.fee / baedalPosting.minMember
-        }
-        else fee = storeInfo.fee / AC.getString("minMember", "").toInt()
-
-        Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
-
+        setOrderInfo()
         refreshView()
 
         return binding.root
@@ -105,6 +86,31 @@ class FragmentBaedalConfirm :Fragment() {
             getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
         }
         super.onDestroyView()
+    }
+
+    fun setOrderInfo() {
+        /** 전체 주문 데이터 */
+        val userOrderString = AC.getString("userOrder", "")
+        if (userOrderString != "") {
+            userOrder = gson.fromJson(userOrderString, UserOrder::class.java)
+        } else {
+            val userId = AC.getString("userId", "").toLong()
+            val nickname = AC.getString("nickname", "")
+            userOrder = UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
+        }
+
+        /** FragBaedalOpt 프래그먼트에서 추가한 주문 */
+        if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
+
+        /** FragBaedalAdd 프래그먼트에서 작성한 게시글 내용 */
+        val postString = AC.getString("baedalPosting", "")
+        if (postString != "") {
+            baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
+            fee = storeInfo.fee / baedalPosting.minMember
+        }
+        else fee = storeInfo.fee / AC.getString("minMember", "").toInt()
+
+        Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
