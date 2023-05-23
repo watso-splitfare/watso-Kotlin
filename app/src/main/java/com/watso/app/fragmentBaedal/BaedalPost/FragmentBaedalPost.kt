@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalPost
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -33,7 +34,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class FragmentBaedalPost :Fragment(), View.OnTouchListener {
+class FragmentBaedalPost :Fragment() {
     lateinit var AC: ActivityController
     lateinit var fragmentContext: Context
     lateinit var baedalPost: BaedalPost
@@ -46,6 +47,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
     val dec = DecimalFormat("#,###")
 
     var isScrolled = false
+    var oldPosition = 0.0.toFloat()
     var infoHeight = 0
     var needMargin = 0
     var addCommentOriginY = 0f
@@ -72,6 +74,7 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
@@ -83,9 +86,10 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         }
 
         refreshView()
-        binding.lytContent.setOnTouchListener(this)
-        binding.lytComment.setOnTouchListener(this)
-        binding.rvComment.setOnTouchListener(this)
+        binding.lytHead.setOnTouchListener { _, motionEvent -> onTouchEvent(motionEvent) }
+        binding.lytContent.setOnTouchListener { _, motionEvent -> onTouchEvent(motionEvent) }
+        binding.rvComment.setOnTouchListener { _, motionEvent -> onTouchEvent(motionEvent) }
+
         binding.lytRefresh.setOnRefreshListener {
             binding.lytRefresh.isRefreshing = false
             refreshView()
@@ -99,15 +103,24 @@ class FragmentBaedalPost :Fragment(), View.OnTouchListener {
         AC.hideSoftInput()
     }
 
-    override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+    fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
-            MotionEvent.ACTION_DOWN -> Log.d("[$TAG][온터치]", "터치시작")
+            MotionEvent.ACTION_DOWN -> {
+                Log.d("[$TAG][온터치]", "터치시작 x: ${event.x}, y: ${event.y}")
+                oldPosition = event.x + event.y
+            }
             MotionEvent.ACTION_MOVE -> {
-                isScrolled = true
-                Log.d("[$TAG][온터치]", "움직임")
+                if (!isScrolled) {
+                    Log.d("[$TAG][온터치][ACTION_MOVE]", "x: ${event.x}, y: ${event.y}")
+                    val newPosition = event.x + event.y
+                    if (Math.abs(oldPosition - newPosition) > 5) {
+                        Log.d("[$TAG][온터치][찐 움직임]", "x: ${event.x}, y: ${event.y}")
+                        isScrolled = true
+                    }
+                }
             }
             MotionEvent.ACTION_UP -> {
-                Log.d("[$TAG][온터치]", "터치끝")
+                Log.d("[$TAG][온터치]", "터치끝 x: ${event.x}, y: ${event.y}")
                 if (!isScrolled) AC.hideSoftInput()
                 isScrolled = false
             }
