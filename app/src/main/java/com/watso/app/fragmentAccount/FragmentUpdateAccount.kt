@@ -106,7 +106,7 @@ class FragmentUpdateAccount :Fragment() {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
                     AC.makeToast("비밀번호가 변경되었습니다.")
-                    AC.setFrag(FragmentAccount())
+                    AC.setFrag(FragmentAccount(), popBackStack = 2)
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
@@ -217,7 +217,7 @@ class FragmentUpdateAccount :Fragment() {
         api.refreshToken().enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
-                AC.setFrag(FragmentAccount())
+                AC.setFrag(FragmentAccount(), popBackStack = 2)
                 if (response.code() == 200)
                     Log.d("$TAG[refreshToken]토큰 재발급 완료", "")
                 else {
@@ -284,7 +284,7 @@ class FragmentUpdateAccount :Fragment() {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
                     AC.makeToast("계좌 정보가 변경되었습니다.")
-                    AC.setFrag(FragmentAccount())
+                    AC.setFrag(FragmentAccount(), popBackStack = 2)
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()

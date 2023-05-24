@@ -11,6 +11,7 @@ class ActivityController(private val activity: MainActivity) {
     private val prefs = MainActivity.prefs
 
     fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1, fragIndex:Int = 1) {
+        hideSoftInput()
         activity.setFrag(fragment, arguments, popBackStack, fragIndex)
     }
 
