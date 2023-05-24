@@ -105,6 +105,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun getNotiPermission() {
+        val requestPermission = RequestPermission(this)
+        requestPermission.getNotiPermission()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode != -1) {
             val requestPermission = RequestPermission(this)

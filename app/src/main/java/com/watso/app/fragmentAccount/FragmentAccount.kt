@@ -34,6 +34,8 @@ class FragmentAccount :Fragment() {
     val TAG = "FragAccount"
     val api= API.create()
 
+    var notificationSwitchBefore = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         fragmentContext = context
@@ -120,7 +122,10 @@ class FragmentAccount :Fragment() {
 
     fun bindSWNotificationPermission() {
         when (AC.getString("notificationPermission", "")) {
-            "true" -> binding.swNotification.isChecked = true
+            "true" -> {
+                binding.swNotification.isChecked = true
+                notificationSwitchBefore = true
+            }
             else -> binding.swNotification.isChecked = false
         }
         binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
@@ -128,10 +133,30 @@ class FragmentAccount :Fragment() {
 
     fun setNotificationPermission() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
+        if (notificationSwitchBefore != binding.swNotification.isChecked)
         when (AC.getString("notificationPermission", "")) {
-            "" -> { AC.requestNotiPermission() }
-            "true" -> { AC.setString("notificationPermission", "false") }
-            else -> AC.setString("notificationPermission", "true")
+            "" -> {
+                Log.d("$TAG 스위치버튼", "")
+                val builder = AlertDialog.Builder(activity)
+                builder.setTitle("알림 권한 요청")
+                    .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 전달받기 위해서 권한을 요청합니다.")
+                    .setPositiveButton("알림 설정", DialogInterface.OnClickListener { dialog, id ->
+                        AC.getNotiPermission()
+                    })
+                    .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id ->
+                        Log.d("TAG, 거절 누름", "")
+                        binding.swNotification.isChecked = false
+                    })
+                builder.show()
+            }
+            "true" -> {
+                AC.setString("notificationPermission", "false")
+                notificationSwitchBefore = false
+            }
+            else -> {
+                AC.setString("notificationPermission", "true")
+                notificationSwitchBefore = true
+            }
         }
 
     }

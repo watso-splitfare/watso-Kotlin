@@ -30,21 +30,19 @@ class RequestPermission(val activity: MainActivity) {
         return notificationManager.areNotificationsEnabled()
     }
 
-    private fun callNotiPermissionDialog() {
+    fun callNotiPermissionDialog() {
         Log.d(TAG, "4")
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("알림 권한 요청")
-            .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 받아 보세요!")
+            .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 전달받기 위해서 권한을 요청합니다.")
             .setPositiveButton("알림 설정", DialogInterface.OnClickListener { dialog, id ->
                 getNotiPermission()
             })
-            .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id ->
-                setPrefs(false)
-            })
+            .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id -> })
         builder.show()
     }
 
-    private fun getNotiPermission() {
+    fun getNotiPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
                 activity,
