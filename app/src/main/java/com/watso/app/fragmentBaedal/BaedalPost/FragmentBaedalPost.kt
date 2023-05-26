@@ -182,14 +182,24 @@ class FragmentBaedalPost :Fragment() {
                         binding.btnCopyAccountNum.setOnClickListener {
                             AC.copyToClipboard("대표자 계좌번호", binding.tvAccountNumber.text.toString())
                         }
-                    } else {
+                    } else if (response.code() == 406 ) {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        Log.d("$TAG[getAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
+                        binding.btnCopyAccountNum.visibility = View.GONE
+                        if (errorResponse.code == 409) {
+                            binding.tvAccountNumber.text =
+                                "계좌 번호 조회 가능 시간이 끝났어요! 아직 배달비를 입금하지 않았다면 대표자와 댓글로 연락해보세요."
+                        } else { binding.lytAccountNumber.visibility = View.GONE }
+                    }
+                    else {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
                             AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[getAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e:Exception) { Log.e("$TAG[getComments]", e.toString())}
-                        finally { binding.tvAccountNumber.text = "계좌번호를 조회할 수 없습니다."  }
+                        finally { binding.lytAccountNumber.visibility = View.GONE }
                     }
                 }
 
