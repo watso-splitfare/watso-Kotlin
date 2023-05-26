@@ -20,16 +20,24 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.google.gson.Gson
+import com.watso.app.API.BaedalPost
+import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.API.UserInfo
 import com.watso.app.databinding.ActivityMainBinding
 import com.watso.app.fragmentAccount.FragmentLogin
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     var mBinding: ActivityMainBinding? = null
     val binding get() = mBinding!!
     val TAG = "MainActivity"
+    val api= API.create()
 
     companion object { lateinit var prefs: PreferenceUtil }
 
@@ -46,6 +54,42 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
         Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
+
+        showProgress()
+        api.getUserInfo().enqueue(object : Callback<UserInfo> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                hideProgress()
+                if (response.code() == 200) {
+                    val userInfo = response.body()!!
+                    prefs.setString("name", userInfo.name)
+                    prefs.setString("accountNum", userInfo.accountNumber)
+                } else if (response.code() == 401) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                     makeToast(errorResponse.msg)
+                    prefs.removeString("accessToken")
+                    prefs.removeString("refreshToken")
+                    prefs.removeString("userId")
+                    prefs.removeString("nickname")
+                    prefs.removeString("name")
+                    prefs.removeString("accountNum")
+                    setFrag(FragmentLogin(), null, 0)
+                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    makeToast(errorResponse.msg)
+                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                hideProgress()
+                Log.e("$TAG[getUserInfo]", t.message.toString())
+                makeToast("유저 정보 갱신 실패")
+            }
+        })
 
         /** FCM설정, Token값 가져오기 */
         MyFirebaseMessagingService().getFirebaseToken()

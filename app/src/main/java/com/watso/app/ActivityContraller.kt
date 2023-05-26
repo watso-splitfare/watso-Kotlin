@@ -117,6 +117,8 @@ class ActivityController(private val activity: MainActivity) {
         prefs.removeString("refreshToken")
         prefs.removeString("userId")
         prefs.removeString("nickname")
+        prefs.removeString("name")
+        prefs.removeString("accountNum")
         setFrag(FragmentLogin(), null, 0)
     }
 }
