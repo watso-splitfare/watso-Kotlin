@@ -133,7 +133,6 @@ class FragmentBaedalOrders :Fragment() {
     }
 
     fun mappingAdapter() {
-
         binding.rvOrders.layoutManager =
             LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvOrders.setHasFixedSize(true)
@@ -149,13 +148,7 @@ class FragmentBaedalOrders :Fragment() {
         Log.d("FragBaedalOrders userOrders addAll", userOrders.toString())
         userOrders.forEach {
             it.isMyOrder = it.userId == userId
-            it.orders.forEach {
-                var price = it.menu.price
-                it.menu.groups?.forEach {
-                    it.options?.forEach { price += it.price }
-                }
-                it.price = price
-            }
+            it.orders.forEach { it.setPrice() }
         }
         binding.rvOrders.adapter!!.notifyDataSetChanged()
 
@@ -163,25 +156,34 @@ class FragmentBaedalOrders :Fragment() {
     }
 
     fun bindPrice() {
+        val dec = DecimalFormat("#,###")
+
         if (isMyorder) {
-            val dec = DecimalFormat("#,###")
-            var price = 0
-            userOrders[0].orders.forEach {
-                price += it.price!! * it.quantity
-            }
-
-            val personalFee = post.fee / post.users.size
-            binding.tvOrderPrice.text = "${dec.format(price)}원"
-            binding.tvFee.text = "${dec.format(personalFee)}원"
-            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
-
             if (post.status == "delivered") {
                 binding.lbFee.text = "1인당 배달비"
                 binding.lbTotalPrice.text = "본인 부담 금액"
             }
+
+            val price = userOrders[0].getTotalPrice()
+            val personalFee = post.fee / post.users.size
+            binding.tvOrderPrice.text = "${dec.format(price)}원"
+            binding.tvFee.text = "${dec.format(personalFee)}원"
+            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
         } else {
-            binding.divider43.visibility = View.GONE
-            binding.lytTable.visibility = View.GONE
+            var price = 0
+            userOrders.forEach { price += it.getTotalPrice() }
+
+            binding.tvOrderPrice.text = "${dec.format(price)}원"
+            binding.tvFee.text = "${dec.format(post.fee)}원"
+            binding.tvTotalPrice.text = "${dec.format(price + post.fee)}원"
+
+            if (post.status == "delivered") {
+                binding.lbFee.text = "배달비"
+                binding.lbTotalPrice.text = "총 결제 금액"
+            } else {
+                binding.lbFee.text = "예상 배달비"
+                binding.lbTotalPrice.text = "예상 총 결제 금액"
+            }
         }
     }
 }

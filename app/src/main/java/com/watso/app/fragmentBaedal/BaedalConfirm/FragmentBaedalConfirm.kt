@@ -44,7 +44,6 @@ class FragmentBaedalConfirm :Fragment() {
 
     var postId = ""
     var orderString = ""
-    var orderPrice = 0
     var fee = 0
     var complete = false
 
@@ -231,12 +230,9 @@ class FragmentBaedalConfirm :Fragment() {
     }
 
     fun bindSetText() {
-        orderPrice = 0
-        userOrder.orders.forEach {
-            orderPrice += it.price!! * it.quantity
-        }
-        binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
-        binding.tvTotalPrice.text = "${dec.format(orderPrice + fee)}원"
+        var totalPrice = userOrder.getTotalPrice()
+        binding.tvOrderPrice.text = "${dec.format(totalPrice)}원"
+        binding.tvTotalPrice.text = "${dec.format(totalPrice + fee)}원"
         if (postId != "-1")
             binding.tvConfirm.text = "주문 등록"
     }
