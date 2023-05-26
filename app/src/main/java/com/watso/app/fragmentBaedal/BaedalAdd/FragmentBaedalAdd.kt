@@ -26,6 +26,7 @@ import com.watso.app.fragmentBaedal.BaedalMenu.FragmentBaedalMenu
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.ActivityController
+import com.watso.app.fragmentAccount.FragmentUpdateAccount
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -335,21 +336,36 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                 })
         } else {
             /** 게시글 신규 등록 */
-            val baedalPosting = BaedalPosting(
-                storeIds[selectedIdx],
-                orderTime!!,
-                binding.spnPlace.selectedItem.toString(),
-                minMember,
-                maxMember,
-                null
-            )
-            AC.setString("postOrder", "")
-            AC.setString("baedalPosting", gson.toJson(baedalPosting))
-            AC.setFrag( FragmentBaedalMenu(), mapOf(
-                "postId" to "-1",
-                "storeId" to storeIds[selectedIdx])
-            )
+            val accountInfo = "${AC.getString("accountNum")} (${AC.getString("name")})"
+            val builder = AlertDialog.Builder(fragmentContext)
+            builder.setTitle("계좌정보 확인")
+                .setMessage("계좌정보가 정확한지 확인해 주세요.\n${accountInfo}")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                    goToFragBaedalMenu(minMember, maxMember)
+                })
+                .setNegativeButton("계좌번호 수정", DialogInterface.OnClickListener { dialog, id ->
+                    AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum"))
+                })
+            builder.show()
         }
+    }
+
+    fun goToFragBaedalMenu(minMember: Int, maxMember: Int) {
+        val baedalPosting = BaedalPosting(
+            storeIds[selectedIdx],
+            orderTime!!,
+            binding.spnPlace.selectedItem.toString(),
+            minMember,
+            maxMember,
+            null
+        )
+        AC.setString("postOrder", "")
+        AC.setString("baedalPosting", gson.toJson(baedalPosting))
+        AC.setFrag( FragmentBaedalMenu(), mapOf(
+            "postId" to "-1",
+            "storeId" to storeIds[selectedIdx])
+        )
+
     }
 
     fun isPostAbleTime(): Boolean {
