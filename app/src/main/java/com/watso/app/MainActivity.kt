@@ -52,44 +52,47 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         prefs = PreferenceUtil(applicationContext)
 
-        Log.d("MainActivity-access token", prefs.getString("accessToken", ""))
-        Log.d("MainActivity-refresh token", prefs.getString("refreshToken", ""))
+        val refreshToken = prefs.getString("refreshToken", "")
+        Log.d("[$TAG]access token", prefs.getString("accessToken", ""))
+        Log.d("[$TAG]refresh token", refreshToken)
 
-        showProgress()
-        api.getUserInfo().enqueue(object : Callback<UserInfo> {
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
-                hideProgress()
-                if (response.code() == 200) {
-                    val userInfo = response.body()!!
-                    prefs.setString("name", userInfo.name)
-                    prefs.setString("accountNum", userInfo.accountNumber)
-                } else if (response.code() == 401) {
-                    val errorBody = response.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                     makeToast(errorResponse.msg)
-                    prefs.removeString("accessToken")
-                    prefs.removeString("refreshToken")
-                    prefs.removeString("userId")
-                    prefs.removeString("nickname")
-                    prefs.removeString("name")
-                    prefs.removeString("accountNum")
-                    setFrag(FragmentLogin(), null, 0)
-                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                    makeToast(errorResponse.msg)
-                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+        if (refreshToken != "") {
+            showProgress()
+            api.getUserInfo().enqueue(object : Callback<UserInfo> {
+                @RequiresApi(Build.VERSION_CODES.O)
+                override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                    hideProgress()
+                    if (response.code() == 200) {
+                        val userInfo = response.body()!!
+                        prefs.setString("name", userInfo.name)
+                        prefs.setString("accountNum", userInfo.accountNumber)
+                    } else if (response.code() == 401) {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        prefs.removeString("accessToken")
+                        prefs.removeString("refreshToken")
+                        prefs.removeString("userId")
+                        prefs.removeString("nickname")
+                        prefs.removeString("name")
+                        prefs.removeString("accountNum")
+                        setFrag(FragmentLogin(), null, 0)
+                        Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        makeToast(errorResponse.msg)
+                        Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<UserInfo>, t: Throwable) {
-                hideProgress()
-                Log.e("$TAG[getUserInfo]", t.message.toString())
-                makeToast("유저 정보 갱신 실패")
-            }
-        })
+                override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                    hideProgress()
+                    Log.e("$TAG[getUserInfo]", t.message.toString())
+                    makeToast("유저 정보 갱신 실패")
+                }
+            })
+        }
 
         /** FCM설정, Token값 가져오기 */
         MyFirebaseMessagingService().getFirebaseToken()
