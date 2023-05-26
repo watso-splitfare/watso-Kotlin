@@ -45,6 +45,9 @@ class FragmentAccount :Fragment() {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
 
+//        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("getUserInfo", this) {
+//                requestKey, bundle -> getUserInfo()
+//        }
         getUserInfo()
         refreshView()
 
@@ -63,6 +66,9 @@ class FragmentAccount :Fragment() {
                     binding.tvEmail.text = userInfo.email
                     binding.tvNickname.text = userInfo.nickname
                     binding.tvAccountNum.text = userInfo.accountNumber
+
+                    AC.setString("nickname", userInfo.nickname)
+                    AC.setString("accountNum", userInfo.accountNumber)
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
