@@ -54,7 +54,9 @@
             true: 휴대폰의 태스크에서 모두닫기 및 스와이프 했을 때 액티비는 종료되고 서비스도 종료
             false: 휴대폰의 태스크에서 모두닫기 및 스와이프 했을 때 액티비티는 종료되고 서비스는 onTackRemoved() 호출이 되며 곧바로 서비스가 재시작되어 onCreate()를 타게 된다.
         -->
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="watso" />
     </application>
 
 </manifest>
