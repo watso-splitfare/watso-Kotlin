@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.watso.app.API.UserInfo
 import com.watso.app.fragmentAccount.FragmentLogin
 
 class ActivityController(private val activity: MainActivity) {
@@ -44,6 +45,10 @@ class ActivityController(private val activity: MainActivity) {
 
     fun removeString(key: String) {
         prefs.removeString(key)
+    }
+
+    fun setUserInfo(userInfo: UserInfo) {
+        activity.setUserInfo(userInfo)
     }
 
     fun makeToast(message: String){
@@ -103,14 +108,6 @@ class ActivityController(private val activity: MainActivity) {
     }
 
     fun logOut(message: String?=null) {
-        message?.let { makeToast(it) }
-
-        prefs.removeString("accessToken")
-        prefs.removeString("refreshToken")
-        prefs.removeString("userId")
-        prefs.removeString("nickname")
-        prefs.removeString("name")
-        prefs.removeString("accountNum")
-        setFrag(FragmentLogin(), null, 0)
+        activity.logOut(message)
     }
 }

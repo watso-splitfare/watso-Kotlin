@@ -32,10 +32,11 @@ import retrofit2.Response
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
     var mBinding: ActivityMainBinding? = null
     val binding get() = mBinding!!
     val TAG = "MainActivity"
-    val api= API.create()
+    val api = API.create()
 
     companion object { lateinit var prefs: PreferenceUtil }
 
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -61,25 +63,11 @@ class MainActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
                     hideProgress()
                     if (response.code() == 200) {
-                        val userInfo = response.body()!!
-                        prefs.setString("name", userInfo.name)
-                        prefs.setString("accountNum", userInfo.accountNumber)
-                    } else if (response.code() == 401) {
-                        val errorBody = response.errorBody()?.string()
-                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
-                        prefs.removeString("accessToken")
-                        prefs.removeString("refreshToken")
-                        prefs.removeString("userId")
-                        prefs.removeString("nickname")
-                        prefs.removeString("name")
-                        prefs.removeString("accountNum")
-                        setFrag(FragmentLogin(), null, 0)
-                        Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                        response.body()?.let { setUserInfo(it) }
                     } else {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        logOut(errorResponse.msg)
                         Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     }
                 }
@@ -298,5 +286,23 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             "Error parsing JWT: $e"
         }
+    }
+
+    fun setUserInfo(userInfo: UserInfo) {
+        prefs.setString("name", userInfo.name)
+        prefs.setString("nickname", userInfo.nickname)
+        prefs.setString("accountNum", userInfo.accountNumber)
+    }
+
+    fun logOut(message: String?=null) {
+        message?.let { makeToast(it) }
+
+        prefs.removeString("accessToken")
+        prefs.removeString("refreshToken")
+        prefs.removeString("userId")
+        prefs.removeString("nickname")
+        prefs.removeString("name")
+        prefs.removeString("accountNum")
+        setFrag(FragmentLogin(), null, 0)
     }
 }

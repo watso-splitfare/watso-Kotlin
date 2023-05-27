@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.LoginModel
+import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
@@ -82,9 +83,8 @@ class FragmentLogin :Fragment() {
                     AC.setString("accessToken", tokens[0])
                     AC.setString("refreshToken", tokens[1])
                     AC.setString("userId", dUserId)
-                    AC.setString("nickname", dNickname)
 
-                    AC.setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+                    getUserInfo()
                 } else  {
                     try {
                         val errorBody = response.errorBody()?.string()
@@ -99,6 +99,31 @@ class FragmentLogin :Fragment() {
                 AC.hideProgressBar()
                 Log.e("login Fragment - login", t.message.toString())
                 AC.makeToast("다시 시도해 주세요.")
+            }
+        })
+    }
+
+    fun getUserInfo() {
+        AC.showProgressBar()
+        api.getUserInfo().enqueue(object : Callback<UserInfo> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                AC.hideProgressBar()
+                if (response.code() == 200) {
+                    response.body()?.let { AC.setUserInfo(it) }
+                    AC.setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.logOut(errorResponse.msg)
+                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("$TAG[getUserInfo]", t.message.toString())
+                AC.makeToast("유저 정보 갱신 실패")
             }
         })
     }
