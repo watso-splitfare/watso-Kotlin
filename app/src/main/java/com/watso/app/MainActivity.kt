@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                     if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         prefs.setString("notificationPermission", true.toString())
                     } else {
-                        prefs.setString("notificationPermission", false.toString())
+                        prefs.setString("notificationPermission", "denied")
                     }
                 }
                 else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)

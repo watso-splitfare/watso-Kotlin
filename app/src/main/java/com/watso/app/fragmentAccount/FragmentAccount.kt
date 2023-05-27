@@ -17,6 +17,7 @@ import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
+import com.watso.app.RequestPermission
 import com.watso.app.databinding.FragAccountBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,6 +26,7 @@ import java.lang.Exception
 
 class FragmentAccount :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var RP: RequestPermission
     lateinit var fragmentContext: Context
 
     lateinit var userInfo: UserInfo
@@ -41,9 +43,25 @@ class FragmentAccount :Fragment() {
         fragmentContext = context
     }
 
+    override fun onResume() {
+        super.onResume()
+        val requestPermitted = RP.isNotificationEnabled()
+        Log.d("[$TAG]onResusme", requestPermitted.toString())
+        if (requestPermitted) {
+            AC.setString("notificationPermission", "true")
+            notificationSwitchBefore = true
+        }
+        else {
+            AC.setString("notificationPermission", "denied")
+            notificationSwitchBefore = false
+        }
+        bindSWNotificationPermission()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
+        RP = RequestPermission(activity as MainActivity)
 
 //        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("getUserInfo", this) {
 //                requestKey, bundle -> getUserInfo()
@@ -102,6 +120,7 @@ class FragmentAccount :Fragment() {
         binding.lytAccountNum.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
 
         bindSWNotificationPermission()
+        binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
 
         binding.lytOss.setOnClickListener {
             startActivity(Intent(fragmentContext, OssLicensesMenuActivity::class.java))
@@ -134,37 +153,38 @@ class FragmentAccount :Fragment() {
             }
             else -> binding.swNotification.isChecked = false
         }
-        binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
     }
 
     fun setNotificationPermission() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
-        if (notificationSwitchBefore != binding.swNotification.isChecked)
-        when (AC.getString("notificationPermission", "")) {
-            "" -> {
-                Log.d("$TAG 스위치버튼", "")
-                val builder = AlertDialog.Builder(activity)
-                builder.setTitle("알림 권한 요청")
-                    .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 전달받기 위해서 권한을 요청합니다.")
-                    .setPositiveButton("알림 설정", DialogInterface.OnClickListener { dialog, id ->
-                        AC.getNotiPermission()
-                    })
-                    .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id ->
-                        Log.d("TAG, 거절 누름", "")
-                        binding.swNotification.isChecked = false
-                    })
-                builder.show()
-            }
-            "true" -> {
-                AC.setString("notificationPermission", "false")
-                notificationSwitchBefore = false
-            }
-            else -> {
-                AC.setString("notificationPermission", "true")
-                notificationSwitchBefore = true
+        if (notificationSwitchBefore != binding.swNotification.isChecked) {
+            when (AC.getString("notificationPermission", "")) {
+                "" -> {
+                    val builder = AlertDialog.Builder(activity)
+                    builder.setTitle("알림 권한 요청")
+                        .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 전달받기 위해서 권한을 요청합니다.")
+                        .setPositiveButton("알림 설정", DialogInterface.OnClickListener { dialog, id ->
+                            RP.getNotiPermission()
+                        })
+                        .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id ->
+                            Log.d("TAG, 거절 누름", "")
+                            binding.swNotification.isChecked = false
+                        })
+                    builder.show()
+                }
+                "true" -> {
+                    AC.setString("notificationPermission", "false")
+                    notificationSwitchBefore = false
+                }
+                "denied" -> {
+                    RP.makeIntent()
+                }
+                else -> {
+                    AC.setString("notificationPermission", "true")
+                    notificationSwitchBefore = true
+                }
             }
         }
-
     }
 
     fun logout() {

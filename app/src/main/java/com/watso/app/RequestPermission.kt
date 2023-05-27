@@ -25,7 +25,7 @@ class RequestPermission(val activity: MainActivity) {
         else callNotiPermissionDialog()
     }
 
-    private fun isNotificationEnabled(): Boolean {
+    fun isNotificationEnabled(): Boolean {
         val notificationManager = activity.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         return notificationManager.areNotificationsEnabled()
     }
@@ -50,10 +50,14 @@ class RequestPermission(val activity: MainActivity) {
                 PERMISSIONS_REQUEST_NOTIFICATION
             )
         } else {
-            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
-            activity.startActivity(intent)
+            makeIntent()
         }
+    }
+
+    fun makeIntent() {
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
+        activity.startActivity(intent)
     }
 
     private fun setPrefs(bool: Boolean) {
