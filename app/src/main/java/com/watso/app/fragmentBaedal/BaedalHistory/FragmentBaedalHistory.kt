@@ -16,6 +16,7 @@ import com.watso.app.API.BaedalPost
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalHistoryBinding
+import com.watso.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.watso.app.fragmentBaedal.BaedalOrders.FragmentBaedalOrders
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
@@ -69,8 +70,16 @@ class FragmentBaedalHistory :Fragment() {
                 AC.hideProgressBar()
                 if (response.code() == 200) {
                     val baedalPosts = mutableListOf<BaedalPost>()
-                    baedalPosts.addAll(response.body()!!)
-                    mappingAdapter(baedalPosts)
+                    if (baedalPosts.isEmpty()) {
+                        binding.rvBaedalListJoined.visibility = View.GONE
+                        binding.lytEmptyList.visibility = View.VISIBLE
+                        binding.lytEmptyList.setOnClickListener { AC.setFrag(FragmentBaedalAdd()) }
+                    } else {
+                        binding.rvBaedalListJoined.visibility = View.VISIBLE
+                        binding.lytEmptyList.visibility = View.GONE
+                        baedalPosts.addAll(response.body()!!)
+                        mappingAdapter(baedalPosts)
+                    }
                 } else {
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
                     AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
