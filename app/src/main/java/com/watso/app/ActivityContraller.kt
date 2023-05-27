@@ -50,14 +50,6 @@ class ActivityController(private val activity: MainActivity) {
         activity.makeToast(message)
     }
 
-    fun requestNotiPermission() {
-        activity.requestNotiPermission()
-    }
-
-    fun getNotiPermission() {
-        activity.getNotiPermission()
-    }
-
     fun showSoftInput(view: View) {
         view.requestFocus()
         activity.showSoftInput(view)

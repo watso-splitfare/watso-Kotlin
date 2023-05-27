@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -21,7 +20,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.gson.Gson
-import com.watso.app.API.BaedalPost
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.API.UserInfo
 import com.watso.app.databinding.ActivityMainBinding
@@ -145,25 +143,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun requestNotiPermission() {
-        if (prefs.getString("notificationPermission", "") == "") {
-            val requestPermission = RequestPermission(this)
-            requestPermission.requestNotificationPermission()
-        }
-    }
-
-    fun getNotiPermission() {
-        val requestPermission = RequestPermission(this)
-        requestPermission.getNotiPermission()
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode != -1) {
             val requestPermission = RequestPermission(this)
             when (requestCode) {
                 requestPermission.PERMISSIONS_REQUEST_NOTIFICATION -> {
                     if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        prefs.setString("notificationPermission", true.toString())
+                        prefs.setString("notificationPermission", "true")
                     } else {
                         prefs.setString("notificationPermission", "denied")
                     }

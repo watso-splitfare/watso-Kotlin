@@ -47,21 +47,18 @@ class FragmentAccount :Fragment() {
         super.onResume()
         val requestPermitted = RP.isNotificationEnabled()
         Log.d("[$TAG]onResusme", requestPermitted.toString())
-        if (requestPermitted) {
-            AC.setString("notificationPermission", "true")
-            notificationSwitchBefore = true
-        }
-        else {
-            AC.setString("notificationPermission", "denied")
-            notificationSwitchBefore = false
-        }
+
         bindSWNotificationPermission()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
+
         AC = ActivityController(activity as MainActivity)
         RP = RequestPermission(activity as MainActivity)
+        RP.setNotiPermitChangedListener(object: RequestPermission.NotiPermitChangedListener {
+            override fun onNotiPermitChanged(permission: String) { bindSWNotificationPermission() }
+        })
 
 //        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("getUserInfo", this) {
 //                requestKey, bundle -> getUserInfo()
@@ -119,8 +116,7 @@ class FragmentAccount :Fragment() {
         binding.lytNickname.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
         binding.lytAccountNum.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
 
-        bindSWNotificationPermission()
-        binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
+        binding.swNotification.setOnCheckedChangeListener { _, _ -> changeNotificationEnabled()}
 
         binding.lytOss.setOnClickListener {
             startActivity(Intent(fragmentContext, OssLicensesMenuActivity::class.java))
@@ -146,44 +142,20 @@ class FragmentAccount :Fragment() {
     }
 
     fun bindSWNotificationPermission() {
-        when (AC.getString("notificationPermission", "")) {
-            "true" -> {
-                binding.swNotification.isChecked = true
-                notificationSwitchBefore = true
-            }
-            else -> binding.swNotification.isChecked = false
+        if (RP.isNotificationEnabled()) {
+            notificationSwitchBefore = true
+            binding.swNotification.isChecked = true
+        } else {
+            notificationSwitchBefore = false
+            binding.swNotification.isChecked = false
         }
     }
 
-    fun setNotificationPermission() {
+    fun changeNotificationEnabled() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
         if (notificationSwitchBefore != binding.swNotification.isChecked) {
-            when (AC.getString("notificationPermission", "")) {
-                "" -> {
-                    val builder = AlertDialog.Builder(activity)
-                    builder.setTitle("알림 권한 요청")
-                        .setMessage("게시글 관련 안내사항이나 댓글소식을 알림으로 전달받기 위해서 권한을 요청합니다.")
-                        .setPositiveButton("알림 설정", DialogInterface.OnClickListener { dialog, id ->
-                            RP.getNotiPermission()
-                        })
-                        .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, id ->
-                            Log.d("TAG, 거절 누름", "")
-                            binding.swNotification.isChecked = false
-                        })
-                    builder.show()
-                }
-                "true" -> {
-                    AC.setString("notificationPermission", "false")
-                    notificationSwitchBefore = false
-                }
-                "denied" -> {
-                    RP.makeIntent()
-                }
-                else -> {
-                    AC.setString("notificationPermission", "true")
-                    notificationSwitchBefore = true
-                }
-            }
+            RP.changeNotificationEnabled()
+            notificationSwitchBefore = binding.swNotification.isChecked
         }
     }
 

@@ -19,6 +19,7 @@ import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.R
+import com.watso.app.RequestPermission
 import com.watso.app.adapterHome.CommentAdapter
 import com.watso.app.databinding.AlertdialogInputtextBinding
 import com.watso.app.databinding.FragBaedalPostBinding
@@ -696,7 +697,7 @@ class FragmentBaedalPost :Fragment() {
                     AC.hideProgressBar()
                     if (response.code() == 204) {
                         Log.d("FragBaedalPost postComment", "성공")
-                        AC.requestNotiPermission()
+                        RequestPermission(activity as MainActivity).requestNotificationPermission()
                         getComments()
                     } else {
                         try {
