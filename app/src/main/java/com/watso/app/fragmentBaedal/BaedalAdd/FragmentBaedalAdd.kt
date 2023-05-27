@@ -321,6 +321,7 @@ class FragmentBaedalAdd :Fragment(), View.OnTouchListener {
                         if (response.code() == 204) {
                             val bundle = bundleOf("success" to true, "postId" to postId)
                             getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
+                            getActivity()?.getSupportFragmentManager()?.setFragmentResult("backToBaedalList", bundleOf())
                             AC.onBackPressed()
                         } else {
                             Log.e("baedalAdd Fragment - updateBaedalPost", response.toString())
