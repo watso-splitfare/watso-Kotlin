@@ -75,6 +75,7 @@ class FragmentLogin :Fragment() {
             override fun onResponse(call: Call<LoginKey>, response: Response<LoginKey>) {
                 AC.hideProgressBar()
                 if (response.code()==200) {
+                    Log.d(TAG,response.body()!!.loginKey)
                     val tokens = response.headers().get("Authentication").toString().split("/")
                     val payload = AC.decodeToken(tokens[0])
                     val dUserId = JSONObject(payload).getString("user_id")
@@ -83,9 +84,9 @@ class FragmentLogin :Fragment() {
                     AC.setString("accessToken", tokens[0])
                     AC.setString("refreshToken", tokens[1])
                     AC.setString("userId", dUserId)
-                    AC.setString("loginKey", response.body()!!.key)
+                    AC.setString("loginKey", response.body()!!.loginKey)
 
-                    getUserInfo()
+                    AC.initDeviceInfo()
                 } else  {
                     try {
                         val errorBody = response.errorBody()?.string()
@@ -103,31 +104,31 @@ class FragmentLogin :Fragment() {
             }
         })
     }
-
-    fun getUserInfo() {
-        AC.showProgressBar()
-        api.getUserInfo().enqueue(object : Callback<UserInfo> {
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
-                AC.hideProgressBar()
-                if (response.code() == 200) {
-                    response.body()?.let { AC.setUserInfo(it) }
-                    AC.setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                    AC.logOut(errorResponse.msg)
-                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
-                }
-            }
-
-            override fun onFailure(call: Call<UserInfo>, t: Throwable) {
-                AC.hideProgressBar()
-                Log.e("$TAG[getUserInfo]", t.message.toString())
-                AC.makeToast("유저 정보 갱신 실패")
-            }
-        })
-    }
+//
+//    fun getUserInfo() {
+//        AC.showProgressBar()
+//        api.getUserInfo().enqueue(object : Callback<UserInfo> {
+//            @RequiresApi(Build.VERSION_CODES.O)
+//            override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+//                AC.hideProgressBar()
+//                if (response.code() == 200) {
+//                    response.body()?.let { AC.setUserInfo(it) }
+//                    AC.setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+//                } else {
+//                    val errorBody = response.errorBody()?.string()
+//                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+//                    AC.logOut(errorResponse.msg)
+//                    Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+//                AC.hideProgressBar()
+//                Log.e("$TAG[getUserInfo]", t.message.toString())
+//                AC.makeToast("유저 정보 갱신 실패")
+//            }
+//        })
+//    }
 
     fun verifyInput(case: String, text: String): Boolean {
         val message = AC.verifyInput(case, text)

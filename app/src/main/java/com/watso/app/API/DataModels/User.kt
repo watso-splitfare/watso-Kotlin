@@ -2,6 +2,7 @@ package com.watso.app.API
 
 import com.google.gson.annotations.SerializedName
 
+
 /** 유저 API 관련 데이터 모델 */
 
 data class SignUpModel(
@@ -32,6 +33,7 @@ data class UserInfo(
     val email: String
 )
 
+
 /** 프로필 API 관련 데이터 모델 */
 
 data class UpdateAccountNumber(
@@ -49,6 +51,7 @@ data class UpdatePassword(
     val newPassword: String
 )
 
+
 /** 찾기 */
 
 data class ForgotPassword(
@@ -59,4 +62,24 @@ data class ForgotPassword(
 data class DuplicationCheckResult(
     @SerializedName("is_duplicated")
     val isDuplicated: Boolean
+)
+
+
+/** 기기 관리 */
+
+data class SendFcmToken(
+    @SerializedName("key")
+    val loginKey: String,
+    @SerializedName("device_token")
+    val fcmToken: String
+)
+
+data class setNotificationPermission(
+    @SerializedName("device_token")
+    val fcmToken: String,
+    val allow: Boolean
+)
+
+data class getNotificationPermission(
+    val allow: Boolean
 )

@@ -47,8 +47,8 @@ class ActivityController(private val activity: MainActivity) {
         prefs.removeString(key)
     }
 
-    fun setUserInfo(userInfo: UserInfo) {
-        activity.setUserInfo(userInfo)
+    fun initDeviceInfo() {
+        activity.initDeviceInfo()
     }
 
     fun makeToast(message: String){

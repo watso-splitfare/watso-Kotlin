@@ -21,7 +21,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.API.SendFcmToken
 import com.watso.app.API.UserInfo
+import com.watso.app.API.VoidResponse
 import com.watso.app.databinding.ActivityMainBinding
 import com.watso.app.fragmentAccount.FragmentLogin
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
@@ -52,33 +54,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         prefs = PreferenceUtil(applicationContext)
 
-        val refreshToken = prefs.getString("refreshToken", "")
-        Log.d("[$TAG]access token", prefs.getString("accessToken", ""))
-        Log.d("[$TAG]refresh token", refreshToken)
-
-        if (refreshToken != "") {
-            showProgress()
-            api.getUserInfo().enqueue(object : Callback<UserInfo> {
-                @RequiresApi(Build.VERSION_CODES.O)
-                override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
-                    hideProgress()
-                    if (response.code() == 200) {
-                        response.body()?.let { setUserInfo(it) }
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        logOut(errorResponse.msg)
-                        Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
-                    }
-                }
-
-                override fun onFailure(call: Call<UserInfo>, t: Throwable) {
-                    hideProgress()
-                    Log.e("$TAG[getUserInfo]", t.message.toString())
-                    makeToast("유저 정보 갱신 실패")
-                }
-            })
-        }
+        prefs.setString("deviceInited", "false")
+        initDeviceInfo()
 
         /** FCM설정, Token값 가져오기 */
         MyFirebaseMessagingService().getFirebaseToken()
@@ -117,6 +94,70 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    fun initDeviceInfo() {
+        Log.d("[$TAG][initDeviceInfo]", prefs.getString("deviceInited", "false"))
+
+        if (prefs.getString("deviceInited", "false") != "true") {
+            val refreshToken = prefs.getString("refreshToken", "")
+            Log.d("[$TAG]access token", prefs.getString("accessToken", ""))
+            Log.d("[$TAG]refresh token", refreshToken)
+
+            if (refreshToken != "" && prefs.getString("loginKey", "") != "") {
+                showProgress()
+                api.getUserInfo().enqueue(object : Callback<UserInfo> {
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                        hideProgress()
+                        if (response.code() == 200) {
+                            response.body()?.let { setUserInfo(it) }
+                            sendFcmToken()
+                        } else {
+                            val errorBody = response.errorBody()?.string()
+                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                            logOut(errorResponse.msg)
+                            Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                        hideProgress()
+                        Log.e("$TAG[getUserInfo]", t.message.toString())
+                        makeToast("유저 정보 갱신 실패")
+                    }
+                })
+            }
+        }
+    }
+
+    fun sendFcmToken() {
+        showProgress()
+        val setDeviceToken = SendFcmToken(
+            prefs.getString("loginKey", ""),
+            prefs.getString("fcmToken", "")
+        )
+        api.sendFcmToken(setDeviceToken).enqueue(object : Callback<VoidResponse> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                hideProgress()
+                if (response.code() == 204) {
+                    setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
+                }
+                else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    logOut(errorResponse.msg)
+                    Log.d("$TAG[sendFcmToken]", "${errorResponse.code}: ${errorResponse.msg}")
+                }
+            }
+
+            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                hideProgress()
+                Log.e("$TAG[sendFcmToken]", t.message.toString())
+                makeToast("fcm 토큰 전송 실패")
+            }
+        })
     }
 
     /** DynamicLink */
@@ -303,6 +344,7 @@ class MainActivity : AppCompatActivity() {
         prefs.removeString("nickname")
         prefs.removeString("name")
         prefs.removeString("accountNum")
+        prefs.removeString("deviceInited")
         setFrag(FragmentLogin(), null, 0)
     }
 }

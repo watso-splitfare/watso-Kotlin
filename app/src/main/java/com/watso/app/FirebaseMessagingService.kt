@@ -26,7 +26,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /** Token 생성 메서드(FirebaseInstanceIdService 사라짐) */
     override fun onNewToken(token: String) {
         Log.d(TAG, "new Token: $token")
-        MainActivity.prefs.setString("registration", token)
+        MainActivity.prefs.setString("fcmToken", token)
 
         // 토큰 값을 따로 저장
         /*val pref = this.getSharedPreferences("token", Context.MODE_PRIVATE)
@@ -97,7 +97,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         //비동기 방식
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             Log.d(TAG, "token=${it}")
-            MainActivity.prefs.setString("registration", it)
+            MainActivity.prefs.setString("fcmToken", it)
         }
 
 //		  //동기방식

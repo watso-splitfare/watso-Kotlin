@@ -1,5 +1,7 @@
 package com.watso.app.API
 
+import com.google.gson.annotations.SerializedName
+
 /** Auth API 관련 데이터 모델 */
 
 data class LoginModel(
@@ -8,5 +10,6 @@ data class LoginModel(
 )
 
 data class LoginKey(
-    val key: String
+    @SerializedName("key")
+    val loginKey: String
 )
