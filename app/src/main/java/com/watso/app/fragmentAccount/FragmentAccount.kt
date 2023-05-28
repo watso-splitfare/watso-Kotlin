@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -117,6 +118,9 @@ class FragmentAccount :Fragment() {
 
         binding.swNotification.setOnCheckedChangeListener { _, _ -> changeNotificationEnabled()}
 
+        binding.lytOpenTalk.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://open.kakao.com/o/gE07iSmf")))
+        }
         binding.lytOss.setOnClickListener {
             startActivity(Intent(fragmentContext, OssLicensesMenuActivity::class.java))
             OssLicensesMenuActivity.setActivityTitle("오픈소스 라이선스")
@@ -196,6 +200,11 @@ class FragmentAccount :Fragment() {
             RP.changeNotificationEnabled()
             notificationSwitchBefore = binding.swNotification.isChecked
         }
+    }
+
+    fun linkToOpenChat() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://open.kakao.com/o/gE07iSmf"))
+        startActivity(intent)
     }
 
     fun logout() {
