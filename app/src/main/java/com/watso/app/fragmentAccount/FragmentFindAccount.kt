@@ -84,9 +84,10 @@ class FragmentFindAccount :Fragment() {
     }
 
     fun findUsername() {
-        if (verifyInput("email", binding.etEmailUsername.text.toString())) {
+        val email = "${binding.etEmailUsername.text}@pusan.ac.kr"
+        if (verifyInput("email", email)) {
             AC.showProgressBar()
-            api.sendForgotUsername(binding.etEmailUsername.text.toString()).enqueue(object : Callback<VoidResponse> {
+            api.sendForgotUsername(email).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
                     AC.hideProgressBar()
                     if (response.code() == 204) {
@@ -115,7 +116,7 @@ class FragmentFindAccount :Fragment() {
 
     fun issueTmpePassword() {
         val username = binding.etUsername.text.toString()
-        val email = binding.etEmailPassword.text.toString()
+        val email = "${binding.etEmailPassword.text}@pusan.ac.kr"
         if (isSendAble && verifyInput("username", username) && verifyInput("email", email)) {
             isSendAble = false
             AC.showProgressBar()

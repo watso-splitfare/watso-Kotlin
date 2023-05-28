@@ -87,7 +87,7 @@ class ActivityController(private val activity: MainActivity) {
                 "username" -> {"아이디는 5~20자의 영문자 또는 숫자로 구성되어야 합니다."}
                 "password" -> {"비밀번호는 영문자, 숫자, 특수문자를 각각 하나이상 포함하여 8~40자로 구성되어야 합니다."}
                 "accountNum" -> {"사용할 수 없는 계좌번호 형식입니다."}
-                else -> {"이메일 형식이 옳바르지 않습니다."}
+                else -> {"사용할 수 없는 메일 형식입니다."}
             }
         }
     }
