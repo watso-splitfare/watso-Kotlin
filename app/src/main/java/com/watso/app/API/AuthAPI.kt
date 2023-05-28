@@ -9,10 +9,11 @@ interface AuthAPI {
     @POST("auth/login")        // 로그인
     fun login(
         @Body jsonparams: LoginModel
-    ): Call<VoidResponse>
+    ): Call<LoginKey>
 
-    @DELETE("auth/logout")         // 로그아웃
+    @POST("auth/logout")         // 로그아웃
     fun logout(
+        @Body jsonparams: LoginKey
     ): Call<VoidResponse>
 
     @GET("auth/refresh")        // 토큰 재발급

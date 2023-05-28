@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.API.LoginKey
 import com.watso.app.API.LoginModel
 import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
@@ -71,8 +72,8 @@ class FragmentLogin :Fragment() {
     fun login() {
         val reg = AC.getString("registration", "")
         AC.showProgressBar()
-        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
-            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<LoginKey> {
+            override fun onResponse(call: Call<LoginKey>, response: Response<LoginKey>) {
                 AC.hideProgressBar()
                 if (response.code()==200) {
                     val tokens = response.headers().get("Authentication").toString().split("/")
@@ -83,6 +84,7 @@ class FragmentLogin :Fragment() {
                     AC.setString("accessToken", tokens[0])
                     AC.setString("refreshToken", tokens[1])
                     AC.setString("userId", dUserId)
+                    AC.setString("loginKey", response.body()!!.key)
 
                     getUserInfo()
                 } else  {
@@ -95,7 +97,7 @@ class FragmentLogin :Fragment() {
                 }
             }
 
-            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+            override fun onFailure(call: Call<LoginKey>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("login Fragment - login", t.message.toString())
                 AC.makeToast("다시 시도해 주세요.")

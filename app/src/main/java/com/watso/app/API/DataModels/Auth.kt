@@ -10,3 +10,7 @@ data class LoginModel(
     @SerializedName("registration_token")
     val registrationToken: String
 )
+
+data class LoginKey(
+    val key: String
+)

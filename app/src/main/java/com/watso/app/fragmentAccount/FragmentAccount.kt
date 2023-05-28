@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
+import com.watso.app.API.LoginKey
 import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
@@ -161,7 +162,7 @@ class FragmentAccount :Fragment() {
 
     fun logout() {
         AC.showProgressBar()
-        api.logout().enqueue(object: Callback<VoidResponse> {
+        api.logout(LoginKey(AC.getString("loginKey"))).enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {}
