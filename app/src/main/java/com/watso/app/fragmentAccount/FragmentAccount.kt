@@ -12,10 +12,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.gson.Gson
+import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.API.LoginKey
-import com.watso.app.API.UserInfo
-import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.RequestPermission
@@ -150,11 +148,51 @@ class FragmentAccount :Fragment() {
             notificationSwitchBefore = false
             binding.swNotification.isChecked = false
         }
+
+        AC.showProgressBar()
+        api.getNotificationPermission(AC.getString("fcmToken", "")).enqueue(object: Callback<getNotificationPermission> {
+            override fun onResponse(call: Call<getNotificationPermission>, response: Response<getNotificationPermission>) {
+                AC.hideProgressBar()
+                if (response.code() == 200) {
+                    Log.d("[$TAG]getNotificationPermisson]서버에저장된상태", response.body()!!.allow.toString())
+                    if (response.body()!!.allow && RP.isNotificationEnabled()) {
+                        notificationSwitchBefore = true
+                        binding.swNotification.isChecked = true
+                    } else {
+                        notificationSwitchBefore = false
+                        binding.swNotification.isChecked = false
+                    }
+                }
+                else Log.d("$TAG[getNotificationPermission]응답에러", response.errorBody()?.string().toString())
+            }
+
+            override fun onFailure(call: Call<getNotificationPermission>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("$TAG[getNotificationPermission]", t.message.toString())
+            }
+        })
     }
 
     fun changeNotificationEnabled() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
         if (notificationSwitchBefore != binding.swNotification.isChecked) {
+            val setNotificationPermission = setNotificationPermission(
+                AC.getString("fcmToken", ""),
+                binding.swNotification.isChecked
+            )
+            AC.showProgressBar()
+            api.setNotificationPermission(setNotificationPermission).enqueue(object: Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    AC.hideProgressBar()
+                    if (response.code() == 204) { Log.d("[$TAG]변경성공", "") }
+                    else Log.d("$TAG[changeNotificationEnabled]응답에러", response.errorBody()?.string().toString())
+                }
+
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                    AC.hideProgressBar()
+                    Log.e("$TAG[changeNotificationEnabled]", t.message.toString())
+                }
+            })
             RP.changeNotificationEnabled()
             notificationSwitchBefore = binding.swNotification.isChecked
         }
@@ -172,7 +210,7 @@ class FragmentAccount :Fragment() {
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
-                Log.d("$TAG[logtout]", t.message.toString())
+                Log.e("$TAG[logtout]", t.message.toString())
                 AC.logOut("로그아웃 되었습니다.")
             }
         })
