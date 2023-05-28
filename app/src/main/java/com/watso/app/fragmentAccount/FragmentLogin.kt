@@ -70,9 +70,8 @@ class FragmentLogin :Fragment() {
     }
 
     fun login() {
-        val reg = AC.getString("registration", "")
         AC.showProgressBar()
-        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<LoginKey> {
+        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString())).enqueue(object: Callback<LoginKey> {
             override fun onResponse(call: Call<LoginKey>, response: Response<LoginKey>) {
                 AC.hideProgressBar()
                 if (response.code()==200) {
