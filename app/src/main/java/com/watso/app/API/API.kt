@@ -28,7 +28,6 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
             "${BASE_URL}user/signup/validation-check",
             "${BASE_URL}user/forgot/username",
             "${BASE_URL}user/forgot/password",
-            "${BASE_URL}user/profile",
             "${BASE_URL}user/profile/account-number",
             "${BASE_URL}user/profile/nickname",
             "${BASE_URL}user/profile/password"

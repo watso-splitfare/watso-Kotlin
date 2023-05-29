@@ -35,6 +35,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /** 메시지 수신 메서드(포그라운드) */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        Log.d("fcm메시지리시브드", remoteMessage.data.toString())
+        Log.d("fcm메시지리시브드", remoteMessage.notification?.body.toString())
         val sharedPreferences = getSharedPreferences("cache", Context.MODE_PRIVATE)
         val isNotificationEnabled = sharedPreferences.getString("notificationPermission", "")
         if (isNotificationEnabled == "true") {

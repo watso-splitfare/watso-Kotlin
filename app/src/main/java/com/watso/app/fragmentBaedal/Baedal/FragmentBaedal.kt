@@ -123,6 +123,7 @@ class FragmentBaedal :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 AC.hideProgressBar()
+                Log.d("겟포스트 프리뷰", response.code().toString())
                 if (response.code() == 200) {
                     val joinedPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinedPosts, true)
@@ -150,6 +151,7 @@ class FragmentBaedal :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 AC.hideProgressBar()
+                Log.d("겟포스트 프리뷰", response.code().toString())
                 if (response.code() == 200) {
                     joinablePosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinablePosts)
