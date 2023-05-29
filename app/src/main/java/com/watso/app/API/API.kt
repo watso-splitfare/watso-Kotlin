@@ -26,7 +26,11 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
             "${BASE_URL}auth/login",
             "${BASE_URL}user/signup",
             "${BASE_URL}user/signup/validation-check",
-            "${BASE_URL}user/forgot/password"
+            "${BASE_URL}user/forgot/password",
+            "${BASE_URL}user/profile",
+            "${BASE_URL}user/profile/account-number",
+            "${BASE_URL}user/profile/nickname",
+            "${BASE_URL}user/profile/password"
         )
         fun create(): API {
             val gson :Gson = GsonBuilder().setLenient().create();
