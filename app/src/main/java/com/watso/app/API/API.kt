@@ -53,8 +53,9 @@ interface API:AuthAPI, UserAPI, BaedalAPI, TaxiAPIS, AdminAPIS {
                 val accessToken = prefs.getString("accessToken", "")
                 val refreshToken = prefs.getString("refreshToken", "")
 
+                val method = chain.request().method()
                 val targetUrl = chain.request().url().toString()
-                Log.d("$TAG[targetURL]", targetUrl)
+                Log.d("[$TAG][$method]", targetUrl)
 
                 if (targetUrl == BASE_URL + "auth/refresh") {
                     Log.d("[${TAG}]refresh token", refreshToken)
