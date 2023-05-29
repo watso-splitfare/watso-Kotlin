@@ -154,11 +154,11 @@ class FragmentAccount :Fragment() {
         }
 
         AC.showProgressBar()
-        api.getNotificationPermission(AC.getString("fcmToken", "")).enqueue(object: Callback<getNotificationPermission> {
-            override fun onResponse(call: Call<getNotificationPermission>, response: Response<getNotificationPermission>) {
+        api.getNotificationPermission().enqueue(object: Callback<NotificationPermission> {
+            override fun onResponse(call: Call<NotificationPermission>, response: Response<NotificationPermission>) {
                 AC.hideProgressBar()
                 if (response.code() == 200) {
-                    Log.d("[$TAG]getNotificationPermisson]서버에저장된상태", response.body()!!.allow.toString())
+                    Log.d("[$TAG][getNotificationPermisson]서버에저장된상태", response.body()!!.allow.toString())
                     if (response.body()!!.allow && RP.isNotificationEnabled()) {
                         notificationSwitchBefore = true
                         binding.swNotification.isChecked = true
@@ -170,7 +170,7 @@ class FragmentAccount :Fragment() {
                 else Log.d("$TAG[getNotificationPermission]응답에러", response.errorBody()?.string().toString())
             }
 
-            override fun onFailure(call: Call<getNotificationPermission>, t: Throwable) {
+            override fun onFailure(call: Call<NotificationPermission>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("$TAG[getNotificationPermission]", t.message.toString())
             }
@@ -180,12 +180,11 @@ class FragmentAccount :Fragment() {
     fun changeNotificationEnabled() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
         if (notificationSwitchBefore != binding.swNotification.isChecked) {
-            val setNotificationPermission = setNotificationPermission(
-                AC.getString("fcmToken", ""),
+            val notificationPermission = NotificationPermission(
                 binding.swNotification.isChecked
             )
             AC.showProgressBar()
-            api.setNotificationPermission(setNotificationPermission).enqueue(object: Callback<VoidResponse> {
+            api.setNotificationPermission(notificationPermission).enqueue(object: Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     AC.hideProgressBar()
                     if (response.code() == 204) { Log.d("[$TAG]변경성공", "") }
@@ -209,7 +208,7 @@ class FragmentAccount :Fragment() {
 
     fun logout() {
         AC.showProgressBar()
-        api.logout(LoginKey(AC.getString("loginKey"))).enqueue(object: Callback<VoidResponse> {
+        api.logout().enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {}

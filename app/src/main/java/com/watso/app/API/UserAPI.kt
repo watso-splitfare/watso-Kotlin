@@ -82,16 +82,15 @@ interface UserAPI {
     /** 기기 관리 */
     @POST("$DEVICE")                    // 기기 정보 추가
     fun sendFcmToken(
-        @Body jsonparams: SendFcmToken
-    ): Call<VoidResponse>
-
-    @PATCH("$DEVICE/notification")      // 알림 허용상태 변경
-    fun setNotificationPermission(
-        @Body jsonparams: setNotificationPermission
+        @Body jsonparams: FcmToken
     ): Call<VoidResponse>
 
     @GET("$DEVICE/notification")        // 알림 허용상태 조회
     fun getNotificationPermission(
-        @Query("device_token") fcmToken: String
-    ): Call<getNotificationPermission>
+    ): Call<NotificationPermission>
+
+    @PATCH("$DEVICE/notification")      // 알림 허용상태 변경
+    fun setNotificationPermission(
+        @Body jsonparams: NotificationPermission
+    ): Call<VoidResponse>
 }

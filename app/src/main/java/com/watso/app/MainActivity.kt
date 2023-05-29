@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.API.SendFcmToken
+import com.watso.app.API.FcmToken
 import com.watso.app.API.UserInfo
 import com.watso.app.API.VoidResponse
 import com.watso.app.databinding.ActivityMainBinding
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("[$TAG]access token", prefs.getString("accessToken", ""))
             Log.d("[$TAG]refresh token", refreshToken)
 
-            if (refreshToken != "" && prefs.getString("loginKey", "") != "") {
+            if (refreshToken != "") {
                 showProgress()
                 api.getUserInfo().enqueue(object : Callback<UserInfo> {
                     @RequiresApi(Build.VERSION_CODES.O)
@@ -133,11 +133,10 @@ class MainActivity : AppCompatActivity() {
 
     fun sendFcmToken() {
         showProgress()
-        val setDeviceToken = SendFcmToken(
-            prefs.getString("loginKey", ""),
-            prefs.getString("fcmToken", "")
-        )
-        api.sendFcmToken(setDeviceToken).enqueue(object : Callback<VoidResponse> {
+        val fcmToken = FcmToken(prefs.getString("fcmToken", ""))
+        if (fcmToken.fcmToken == "")
+            return
+        api.sendFcmToken(fcmToken).enqueue(object : Callback<VoidResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 hideProgress()

@@ -67,7 +67,11 @@ data class DuplicationCheckResult(
 
 /** 기기 관리 */
 
-data class SendFcmToken(
+data class FcmToken(
+    @SerializedName("device_token")
+    val fcmToken: String
+)
+/*data class SendFcmToken(
     @SerializedName("key")
     val loginKey: String,
     @SerializedName("device_token")
@@ -78,8 +82,8 @@ data class setNotificationPermission(
     @SerializedName("device_token")
     val fcmToken: String,
     val allow: Boolean
-)
+)*/
 
-data class getNotificationPermission(
+data class NotificationPermission(
     val allow: Boolean
 )
