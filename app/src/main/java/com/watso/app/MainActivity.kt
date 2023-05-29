@@ -357,6 +357,8 @@ class MainActivity : AppCompatActivity() {
         prefs.removeString("name")
         prefs.removeString("accountNum")
         prefs.removeString("deviceInited")
+        prefs.removeString("fcmToken")
+        prefs.removeString("previousFcmToken")
         setFrag(FragmentLogin(), null, 0)
     }
 }
