@@ -141,11 +141,6 @@ class MainActivity : AppCompatActivity() {
             setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
             return
         }
-        if (previous==fcmToken) {
-            Log.d(TAG, "토큰 일치")
-            setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
-            return
-        }
         Log.d(TAG,"토큰 갱신")
         showProgress()
         api.sendFcmToken(FcmToken(fcmToken)).enqueue(object : Callback<VoidResponse> {
