@@ -80,7 +80,7 @@ interface UserAPI {
 
 
     /** 기기 관리 */
-    @POST("$DEVICE")                    // 기기 정보 추가
+    @PATCH("$DEVICE/token")                    // 기기 정보 추가
     fun sendFcmToken(
         @Body jsonparams: FcmToken
     ): Call<VoidResponse>
