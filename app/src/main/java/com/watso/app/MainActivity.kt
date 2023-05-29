@@ -138,10 +138,12 @@ class MainActivity : AppCompatActivity() {
         Log.d("[$TAG][sendFcmToken]", "previous: $previous, current: $fcmToken")
         if (fcmToken == "") {
             Log.d(TAG, "fcm 토큰 조회 실패")
+            setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
             return
         }
         if (previous==fcmToken) {
             Log.d(TAG, "토큰 일치")
+            setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
             return
         }
         Log.d(TAG,"토큰 갱신")
