@@ -62,6 +62,7 @@ class FragmentFindAccount :Fragment() {
 
         binding.tvFindUsername.setOnClickListener {
             forgot = "username"
+            isSendAble = true
             AC.hideSoftInput()
             binding.etEmailPassword.setText("")
             binding.etUsername.setText("")
@@ -72,6 +73,7 @@ class FragmentFindAccount :Fragment() {
         }
         binding.tvFindPassword.setOnClickListener {
             forgot = "password"
+            isSendAble = true
             AC.hideSoftInput()
             binding.etEmailUsername.setText("")
             binding.lytFindUsername.visibility = View.GONE
@@ -85,7 +87,8 @@ class FragmentFindAccount :Fragment() {
 
     fun findUsername() {
         val email = "${binding.etEmailUsername.text}@pusan.ac.kr"
-        if (verifyInput("email", email)) {
+        if (isSendAble && verifyInput("email", email)) {
+            isSendAble = false
             AC.showProgressBar()
             api.sendForgotUsername(email).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>,response: Response<VoidResponse>) {
@@ -93,6 +96,7 @@ class FragmentFindAccount :Fragment() {
                     if (response.code() == 204) {
                         binding.tvResultUsername.text = "입력하신 메일로 아이디가 전송되었습니다."
                     } else {
+                        isSendAble = true
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
@@ -107,6 +111,7 @@ class FragmentFindAccount :Fragment() {
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     AC.hideProgressBar()
+                    isSendAble = true
                     Log.e("FragFindAccount username", t.message.toString())
                     binding.tvResultUsername.text = ""
                 }
@@ -126,6 +131,7 @@ class FragmentFindAccount :Fragment() {
                     if (response.code() == 204) {
                         binding.tvResultPassword.text = "입력하신 메일로 임시 비밀번호가 전송되었습니다."
                     } else {
+                        isSendAble = true
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
@@ -140,6 +146,7 @@ class FragmentFindAccount :Fragment() {
 
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     AC.hideProgressBar()
+                    isSendAble = true
                     Log.e("FragFindAccount username", t.message.toString())
                     binding.tvResultPassword.text = "다시 시도해주세요"
                 }
