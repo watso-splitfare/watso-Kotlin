@@ -70,17 +70,20 @@ class FragmentBaedalHistory :Fragment() {
                 AC.hideProgressBar()
                 if (response.code() == 200) {
                     val baedalPosts = mutableListOf<BaedalPost>()
+                    baedalPosts.addAll(response.body()!!)
                     if (baedalPosts.isEmpty()) {
+                        Log.d("히스토리", "빔")
                         binding.rvBaedalListJoined.visibility = View.GONE
                         binding.lytEmptyList.visibility = View.VISIBLE
                         binding.lytEmptyList.setOnClickListener { AC.setFrag(FragmentBaedalAdd()) }
                     } else {
+                        Log.d("히스토리", "안빔")
                         binding.rvBaedalListJoined.visibility = View.VISIBLE
                         binding.lytEmptyList.visibility = View.GONE
-                        baedalPosts.addAll(response.body()!!)
                         mappingAdapter(baedalPosts)
                     }
                 } else {
+                    Log.d("히스토리", "에러")
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
                     AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
