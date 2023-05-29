@@ -54,11 +54,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         prefs = PreferenceUtil(applicationContext)
 
+        /** FCM설정, Token값 가져오기 */
+        MyFirebaseMessagingService().getFirebaseToken()
+
         prefs.setString("deviceInited", "false")
         initDeviceInfo()
 
-        /** FCM설정, Token값 가져오기 */
-        MyFirebaseMessagingService().getFirebaseToken()
 
         if (prefs.getString("refreshToken", "") == "") {
             setFrag(FragmentLogin(), popBackStack=0, fragIndex=0)
@@ -132,15 +133,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendFcmToken() {
-        showProgress()
-        val fcmToken = FcmToken(prefs.getString("fcmToken", ""))
-        if (fcmToken.fcmToken == "")
+        val previous = prefs.getString("previousFcmToken", "")
+        val fcmToken = prefs.getString("fcmToken", "")
+        Log.d("[$TAG][sendFcmToken]", "previous: $previous, current: $fcmToken")
+        if (fcmToken == "") {
+            Log.d(TAG, "fcm 토큰 조회 실패")
             return
-        api.sendFcmToken(fcmToken).enqueue(object : Callback<VoidResponse> {
+        }
+        if (previous==fcmToken) {
+            Log.d(TAG, "토큰 일치")
+            return
+        }
+        Log.d(TAG,"토큰 갱신")
+        showProgress()
+        api.sendFcmToken(FcmToken(fcmToken)).enqueue(object : Callback<VoidResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 hideProgress()
                 if (response.code() == 204) {
+                    prefs.setString("previousFcmToken", fcmToken)
                     setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
                 }
                 else {
