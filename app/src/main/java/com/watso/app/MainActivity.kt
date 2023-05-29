@@ -141,13 +141,19 @@ class MainActivity : AppCompatActivity() {
             setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
             return
         }
-        Log.d(TAG,"토큰 갱신")
+        if (prefs.getString("deviceInited", "false") == "true") {
+            Log.d(TAG, "fcm 토큰 갱신되어있음, 반환")
+            return
+        }
+        Log.d(TAG,"fcm 토큰 갱신")
+
         showProgress()
         api.sendFcmToken(FcmToken(fcmToken)).enqueue(object : Callback<VoidResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 hideProgress()
                 if (response.code() == 204) {
+                    prefs.setString("deviceInited", "true")
                     prefs.setString("previousFcmToken", fcmToken)
                     setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
                 }
@@ -354,6 +360,7 @@ class MainActivity : AppCompatActivity() {
         prefs.removeString("deviceInited")
         prefs.removeString("fcmToken")
         prefs.removeString("previousFcmToken")
+        MyFirebaseMessagingService().getFirebaseToken()
         setFrag(FragmentLogin(), null, 0)
     }
 }
