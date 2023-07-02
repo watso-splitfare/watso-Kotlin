@@ -53,13 +53,15 @@ class FragmentBaedal :Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         fragmentContext = context
+        AC = ActivityController(activity as MainActivity)
+        checkIntent()
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalBinding.inflate(inflater, container, false)
-        AC = ActivityController(activity as MainActivity)
+//        AC = ActivityController(activity as MainActivity)
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("deletePost", this) {
                 requestKey, bundle -> getPostPreview()
@@ -80,6 +82,13 @@ class FragmentBaedal :Fragment() {
         getPostPreview()
 
         return binding.root
+    }
+
+    fun checkIntent() {
+        val mActivity = activity as MainActivity
+        val postId = mActivity.intent.getStringExtra("post_id")
+        Log.d("[$TAG][checkIntent]", "postId: $postId")
+        postId?.run { AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId)) }
     }
 
     fun setAdapter() {

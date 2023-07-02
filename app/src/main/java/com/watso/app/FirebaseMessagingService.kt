@@ -24,19 +24,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         Log.d(TAG, "new Token: $token")
         MainActivity.prefs.setString("fcmToken", token)
-
-        // 토큰 값을 따로 저장
-        /*val pref = this.getSharedPreferences("token", Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        editor.putString("token", token).apply()
-        editor.commit()
-        Log.i(TAG, "성공적으로 토큰을 저장함")*/
     }
 
     /** 메시지 수신 메서드(포그라운드) */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d("fcm메시지리시브드", remoteMessage.data.toString())
-        Log.d("fcm메시지리시브드", remoteMessage.notification?.body.toString())
+        Log.d("[$TAG][onMessageReceived] data", remoteMessage.data.toString())
+        Log.d("[$TAG][onMessageReceived] notiㅅ", remoteMessage.notification?.body.toString())
         val sharedPreferences = getSharedPreferences("cache", Context.MODE_PRIVATE)
         val isNotificationEnabled = sharedPreferences.getString("notificationPermission", "")
         if (isNotificationEnabled == "true") {
@@ -92,23 +85,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     /** Token 가져오기 */
-    fun getFirebaseToken() {
-        //비동기 방식
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            val previous = MainActivity.prefs.getString("previousFcmToken", "")
-            Log.d(TAG, "previous=$previous, current=${it}")
-            MainActivity.prefs.setString("fcmToken", it)
+    fun getFirebaseToken(callback: (String?) -> Unit) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                MainActivity.prefs.setString("fcmToken", token)
+                callback(token)
+            } else {
+                callback(null)
+            }
         }
-
-//		  //동기방식
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-//                if (!task.isSuccessful) {
-//                    Log.d(TAG, "Fetching FCM registration token failed ${task.exception}")
-//                    return@OnCompleteListener
-//                }
-//                var deviceToken = task.result
-//                Log.e(TAG, "token=${deviceToken}")
-//            })
     }
 }
 

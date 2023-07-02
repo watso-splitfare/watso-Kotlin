@@ -18,6 +18,7 @@ import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragLoginBinding
+import com.watso.app.initApp
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -81,7 +82,8 @@ class FragmentLogin :Fragment() {
                     AC.setString("refreshToken", tokens[1])
                     AC.setString("userId", dUserId)
 
-                    AC.initDeviceInfo()
+//                    AC.initDeviceInfo()
+                    initApp(activity as MainActivity)
                 } else  {
                     try {
                         val errorBody = response.errorBody()?.string()

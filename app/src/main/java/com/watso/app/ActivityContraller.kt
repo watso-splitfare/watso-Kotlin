@@ -4,8 +4,6 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.watso.app.API.UserInfo
-import com.watso.app.fragmentAccount.FragmentLogin
 
 class ActivityController(private val activity: MainActivity) {
     private var progressStack = 0
@@ -45,10 +43,6 @@ class ActivityController(private val activity: MainActivity) {
 
     fun removeString(key: String) {
         prefs.removeString(key)
-    }
-
-    fun initDeviceInfo() {
-        activity.initDeviceInfo()
     }
 
     fun makeToast(message: String){

@@ -66,6 +66,8 @@ class FragmentBaedalPost :Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         fragmentContext = context
+        AC = ActivityController(activity as MainActivity)
+        checkIntent()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +81,7 @@ class FragmentBaedalPost :Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalPostBinding.inflate(inflater, container, false)
-        AC = ActivityController(activity as MainActivity)
+//        AC = ActivityController(activity as MainActivity)
 
         userId = AC.getString("userId", "-1").toLong()
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("backToList", this) {
@@ -102,6 +104,13 @@ class FragmentBaedalPost :Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         AC.hideSoftInput()
+    }
+
+    fun checkIntent() {
+        val mActivity = activity as MainActivity
+        val intentPostId = mActivity.intent.getStringExtra("post_id")
+        Log.d("[$TAG][checkIntent]", "intentPostId: $intentPostId")
+        intentPostId?.run { mActivity.intent.removeExtra("post_id") }
     }
 
     fun onTouchEvent(event: MotionEvent?): Boolean {
