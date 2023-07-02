@@ -26,8 +26,8 @@ class FragmentHome :Fragment() {
     }
 
     override fun onDestroyView() {
-        mBinding = null
         super.onDestroyView()
+        mBinding = null
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -44,20 +44,5 @@ class FragmentHome :Fragment() {
     }
 
     fun mappingTaxiAdapter(taxiPosts: List<TaxiPostPreviewModel>) {
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex: Int) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

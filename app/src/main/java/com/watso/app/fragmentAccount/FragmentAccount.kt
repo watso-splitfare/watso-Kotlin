@@ -1,8 +1,10 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,11 +13,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.gson.Gson
+import com.watso.app.API.*
 import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.API.UserInfo
-import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
+import com.watso.app.RequestPermission
 import com.watso.app.databinding.FragAccountBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,27 +25,48 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentAccount :Fragment() {
-    private val TAG = "FragAccount"
     lateinit var AC: ActivityController
+    lateinit var RP: RequestPermission
+    lateinit var fragmentContext: Context
+
     lateinit var userInfo: UserInfo
-    private var mBinding: FragAccountBinding? = null
-    private val binding get() = mBinding!!
+
+    var mBinding: FragAccountBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragAccount"
     val api= API.create()
-    val prefs = MainActivity.prefs
+
+    var notificationSwitchBefore = false
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val requestPermitted = RP.isNotificationEnabled()
+        Log.d("[$TAG]onResusme", requestPermitted.toString())
+
+        bindSWNotificationPermission()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragAccountBinding.inflate(inflater, container, false)
-        AC = ActivityController(activity as MainActivity)
 
+        AC = ActivityController(activity as MainActivity)
+        RP = RequestPermission(activity as MainActivity)
+        RP.setNotiPermitChangedListener(object: RequestPermission.NotiPermitChangedListener {
+            override fun onNotiPermitChanged(permission: String) { bindSWNotificationPermission() }
+        })
+
+//        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("getUserInfo", this) {
+//                requestKey, bundle -> getUserInfo()
+//        }
         getUserInfo()
         refreshView()
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        mBinding = null
-        super.onDestroyView()
     }
 
     fun getUserInfo() {
@@ -58,11 +81,14 @@ class FragmentAccount :Fragment() {
                     binding.tvEmail.text = userInfo.email
                     binding.tvNickname.text = userInfo.nickname
                     binding.tvAccountNum.text = userInfo.accountNumber
+
+                    AC.setString("nickname", userInfo.nickname)
+                    AC.setString("accountNum", userInfo.accountNumber)
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) {
                         Log.e("$TAG[getUserInfo]", e.toString())
@@ -76,29 +102,31 @@ class FragmentAccount :Fragment() {
                 Log.e("FragAccount getUserInfo", t.message.toString())
                 binding.tvUsername.text = "ID"
                 binding.tvNickname.text = "닉네임"
-                makeToast("다시 시도해 주세요.")
-                //onBackPressed()
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
 
     fun refreshView() {
         binding.btnPrevious.setOnClickListener {
-            onBackPressed()
+            AC.onBackPressed()
         }
 
-        binding.lytPassword.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "password")) }
-        binding.lytNickname.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
-        binding.lytAccountNum.setOnClickListener { setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
+        binding.lytPassword.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "password")) }
+        binding.lytNickname.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "nickname")) }
+        binding.lytAccountNum.setOnClickListener { AC.setFrag(FragmentUpdateAccount(), mapOf("target" to "accountNum")) }
 
-        bindSWNotificationPermission()
+        binding.swNotification.setOnCheckedChangeListener { _, _ -> changeNotificationEnabled()}
 
+        binding.lytOpenTalk.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://open.kakao.com/o/gE07iSmf")))
+        }
         binding.lytOss.setOnClickListener {
-            startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
+            startActivity(Intent(fragmentContext, OssLicensesMenuActivity::class.java))
             OssLicensesMenuActivity.setActivityTitle("오픈소스 라이선스")
         }
         binding.lytLogout.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("로그아웃하기")
                 .setMessage("로그아웃 하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> logout() })
@@ -106,7 +134,7 @@ class FragmentAccount :Fragment() {
             builder.show()
         }
         binding.lytDeleteAccount.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setTitle("회원 탈퇴하기")
                 .setMessage("탈퇴 하시겠습니까?")
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -117,26 +145,65 @@ class FragmentAccount :Fragment() {
     }
 
     fun bindSWNotificationPermission() {
-        when (prefs.getString("notificationPermission", "")) {
-            "true" -> binding.swNotification.isChecked = true
-            else -> binding.swNotification.isChecked = false
+        if (RP.isNotificationEnabled()) {
+            notificationSwitchBefore = true
+            binding.swNotification.isChecked = true
+        } else {
+            notificationSwitchBefore = false
+            binding.swNotification.isChecked = false
         }
-        binding.swNotification.setOnCheckedChangeListener { _, _ -> setNotificationPermission()}
-        //binding.swNotification.setOnClickListener { setNotificationPermission() }
+
+        AC.showProgressBar()
+        api.getNotificationPermission().enqueue(object: Callback<NotificationPermission> {
+            override fun onResponse(call: Call<NotificationPermission>, response: Response<NotificationPermission>) {
+                AC.hideProgressBar()
+                if (response.code() == 200) {
+                    Log.d("[$TAG][getNotificationPermisson]서버에저장된상태", response.body()!!.allow.toString())
+                    if (response.body()!!.allow && RP.isNotificationEnabled()) {
+                        notificationSwitchBefore = true
+                        binding.swNotification.isChecked = true
+                    } else {
+                        notificationSwitchBefore = false
+                        binding.swNotification.isChecked = false
+                    }
+                }
+                else Log.d("$TAG[getNotificationPermission]응답에러", response.errorBody()?.string().toString())
+            }
+
+            override fun onFailure(call: Call<NotificationPermission>, t: Throwable) {
+                AC.hideProgressBar()
+                Log.e("$TAG[getNotificationPermission]", t.message.toString())
+            }
+        })
     }
 
-    fun setNotificationPermission() {
+    fun changeNotificationEnabled() {
         Log.d(TAG, binding.swNotification.isChecked.toString())
-        when (prefs.getString("notificationPermission", "")) {
-            "" ->
-            {
-                val mActivity = activity as MainActivity
-                mActivity.requestNotiPermission()
-            }
-            "true" -> { prefs.setString("notificationPermission", "false") }
-            else -> prefs.setString("notificationPermission", "true")
-        }
+        if (notificationSwitchBefore != binding.swNotification.isChecked) {
+            val notificationPermission = NotificationPermission(
+                binding.swNotification.isChecked
+            )
+            AC.showProgressBar()
+            api.setNotificationPermission(notificationPermission).enqueue(object: Callback<VoidResponse> {
+                override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
+                    AC.hideProgressBar()
+                    if (response.code() == 204) { Log.d("[$TAG]변경성공", "") }
+                    else Log.d("$TAG[changeNotificationEnabled]응답에러", response.errorBody()?.string().toString())
+                }
 
+                override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
+                    AC.hideProgressBar()
+                    Log.e("$TAG[changeNotificationEnabled]", t.message.toString())
+                }
+            })
+            RP.changeNotificationEnabled()
+            notificationSwitchBefore = binding.swNotification.isChecked
+        }
+    }
+
+    fun linkToOpenChat() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://open.kakao.com/o/gE07iSmf"))
+        startActivity(intent)
     }
 
     fun logout() {
@@ -145,26 +212,16 @@ class FragmentAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {}
-                else Log.e("로그아웃 에러", response.toString())
-                removePrefs()
+                else Log.d("$TAG[logtout]", response.errorBody()?.string().toString())
+                AC.logOut("로그아웃 되었습니다.")
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
-                Log.d("로그아웃",t.message.toString())
-                removePrefs()
+                Log.e("$TAG[logtout]", t.message.toString())
+                AC.logOut("로그아웃 되었습니다.")
             }
         })
-    }
-
-    fun removePrefs(makeToast: Boolean = true) {
-        if (makeToast)
-            makeToast("로그아웃 되었습니다.")
-        prefs.removeString("accessToken")
-        prefs.removeString("refreshToken")
-        prefs.removeString("userId")
-        prefs.removeString("nickname")
-        setFrag(FragmentLogin(), null, 0)
     }
 
     fun deleteAccount() {
@@ -173,34 +230,18 @@ class FragmentAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code()==204) {
-                    makeToast("탈퇴되었습니다.")
-                    removePrefs(false)
+                    AC.logOut("탈퇴되었습니다.")
                 } else {
                     Log.e("FragAccount deleteAccount", response.toString())
-                    makeToast("다시 시도해 주세요.")
+                    AC.makeToast("다시 시도해 주세요.")
                 }
             }
 
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("FragAccount deleteAccount", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int = -1) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

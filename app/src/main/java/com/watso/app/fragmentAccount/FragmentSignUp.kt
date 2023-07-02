@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
@@ -27,18 +28,15 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentSignUp :Fragment() {
-    val TAG = "FragSignUp"
     lateinit var AC: ActivityController
-
-    var remainingSeconds = 0
-    var valifyTime = 300
-    var sendCoolTime = 10
-    var isSendAble = true
+    lateinit var fragmentContext: Context
     lateinit var job: Job
 
-    private var mBinding: FragSignUpBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragSignUpBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragSignUp"
     val api= API.create()
+
     val signUpCheck = mutableMapOf(
         "realName" to false,    // verifyInputFormat
         "username" to false,    // 중복확인할 때 유효성 검사 함
@@ -47,12 +45,21 @@ class FragmentSignUp :Fragment() {
         "accountNum" to false,  // verifyInputFormat
         "email" to false        // 코드확인할 때 유효성 검사 함
     )
+    var remainingSeconds = 0
+    var valifyTime = 300
+    var sendCoolTime = 10
+    var isSendAble = true
     var checkedUsername: String? = null
     var checkedNickname: String? = null
     var verifingEmail = ""
     var verifiedEmail = ""
     var authToken = ""
     var bankName = ""
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragSignUpBinding.inflate(inflater, container, false)
@@ -64,14 +71,14 @@ class FragmentSignUp :Fragment() {
     }
 
     override fun onDestroyView() {
-        mBinding = null
         super.onDestroyView()
+        mBinding = null
         if (::job.isInitialized && job.isActive)
             job.cancel()
     }
 
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.btnSignup.setEnabled(false)
         bindNickname()
         bindUsername()
@@ -125,7 +132,7 @@ class FragmentSignUp :Fragment() {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[nicknameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) {
                                 Log.e("$TAG[nicknameVerify]", e.toString())
@@ -140,7 +147,7 @@ class FragmentSignUp :Fragment() {
                             "signUp Fragment - nicknameDuplicationCheck",
                             t.message.toString()
                         )
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             } else {
@@ -199,7 +206,7 @@ class FragmentSignUp :Fragment() {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[usernameVerify]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) {
                                 Log.e("$TAG[usernameVerify]", e.toString())
@@ -214,7 +221,7 @@ class FragmentSignUp :Fragment() {
                             "signUp Fragment - usernameDuplicationCheck",
                             t.message.toString()
                         )
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             } else {
@@ -245,7 +252,7 @@ class FragmentSignUp :Fragment() {
         bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.banks, android.R.layout.simple_spinner_item)
+            fragmentContext, R.array.banks, android.R.layout.simple_spinner_item)
         binding.spnAccountNum.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) { }
 
@@ -262,7 +269,7 @@ class FragmentSignUp :Fragment() {
     fun bindEmail() {
         binding.etEmail.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                signUpCheck["email"] = verifiedEmail != "" && binding.etEmail.text.toString() == verifiedEmail
+                signUpCheck["email"] = (verifiedEmail != "" && binding.etEmail.text.toString() == verifiedEmail)
                 setSignupBtnAble()
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -273,10 +280,10 @@ class FragmentSignUp :Fragment() {
         binding.btnSendCode.setOnClickListener {
             val temp = binding.etEmail.text.toString()
             if (temp != "" && isSendAble) {
-                if (verifyInput("email", temp)) {
+                if (verifyInput("email", "${temp}@pusan.ac.kr")) {
                     verifingEmail = temp
                     AC.showProgressBar()
-                    api.sendVerificationCode(verifingEmail).enqueue(object : Callback<VoidResponse> {
+                    api.sendVerificationCode("${verifingEmail}@pusan.ac.kr").enqueue(object : Callback<VoidResponse> {
                         override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                             AC.hideProgressBar()
                             if (response.code() == 204) {
@@ -289,11 +296,11 @@ class FragmentSignUp :Fragment() {
                                 try {
                                     val errorBody = response.errorBody()?.string()
                                     val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                    makeToast(errorResponse.msg)
-                                    Log.d("$TAG[sencCode]", "${errorResponse.code}: ${errorResponse.msg}")
+                                    AC.makeToast(errorResponse.msg)
+                                    Log.d("$TAG[sendCode]", "${errorResponse.code}: ${errorResponse.msg}")
                                 } catch (e:Exception) {
                                     Log.e("$TAG[sendCode]", e.toString())
-                                    Log.d("$TAG[sencCode]", response.errorBody()?.string().toString())
+                                    Log.d("$TAG[sendCode]", response.errorBody()?.string().toString())
                                 }
                             }
                         }
@@ -301,15 +308,9 @@ class FragmentSignUp :Fragment() {
                         override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                             AC.hideProgressBar()
                             Log.e("signUp Fragment - sendMail", t.message.toString())
-                            makeToast("다시 시도해 주세요.")
+                            AC.makeToast("다시 시도해 주세요.")
                         }
                     })
-                } else {
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("이메일 확인")
-                        .setMessage("사용할 수 없는 메일 형식입니다.")
-                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
-                    builder.show()
                 }
             }
             else if (verifingEmail != "" && !isSendAble ) binding.tvCoolTime.visibility = View.VISIBLE
@@ -320,7 +321,7 @@ class FragmentSignUp :Fragment() {
             Log.d("$TAG[메일 인증]", binding.etEmail.text.toString())
             if (verifingEmail != "" && binding.etVerifyCode.text.toString() != "") {
                 AC.showProgressBar()
-                api.checkVerificationCode(verifingEmail, binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
+                api.checkVerificationCode("${verifingEmail}@pusan.ac.kr", binding.etVerifyCode.text.toString()).enqueue(object : Callback<VerificationResponse> {
                     override fun onResponse(call: Call<VerificationResponse>, response: Response<VerificationResponse>) {
                         AC.hideProgressBar()
                         if (response.code() == 200) {
@@ -334,7 +335,7 @@ class FragmentSignUp :Fragment() {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[verifyMail]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e: Exception) {
                                 Log.e("$TAG[verifyMail]", e.toString())
@@ -347,7 +348,7 @@ class FragmentSignUp :Fragment() {
                         Log.d("$TAG[onFailure]", "")
                         AC.hideProgressBar()
                         Log.e("signUp Fragment - sendMail", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             }
@@ -356,7 +357,7 @@ class FragmentSignUp :Fragment() {
 
     fun bindSignUp() {
         binding.btnSignup.setOnClickListener {
-            if (verifyInput()) {
+            if (verifySignup()) {
                 var data = SignUpModel(
                     authToken,
                     binding.etRealName.text.toString(),
@@ -364,20 +365,20 @@ class FragmentSignUp :Fragment() {
                     binding.etPassword.text.toString(),
                     binding.etNickname.text.toString(),
                     binding.etAccountNum.text.toString(),
-                    binding.etEmail.text.toString()// + "@pusan.ac.kr"
+                    "${binding.etEmail.text.toString()}@pusan.ac.kr"
                 )
                 AC.showProgressBar()
                 api.signup(data).enqueue(object : Callback<VoidResponse> {
                     override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                         AC.hideProgressBar()
                         if (response.code() == 201) {
-                            makeToast("회원가입에 성공하였습니다.")
-                            onBackPressed()
+                            AC.makeToast("회원가입에 성공하였습니다.")
+                            AC.onBackPressed()
                         } else  {
                             try {
                                 val errorBody = response.errorBody()?.string()
                                 val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                                makeToast(errorResponse.msg)
+                                AC.makeToast(errorResponse.msg)
                                 Log.d("$TAG[signup]", "${errorResponse.code}: ${errorResponse.msg}")
                             } catch (e:Exception) {
                                 Log.e("$TAG[signup]", e.toString())
@@ -389,35 +390,11 @@ class FragmentSignUp :Fragment() {
                     override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                         AC.hideProgressBar()
                         Log.e("signUp Fragment - signup", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             }
         }
-    }
-
-    fun verifyInput(): Boolean {
-        val builder = AlertDialog.Builder(requireContext())
-        if (verifyInput("realName", binding.etRealName.text.toString())) {
-            if (verifyInput("password", binding.etPassword.text.toString())) {
-                if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
-                    return true
-                } else {
-                    builder.setMessage("사용할 수 없는 계좌번호 형식입니다.")
-                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
-                    builder.show()
-                }
-            } else {
-                builder.setMessage("비밀번호는 숫자, 영문자, 특수문자(~!@#\$%^&)를 각각 하나이상 포함하여 8~16자여야 합니다.")
-                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
-                builder.show()
-            }
-        } else {
-            builder.setMessage("사용할 수 없는 이름 형식입니다.")
-                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
-            builder.show()
-        }
-        return false
     }
 
     fun compairPassword() {
@@ -480,37 +457,46 @@ class FragmentSignUp :Fragment() {
         }
     }
 
-    fun verifyInput(case: String, text: String): Boolean {
-        val message = VerifyInputFormat().verifyInput(case, text)
-        return if (message == "") {
-            true
-        } else {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setMessage(message)
-                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
-                .show()
-            false
-        }
-    }
-
     fun countDownStr(seconds: Int): String {
         val min = seconds / 60
         val sec = seconds % 60
         return String.format("%02d:%02d", min, sec)
     }
 
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
+    fun verifySignup(): Boolean {
+        val builder = AlertDialog.Builder(fragmentContext)
+        if (verifyInput("realName", binding.etRealName.text.toString())) {
+            if (verifyInput("password", binding.etPassword.text.toString())) {
+                if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
+                    return true
+                } else {
+                    builder.setMessage("사용할 수 없는 계좌번호 형식입니다.")
+                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                    builder.show()
+                }
+            } else {
+                builder.setMessage("비밀번호는 숫자, 영문자, 특수문자(~!@#\$%^&)를 각각 하나이상 포함하여 8~16자여야 합니다.")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                builder.show()
+            }
+        } else {
+            builder.setMessage("사용할 수 없는 이름 형식입니다.")
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+            builder.show()
+        }
+        return false
     }
 
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
+    fun verifyInput(case: String, text: String): Boolean {
+        val message = AC.verifyInput(case, text)
+        return if (message == "") {
+            true
+        } else {
+            val builder = AlertDialog.Builder(fragmentContext)
+            builder.setMessage(message)
+                .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
+                .show()
+            false
+        }
     }
 }

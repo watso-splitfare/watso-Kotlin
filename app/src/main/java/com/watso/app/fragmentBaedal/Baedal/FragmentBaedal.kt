@@ -2,6 +2,7 @@ package com.watso.app.fragmentBaedal.Baedal
 
 import android.R
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -15,7 +16,9 @@ import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.watso.app.API.BaedalPost
+import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalBinding
@@ -26,23 +29,31 @@ import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class FragmentBaedal :Fragment() {
-    val TAG = "FragBaedal"
     lateinit var AC: ActivityController
-    var viewClickAble = true    // 포스트 중복 클릭 방지
+    lateinit var fragmentContext: Context
 
     lateinit var joinedAdapter: TableAdapter
     lateinit var joinableAdapter: TableAdapter
     lateinit var joinablePosts: List<BaedalPost>
+
+    var mBinding: FragBaedalBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedal"
+    val api= API.create()
+
+    var viewClickAble = true    // 포스트 중복 클릭 방지
     var joined = true       // 참가한 게시글 여부
     var joinable = true     // 참가 가능한 게시글 여부
 
-    private var mBinding: FragBaedalBinding? = null
-    private val binding get() = mBinding!!
-    val api= API.create()
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -51,13 +62,15 @@ class FragmentBaedal :Fragment() {
         AC = ActivityController(activity as MainActivity)
 
         getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("deletePost", this) {
-                requestKey, bundle ->
-            getPostPreview()
+                requestKey, bundle -> getPostPreview()
+        }
+        getActivity()?.getSupportFragmentManager()?.setFragmentResultListener("backToBaedalList", this) {
+                requestKey, bundle -> getPostPreview()
         }
 
-        binding.btnOption.setOnClickListener { setFrag(FragmentAccount(), fragIndex=0) }
-        binding.btnBaedalHistory.setOnClickListener { setFrag(FragmentBaedalHistory()) }
-        binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentBaedalAdd()) }
+        binding.btnOption.setOnClickListener { AC.setFrag(FragmentAccount(), fragIndex=0) }
+        binding.btnBaedalHistory.setOnClickListener { AC.setFrag(FragmentBaedalHistory()) }
+        binding.btnBaedalPostAdd.setOnClickListener { AC.setFrag(FragmentBaedalAdd()) }
         binding.lytRefresh.setOnRefreshListener {
             binding.lytRefresh.isRefreshing = false
             getPostPreview()
@@ -78,7 +91,7 @@ class FragmentBaedal :Fragment() {
             override fun onClick(postId: String) {
                 if (viewClickAble) {
                     viewClickAble = false
-                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+                    AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
                     Handler(Looper.getMainLooper()).postDelayed({ viewClickAble = true}, 500)
                 }
             }
@@ -87,19 +100,19 @@ class FragmentBaedal :Fragment() {
             override fun onClick(postId: String) {
                 if (viewClickAble) {
                     viewClickAble = false
-                    setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+                    AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
                     Handler(Looper.getMainLooper()).postDelayed({ viewClickAble = true}, 500)
                 }
             }
         })
 
         binding.rvBaedalListJoined.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalListJoined.setHasFixedSize(true)
         binding.rvBaedalListJoined.adapter = joinedAdapter
 
         binding.rvBaedalListJoinable.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalListJoinable.setHasFixedSize(true)
         binding.rvBaedalListJoinable.adapter = joinableAdapter
     }
@@ -110,19 +123,26 @@ class FragmentBaedal :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 AC.hideProgressBar()
+                Log.d("겟포스트 프리뷰", response.code().toString())
                 if (response.code() == 200) {
                     val joinedPosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinedPosts, true)
+                } else if (response.code() == 401) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.logOut(errorResponse.msg)
                 } else {
-                    Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
-                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.makeToast(errorResponse.msg)
+                    Log.d("$TAG[getBaedalPostList-joined]", "${errorResponse.code}: ${errorResponse.msg}")
                 }
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
-                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
         })
 
@@ -131,20 +151,27 @@ class FragmentBaedal :Fragment() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<List<BaedalPost>>, response: Response<List<BaedalPost>>) {
                 AC.hideProgressBar()
+                Log.d("겟포스트 프리뷰", response.code().toString())
                 if (response.code() == 200) {
                     joinablePosts = response.body()!!.sortedBy { it.orderTime }
                     mappingPostDate(joinablePosts)
                     setSpiner()
+                } else if (response.code() == 401) {
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.logOut(errorResponse.msg)
                 } else {
-                    Log.e("baedal Fragment - getBaedalPostListJoinable", response.toString())
-                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                    val errorBody = response.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    AC.makeToast(errorResponse.msg)
+                    Log.d("$[TAG][getBaedalPostList-joinable]", "${errorResponse.code}: ${errorResponse.msg}")
                 }
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoinable", t.message.toString())
-                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
         })
     }
@@ -171,7 +198,7 @@ class FragmentBaedal :Fragment() {
                 joined = true
             } else {
                 joinableAdapter.setData(tables)
-                binding.lytJoinableTableHeader.visibility = View.VISIBLE
+                binding.divJoinable.visibility = View.VISIBLE
                 binding.rvBaedalListJoinable.visibility = View.VISIBLE
                 joinable = true
             }
@@ -180,7 +207,7 @@ class FragmentBaedal :Fragment() {
                 binding.lytJoinedTable.visibility = View.GONE
                 joined = false
             } else {
-                binding.lytJoinableTableHeader.visibility = View.GONE
+                binding.divJoinable.visibility = View.GONE
                 binding.rvBaedalListJoinable.visibility = View.GONE
                 joinable = false
             }
@@ -188,13 +215,13 @@ class FragmentBaedal :Fragment() {
 
         if (!joined && !joinable) {
             binding.lytEmptyList.visibility = View.VISIBLE
-            binding.lytEmptyList.setOnClickListener { setFrag(FragmentBaedalAdd()) }
+            binding.lytEmptyList.setOnClickListener { AC.setFrag(FragmentBaedalAdd()) }
         } else binding.lytEmptyList.visibility = View.GONE
     }
 
     fun setSpiner() {
         val places = listOf("모두", "생자대", "기숙사")
-        val placeSpinerAdapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, places)
+        val placeSpinerAdapter = ArrayAdapter(fragmentContext, R.layout.simple_list_item_1, places)
         binding.spnFilter.adapter = placeSpinerAdapter
         binding.spnFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
@@ -214,17 +241,6 @@ class FragmentBaedal :Fragment() {
         joinablePosts.forEach {
             if (it.place == filterBy) filteredPosts.add(it)
         }
-
         return filteredPosts
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex:Int = 1) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
     }
 }

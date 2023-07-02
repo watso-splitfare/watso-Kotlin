@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:background="@color/background">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +22,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:contentDescription="@string/previous"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="16dp"
-                android:background="@drawable/stroked_background_8_lightgray"
+                android:background="@drawable/stroked_white_8_lightgray"
                 android:elevation="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -169,7 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="16dp"
-                android:background="@drawable/stroked_background_8_lightgray"
+                android:background="@drawable/stroked_white_8_lightgray"
                 android:elevation="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -260,7 +262,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="16dp"
-                android:background="@drawable/stroked_background_8_lightgray"
+                android:background="@drawable/stroked_white_8_lightgray"
                 android:elevation="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

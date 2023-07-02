@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalOrders
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -22,25 +23,27 @@ import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalOrders :Fragment() {
-    val TAG = "FragBaedalOrders"
     lateinit var AC: ActivityController
-
-    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
-
-    lateinit var post: BaedalPost
-    //var postId = "-1"
-    var isMyorder = true
-//    var storeName = ""
-//    var fee = 0
-//    var currentMember = 1
+    lateinit var fragmentContext: Context
 
     lateinit var userOrders: MutableList<UserOrder>
     lateinit var adapter: BaedalUserOrderAdapter
 
+    lateinit var post: BaedalPost
+
+    var mBinding: FragBaedalOrdersBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedalOrders"
     val api= API.create()
     val dec = DecimalFormat("#,###")
-    private var mBinding: FragBaedalOrdersBinding? = null
-    private val binding get() = mBinding!!
+
+    var userId = (-1).toLong()
+    var isMyorder = true
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +53,14 @@ class FragmentBaedalOrders :Fragment() {
         }
 
         userOrders = mutableListOf<UserOrder>()
-        adapter = BaedalUserOrderAdapter(requireContext(), userOrders, isMyorder)
+        adapter = BaedalUserOrderAdapter(fragmentContext, userOrders, isMyorder)
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalOrdersBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
+
+        userId = AC.getString("userId", "-1").toLong()
 
         binding.tvOrder.text = if (isMyorder) "내가 고른 메뉴" else "주문할 메뉴"
         refreshView()
@@ -65,7 +70,7 @@ class FragmentBaedalOrders :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.tvStoreName.text = post.store.name
         mappingAdapter()
         getOrders()
@@ -87,18 +92,18 @@ class FragmentBaedalOrders :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[getMyOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getMyOrders]", e.toString())}
-                        onBackPressed()
+                        AC.onBackPressed()
                     }
                 }
 
                 override fun onFailure(call: Call<MyOrderInfo>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
-                    makeToast("주문정보를 불러오지 못했습니다.")
-                    onBackPressed()
+                    AC.makeToast("주문정보를 불러오지 못했습니다.")
+                    AC.onBackPressed()
                 }
             })
         } else {
@@ -110,27 +115,26 @@ class FragmentBaedalOrders :Fragment() {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[getAllOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) { Log.e("$TAG[getAllOrders]", e.toString())}
-                        onBackPressed()
+                        AC.onBackPressed()
                     }
                 }
 
                 override fun onFailure(call: Call<AllOrderInfo>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("FragBaedalOrders getMyOrders", t.message.toString())
-                    makeToast("주문정보를 불러오지 못했습니다.")
-                    onBackPressed()
+                    AC.makeToast("주문정보를 불러오지 못했습니다.")
+                    AC.onBackPressed()
                 }
             })
         }
     }
 
     fun mappingAdapter() {
-
         binding.rvOrders.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvOrders.setHasFixedSize(true)
         binding.rvOrders.adapter = adapter
     }
@@ -144,13 +148,7 @@ class FragmentBaedalOrders :Fragment() {
         Log.d("FragBaedalOrders userOrders addAll", userOrders.toString())
         userOrders.forEach {
             it.isMyOrder = it.userId == userId
-            it.orders.forEach {
-                var price = it.menu.price
-                it.menu.groups?.forEach {
-                    it.options?.forEach { price += it.price }
-                }
-                it.price = price
-            }
+            it.orders.forEach { it.setPrice() }
         }
         binding.rvOrders.adapter!!.notifyDataSetChanged()
 
@@ -158,40 +156,34 @@ class FragmentBaedalOrders :Fragment() {
     }
 
     fun bindPrice() {
+        val dec = DecimalFormat("#,###")
+
         if (isMyorder) {
-            val dec = DecimalFormat("#,###")
-            var price = 0
-            userOrders[0].orders.forEach {
-                price += it.price!! * it.quantity
-            }
-
-            val personalFee = post.fee / post.users.size
-            binding.tvOrderPrice.text = "${dec.format(price)}원"
-            binding.tvFee.text = "${dec.format(personalFee)}원"
-            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
-
             if (post.status == "delivered") {
                 binding.lbFee.text = "1인당 배달비"
                 binding.lbTotalPrice.text = "본인 부담 금액"
             }
+
+            val price = userOrders[0].getTotalPrice()
+            val personalFee = post.fee / post.users.size
+            binding.tvOrderPrice.text = "${dec.format(price)}원"
+            binding.tvFee.text = "${dec.format(personalFee)}원"
+            binding.tvTotalPrice.text = "${dec.format(price + personalFee)}원"
         } else {
-            binding.divider43.visibility = View.GONE
-            binding.lytTable.visibility = View.GONE
+            var price = 0
+            userOrders.forEach { price += it.getTotalPrice() }
+
+            binding.tvOrderPrice.text = "${dec.format(price)}원"
+            binding.tvFee.text = "${dec.format(post.fee)}원"
+            binding.tvTotalPrice.text = "${dec.format(price + post.fee)}원"
+
+            if (post.status == "delivered") {
+                binding.lbFee.text = "배달비"
+                binding.lbTotalPrice.text = "총 결제 금액"
+            } else {
+                binding.lbFee.text = "예상 배달비"
+                binding.lbTotalPrice.text = "예상 총 결제 금액"
+            }
         }
     }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
-        }
 }

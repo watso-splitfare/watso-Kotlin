@@ -2,6 +2,7 @@ package com.watso.app.fragmentTaxi
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -25,37 +26,40 @@ import java.util.*
 
 class FragmentTaxiAdd :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
-    var userId = MainActivity.prefs.getString("userId", "-1").toLong()
+    var mBinding: FragTaxiAddBinding? = null
+    val binding get() = mBinding!!
+    val api = API.create()
+    var decDt = DecimalFormat("00")
 
-    @RequiresApi(Build.VERSION_CODES.O)
     var departTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")).toString()
-
-
+    var userId = (-1).toLong()
+    @RequiresApi(Build.VERSION_CODES.O)
     var currentMember = 1
     var minMember = 2
     var maxMember = 4
 
-    private var mBinding: FragTaxiAddBinding? = null
-    private val binding get() = mBinding!!
-    val api = API.create()
-    var decDt = DecimalFormat("00")
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragTaxiAddBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
 
+        userId = AC.getString("userId", "-1").toLong()
         refreshView()
-        //println("택시1: ${departTime}")
 
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         binding.lytTable.visibility = View.GONE
 
         binding.lytTime.setOnClickListener { showCalendar() }
@@ -84,12 +88,12 @@ class FragmentTaxiAdd :Fragment() {
                         }
                     }
 
-                TimePickerDialog(requireContext(), timeSetListener,
+                TimePickerDialog(fragmentContext, timeSetListener,
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
             }
         }
 
-        val dpd = DatePickerDialog(requireContext(), dateSetListener,
+        val dpd = DatePickerDialog(fragmentContext, dateSetListener,
             cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
         dpd.datePicker.minDate = System.currentTimeMillis() - 1000;
         dpd.show()
@@ -159,34 +163,19 @@ class FragmentTaxiAdd :Fragment() {
                     val result = response.body()!!
                     val bundle = bundleOf("success" to result.success, "postId" to result.post_id)
                     getActivity()?.getSupportFragmentManager()?.setFragmentResult("updatePost", bundle)
-                    onBackPressed()
+                    AC.onBackPressed()
                 } else {
                     Log.e("taxiAdd Fragment - taxiPosting", response.toString())
-                    makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                    AC.makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                 }
                 AC.hideProgressBar()
             }
 
             override fun onFailure(call: Call<PostingResponse>, t: Throwable) {
                 Log.e("taxiAdd Fragment - taxiPosting", t.message.toString())
-                makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
+                AC.makeToast("게시글을 작성하지 못 했습니다.\n다시 시도해 주세요.")
                 AC.hideProgressBar()
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

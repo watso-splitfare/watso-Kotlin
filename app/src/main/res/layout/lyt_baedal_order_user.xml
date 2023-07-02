@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginVertical="8dp"
     android:layout_marginHorizontal="16dp"
-    android:background="@drawable/stroked_background_5_silver">
+    android:background="@drawable/stroked_white_5_silver">
 
     <TextView
         android:id="@+id/tv_nickname"

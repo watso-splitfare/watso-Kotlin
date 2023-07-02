@@ -1,5 +1,6 @@
 package com.watso.app.fragmentTaxi
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,9 +25,16 @@ import java.time.LocalDateTime
 
 class FragmentTaxi :Fragment() {
     lateinit var AC: ActivityController
-    private var mBinding: FragTaxiBinding? = null
-    private val binding get() = mBinding!!
+    lateinit var fragmentContext: Context
+
+    var mBinding: FragTaxiBinding? = null
+    val binding get() = mBinding!!
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,7 +48,7 @@ class FragmentTaxi :Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshView() {
-        binding.btnBaedalPostAdd.setOnClickListener { setFrag(FragmentTaxiAdd()) }
+        binding.btnBaedalPostAdd.setOnClickListener { AC.setFrag(FragmentTaxiAdd()) }
         binding.constraintLayout8.visibility = View.GONE    // 출발지, 목적지 필터 숨김
         binding.constraintLayout9.visibility = View.GONE
         binding.textView7.visibility = View.GONE            // 예상비용 숨김
@@ -57,14 +65,14 @@ class FragmentTaxi :Fragment() {
                     mappingAdapter(taxiPosts)
                 } else {
                     Log.e("taxi Fragment - getTaxiPostListPreview", response.toString())
-                    makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                    AC.makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 }
                 AC.hideProgressBar()
             }
 
             override fun onFailure(call: Call<List<TaxiPostPreviewModel>>, t: Throwable) {
                 Log.e("taxi Fragment - getTaxiPostListPreview", t.message.toString())
-                makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
+                AC.makeToast("택시 게시글 리스트를 조회하지 못했습니다.")
                 AC.hideProgressBar()
             }
         })
@@ -85,25 +93,15 @@ class FragmentTaxi :Fragment() {
             posts[idx].rows.add(TaxiTableRow(
                 post._id, post.depart_name, post.dest_name, LocalDateTime.parse(post.depart_time), post.join_users.size))
         }
-        binding.rvTaxiTable.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvTaxiTable.layoutManager = LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvTaxiTable.setHasFixedSize(true)
 
-        val adapter = TaxiTableAdapter(requireContext(), posts)
+        val adapter = TaxiTableAdapter(fragmentContext, posts)
         binding.rvTaxiTable.adapter = adapter
         adapter.addListener(object: TaxiTableAdapter.OnItemClickListener{
             override fun onClick(postId: String) {
-                setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
+                AC.setFrag(FragmentTaxiPost(), mapOf("postId" to postId))
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
     }
 }

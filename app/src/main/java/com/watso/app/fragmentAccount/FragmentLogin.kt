@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +18,6 @@ import com.watso.app.API.VoidResponse
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragLoginBinding
-import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,12 +25,18 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentLogin :Fragment() {
-    val TAG = "FragLogin"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
-    private var mBinding: FragLoginBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragLoginBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragLogin"
     val api= API.create()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,8 +49,8 @@ class FragmentLogin :Fragment() {
     }
 
     override fun onDestroyView() {
-        mBinding = null
         super.onDestroyView()
+        mBinding = null
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -56,34 +62,31 @@ class FragmentLogin :Fragment() {
             if (verifyInput("username", username) && verifyInput("password", password)) login()
         }
 
-        binding.tvFindAccount.setOnClickListener { setFrag(FragmentFindAccount()) }
-        binding.btnSignup.setOnClickListener { setFrag(FragmentSignUp()) }
+        binding.tvFindAccount.setOnClickListener { AC.setFrag(FragmentFindAccount()) }
+        binding.btnSignup.setOnClickListener { AC.setFrag(FragmentSignUp()) }
     }
 
     fun login() {
-        val prefs = MainActivity.prefs
-        val reg = prefs.getString("registration", "")
         AC.showProgressBar()
-        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString(), reg)).enqueue(object: Callback<VoidResponse> {
+        api.login(LoginModel(binding.etUsername.text.toString(), binding.etPassword.text.toString())).enqueue(object: Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code()==200) {
                     val tokens = response.headers().get("Authentication").toString().split("/")
-                    val payload = decodeToken(tokens[0])
+                    val payload = AC.decodeToken(tokens[0])
                     val dUserId = JSONObject(payload).getString("user_id")
-                    val dNickname = JSONObject(payload).getString("nickname")
+                    // val dNickname = JSONObject(payload).getString("nickname")
 
-                    prefs.setString("accessToken", tokens[0])
-                    prefs.setString("refreshToken", tokens[1])
-                    prefs.setString("userId", dUserId)
-                    prefs.setString("nickname", dNickname)
+                    AC.setString("accessToken", tokens[0])
+                    AC.setString("refreshToken", tokens[1])
+                    AC.setString("userId", dUserId)
 
-                    setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+                    AC.initDeviceInfo()
                 } else  {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        showAlert(errorResponse.msg)
+                        AC.showAlert(errorResponse.msg)
                         Log.d("$TAG[login]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[login]", e.toString())}
                 }
@@ -92,48 +95,21 @@ class FragmentLogin :Fragment() {
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("login Fragment - login", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
 
-    fun showAlert(msg: String) {
-        AlertDialog.Builder(requireContext()).setTitle("로그인 실패")
-        .setMessage(msg)
-        .setPositiveButton("확인", DialogInterface.OnClickListener { _, _ -> })
-        .show()
-    }
-
     fun verifyInput(case: String, text: String): Boolean {
-        val message = VerifyInputFormat().verifyInput(case, text)
+        val message = AC.verifyInput(case, text)
         return if (message == "") {
             true
         } else {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()
             false
         }
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun decodeToken(jwt: String): String {
-        val mActivity = activity as MainActivity
-        return mActivity.decodeToken(jwt)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack:Int=-1, fragIndex:Int=0) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack, fragIndex)
-    }
-
-    fun onBackPressed() {
-        val mActivity = activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

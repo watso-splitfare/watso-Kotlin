@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/stroked_background_5_silver">
+    android:background="@drawable/stroked_white_5_silver">
 
     <TextView
         android:id="@+id/tv_status"
@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/stroked_background_5_silver"
+        android:background="@drawable/stroked_white_5_silver"
         app:layout_constraintBottom_toBottomOf="@+id/tv_datetime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_status">

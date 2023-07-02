@@ -10,7 +10,9 @@ interface UserAPI {
         const val SIGNUP = "user/signup"
         const val PROFILE = "user/profile"
         const val FORGOT = "user/forgot"
+        const val DEVICE = "user/device"
     }
+
 
     /** 회원 가입 */
 
@@ -29,6 +31,7 @@ interface UserAPI {
         @Query("email") email: String,
         @Query("auth-code") authCode: String
     ): Call<VerificationResponse>
+
 
     /** 프로필 */
 
@@ -53,6 +56,7 @@ interface UserAPI {
         @Body jsonparams: UpdatePassword
     ): Call<VoidResponse>
 
+
     /** 찾기 */
 
     @POST("$FORGOT/password")           // 비밀번호 찾기
@@ -65,6 +69,7 @@ interface UserAPI {
         @Query("email") email: String
     ): Call<VoidResponse>
 
+
     /** 중복 체크 */
 
     @GET("user/duplicate-check")        // 정보 중복조회
@@ -72,4 +77,20 @@ interface UserAPI {
         @Query("field") field: String,
         @Query("value") value: String
     ): Call<DuplicationCheckResult>
+
+
+    /** 기기 관리 */
+    @PATCH("$DEVICE/token")                    // 기기 정보 추가
+    fun sendFcmToken(
+        @Body jsonparams: FcmToken
+    ): Call<VoidResponse>
+
+    @GET("$DEVICE/notification")        // 알림 허용상태 조회
+    fun getNotificationPermission(
+    ): Call<NotificationPermission>
+
+    @PATCH("$DEVICE/notification")      // 알림 허용상태 변경
+    fun setNotificationPermission(
+        @Body jsonparams: NotificationPermission
+    ): Call<VoidResponse>
 }

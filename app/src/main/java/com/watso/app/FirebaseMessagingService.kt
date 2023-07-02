@@ -1,6 +1,5 @@
 package com.watso.app
 
-import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,7 +12,6 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.security.Permission
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     /** 푸시 알림으로 보낼 수 있는 메세지는 2가지
@@ -25,7 +23,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /** Token 생성 메서드(FirebaseInstanceIdService 사라짐) */
     override fun onNewToken(token: String) {
         Log.d(TAG, "new Token: $token")
-        MainActivity.prefs.setString("registration", token)
+        MainActivity.prefs.setString("fcmToken", token)
 
         // 토큰 값을 따로 저장
         /*val pref = this.getSharedPreferences("token", Context.MODE_PRIVATE)
@@ -37,20 +35,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /** 메시지 수신 메서드(포그라운드) */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: " + remoteMessage!!.from)
-
-        // Notification 메시지를 수신할 경우
-        // remoteMessage.notification?.body!! 여기에 내용이 저장되있음
-        // Log.d(TAG, "Notification Message Body: " + remoteMessage.notification?.body!!)
-
-        //받은 remoteMessage의 값 출력해보기. 데이터메세지 / 알림메세지
-        Log.d(TAG, "Message data : ${remoteMessage.data}")
-        Log.d(TAG, "Message noti : ${remoteMessage.notification}")
-
-        if(remoteMessage.data.isNotEmpty()){
-            sendNotification(remoteMessage)
-        }else {
-            Log.e(TAG, "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
+        Log.d("fcm메시지리시브드", remoteMessage.data.toString())
+        Log.d("fcm메시지리시브드", remoteMessage.notification?.body.toString())
+        val sharedPreferences = getSharedPreferences("cache", Context.MODE_PRIVATE)
+        val isNotificationEnabled = sharedPreferences.getString("notificationPermission", "")
+        if (isNotificationEnabled == "true") {
+            if (remoteMessage.data.isNotEmpty()) {
+                sendNotification(remoteMessage)
+            } else {
+                Log.e(TAG, "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
+            }
         }
     }
 
@@ -94,19 +88,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             channel.vibrationPattern = vibrationPattern
             notificationManager.createNotificationChannel(channel)
         }
-
-        // 알림 생성
-        //if (MainActivity.prefs.getString("notificationPermission", "") == "true") {
         notificationManager.notify(uniId, notificationBuilder.build())
-        //}
     }
 
     /** Token 가져오기 */
     fun getFirebaseToken() {
         //비동기 방식
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            Log.d(TAG, "token=${it}")
-            MainActivity.prefs.setString("registration", it)
+            val previous = MainActivity.prefs.getString("previousFcmToken", "")
+            Log.d(TAG, "previous=$previous, current=${it}")
+            MainActivity.prefs.setString("fcmToken", it)
         }
 
 //		  //동기방식

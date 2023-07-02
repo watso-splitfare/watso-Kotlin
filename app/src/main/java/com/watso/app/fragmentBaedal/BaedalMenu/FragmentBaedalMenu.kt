@@ -1,5 +1,6 @@
 package com.watso.app.fragmentBaedal.BaedalMenu
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,22 +24,28 @@ import retrofit2.Response
 import java.text.DecimalFormat
 
 class FragmentBaedalMenu :Fragment() {
-    val TAG = "FragBaedalMenu"
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
 
-    var postId = ""
-    var storeId = "0"
     lateinit var storeInfo: StoreInfo
     lateinit var adapter: BaedalMenuSectionAdapter
 
-    var orderCnt = 0
-    var viewClickAble = true
-
-    private var mBinding: FragBaedalMenuBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragBaedalMenuBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedalMenu"
     val api= API.create()
     val gson = Gson()
     val dec = DecimalFormat("#,###")
+
+    var postId = ""
+    var storeId = "0"
+    var orderCnt = 0
+    var viewClickAble = true
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +67,7 @@ class FragmentBaedalMenu :Fragment() {
                 setFooter()
             }
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
 
         setAdapter()
         getStoreInfo()
@@ -71,7 +78,7 @@ class FragmentBaedalMenu :Fragment() {
     }
 
     fun setAdapter() {
-        adapter = BaedalMenuSectionAdapter(requireContext())
+        adapter = BaedalMenuSectionAdapter(fragmentContext)
 
         /** 이중 어댑터안의 메뉴 이름을 선택할 경우 해당 메뉴의 옵션을 보여주는 프래그먼트로 이동 */
         adapter.setSecMenuClickListener(object : BaedalMenuSectionAdapter.OnSecMenuClickListener {
@@ -79,7 +86,7 @@ class FragmentBaedalMenu :Fragment() {
                 Log.d("메뉴 프래그먼트", "리스너")
                 if (viewClickAble) {
                     viewClickAble = false
-                    setFrag(FragmentBaedalOpt(), mapOf(
+                    AC.setFrag(FragmentBaedalOpt(), mapOf(
                         "postId" to postId,
                         "menuId" to menuId,
                         "storeInfo" to gson.toJson(storeInfo),
@@ -90,7 +97,7 @@ class FragmentBaedalMenu :Fragment() {
             }
         })
         binding.rvMenuSection.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvMenuSection.setHasFixedSize(true)
         binding.rvMenuSection.adapter = adapter
     }
@@ -108,7 +115,7 @@ class FragmentBaedalMenu :Fragment() {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[getStoreInfo]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e:Exception) { Log.e("$TAG[getStoreInfo]", e.toString())}
                 }
@@ -117,7 +124,7 @@ class FragmentBaedalMenu :Fragment() {
             override fun onFailure(call: Call<StoreInfo>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("baedalMenu Fragment - getSectionMenu", t.message.toString())
-                makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
+                AC.makeToast("메뉴정보를 불러오지 못 했습니다.\n다시 시도해 주세요.")
             }
         })
     }
@@ -136,22 +143,6 @@ class FragmentBaedalMenu :Fragment() {
             "order" to "",
             "storeInfo" to gson.toJson(storeInfo)
         )
-
-        setFrag(FragmentBaedalConfirm(), map)
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments)
-    }
-
-    fun onBackPressed() {
-        val mActivity = activity as MainActivity
-        mActivity.onBackPressed()
+        AC.setFrag(FragmentBaedalConfirm(), map)
     }
 }

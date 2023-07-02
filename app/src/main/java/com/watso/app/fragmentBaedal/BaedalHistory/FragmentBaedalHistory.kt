@@ -1,6 +1,7 @@
 package com.watso.app.fragmentBaedal.BaedalHistory
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import com.watso.app.API.BaedalPost
 import com.watso.app.ActivityController
 import com.watso.app.MainActivity
 import com.watso.app.databinding.FragBaedalHistoryBinding
+import com.watso.app.fragmentBaedal.BaedalAdd.FragmentBaedalAdd
 import com.watso.app.fragmentBaedal.BaedalOrders.FragmentBaedalOrders
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
@@ -23,11 +25,18 @@ import retrofit2.Response
 
 class FragmentBaedalHistory :Fragment() {
     lateinit var AC: ActivityController
+    lateinit var fragmentContext: Context
+
+    var mBinding: FragBaedalHistoryBinding? = null
+    val binding get() = mBinding!!
+    val api= API.create()
+
     var isTouched = false
 
-    private var mBinding: FragBaedalHistoryBinding? = null
-    private val binding get() = mBinding!!
-    val api= API.create()
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -47,7 +56,7 @@ class FragmentBaedalHistory :Fragment() {
             return@setOnTouchListener false
         }
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
         getPostPreview()
 
         return binding.root
@@ -62,17 +71,28 @@ class FragmentBaedalHistory :Fragment() {
                 if (response.code() == 200) {
                     val baedalPosts = mutableListOf<BaedalPost>()
                     baedalPosts.addAll(response.body()!!)
-                    mappingAdapter(baedalPosts)
+                    if (baedalPosts.isEmpty()) {
+                        Log.d("히스토리", "빔")
+                        binding.rvBaedalListJoined.visibility = View.GONE
+                        binding.lytEmptyList.visibility = View.VISIBLE
+                        binding.lytEmptyList.setOnClickListener { AC.setFrag(FragmentBaedalAdd()) }
+                    } else {
+                        Log.d("히스토리", "안빔")
+                        binding.rvBaedalListJoined.visibility = View.VISIBLE
+                        binding.lytEmptyList.visibility = View.GONE
+                        mappingAdapter(baedalPosts)
+                    }
                 } else {
+                    Log.d("히스토리", "에러")
                     Log.e("baedal Fragment - getBaedalPostListJoined", response.toString())
-                    makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                    AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
                 }
             }
 
             override fun onFailure(call: Call<List<BaedalPost>>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("baedal Fragment - getBaedalPostListJoined", t.message.toString())
-                makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
+                AC.makeToast("배달 게시글 리스트를 조회하지 못했습니다.")
             }
         })
     }
@@ -83,34 +103,19 @@ class FragmentBaedalHistory :Fragment() {
         val adapter = HistoryAdapter(baedalPosts)
 
         binding.rvBaedalListJoined.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvBaedalListJoined.setHasFixedSize(true)
         binding.rvBaedalListJoined.adapter = adapter
 
         adapter.setShowOrderListener(object : HistoryAdapter.OnOrderBtnListener {
             override fun showOrder(postJson: String) {
-                setFrag(FragmentBaedalOrders(), mapOf("postJson" to postJson, "isMyOrder" to "true"))
+                AC.setFrag(FragmentBaedalOrders(), mapOf("postJson" to postJson, "isMyOrder" to "true"))
             }
         })
         adapter.setShowPostListener(object : HistoryAdapter.OnPostBtnListener {
             override fun showPost(postId: String) {
-                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+                AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
             }
         })
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, fragIndex:Int = 1) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, fragIndex=fragIndex)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

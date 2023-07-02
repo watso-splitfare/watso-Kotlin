@@ -149,7 +149,16 @@ data class UserOrder(
     @SerializedName("order_lines")
     val orders: MutableList<Order>,
     var isMyOrder: Boolean?
-)
+) {
+    fun getTotalPrice(): Int {
+        var totalPrice = 0
+        orders.forEach {
+            it.setPrice()
+            totalPrice += it.price!! * it.quantity
+        }
+        return totalPrice
+    }
+}
 
 /** 주문 등록 */
 data class PostOrder(
@@ -161,7 +170,13 @@ data class Order(
     var quantity: Int,
     var price: Int?,
     val menu: Menu
-)
+) {
+    fun setPrice(){
+        var tempPrice = menu.price
+        menu.groups?.forEach { it.options?.forEach { tempPrice += it.price } }
+        price = tempPrice
+    }
+}
 
 data class VoidResponse(
     val message: String?

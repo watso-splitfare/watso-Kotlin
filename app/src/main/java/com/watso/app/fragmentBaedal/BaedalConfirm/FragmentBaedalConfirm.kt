@@ -1,11 +1,13 @@
 package com.watso.app.fragmentBaedal.BaedalConfirm
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -17,6 +19,7 @@ import com.watso.app.databinding.FragBaedalConfirmBinding
 import com.google.gson.Gson
 import com.watso.app.API.DataModels.ErrorResponse
 import com.watso.app.ActivityController
+import com.watso.app.RequestPermission
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
 import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
 import retrofit2.Call
@@ -26,57 +29,88 @@ import java.lang.Exception
 import java.text.DecimalFormat
 
 class FragmentBaedalConfirm :Fragment() {
-    val TAG = "FragBaedalConfirm"
     lateinit var AC: ActivityController
-    var postId = ""
+    lateinit var fragmentContext: Context
+
     lateinit var userOrder: UserOrder
     lateinit var storeInfo: StoreInfo
     lateinit var baedalPosting: BaedalPosting
-    var orderPrice = 0
-    var fee = 0
 
-    private var mBinding: FragBaedalConfirmBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragBaedalConfirmBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragBaedalConfirm"
     val api= API.create()
     val gson = Gson()
-    val prefs = MainActivity.prefs
     val dec = DecimalFormat("#,###")
+
+    var postId = ""
+    var orderString = ""
+    var fee = 0
+    var complete = false
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             postId = it.getString("postId")!!
-            val orderString = it.getString("order")
-            val userOrderString = prefs.getString("userOrder", "")
-
-            userOrder = if (userOrderString != "") gson.fromJson(userOrderString, UserOrder::class.java)
-            else {
-                val userId = prefs.getString("userId", "").toLong()
-                val nickname = prefs.getString("nickname", "")
-                UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
-            }
-
-            if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
+            orderString = it.getString("order")!!
             storeInfo = gson.fromJson(it.getString("storeInfo"), StoreInfo::class.java)
         }
-        prefs.setString("userOrder", gson.toJson(userOrder))
-
-        var postString = prefs.getString("baedalPosting", "")
-        if (postString != "") {
-            baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
-            fee = storeInfo.fee / baedalPosting.minMember
-        }
-        else fee = storeInfo.fee / prefs.getString("minMember", "").toInt()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = FragBaedalConfirmBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
-        Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
 
+        setOrderInfo()
         refreshView()
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        Log.d("[$TAG]onDestroyView", complete.toString())
+        if (complete) {
+            AC.removeString("baedalPosting")
+            AC.removeString("storeInfo")
+            AC.removeString("userOrder")
+            AC.removeString("minMember")
+        } else {
+            AC.setString("userOrder", gson.toJson(userOrder))
+            val bundle = bundleOf("orderCnt" to userOrder.orders.size)
+            getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
+        }
+        super.onDestroyView()
+    }
+
+    fun setOrderInfo() {
+        /** 전체 주문 데이터 */
+        val userOrderString = AC.getString("userOrder", "")
+        if (userOrderString != "") {
+            userOrder = gson.fromJson(userOrderString, UserOrder::class.java)
+        } else {
+            val userId = AC.getString("userId", "").toLong()
+            val nickname = AC.getString("nickname", "")
+            userOrder = UserOrder(userId, nickname, "", mutableListOf<Order>(), null)
+        }
+
+        /** FragBaedalOpt 프래그먼트에서 추가한 주문 */
+        if (orderString != "") userOrder.orders.add(gson.fromJson(orderString, Order::class.java))
+
+        /** FragBaedalAdd 프래그먼트에서 작성한 게시글 내용 */
+        val postString = AC.getString("baedalPosting", "")
+        if (postString != "") {
+            baedalPosting = gson.fromJson(postString, BaedalPosting::class.java)
+            fee = storeInfo.fee / baedalPosting.minMember
+        }
+        else fee = storeInfo.fee / AC.getString("minMember", "").toInt()
+
+        Log.d("FragBaedalConfirm onCreate View orders", userOrder.toString())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -85,10 +119,10 @@ class FragmentBaedalConfirm :Fragment() {
 
         binding.tvStoreName.text = storeInfo.name
         binding.rvOrderList.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(fragmentContext, LinearLayoutManager.VERTICAL, false)
         binding.rvOrderList.setHasFixedSize(true)
 
-        val adapter = SelectedMenuAdapter(requireContext(), userOrder.orders)
+        val adapter = SelectedMenuAdapter(fragmentContext, userOrder.orders)
         binding.rvOrderList.adapter = adapter
 
         adapter.setItemClickListener(object: SelectedMenuAdapter.OnItemClickListener {
@@ -132,12 +166,15 @@ class FragmentBaedalConfirm :Fragment() {
             api.baedalPosting(baedalPosting).enqueue(object : Callback<BaedalPostingResponse> {
                 override fun onResponse(call: Call<BaedalPostingResponse>, response: Response<BaedalPostingResponse>) {
                     AC.hideProgressBar()
-                    if (response.code() == 201) setFrag(FragmentBaedal(), popBackStack = 0)
+                    if (response.code() == 201) {
+                        complete = true
+                        goToPosting(true)
+                    }
                     else {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[baedalPosting]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) {
                             Log.e("$TAG[baedalPosting]", e.toString())
@@ -149,7 +186,7 @@ class FragmentBaedalConfirm :Fragment() {
                 override fun onFailure(call: Call<BaedalPostingResponse>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("baedal Confirm Fragment - baedalPosting", t.message.toString())
-                    makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
+                    AC.makeToast("게시글을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
             })
         } else {            // 게시글에 참가할 때
@@ -157,12 +194,17 @@ class FragmentBaedalConfirm :Fragment() {
             api.postOrders(postId, userOrder).enqueue(object : Callback<VoidResponse> {
                 override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                     AC.hideProgressBar()
-                    if (response.code() == 204) goToPosting()
+                    if (response.code() == 204) {
+                        complete = true
+                        val bundle = bundleOf()
+                        getActivity()?.getSupportFragmentManager()?.setFragmentResult("backToBaedalList", bundle)
+                        goToPosting()
+                    }
                     else {
                         try {
                             val errorBody = response.errorBody()?.string()
                             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            makeToast(errorResponse.msg)
+                            AC.makeToast(errorResponse.msg)
                             Log.d("$TAG[postOrders]", "${errorResponse.code}: ${errorResponse.msg}")
                         } catch (e: Exception) {
                             Log.e("$TAG[postOrders]", e.toString())
@@ -174,54 +216,33 @@ class FragmentBaedalConfirm :Fragment() {
                 override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                     AC.hideProgressBar()
                     Log.e("baedal Confirm Fragment - postOrders", t.message.toString())
-                    makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
+                    AC.makeToast("주문을 작성하지 못했습니다. \n다시 시도해주세요.")
                 }
             })
         }
     }
 
-    fun goToPosting() {
-        requestNotiPermission()
-        prefs.removeString("baedalPosting")
-        prefs.removeString("storeInfo")
-        prefs.removeString("userOrder")
-        prefs.removeString("minMember")
-        setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
+    fun goToPosting(isPostiong: Boolean=false) {
+        RequestPermission(activity as MainActivity).requestNotificationPermission()
+        if (isPostiong)
+            AC.setFrag(FragmentBaedal(), popBackStack = 0)
+        else
+            AC.setFrag(FragmentBaedalPost(), mapOf("postId" to postId), 3)
     }
 
     fun bindSetText() {
-        orderPrice = 0
-        userOrder.orders.forEach {
-            orderPrice += it.price!! * it.quantity
-        }
-        binding.tvOrderPrice.text = "${dec.format(orderPrice)}원"
-        binding.tvTotalPrice.text = "${dec.format(orderPrice + fee)}원"
+        var totalPrice = userOrder.getTotalPrice()
+        binding.tvOrderPrice.text = "${dec.format(totalPrice)}원"
+        binding.tvTotalPrice.text = "${dec.format(totalPrice + fee)}원"
         if (postId != "-1")
             binding.tvConfirm.text = "주문 등록"
     }
 
-    fun requestNotiPermission() {
-        val mActivity = activity as MainActivity
-        mActivity.requestNotiPermission()
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment, arguments: Map<String, String>? = null, popBackStack: Int=3) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, arguments, popBackStack)
-    }
-
     fun onBackPressed() {
-        val mActivity = activity as MainActivity
-        prefs.setString("userOrder", gson.toJson(userOrder))
+//        AC.setString("userOrder", gson.toJson(userOrder))
+//        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
+//        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
 
-        val bundle = bundleOf("orderCnt" to userOrder.orders.size)
-        getActivity()?.getSupportFragmentManager()?.setFragmentResult("addOrder", bundle)
-
-        mActivity.onBackPressed()
+        AC.onBackPressed()
     }
 }

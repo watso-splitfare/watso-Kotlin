@@ -11,7 +11,7 @@ interface AuthAPI {
         @Body jsonparams: LoginModel
     ): Call<VoidResponse>
 
-    @DELETE("auth/logout")         // 로그아웃
+    @POST("auth/logout")         // 로그아웃
     fun logout(
     ): Call<VoidResponse>
 

@@ -1,6 +1,7 @@
 package com.watso.app.fragmentAccount
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.watso.app.API.*
@@ -23,19 +25,27 @@ import retrofit2.Response
 import java.lang.Exception
 
 class FragmentUpdateAccount :Fragment() {
-    val TAG = "FragUpdateAccount"
     lateinit var AC: ActivityController
-    var taget = ""
-    var checkedPassword = ""
+    lateinit var fragmentContext: Context
 
-    private var mBinding: FragUpdateAccountBinding? = null
-    private val binding get() = mBinding!!
+    var mBinding: FragUpdateAccountBinding? = null
+    val binding get() = mBinding!!
+    val TAG = "FragUpdateAccount"
     val api= API.create()
+
+    var target = ""
+    var checkedPassword = ""
+    var complete = false
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            taget = it.getString("target")!!
+            target = it.getString("target")!!
         }
     }
 
@@ -43,9 +53,9 @@ class FragmentUpdateAccount :Fragment() {
         mBinding = FragUpdateAccountBinding.inflate(inflater, container, false)
         AC = ActivityController(activity as MainActivity)
 
-        binding.btnPrevious.setOnClickListener { onBackPressed() }
+        binding.btnPrevious.setOnClickListener { AC.onBackPressed() }
 
-        when (taget) {
+        when (target) {
             "password" -> setLytPassword()
             "nickname" -> setLytNickname()
             else -> setLytAccountNum()
@@ -53,10 +63,15 @@ class FragmentUpdateAccount :Fragment() {
         return binding.root
     }
 
-    override fun onDestroyView() {
-        mBinding = null
-        super.onDestroyView()
-    }
+//    override fun onDestroyView() {
+//        Log.d("[$TAG]onDestroyView", complete.toString())
+//        if (complete) {
+//            val bundle = bundleOf()
+//            getActivity()?.getSupportFragmentManager()?.setFragmentResult("getUserInfo", bundle)
+//        }
+//        mBinding = null
+//        super.onDestroyView()
+//    }
 
     fun setLytPassword() {
         binding.tvTitle.text = "비밀번호 변경"
@@ -78,7 +93,7 @@ class FragmentUpdateAccount :Fragment() {
             val currentPassword = binding.etCurrentPassword.text.toString()
             if (currentPassword != "" && checkedPassword != "") {
                 if (verifyInput("password", checkedPassword)) {
-                    val builder = AlertDialog.Builder(requireContext())
+                    val builder = AlertDialog.Builder(fragmentContext)
                     builder.setTitle("비밀번호 변경")
                         .setMessage("비밀번호를 변경하시겠습니까?")
                         .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -97,13 +112,14 @@ class FragmentUpdateAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
-                    makeToast("비밀번호가 변경되었습니다.")
-                    setFrag(FragmentAccount())
+                    AC.makeToast("비밀번호가 변경되었습니다.")
+                    complete = true
+                    AC.onBackPressed()
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[username check]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[username check]", e.toString()) }
                 }
@@ -112,7 +128,7 @@ class FragmentUpdateAccount :Fragment() {
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("FragUpdateAccount password", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
@@ -154,21 +170,21 @@ class FragmentUpdateAccount :Fragment() {
                             }
                         } else {
                             Log.e("FragUpdateAccount nicknameCheck", response.toString())
-                            makeToast("다시 시도해 주세요.")
+                            AC.makeToast("다시 시도해 주세요.")
                         }
                     }
 
                     override fun onFailure(call: Call<DuplicationCheckResult>, t: Throwable) {
                         AC.hideProgressBar()
                         Log.e("FragUpdateAccount nicknameCheck", t.message.toString())
-                        makeToast("다시 시도해 주세요.")
+                        AC.makeToast("다시 시도해 주세요.")
                     }
                 })
             }
         }
         binding.btnUpdateNickname.setOnClickListener {
             if (checkedNickname != null && binding.etNickname.text.toString() == checkedNickname) {
-                val builder = AlertDialog.Builder(requireContext())
+                val builder = AlertDialog.Builder(fragmentContext)
                 builder.setTitle("닉네임 변경")
                     .setMessage("닉네임을 변경하시겠습니까?")
                     .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -185,13 +201,15 @@ class FragmentUpdateAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
-                    makeToast("닉네임이 변경되었습니다.")
+                    AC.makeToast("닉네임이 변경되었습니다.")
                     refreshToken()
+                    complete = true
+                    AC.onBackPressed()
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[nickname check]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) { Log.e("$TAG[nickname check]", e.toString()) }
                 }
@@ -200,7 +218,7 @@ class FragmentUpdateAccount :Fragment() {
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("$TAG[nickname check]", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
@@ -209,7 +227,7 @@ class FragmentUpdateAccount :Fragment() {
         api.refreshToken().enqueue(object : Callback<VoidResponse> {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
-                setFrag(FragmentAccount())
+                AC.setFrag(FragmentAccount(), popBackStack = 2)
                 if (response.code() == 200)
                     Log.d("$TAG[refreshToken]토큰 재발급 완료", "")
                 else {
@@ -227,7 +245,7 @@ class FragmentUpdateAccount :Fragment() {
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("$TAG[refreshToken]", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
@@ -241,7 +259,7 @@ class FragmentUpdateAccount :Fragment() {
         var bankName = banks[0]
 
         binding.spnAccountNum.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.banks, android.R.layout.simple_spinner_item)
+            fragmentContext, R.array.banks, android.R.layout.simple_spinner_item)
         binding.spnAccountNum.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) { }
 
@@ -257,7 +275,7 @@ class FragmentUpdateAccount :Fragment() {
 
         binding.btnUpdateAccountNum.setOnClickListener {
             if (verifyInput("accountNum", binding.etAccountNum.text.toString())) {
-                val builder = AlertDialog.Builder(requireContext())
+                val builder = AlertDialog.Builder(fragmentContext)
                 builder.setTitle("계좌번호 변경")
                     .setMessage("계좌번호를 변경하시겠습니까?")
                     .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
@@ -275,13 +293,14 @@ class FragmentUpdateAccount :Fragment() {
             override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
                 AC.hideProgressBar()
                 if (response.code() == 204) {
-                    makeToast("계좌 정보가 변경되었습니다.")
-                    setFrag(FragmentAccount())
+                    AC.makeToast("계좌 정보가 변경되었습니다.")
+                    complete = true
+                    AC.onBackPressed()
                 } else {
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        makeToast(errorResponse.msg)
+                        AC.makeToast(errorResponse.msg)
                         Log.d("$TAG[updateAccountNum]", "${errorResponse.code}: ${errorResponse.msg}")
                     } catch (e: Exception) {
                         Log.e("$TAG[updateAccountNum]", e.toString())
@@ -292,7 +311,7 @@ class FragmentUpdateAccount :Fragment() {
             override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
                 AC.hideProgressBar()
                 Log.e("FragUpdateAccount AccountNum", t.message.toString())
-                makeToast("다시 시도해 주세요.")
+                AC.makeToast("다시 시도해 주세요.")
             }
         })
     }
@@ -315,30 +334,15 @@ class FragmentUpdateAccount :Fragment() {
     }
 
     fun verifyInput(case: String, text: String): Boolean {
-        val message = VerifyInputFormat().verifyInput(case, text)
+        val message = AC.verifyInput(case, text)
         return if (message == "") {
             true
         } else {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(fragmentContext)
             builder.setMessage(message)
                 .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id -> })
                 .show()
             false
         }
-    }
-
-    fun makeToast(message: String){
-        val mActivity = activity as MainActivity
-        mActivity.makeToast(message)
-    }
-
-    fun setFrag(fragment: Fragment) {
-        val mActivity = activity as MainActivity
-        mActivity.setFrag(fragment, popBackStack=2)
-    }
-
-    fun onBackPressed() {
-        val mActivity =activity as MainActivity
-        mActivity.onBackPressed()
     }
 }

@@ -70,9 +70,8 @@ class TableRowAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<Tab
             binding.tvTime.text = orderTime.format(
                     DateTimeFormatter.ofPattern("HH시 mm분", Locale.KOREAN)
                     )
-            binding.tvStoreName.text = post.store.name
+            binding.tvStoreName.text = "[${post.place}] ${post.store.name}"
             binding.tvStatus.text = status
-            binding.tvPlace.text = post.place
             binding.tvMember.text = currentMember + " / " + maxMember + "명"
             binding.tvNickname.text = "모임장 : " + post.nickname
         }
