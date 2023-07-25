@@ -19,18 +19,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.google.gson.Gson
-import com.watso.app.API.DataModels.ErrorResponse
-import com.watso.app.API.FcmToken
 import com.watso.app.API.UserInfo
-import com.watso.app.API.VoidResponse
 import com.watso.app.databinding.ActivityMainBinding
 import com.watso.app.fragmentAccount.FragmentLogin
 import com.watso.app.fragmentBaedal.Baedal.FragmentBaedal
-import com.watso.app.fragmentBaedal.BaedalPost.FragmentBaedalPost
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -47,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("[$TAG][onCreate", "")
         super.onCreate(savedInstanceState)
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -54,27 +47,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         prefs = PreferenceUtil(applicationContext)
 
-        /** FCM설정, Token값 가져오기 */
-        MyFirebaseMessagingService().getFirebaseToken()
-
-        prefs.setString("deviceInited", "false")
-        initDeviceInfo()
-
-
-        if (prefs.getString("refreshToken", "") == "") {
-            setFrag(FragmentLogin(), popBackStack=0, fragIndex=0)
-        } else setFrag(FragmentBaedal(), popBackStack=0, fragIndex=1)
+        initApp(this)
 
         binding.linearLayout.visibility = View.GONE
         binding.btnHome.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentHome(), popBackStack = 0, fragIndex=0)*/ }
         binding.btnBaedal.setOnClickListener { setFrag(FragmentBaedal(), popBackStack = 0, fragIndex=1) }
         binding.btnTaxi.setOnClickListener { makeToast("게시판 준비중입니다.")/*setFrag(FragmentTaxi(),popBackStack = 0, fragIndex=2)*/ }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("[$TAG] onResume", "")
-        //initDynamicLink()
     }
 
     override fun onDestroy() {
@@ -93,94 +71,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
             } else {
                 finish()
-            }
-        }
-    }
-
-    fun initDeviceInfo() {
-        Log.d("[$TAG][initDeviceInfo]", prefs.getString("deviceInited", "false"))
-
-        if (prefs.getString("deviceInited", "false") != "true") {
-            val refreshToken = prefs.getString("refreshToken", "")
-            Log.d("[$TAG]access token", prefs.getString("accessToken", ""))
-            Log.d("[$TAG]refresh token", refreshToken)
-
-            if (refreshToken != "") {
-                showProgress()
-                api.getUserInfo().enqueue(object : Callback<UserInfo> {
-                    @RequiresApi(Build.VERSION_CODES.O)
-                    override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
-                        hideProgress()
-                        if (response.code() == 200) {
-                            response.body()?.let { setUserInfo(it) }
-                            sendFcmToken()
-                        } else {
-                            val errorBody = response.errorBody()?.string()
-                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            logOut(errorResponse.msg)
-                            Log.d("$TAG[getUserInfo]", "${errorResponse.code}: ${errorResponse.msg}")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<UserInfo>, t: Throwable) {
-                        hideProgress()
-                        Log.e("$TAG[getUserInfo]", t.message.toString())
-                        makeToast("유저 정보 갱신 실패")
-                    }
-                })
-            }
-        }
-    }
-
-    fun sendFcmToken() {
-        val previous = prefs.getString("previousFcmToken", "")
-        val fcmToken = prefs.getString("fcmToken", "")
-        Log.d("[$TAG][sendFcmToken]", "previous: $previous, current: $fcmToken")
-        if (fcmToken == "") {
-            Log.d(TAG, "fcm 토큰 조회 실패")
-            setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
-            return
-        }
-        if (prefs.getString("deviceInited", "false") == "true") {
-            Log.d(TAG, "fcm 토큰 갱신되어있음, 반환")
-            return
-        }
-        Log.d(TAG,"fcm 토큰 갱신")
-
-        showProgress()
-        api.sendFcmToken(FcmToken(fcmToken)).enqueue(object : Callback<VoidResponse> {
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<VoidResponse>, response: Response<VoidResponse>) {
-                hideProgress()
-                if (response.code() == 204) {
-                    prefs.setString("deviceInited", "true")
-                    prefs.setString("previousFcmToken", fcmToken)
-                    setFrag(FragmentBaedal(), popBackStack = 0, fragIndex = 1)
-                }
-                else {
-                    val errorBody = response.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                    logOut(errorResponse.msg)
-                    Log.d("$TAG[sendFcmToken]", "${errorResponse.code}: ${errorResponse.msg}")
-                }
-            }
-
-            override fun onFailure(call: Call<VoidResponse>, t: Throwable) {
-                hideProgress()
-                Log.e("$TAG[sendFcmToken]", t.message.toString())
-                makeToast("fcm 토큰 전송 실패")
-            }
-        })
-    }
-
-    /** DynamicLink */
-    private fun initDynamicLink() {
-        val dynamicLinkData = intent.extras
-        if (dynamicLinkData != null) {
-            val postId = dynamicLinkData.getString("post_id")
-            if (postId != null) {
-                setFrag(FragmentBaedalPost(), mapOf("postId" to postId))
-                intent.removeExtra("post_id")
             }
         }
     }
@@ -360,7 +250,7 @@ class MainActivity : AppCompatActivity() {
         prefs.removeString("deviceInited")
         prefs.removeString("fcmToken")
         prefs.removeString("previousFcmToken")
-        MyFirebaseMessagingService().getFirebaseToken()
+//        MyFirebaseMessagingService().getFirebaseToken()
         setFrag(FragmentLogin(), null, 0)
     }
 }
